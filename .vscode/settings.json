@@ -1,0 +1,17 @@
+{
+    "cSpell.words": [
+        "CICD",
+        "patt",
+        "shdw",
+        "subcontexts",
+        "Subsubsubsection",
+        "unformat"
+    ],
+    "cSpell.ignoreRegExpList": [
+        "\\:\\:[a-z]+",             // message names
+        "\\\\:[0-9a-f]+",           // unicode characters
+        "%[0-9A-F]{2}\\w+",         // url encoded characters
+        "1\\:eJ.+"                  // compressed data
+    ],
+    "files.trimTrailingWhitespace": true
+}
