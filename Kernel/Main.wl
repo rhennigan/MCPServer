@@ -10,6 +10,8 @@ BeginPackage[ "RickHennigan`MCPServer`" ];
 `CreateMCPServer;
 `MCPServer;
 `MCPServerObject;
+`MCPServerObjects;
+`MCPServerObjectQ;
 `StartMCPServer;
 
 (* ::**************************************************************************************************************:: *)
@@ -39,7 +41,10 @@ GeneralUtilities`SetUsage[ MCPServer, "MCPServer is a symbol for miscellaneous m
 (*Load Files*)
 $MCPServerContexts = {
     "RickHennigan`MCPServer`",
-    "RickHennigan`MCPServer`Common`"
+    "RickHennigan`MCPServer`Common`",
+    "RickHennigan`MCPServer`CreateMCPServer`",
+    "RickHennigan`MCPServer`Files`",
+    "RickHennigan`MCPServer`MCPServerObject`"
 };
 
 Scan[ Needs[ # -> None ] &, $MCPServerContexts ];
@@ -61,6 +66,7 @@ $MCPServerProtectedNames = "RickHennigan`MCPServer`" <> # & /@ {
     "CreateMCPServer",
     "MCPServer",
     "MCPServerObject",
+    "MCPServerObjectQ",
     "StartMCPServer"
 };
 

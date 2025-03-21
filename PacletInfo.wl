@@ -19,14 +19,7 @@ PacletObject[ <|
             "Context"      -> { "RickHennigan`MCPServer`" },
             "HiddenImport" -> True,
             "Loading"      -> Automatic,
-            "Symbols"      -> {
-                "RickHennigan`MCPServer`$LastMCPServerFailure",
-                "RickHennigan`MCPServer`$LastMCPServerFailureText",
-                "RickHennigan`MCPServer`CreateMCPServer",
-                "RickHennigan`MCPServer`MCPServer",
-                "RickHennigan`MCPServer`MCPServerObject",
-                "RickHennigan`MCPServer`StartMCPServer"
-            }
+            "Symbols"      -> { "RickHennigan`MCPServer`StartMCPServer" } (* only one symbol needs to autoload *)
         }
     }
 |> ]
