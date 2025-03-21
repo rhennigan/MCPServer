@@ -77,7 +77,7 @@ getMCPServerObjectByName[ name_String ] := Enclose[
     Module[ { dir, file, data },
         dir = ConfirmMatch[ mcpServerPath @ name, File[ _String ], "Directory" ];
         If[ ! DirectoryQ @ dir, throwFailure[ "MCPServerNotFound", name ] ];
-        file = FileNameJoin @ { First @ dir, name <> ".wxf" };
+        file = FileNameJoin @ { First @ dir, URLEncode @ name <> ".wxf" };
         If[ ! FileExistsQ @ file, throwFailure[ "MCPServerNotFound", name ] ];
         data = Developer`ReadWXFFile @ file;
         If[ ! AssociationQ @ data, throwFailure[ "MCPServerNotFound", name ] ];
@@ -116,13 +116,56 @@ getMCPServerObjectByLocation // endDefinition;
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Properties*)
-(MCPServerObject[ data_Association ]? MCPServerObjectQ)[ prop_String ] := data[ prop ];
+(MCPServerObject[ data_Association ]? MCPServerObjectQ)[ prop_String ] :=
+    catchTop[ getMCPServerObjectProperty[ data, prop ], MCPServerObject ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*getMCPServerObjectProperty*)
+getMCPServerObjectProperty // beginDefinition;
+getMCPServerObjectProperty[ KeyValuePattern[ key_ -> value_ ], key_ ] := value;
+getMCPServerObjectProperty[ KeyValuePattern[ "LLMEvaluator" -> KeyValuePattern[ prop_ -> value_ ] ], prop_ ] := value;
+getMCPServerObjectProperty[ data_Association, "LLMConfiguration" ] := makeLLMConfiguration @ data;
+getMCPServerObjectProperty[ _, prop_ ] := Missing[ "UnknownProperty", prop ];
+getMCPServerObjectProperty // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*makeLLMConfiguration*)
+makeLLMConfiguration // beginDefinition;
+makeLLMConfiguration[ data_Association ] := makeLLMConfiguration[ data, convertStringTools @ data[ "LLMEvaluator" ] ];
+makeLLMConfiguration[ _, evaluator_Association ] := LLMConfiguration @ evaluator;
+makeLLMConfiguration // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*convertStringTools*)
+convertStringTools // beginDefinition;
+
+convertStringTools[ evaluator: KeyValuePattern[ "Tools" -> tools_ ] ] :=
+    <| evaluator, "Tools" -> Map[ convertStringTools0, Flatten @ { tools } ] |>;
+
+convertStringTools[ evaluator_ ] := evaluator;
+
+convertStringTools // endDefinition;
+
+
+convertStringTools0 // beginDefinition;
+convertStringTools0[ name_String ] := Lookup[ Wolfram`Chatbook`$AvailableTools, name, name ];
+convertStringTools0[ tool_ ] := tool;
+convertStringTools0 // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*UpValues*)
 MCPServerObject /: DeleteObject[ obj_MCPServerObject? MCPServerObjectQ ] := catchTop[
     deleteMCPServer @ obj,
+    MCPServerObject
+];
+
+
+MCPServerObject /: LLMConfiguration[ obj_MCPServerObject? MCPServerObjectQ ] := catchTop[
+    obj[ "LLMConfiguration" ],
     MCPServerObject
 ];
 
