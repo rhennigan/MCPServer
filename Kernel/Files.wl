@@ -13,7 +13,7 @@ $storagePath := FileNameJoin @ { ExpandFileName @ LocalObject @ $LocalBase, "Ric
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*Storage Path*)
+(*Server Files*)
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -22,6 +22,14 @@ mcpServerPath // beginDefinition;
 mcpServerPath[ name_String ] := File @ FileNameJoin @ { $storagePath, URLEncode @ name };
 mcpServerPath[ obj_MCPServerObject? MCPServerObjectQ ] := obj[ "Location" ];
 mcpServerPath // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*mcpServerLogFile*)
+mcpServerLogFile // beginDefinition;
+mcpServerLogFile[ name_String ] := File @ FileNameJoin @ { First @ mcpServerPath @ name, "log.wl" };
+mcpServerLogFile[ obj_MCPServerObject? MCPServerObjectQ ] := File @ FileNameJoin @ { obj[ "Location" ], "log.wl" };
+mcpServerLogFile // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

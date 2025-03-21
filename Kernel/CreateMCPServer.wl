@@ -12,6 +12,11 @@ Needs[ "RickHennigan`MCPServer`Common`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Configuration*)
+$serverVersion = "1.0.0";
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*CreateMCPServer*)
 CreateMCPServer // beginDefinition;
 
@@ -36,7 +41,7 @@ createMCPServer[ name_String, evaluator_Association ] := Enclose[
         dir = ConfirmMatch[ mcpServerPath @ name, File[ _String ], "Directory" ];
         dir = ConfirmBy[ GeneralUtilities`EnsureDirectory @ First @ dir, DirectoryQ, "Directory" ];
         path = FileNameJoin @ { dir, URLEncode @ name <> ".wxf" };
-        data = <| "Name" -> name, "LLMEvaluator" -> evaluator, "Location" -> File @ dir |>;
+        data = <| "Name" -> name, "LLMEvaluator" -> evaluator, "Location" -> File @ dir, "Version" -> $serverVersion |>;
         exported = ConfirmBy[ Developer`WriteWXFFile[ path, data ], FileExistsQ, "Exported" ];
         ConfirmBy[ MCPServerObject @ data, MCPServerObjectQ, "MCPServerObject" ]
     ],
