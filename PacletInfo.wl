@@ -4,7 +4,7 @@ PacletObject[ <|
     "Creator"          -> "Richard Hennigan",
     "Version"          -> "0.0.1",
     "WolframVersion"   -> "14.2+",
-    "PublisherID"      -> "Wolfram",
+    "PublisherID"      -> "RickHennigan",
     "License"          -> "MIT",
     "ReleaseID"        -> "$RELEASE_ID$",
     "ReleaseDate"      -> "$RELEASE_DATE$",
