@@ -13,20 +13,24 @@ $protocolVersion = "2024-11-05";
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Messages*)
+MCPServer::InvalidSession = "StartMCPServer must run in a standalone kernel.";
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*StartMCPServer*)
-(* FIXME: This should fail if evaluated in an interactive session *)
 StartMCPServer // beginDefinition;
 
 StartMCPServer[ ] :=
-    StartMCPServer @ Environment[ "MCP_SERVER_NAME" ];
-
-StartMCPServer[ name_String ] :=
-    With[ { obj = MCPServerObject @ name },
-        StartMCPServer @ obj
+    With[ { name = Environment[ "MCP_SERVER_NAME" ] },
+        StartMCPServer @ name /; StringQ @ name
     ];
 
+StartMCPServer[ name_String ] :=
+    catchMine @ StartMCPServer @ MCPServerObject @ name;
+
 StartMCPServer[ obj_MCPServerObject? MCPServerObjectQ ] :=
-    catchMine @ superQuiet @ startMCPServer @ obj;
+    catchMine @ startMCPServer @ obj;
 
 StartMCPServer // endExportedDefinition;
 
@@ -35,8 +39,11 @@ StartMCPServer // endExportedDefinition;
 (*startMCPServer*)
 startMCPServer // beginDefinition;
 
+startMCPServer[ obj_ ] /; $Notebooks :=
+    throwFailure[ "InvalidSession" ];
+
 startMCPServer[ obj_MCPServerObject? MCPServerObjectQ ] := Enclose[
-    Module[ { logFile, llmTools, toolList, init, response },
+    superQuiet @ Module[ { logFile, llmTools, toolList, init, response },
 
         logFile = ConfirmMatch[ mcpServerLogFile @ obj, File[ _String ], "LogFile" ];
         ConfirmBy[ GeneralUtilities`EnsureDirectory @ DirectoryName @ logFile, DirectoryQ, "LogFileDirectory" ];
