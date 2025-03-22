@@ -22,7 +22,6 @@ StartMCPServer[ ] :=
 
 StartMCPServer[ name_String ] :=
     With[ { obj = MCPServerObject @ name },
-        PutAppend[ "MCPServerObject" -> obj, "H:\\Documents\\MCPServer\\log.wl" ];
         StartMCPServer @ obj
     ];
 
@@ -78,9 +77,12 @@ startMCPServer // endDefinition;
 (*processRequest*)
 processRequest // beginDefinition;
 
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
 processRequest[ ] :=
     Catch @ Enclose @ Module[ { stdin, message, method, id, response },
         stdin = InputString[ "" ];
+        If[ stdin === "Quit", Exit[ 0 ] ];
         If[ ! StringQ @ stdin, Throw @ EndOfFile ];
         message = ConfirmBy[ Developer`ReadRawJSONString @ stdin, AssociationQ ];
         writeLog[ "Request" -> message ];
@@ -90,6 +92,7 @@ processRequest[ ] :=
         writeLog[ "Response" -> response ];
         response
     ];
+(* :!CodeAnalysis::EndBlock:: *)
 
 processRequest // endDefinition;
 

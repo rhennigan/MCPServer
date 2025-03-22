@@ -44,6 +44,7 @@ $MCPServerContexts = {
     "RickHennigan`MCPServer`Common`",
     "RickHennigan`MCPServer`CreateMCPServer`",
     "RickHennigan`MCPServer`Files`",
+    "RickHennigan`MCPServer`Formatting`",
     "RickHennigan`MCPServer`MCPServerObject`",
     "RickHennigan`MCPServer`StartMCPServer`"
 };

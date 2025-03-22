@@ -17,6 +17,7 @@ BeginPackage[ "RickHennigan`MCPServer`Common`" ];
 `endDefinition;
 `endExportedDefinition;
 `importResourceFunction;
+`makeMCPServerObjectBoxes;
 `mcpServerLogFile;
 `mcpServerPath;
 `messageFailure;
