@@ -8,6 +8,8 @@ Needs[ "RickHennigan`MCPServer`Common`" ];
 
 (* TODO:
     - Add OverwriteTarget option
+    - Add IncludeDefinitions option
+    - Support "Remote" type (deploy as cloud API)
 *)
 
 (* ::**************************************************************************************************************:: *)
@@ -41,7 +43,15 @@ createMCPServer[ name_String, evaluator_Association ] := Enclose[
         dir = ConfirmMatch[ mcpServerPath @ name, File[ _String ], "Directory" ];
         dir = ConfirmBy[ GeneralUtilities`EnsureDirectory @ First @ dir, DirectoryQ, "Directory" ];
         path = FileNameJoin @ { dir, URLEncode @ name <> ".wxf" };
-        data = <| "Name" -> name, "LLMEvaluator" -> evaluator, "Location" -> File @ dir, "Version" -> $serverVersion |>;
+
+        data = <|
+            "Name"         -> name,
+            "LLMEvaluator" -> evaluator,
+            "Location"     -> File @ dir,
+            "Type"         -> "Local",
+            "Version"      -> $serverVersion
+        |>;
+
         exported = ConfirmBy[ Developer`WriteWXFFile[ path, data ], FileExistsQ, "Exported" ];
         ConfirmBy[ MCPServerObject @ data, MCPServerObjectQ, "MCPServerObject" ]
     ],
