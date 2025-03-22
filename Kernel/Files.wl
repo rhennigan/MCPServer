@@ -28,7 +28,7 @@ mcpServerPath // endDefinition;
 (*mcpServerLogFile*)
 mcpServerLogFile // beginDefinition;
 mcpServerLogFile[ name_String ] := File @ FileNameJoin @ { First @ mcpServerPath @ name, "log.wl" };
-mcpServerLogFile[ obj_MCPServerObject? MCPServerObjectQ ] := File @ FileNameJoin @ { obj[ "Location" ], "log.wl" };
+mcpServerLogFile[ obj_MCPServerObject? MCPServerObjectQ ] := File @ FileNameJoin @ { First @ obj[ "Location" ], "log.wl" };
 mcpServerLogFile // endDefinition;
 
 (* ::**************************************************************************************************************:: *)

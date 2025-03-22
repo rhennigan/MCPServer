@@ -123,9 +123,10 @@ getMCPServerObjectByLocation // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*getMCPServerObjectProperty*)
 getMCPServerObjectProperty // beginDefinition;
+getMCPServerObjectProperty[ data_Association, "LLMConfiguration" ] := makeLLMConfiguration @ data;
+getMCPServerObjectProperty[ data_Association, "Tools" ] := makeLLMConfiguration[ data ][ "Tools" ];
 getMCPServerObjectProperty[ KeyValuePattern[ key_ -> value_ ], key_ ] := value;
 getMCPServerObjectProperty[ KeyValuePattern[ "LLMEvaluator" -> KeyValuePattern[ prop_ -> value_ ] ], prop_ ] := value;
-getMCPServerObjectProperty[ data_Association, "LLMConfiguration" ] := makeLLMConfiguration @ data;
 getMCPServerObjectProperty[ _, prop_ ] := Missing[ "UnknownProperty", prop ];
 getMCPServerObjectProperty // endDefinition;
 

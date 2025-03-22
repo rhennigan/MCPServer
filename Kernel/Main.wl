@@ -44,7 +44,8 @@ $MCPServerContexts = {
     "RickHennigan`MCPServer`Common`",
     "RickHennigan`MCPServer`CreateMCPServer`",
     "RickHennigan`MCPServer`Files`",
-    "RickHennigan`MCPServer`MCPServerObject`"
+    "RickHennigan`MCPServer`MCPServerObject`",
+    "RickHennigan`MCPServer`StartMCPServer`"
 };
 
 Scan[ Needs[ # -> None ] &, $MCPServerContexts ];

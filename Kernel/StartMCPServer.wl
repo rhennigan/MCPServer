@@ -16,8 +16,19 @@ $protocolVersion = "2024-11-05";
 (*StartMCPServer*)
 (* FIXME: This should fail if evaluated in an interactive session *)
 StartMCPServer // beginDefinition;
-StartMCPServer[ name_String ] := catchMine @ StartMCPServer @ MCPServerObject @ name;
-StartMCPServer[ obj_MCPServerObject? MCPServerObjectQ ] := catchMine @ superQuiet @ startMCPServer @ obj;
+
+StartMCPServer[ ] :=
+    StartMCPServer @ Environment[ "MCP_SERVER_NAME" ];
+
+StartMCPServer[ name_String ] :=
+    With[ { obj = MCPServerObject @ name },
+        PutAppend[ "MCPServerObject" -> obj, "H:\\Documents\\MCPServer\\log.wl" ];
+        StartMCPServer @ obj
+    ];
+
+StartMCPServer[ obj_MCPServerObject? MCPServerObjectQ ] :=
+    catchMine @ superQuiet @ startMCPServer @ obj;
+
 StartMCPServer // endExportedDefinition;
 
 (* ::**************************************************************************************************************:: *)
@@ -31,6 +42,7 @@ startMCPServer[ obj_MCPServerObject? MCPServerObjectQ ] := Enclose[
         logFile = ConfirmMatch[ mcpServerLogFile @ obj, File[ _String ], "LogFile" ];
         ConfirmBy[ GeneralUtilities`EnsureDirectory @ DirectoryName @ logFile, DirectoryQ, "LogFileDirectory" ];
         If[ FileExistsQ @ logFile, DeleteFile @ logFile ];
+        writeLog[ "LogFile" -> logFile ];
 
         llmTools = Association[ #[ "Name" ] -> # & /@ ConfirmMatch[ obj[ "Tools" ], { ___LLMTool }, "Tools" ] ];
 
@@ -38,16 +50,17 @@ startMCPServer[ obj_MCPServerObject? MCPServerObjectQ ] := Enclose[
             <|
                 "name"        -> safeString @ #[ "Name"        ],
                 "description" -> safeString @ #[ "Description" ],
-                "inputSchema" -> safeString @ #[ "JSONSchema"  ]
+                "inputSchema" -> #[ "JSONSchema" ]
             |> &,
-            llmTools
+            Values @ llmTools
         ];
 
         init = ConfirmBy[ initResponse @ obj, AssociationQ, "InitResponse" ];
 
         Block[ { $initResult = init, $toolList = toolList, $llmTools = llmTools, $logFile = logFile },
             While[ True,
-                response = processRequest[ ];
+                response = catchAlways @ processRequest[ ];
+                writeLog[ "Response" -> response ];
                 If[ AssociationQ @ response,
                     WriteLine[ "stdout", Developer`WriteRawJSONString[ response, "Compact" -> True ] ],
                     Pause[ 0.1 ]
