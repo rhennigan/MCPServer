@@ -153,7 +153,16 @@ superQuiet // beginDefinition;
 superQuiet // Attributes = { HoldFirst };
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
-superQuiet[ eval_ ] := Block[ { PrintTemporary, Print = Null &, $ProgressReporting = False }, Quiet @ eval ];
+superQuiet[ eval_ ] :=
+    Block[
+        {
+            $ProgressReporting = False,
+            Print              = Null &,
+            PrintTemporary     = Null &,
+            $Messages          = Streams[ "stderr" ]
+        },
+        eval
+    ];
 (* :!CodeAnalysis::EndBlock:: *)
 superQuiet // endDefinition;
 
