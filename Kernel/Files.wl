@@ -9,7 +9,7 @@ Needs[ "RickHennigan`MCPServer`Common`" ];
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Configuration*)
-$storagePath := FileNameJoin @ { ExpandFileName @ LocalObject @ $LocalBase, "RickHennigan", "MCPServer" };
+$storagePath := FileNameJoin @ { $UserBaseDirectory, "ApplicationData", "RickHennigan", "MCPServer" };
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
