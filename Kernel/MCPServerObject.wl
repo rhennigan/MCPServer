@@ -107,6 +107,11 @@ getMCPServerObjectByLocation // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*Flat*)
+MCPServerObject[ obj_MCPServerObject? MCPServerObjectQ ] := obj;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*Properties*)
 (MCPServerObject[ data_Association ]? MCPServerObjectQ)[ prop_String ] :=
     catchTop[ getMCPServerObjectProperty[ data, prop ], MCPServerObject ];

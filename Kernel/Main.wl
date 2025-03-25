@@ -8,6 +8,7 @@ BeginPackage[ "RickHennigan`MCPServer`" ];
 `$LastMCPServerFailure;
 `$LastMCPServerFailureText;
 `CreateMCPServer;
+`InstallMCPServer;
 `MCPServer;
 `MCPServerObject;
 `MCPServerObjects;
@@ -45,6 +46,7 @@ $MCPServerContexts = {
     "RickHennigan`MCPServer`CreateMCPServer`",
     "RickHennigan`MCPServer`Files`",
     "RickHennigan`MCPServer`Formatting`",
+    "RickHennigan`MCPServer`InstallMCPServer`",
     "RickHennigan`MCPServer`MCPServerObject`",
     "RickHennigan`MCPServer`StartMCPServer`"
 };
