@@ -27,7 +27,8 @@ $mxFlag                 := RickHennigan`MCPServerInternal`$BuildingMX;
 $resourceFunctionContext = "RickHennigan`MCPServer`ResourceFunctions`";
 
 $resourceVersions = <|
-    "MessageFailure" -> "1.0.1"
+    "BinarySerializeWithDefinitions" -> "1.0.0",
+    "MessageFailure"                 -> "1.0.1"
 |>;
 
 (* ::**************************************************************************************************************:: *)
