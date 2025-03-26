@@ -68,9 +68,11 @@ $MCPServerProtectedNames = "RickHennigan`MCPServer`" <> # & /@ {
     "$LastMCPServerFailure",
     "$LastMCPServerFailureText",
     "CreateMCPServer",
+    "InstallMCPServer",
     "MCPServer",
     "MCPServerObject",
     "MCPServerObjectQ",
+    "MCPServerObjects",
     "StartMCPServer"
 };
 

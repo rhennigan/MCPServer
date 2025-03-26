@@ -9,6 +9,11 @@ Get[ "RickHennigan`MCPServer`CommonSymbols`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*Messages*)
+Get[ "RickHennigan`MCPServer`Messages`" ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*Begin Private Context*)
 Begin[ "`Private`" ];
 
@@ -24,15 +29,6 @@ $resourceFunctionContext = "RickHennigan`MCPServer`ResourceFunctions`";
 $resourceVersions = <|
     "MessageFailure" -> "1.0.1"
 |>;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Section::Closed:: *)
-(*Messages*)
-KeyValueMap[ Function[ MessageName[ MCPServer, #1 ] = #2 ], <|
-    "Internal"               -> "An unexpected error occurred. `1`",
-    "InvalidArguments"       -> "Invalid arguments given for `1` in `2`.",
-    "InvalidMCPServerObject" -> "Invalid MCPServerObject argument: `1`"
-|> ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

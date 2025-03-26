@@ -8,11 +8,6 @@ Needs[ "RickHennigan`MCPServer`Common`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*Messages*)
-MCPServer::InvalidMCPConfiguration = "Invalid MCP configuration file: `1`";
-
-(* ::**************************************************************************************************************:: *)
-(* ::Section::Closed:: *)
 (*InstallMCPServer*)
 InstallMCPServer // beginDefinition;
 InstallMCPServer // Options = { };

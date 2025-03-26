@@ -13,25 +13,11 @@ $protocolVersion = "2024-11-05";
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*Messages*)
-MCPServer::InvalidSession = "StartMCPServer must run in a standalone kernel.";
-
-(* ::**************************************************************************************************************:: *)
-(* ::Section::Closed:: *)
 (*StartMCPServer*)
 StartMCPServer // beginDefinition;
-
-StartMCPServer[ ] :=
-    With[ { name = Environment[ "MCP_SERVER_NAME" ] },
-        StartMCPServer @ name /; StringQ @ name
-    ];
-
-StartMCPServer[ name_String ] :=
-    catchMine @ StartMCPServer @ MCPServerObject @ name;
-
-StartMCPServer[ obj_MCPServerObject? MCPServerObjectQ ] :=
-    catchMine @ startMCPServer @ obj;
-
+StartMCPServer[ ] := catchMine @ StartMCPServer @ Environment[ "MCP_SERVER_NAME" ];
+StartMCPServer[ name_String ] := catchMine @ StartMCPServer @ MCPServerObject @ name;
+StartMCPServer[ obj_MCPServerObject? MCPServerObjectQ ] := catchMine @ startMCPServer @ obj;
 StartMCPServer // endExportedDefinition;
 
 (* ::**************************************************************************************************************:: *)

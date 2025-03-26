@@ -15,13 +15,6 @@ $defaultCommandLineArguments = { "-run", "RickHennigan`MCPServer`StartMCPServer[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*Messages*)
-MCPServer::MCPServerFileNotFound = "MCPServerObject file not found for MCPServer named \"`1`\".";
-MCPServer::MCPServerNotFound     = "No MCPServerObject found for name \"`1`\".";
-MCPServer::InvalidMCPServerFile  = "Invalid MCPServerObject file: \"`1`\".";
-
-(* ::**************************************************************************************************************:: *)
-(* ::Section::Closed:: *)
 (*MCPServerObject*)
 MCPServerObject // ClearAll;
 
