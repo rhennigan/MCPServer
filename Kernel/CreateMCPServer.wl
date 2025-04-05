@@ -7,9 +7,9 @@ Needs[ "RickHennigan`MCPServer`"        ];
 Needs[ "RickHennigan`MCPServer`Common`" ];
 
 (* TODO:
-    - Add OverwriteTarget option
-    - Add IncludeDefinitions option
     - Support "Remote" type (deploy as cloud API)
+    - Add Initialization option
+    - Add developer mode option to start from script instead
 *)
 
 (* ::**************************************************************************************************************:: *)
