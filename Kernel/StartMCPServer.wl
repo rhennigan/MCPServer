@@ -29,10 +29,9 @@ startMCPServer[ obj_ ] /; $Notebooks :=
     throwFailure[ "InvalidSession" ];
 
 startMCPServer[ obj_MCPServerObject? MCPServerObjectQ ] := Enclose[
-    superQuiet @ Module[ { logFile, llmTools, toolList, init, response },
+    superQuiet @ Module[ { logFile, llmTools, toolList, promptList, promptLookup, init, response },
 
-        logFile = ConfirmMatch[ mcpServerLogFile @ obj, File[ _String ], "LogFile" ];
-        ConfirmBy[ GeneralUtilities`EnsureDirectory @ DirectoryName @ logFile, DirectoryQ, "LogFileDirectory" ];
+        logFile = ConfirmBy[ ensureFilePath @ mcpServerLogFile @ obj, fileQ, "LogFile" ];
         If[ FileExistsQ @ logFile, DeleteFile @ logFile ];
         writeLog[ "LogFile" -> logFile ];
 
@@ -47,9 +46,23 @@ startMCPServer[ obj_MCPServerObject? MCPServerObjectQ ] := Enclose[
             Values @ llmTools
         ];
 
+        promptList = ConfirmMatch[ makePromptData @ obj[ "PromptData" ], { ___Association }, "PromptData" ];
+        writeError[ "promptList: " <> ToString[ promptList, InputForm ] ];
+
+        promptLookup = ConfirmBy[ makePromptLookup @ obj[ "PromptData" ], AssociationQ, "PromptLookup" ];
+        writeError[ "promptLookup: " <> ToString[ promptLookup, InputForm ] ];
+
         init = ConfirmBy[ initResponse @ obj, AssociationQ, "InitResponse" ];
 
-        Block[ { $initResult = init, $toolList = toolList, $llmTools = llmTools, $logFile = logFile },
+        Block[
+            {
+                $initResult   = init,
+                $toolList     = toolList,
+                $llmTools     = llmTools,
+                $promptList   = promptList,
+                $promptLookup = promptLookup,
+                $logFile      = logFile
+            },
             While[ True,
                 response = catchAlways @ processRequest[ ];
                 writeLog[ "Response" -> response ];
@@ -64,6 +77,22 @@ startMCPServer[ obj_MCPServerObject? MCPServerObjectQ ] := Enclose[
 ];
 
 startMCPServer // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*makePromptLookup*)
+makePromptLookup // beginDefinition;
+makePromptLookup[ prompts: { ___Association } ] := Association[ #Name -> # & /@ prompts ];
+makePromptLookup // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*makePromptData*)
+makePromptData // beginDefinition;
+makePromptData[ prompts: { ___Association } ] := KeyMap[ ToLowerCase ] @* KeyTake[ $promptKeys ] /@ prompts;
+makePromptData // endDefinition;
+
+$promptKeys = { "Name", "Description", "Arguments" };
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -96,7 +125,8 @@ handleMethod // beginDefinition;
 
 handleMethod[ "initialize"    , msg_, req_ ] := <| req, "result" -> $initResult |>;
 handleMethod[ "resources/list", msg_, req_ ] := <| req, "result" -> <| "resources" -> { } |> |>;
-handleMethod[ "prompts/list"  , msg_, req_ ] := <| req, "result" -> <| "prompts" -> { } |> |>;
+handleMethod[ "prompts/list"  , msg_, req_ ] := <| req, "result" -> <| "prompts" -> $promptList |> |>;
+handleMethod[ "prompts/get"   , msg_, req_ ] := <| req, "result" -> getPrompt[ msg, req ] |>;
 handleMethod[ "tools/list"    , msg_, req_ ] := <| req, "result" -> <| "tools" -> $toolList |> |>;
 handleMethod[ "tools/call"    , msg_, req_ ] := <| req, "result" -> evaluateTool[ msg, req ] |>;
 
@@ -105,9 +135,50 @@ handleMethod[ method_String, _, req_ ] /; StringStartsQ[ method, "notifications/
 handleMethod[ _, _, KeyValuePattern[ "id" -> Null ] ] := Null;
 
 (* Unknown method *)
-handleMethod[ _, _, req_ ] := <| req, "error" -> <| "code" -> -32601, "message" -> "Unknown method" |> |>;
+e: handleMethod[ method_, msg_, req_ ] := (
+    writeError[ "Unhandled method: " <> ToString[ Unevaluated @ e, InputForm ] ];
+    <| req, "error" -> <| "code" -> -32601, "message" -> "Unknown method" |> |>
+);
 
 handleMethod // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*getPrompt*)
+getPrompt // beginDefinition;
+
+getPrompt[ msg_, req_ ] := getPrompt[ msg, req, $promptLookup ];
+
+getPrompt[ msg_Association, req_Association, prompts_Association ] := Enclose[
+    Module[ { params, name, arguments, promptData, content, messages },
+        params = ConfirmBy[ Lookup[ msg, "params" ], AssociationQ, "Parameters" ];
+        name = ConfirmBy[ Lookup[ params, "name" ], StringQ, "Name" ];
+        arguments = ConfirmBy[ Lookup[ params, "arguments", <| |> ], AssociationQ, "Arguments" ];
+        promptData = ConfirmBy[ Lookup[ prompts, name ], AssociationQ, "PromptData" ];
+        content = makePromptContent[ promptData, arguments ];
+        messages = { <| "role" -> "user", "content" -> content |> };
+        <| "messages" -> messages |>
+    ],
+    throwInternalFailure
+];
+
+getPrompt // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*makePromptContent*)
+makePromptContent // beginDefinition;
+
+makePromptContent[ KeyValuePattern[ "Content" -> content_ ], arguments_ ] :=
+    makePromptContent[ content, arguments ];
+
+makePromptContent[ content_String, arguments_ ] :=
+    <| "type" -> "text", "text" -> content |>
+
+makePromptContent[ template_TemplateObject, arguments_Association ] :=
+    makePromptContent[ TemplateApply[ template, arguments ], arguments ];
+
+makePromptContent // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -165,7 +236,7 @@ superQuiet // endDefinition;
 initResponse // beginDefinition;
 
 initResponse[ obj_MCPServerObject ] :=
-    initResponse[ obj[ "Name" ], obj[ "Version" ], obj[ "Tools" ] ];
+    initResponse[ obj[ "Name" ], obj[ "ServerVersion" ], obj[ "Tools" ] ];
 
 initResponse[ name_String, version_String, tools: { ___LLMTool } ] := <|
     "protocolVersion" -> $protocolVersion,
@@ -188,6 +259,14 @@ writeLog[ expr_ ] := writeLog[ expr, $logFile ];
 writeLog[ expr_, File[ file_String ] ] := PutAppend[ expr, file ];
 writeLog[ expr_, _ ] := Null;
 writeLog // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*writeError*)
+writeError // beginDefinition;
+writeError[ str_String ] := WriteLine[ "stderr", str ];
+writeError[ expr_ ] := WriteLine[ "stderr", ToString[ Unevaluated @ expr, InputForm ] ];
+writeError // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

@@ -16,6 +16,7 @@ Needs[ "RickHennigan`MCPServer`Common`" ];
 (* ::Section::Closed:: *)
 (*Configuration*)
 $serverVersion      = "1.0.0";
+$objectVersion      = 1;
 $overwriteTarget    = False;
 $includeDefinitions = True;
 
@@ -51,21 +52,14 @@ CreateMCPServer // endExportedDefinition;
 createMCPServer // beginDefinition;
 
 createMCPServer[ name_String, evaluator_Association ] := Enclose[
-    Module[ { dir, path, exported, data, wxf },
+    Module[ { path, data, wxf, exported },
 
-        dir = ConfirmMatch[ mcpServerPath @ name, File[ _String ], "Directory" ];
-        dir = ConfirmBy[ GeneralUtilities`EnsureDirectory @ First @ dir, DirectoryQ, "Directory" ];
-        path = FileNameJoin @ { dir, URLEncode @ name <> ".wxf" };
+        path = ConfirmBy[ mcpServerFile @ name, fileQ, "Path" ];
+        If[ ! $overwriteTarget && FileExistsQ @ path,
+            throwFailure[ "MCPServerExists", name, OverwriteTarget -> True ]
+        ];
 
-        If[ ! $overwriteTarget && FileExistsQ @ path, throwFailure[ "MCPServerExists", name, OverwriteTarget -> True ] ];
-
-        data = <|
-            "Name"         -> name,
-            "LLMEvaluator" -> evaluator,
-            "Location"     -> File @ dir,
-            "Type"         -> "Local",
-            "Version"      -> $serverVersion
-        |>;
+        data = ConfirmBy[ createMCPServerData[ name, evaluator ], AssociationQ, "Data" ];
 
         wxf = ConfirmBy[
             If[ TrueQ @ $includeDefinitions, binarySerializeWithDefinitions @ data, BinarySerialize @ data ],
@@ -81,6 +75,28 @@ createMCPServer[ name_String, evaluator_Association ] := Enclose[
 ];
 
 createMCPServer // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*createMCPServerData*)
+createMCPServerData // beginDefinition;
+
+createMCPServerData[ name_String, evaluator_Association ] := Enclose[
+    Module[ { dir },
+        dir = ConfirmBy[ ensureDirectory @ mcpServerDirectory @ name, directoryQ, "Directory" ];
+        <|
+            "Name"          -> name,
+            "LLMEvaluator"  -> evaluator,
+            "Location"      -> dir,
+            "Transport"     -> "StandardInputOutput",
+            "ServerVersion" -> $serverVersion,
+            "ObjectVersion" -> $objectVersion
+        |>
+    ],
+    throwInternalFailure
+];
+
+createMCPServerData // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)

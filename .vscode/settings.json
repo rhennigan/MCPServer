@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
         "CICD",
+        "LOCALBASE",
         "Multicolumn",
         "noinit",
         "noprompt",
@@ -8,7 +9,8 @@
         "shdw",
         "subcontexts",
         "Subsubsubsection",
-        "unformat"
+        "unformat",
+        "USERBASE"
     ],
     "cSpell.ignoreRegExpList": [
         "\\:\\:[a-z]+",             // message names

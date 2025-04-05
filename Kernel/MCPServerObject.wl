@@ -13,6 +13,17 @@ $ContextAliases[ "sp`" ] = "System`Private`";
 (*Argument Patterns*)
 $defaultCommandLineArguments = { "-run", "RickHennigan`MCPServer`StartMCPServer[]", "-noinit", "-noprompt" };
 
+$$transport = "StandardInputOutput" | "HTTP" | "ServerSentEvents";
+
+$$metadata = KeyValuePattern @ {
+    "LLMEvaluator"  -> _Association? AssociationQ,
+    "Location"      -> _File? fileQ,
+    "Name"          -> _String? StringQ,
+    "ObjectVersion" -> _Integer? IntegerQ,
+    "ServerVersion" -> _String? StringQ,
+    "Transport"     -> $$transport
+};
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*MCPServerObject*)
@@ -59,12 +70,10 @@ MCPServerObject[ name_String ] := catchMine @ getMCPServerObjectByName @ name;
 getMCPServerObjectByName // beginDefinition;
 
 getMCPServerObjectByName[ name_String ] := Enclose[
-    Module[ { dir, file, data },
-        dir = ConfirmMatch[ mcpServerPath @ name, File[ _String ], "Directory" ];
-        If[ ! DirectoryQ @ dir, throwFailure[ "MCPServerNotFound", name ] ];
-        file = FileNameJoin @ { First @ dir, URLEncode @ name <> ".wxf" };
+    Module[ { file, data },
+        file = ConfirmBy[ mcpServerFile @ name, fileQ, "File" ];
         If[ ! FileExistsQ @ file, throwFailure[ "MCPServerNotFound", name ] ];
-        data = Developer`ReadWXFFile @ file;
+        data = readMetadataFile @ file;
         If[ ! AssociationQ @ data, throwFailure[ "MCPServerNotFound", name ] ];
         ConfirmBy[ MCPServerObject @ data, MCPServerObjectQ, "MCPServerObject" ]
     ],
@@ -83,20 +92,44 @@ MCPServerObject[ location_File ] := catchMine @ getMCPServerObjectByLocation @ l
 (*getMCPServerObjectByLocation*)
 getMCPServerObjectByLocation // beginDefinition;
 
-getMCPServerObjectByLocation[ File[ dir_String? DirectoryQ ] ] :=
-    getMCPServerObjectByLocation @ File @ FileNameJoin @ { dir, FileBaseName @ dir <> ".wxf" };
+getMCPServerObjectByLocation[ dir_File? directoryQ ] :=
+    getMCPServerObjectByLocation @ fileNameJoin[ dir, "Metadata.wxf" ];
 
-getMCPServerObjectByLocation[ File[ file_String ] ] := Enclose[
+getMCPServerObjectByLocation[ file_File ] := Enclose[
     Module[ { data },
-        If[ ! FileExistsQ @ file, throwFailure[ "InvalidMCPServerFile", file ] ];
-        data = Developer`ReadWXFFile @ file;
-        If[ ! AssociationQ @ data, throwFailure[ "InvalidMCPServerFile", file ] ];
+        data = ConfirmBy[ readMetadataFile @ file, validMetadataQ, "Metadata" ];
         ConfirmBy[ MCPServerObject @ data, MCPServerObjectQ, "MCPServerObject" ]
     ],
     throwInternalFailure
 ];
 
 getMCPServerObjectByLocation // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*readMetadataFile*)
+readMetadataFile // beginDefinition;
+
+(* TODO: This should check the object version and update if necessary *)
+readMetadataFile[ file_File ] := Enclose[
+    Module[ { data },
+        If[ ! FileExistsQ @ file, throwFailure[ "InvalidMCPServerFile", file ] ];
+        data = Developer`ReadWXFFile @ ExpandFileName @ file;
+        If[ ! validMetadataQ @ data, throwFailure[ "InvalidMCPServerFile", file ] ];
+        data
+    ],
+    throwInternalFailure
+];
+
+readMetadataFile // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*validMetadataQ*)
+validMetadataQ // beginDefinition;
+validMetadataQ[ $$metadata ] := True;
+validMetadataQ[ _ ] := False;
+validMetadataQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -115,8 +148,9 @@ MCPServerObject[ obj_MCPServerObject? MCPServerObjectQ ] := obj;
 getMCPServerObjectProperty // beginDefinition;
 
 (* Special properties *)
-getMCPServerObjectProperty[ data_Association, "LLMConfiguration" ] := makeLLMConfiguration @ data;
-getMCPServerObjectProperty[ data_Association, "Tools" ] := makeLLMConfiguration[ data ][ "Tools" ];
+getMCPServerObjectProperty[ data_Association, "LLMConfiguration"  ] := makeLLMConfiguration @ data;
+getMCPServerObjectProperty[ data_Association, "PromptData"        ] := getPromptData @ data;
+getMCPServerObjectProperty[ data_Association, "Tools"             ] := getToolList @ data;
 getMCPServerObjectProperty[ data_Association, "JSONConfiguration" ] := makeJSONConfiguration @ data;
 
 (* Standard properties *)
@@ -126,6 +160,24 @@ getMCPServerObjectProperty[ KeyValuePattern[ "LLMEvaluator" -> KeyValuePattern[ 
 (* Unknown property *)
 getMCPServerObjectProperty[ _, prop_ ] := Missing[ "UnknownProperty", prop ];
 getMCPServerObjectProperty // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*getPromptData*)
+getPromptData // beginDefinition;
+getPromptData[ as_Association ] := getPromptData[ as, as[ "LLMEvaluator", "PromptData" ] ];
+getPromptData[ as_, prompts: { ___Association } ] := prompts;
+getPromptData[ as_, prompts_ ] := { };
+getPromptData // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*getToolList*)
+getToolList // beginDefinition;
+getToolList[ as_Association ] := getToolList[ as, convertStringTools[ as[ "LLMEvaluator" ] ][ "Tools" ] ];
+getToolList[ as_Association, tools_List ] := tools;
+getToolList[ as_Association, tools_ ] := { };
+getToolList // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)

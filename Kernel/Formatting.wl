@@ -45,12 +45,12 @@ makeMCPServerObjectBoxes // endDefinition;
 makeSummaryRows // beginDefinition;
 
 makeSummaryRows[ obj_ ] :=
-    makeSummaryRows[ obj[ "Name" ], obj[ "Type" ] ];
+    makeSummaryRows[ obj[ "Name" ], obj[ "Transport" ] ];
 
 makeSummaryRows[ name_String, type_ ] :=
     Flatten @ {
-        summaryItem[ "Name", name ],
-        summaryItem[ "Type", type ]
+        summaryItem[ "Name"     , name ],
+        summaryItem[ "Transport", type ]
     };
 
 makeSummaryRows // endDefinition;
@@ -66,13 +66,13 @@ makeHiddenSummaryRows[ obj_ ] :=
 makeHiddenSummaryRows[ name_String, evaluator_Association, location_File, json_String ] :=
     Module[ { toolNames, copyJSONButton },
         toolNames = Select[ Cases[ Flatten @ { evaluator[ "Tools" ] }, tool: $$llmTool :> toolName @ tool ], StringQ ];
-        copyJSONButton = clickToCopy[ "{\[Ellipsis]}", TextCell @ json ];
+        copyJSONButton = clickToCopy[ "{\[Ellipsis]}", json ];
         Flatten @ {
             summaryItem[ "JSON Configuration", copyJSONButton ],
             If[ Length @ toolNames > 0, summaryItem[ "Tool Names", Multicolumn[ toolNames, 5 ] ], Nothing ],
             summaryItem[ "Location", location ]
         }
-];
+    ];
 
 makeHiddenSummaryRows // endDefinition;
 
