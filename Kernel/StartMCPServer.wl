@@ -236,20 +236,57 @@ superQuiet // endDefinition;
 initResponse // beginDefinition;
 
 initResponse[ obj_MCPServerObject ] :=
-    initResponse[ obj[ "Name" ], obj[ "ServerVersion" ], obj[ "Tools" ] ];
+    initResponse[ obj[ "Name" ], obj[ "ServerVersion" ], obj[ "Tools" ], obj[ "Prompts" ] ];
 
-initResponse[ name_String, version_String, tools: { ___LLMTool } ] := <|
-    "protocolVersion" -> $protocolVersion,
-    "capabilities" -> <|
-        "logging"   -> <| |>, (* TODO: support logging *)
-        "prompts"   -> <| |>, (* TODO: support prompts *)
-        "resources" -> <| |>, (* TODO: support resources *)
-        "tools"     -> If[ Length @ tools > 0, <| "listChanged" -> True |>, <| |> ]
-    |>,
-    "serverInfo" -> <| "name" -> name, "version" -> version |>
-|>;
+initResponse[ name_String, version_String, tools0: { ___LLMTool }, prompts_ ] := Enclose[
+    Module[ { tools, instructions },
+        tools = If[ Length @ tools0 > 0, <| "listChanged" -> True |>, <| |> ];
+        instructions = ConfirmMatch[ makeInstructions @ prompts, _Missing | _String, "Instructions" ];
+        DeleteMissing @ <|
+            "protocolVersion" -> $protocolVersion,
+            "instructions"    -> instructions,
+            "capabilities" -> <|
+                "logging"   -> <| |>, (* TODO: support logging *)
+                "prompts"   -> <| |>, (* TODO: support prompts *)
+                "resources" -> <| |>, (* TODO: support resources *)
+                "tools"     -> tools
+            |>,
+            "serverInfo" -> <| "name" -> name, "version" -> version |>
+        |>
+    ],
+    throwInternalFailure
+];
 
 initResponse // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*makeInstructions*)
+makeInstructions // beginDefinition;
+
+makeInstructions[ { } | "" ] :=
+    Missing[ "NotAvailable" ];
+
+makeInstructions[ prompt_String ] :=
+    makeInstructions @ { prompt };
+
+makeInstructions[ prompts: { __String } ] :=
+    StringRiffle[ prompts, "\n\n" ];
+
+makeInstructions[ prompts: { (_String|_TemplateObject)... } ] :=
+    makeInstructions @ Select[
+        Replace[
+            prompts,
+            t_TemplateObject :> TemplateApply @ t,
+            { 1 }
+        ],
+        StringQ
+    ];
+
+makeInstructions[ _ ] :=
+    Missing[ "NotAvailable" ];
+
+makeInstructions // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
