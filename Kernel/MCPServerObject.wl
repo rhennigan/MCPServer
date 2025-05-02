@@ -216,7 +216,7 @@ getWolframCommand[ os_, wolfram_String, KeyValuePattern @ { "ExitCode" -> 0, "St
     ];
 
 getWolframCommand[ os_, wolfram_String, _ ] :=
-    FileNameJoin @ { $InstallationDirectory, wolfram };
+    FileNameJoin @ { $InstallationDirectory, If[ os === "MacOSX", "MacOS", Nothing ], wolfram };
 
 getWolframCommand // endDefinition;
 
