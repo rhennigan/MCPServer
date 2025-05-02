@@ -64,6 +64,7 @@ startMCPServer[ obj_MCPServerObject? MCPServerObjectQ ] := Enclose[
                 $logFile      = logFile
             },
             While[ True,
+                If[ $$ParentProcessID === 1, Exit[ 0 ] ];
                 response = catchAlways @ processRequest[ ];
                 writeLog[ "Response" -> response ];
                 If[ AssociationQ @ response,
