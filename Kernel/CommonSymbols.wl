@@ -8,6 +8,7 @@ BeginPackage[ "RickHennigan`MCPServer`Common`" ];
 `$settingsData;
 `$storagePath;
 `$thisPaclet;
+`addEnvironmentVariables;
 `addToMXInitialization;
 `beginDefinition;
 `catchAlways;

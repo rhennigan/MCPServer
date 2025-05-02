@@ -185,12 +185,13 @@ getToolList // endDefinition;
 makeJSONConfiguration // beginDefinition;
 
 makeJSONConfiguration[ data_Association ] := Enclose[
-    Module[ { name, env, cmd, config, full },
+    Module[ { name, env, cmd, config, withEnv, full },
         name = ConfirmBy[ data[ "Name" ], StringQ, "Name" ];
         env = <| "MCP_SERVER_NAME" -> name |>;
         cmd = ConfirmBy[ getWolframCommand @ $OperatingSystem, StringQ, "WolframCommand" ];
-        config = <| "command" -> cmd, "args" -> $defaultCommandLineArguments, "env" -> env |>;
-        full = <| "mcpServers" -> <| name -> config |> |>;
+        config = <| "type" -> "stdio", "command" -> cmd, "args" -> $defaultCommandLineArguments, "env" -> env |>;
+        withEnv = ConfirmBy[ addEnvironmentVariables @ config, AssociationQ, "WithEnvironment" ];
+        full = <| "mcpServers" -> <| name -> withEnv |> |>;
         ConfirmBy[ Developer`WriteRawJSONString @ full, StringQ, "JSONConfiguration" ]
     ],
     throwInternalFailure

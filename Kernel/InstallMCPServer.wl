@@ -41,7 +41,7 @@ installMCPServer[ target_, obj_, Automatic|Inherited ] :=
     installMCPServer[ target, obj, defaultEnvironment[ ] ];
 
 installMCPServer[ target0_File, obj_MCPServerObject, env_Association ] := Enclose[
-    Module[ { target, name, json, data, server, existing },
+    Module[ { target, name, json, data, server, existing, updated },
 
         target   = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
         name     = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
@@ -49,11 +49,10 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association ] := Enclos
         data     = ConfirmBy[ Developer`ReadRawJSONString @ json, AssociationQ, "JSONConfiguration" ];
         server   = ConfirmBy[ addEnvironmentVariables[ data[ "mcpServers", name ], env ], AssociationQ, "Server" ];
         existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
+        updated  = ConfirmBy[ addMCPServerConfig[ name, existing, server ], AssociationQ, "Updated" ];
 
-        existing[ "mcpServers", name ] = server;
-
-        ConfirmBy[ writeRawJSONFile[ target, existing ], FileExistsQ, "Export" ];
-        ConfirmAssert[ readRawJSONFile @ target === existing, "ExportCheck" ];
+        ConfirmBy[ writeRawJSONFile[ target, updated ], FileExistsQ, "Export" ];
+        ConfirmAssert[ readRawJSONFile @ target === updated, "ExportCheck" ];
 
         installSuccess[ name, target, obj ]
     ],
@@ -64,8 +63,26 @@ installMCPServer // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*addMCPServerConfig*)
+addMCPServerConfig // beginDefinition;
+
+(* FIXME: This isn't correct for VSCode: *)
+addMCPServerConfig[ name_String, existing_Association, server_Association ] :=
+    Module[ { new },
+        new = existing;
+        new[ "mcpServers", name ] = server;
+        new
+    ];
+
+addMCPServerConfig // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*addEnvironmentVariables*)
 addEnvironmentVariables // beginDefinition;
+
+addEnvironmentVariables[ server_Association ] :=
+    addEnvironmentVariables[ server, defaultEnvironment[ ] ];
 
 addEnvironmentVariables[ server0_Association, extraEnv_Association ] := Enclose[
     Module[ { server, env, newEnv },
@@ -191,6 +208,18 @@ installLocation[ "Cursor", _ ] := fileNameJoin[ $HomeDirectory, ".cursor", "mcp.
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*VSCode*)
+installLocation[ "VisualStudioCode", "Windows" ] :=
+    fileNameJoin[ $appDataDirectory, "Code", "User", "settings.json" ];
+
+installLocation[ "VisualStudioCode", "MacOSX" ] :=
+    fileNameJoin[ $HomeDirectory, "Library", "Application Support", "Code", "User", "settings.json" ];
+
+installLocation[ "VisualStudioCode", _ ] :=
+    fileNameJoin[ $HomeDirectory, ".config", "Code", "User", "settings.json" ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*Unknown*)
 installLocation[ name_String, os_String ] := throwFailure[ "UnknownInstallLocation", name, os ];
 installLocation // endDefinition;
@@ -200,6 +229,7 @@ installLocation // endDefinition;
 (*toInstallName*)
 toInstallName // beginDefinition;
 toInstallName[ "Claude" ] := "ClaudeDesktop";
+toInstallName[ "VSCode" ] := "VisualStudioCode";
 toInstallName[ name_String ] := name;
 toInstallName // endDefinition;
 
@@ -207,10 +237,19 @@ toInstallName // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*installDisplayName*)
 installDisplayName // beginDefinition;
-installDisplayName[ "ClaudeDesktop" ] := "Claude Desktop";
-installDisplayName[ name_String ] := name;
-installDisplayName[ None ] := None;
+installDisplayName[ "ClaudeDesktop"    ] := "Claude Desktop";
+installDisplayName[ "VisualStudioCode" ] := "Visual Studio Code";
+installDisplayName[ name_String        ] := name;
+installDisplayName[ None               ] := None;
 installDisplayName // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*$appDataDirectory*)
+$appDataDirectory := Replace[
+    Environment[ "AppData" ],
+    Except[ _? DirectoryQ ] :> fileNameJoin[ $HomeDirectory, "AppData", "Roaming" ]
+];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
