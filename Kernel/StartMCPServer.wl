@@ -64,7 +64,13 @@ startMCPServer[ obj_MCPServerObject? MCPServerObjectQ ] := Enclose[
                 $logFile      = logFile
             },
             While[ True,
-                If[ $$ParentProcessID === 1, Exit[ 0 ] ];
+                If[
+                    And[
+                        Or[ $OperatingSystem === "MacOSX", $OperatingSystem === "Unix" ],
+                        $ParentProcessID === 1
+                        ],
+                    Exit[0]
+                ];
                 response = catchAlways @ processRequest[ ];
                 writeLog[ "Response" -> response ];
                 If[ AssociationQ @ response,
