@@ -162,9 +162,13 @@ If[ $assertions,
 cicd`ConsoleLog[ "Loading paclet..." ];
 PacletDirectoryUnload @ $pacletDir;
 cicd`ScriptConfirmBy[ PacletDirectoryLoad @ tmp, MemberQ @ tmp ];
-Unprotect[ "RickHennigan`MCPServer`*" ];
-Remove[ "RickHennigan`MCPServer`*" ];
-Remove[ "RickHennigan`MCPServer`*`*" ];
+
+Quiet[
+    Unprotect[ "RickHennigan`MCPServer`*" ];
+    Remove[ "RickHennigan`MCPServer`*" ];
+    Remove[ "RickHennigan`MCPServer`*`*" ];
+];
+
 cicd`ScriptConfirmAssert[ Names[ "RickHennigan`MCPServer`*" ] === Names[ "RickHennigan`MCPServer`*`*" ] === { }, "Names" ];
 cicd`ScriptConfirm @ CheckAbort[ Get[ "RickHennigan`MCPServer`" ], $Failed ];
 
