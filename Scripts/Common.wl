@@ -8,8 +8,6 @@ Wolfram`PacletCICD`$Debug = True;
 Off[ General::shdw           ];
 Off[ PacletInstall::samevers ];
 
-If[ StringQ @ Environment[ "GITHUB_ACTIONS" ], PacletInstall[ "Wolfram/LLMFunctions", UpdatePacletSites -> True ] ];
-
 If[ ! PacletObjectQ @ PacletObject[ "Wolfram/PacletCICD" ],
     PacletInstall[ "https://github.com/WolframResearch/PacletCICD/releases/download/v0.36.2/Wolfram__PacletCICD-0.36.2.paclet" ]
 ];
@@ -20,12 +18,13 @@ cFile = cicd`ScriptConfirmBy[ #, FileExistsQ ] &;
 cDir  = cicd`ScriptConfirmBy[ #, DirectoryQ  ] &;
 cStr  = cicd`ScriptConfirmBy[ #, StringQ     ] &;
 
+ResourceObject;
+$PublisherID = "RickHennigan";
+
 Needs[ "DefinitionNotebookClient`" -> None ];
 DefinitionNotebookClient`$DisabledHints = <| "MessageTag" -> #, "Level" -> All, "ID" -> All |> & /@ {
     "CodeInspectionFileIssue/TopLevel",
-    "HeroImageTooSmall",
-    "InternalContextWarning",
-    "StylesheetSubdirectory"
+    "InternalContextWarning"
 };
 
 $messageHistoryLength = 10;
