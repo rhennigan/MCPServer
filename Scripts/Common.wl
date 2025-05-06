@@ -18,9 +18,6 @@ cFile = cicd`ScriptConfirmBy[ #, FileExistsQ ] &;
 cDir  = cicd`ScriptConfirmBy[ #, DirectoryQ  ] &;
 cStr  = cicd`ScriptConfirmBy[ #, StringQ     ] &;
 
-ResourceObject;
-$PublisherID = "RickHennigan";
-
 Needs[ "DefinitionNotebookClient`" -> None ];
 DefinitionNotebookClient`$DisabledHints = <| "MessageTag" -> #, "Level" -> All, "ID" -> All |> & /@ {
     "CodeInspectionFileIssue/TopLevel",
@@ -98,6 +95,12 @@ messageString[ HoldPattern @ MessageName[ f_, tag_ ], args___ ] :=
     ];
 
 messageString[ ___ ] := "-- Message text not found --";
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Publisher ID*)
+Needs[ "ResourceSystemClient`" -> None ];
+$PublisherID = PacletObject[ File @ $pacletDir ][ "PublisherID" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
