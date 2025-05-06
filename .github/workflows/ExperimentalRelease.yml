@@ -1,0 +1,64 @@
+name: Experimental Release
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Increment Paclet Version"]
+    types:
+      - completed
+    branches: [main]
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  WOLFRAMSCRIPT_ENTITLEMENTID: ${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
+  WOLFRAM_SYSTEM_ID: Linux-x86-64
+  GH_INSTALL_URL: https://github.com/cli/cli/releases/download/v2.33.0/gh_2.33.0_linux_amd64.deb
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    container:
+      image: wolframresearch/wolframengine:14.1
+      options: --user root
+
+    steps:
+    - name: Update Git
+      run: |
+        apt-get update && apt-get install software-properties-common -y
+        add-apt-repository ppa:git-core/ppa -y
+        apt-get update && apt-get install git -y
+        wget ${{ env.GH_INSTALL_URL }} -O gh.deb
+        dpkg -i gh.deb
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Build Paclet
+      run: wolframscript -f Scripts/BuildPaclet.wls
+
+    - name: Rename Paclet File
+      run: mv "${{ env.PACLET_PATH }}" "${{ env.PACLET_BUILD_DIR }}/RickHennigan__MCPServer.paclet"
+
+    - name: Update Release
+      run: |
+        git config --global --add safe.directory $(pwd)
+
+        if ! gh release view experimental; then
+          gh release create experimental \
+            --target="${{ github.ref }}" \
+            --repo="${{ github.repository }}" \
+            --title="Experimental Release" \
+            --notes="This is an experimental release that's always updated with the latest build from the main branch." \
+            --prerelease
+        fi
+
+        gh release upload experimental \
+          "${{ env.PACLET_BUILD_DIR }}/RickHennigan__MCPServer.paclet" \
+          --clobber \
+          --repo="${{ github.repository }}"
