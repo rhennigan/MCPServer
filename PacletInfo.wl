@@ -2,7 +2,7 @@ PacletObject[ <|
     "Name"             -> "RickHennigan/MCPServer",
     "Description"      -> "Implements a model context protocol server using Wolfram Language",
     "Creator"          -> "Richard Hennigan (Wolfram Research)",
-    "Version"          -> "0.0.6",
+    "Version"          -> "0.0.7",
     "WolframVersion"   -> "14.1+",
     "PublisherID"      -> "RickHennigan",
     "License"          -> "MIT",
