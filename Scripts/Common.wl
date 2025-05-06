@@ -18,9 +18,6 @@ cFile = cicd`ScriptConfirmBy[ #, FileExistsQ ] &;
 cDir  = cicd`ScriptConfirmBy[ #, DirectoryQ  ] &;
 cStr  = cicd`ScriptConfirmBy[ #, StringQ     ] &;
 
-ResourceObject;
-$PublisherID = "RickHennigan";
-
 Needs[ "DefinitionNotebookClient`" -> None ];
 DefinitionNotebookClient`$DisabledHints = <| "MessageTag" -> #, "Level" -> All, "ID" -> All |> & /@ {
     "CodeInspectionFileIssue/TopLevel",
