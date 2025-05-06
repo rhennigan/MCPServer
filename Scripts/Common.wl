@@ -97,6 +97,12 @@ messageString[ HoldPattern @ MessageName[ f_, tag_ ], args___ ] :=
 messageString[ ___ ] := "-- Message text not found --";
 
 (* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Publisher ID*)
+Needs[ "ResourceSystemClient`" -> None ];
+$PublisherID = PacletObject[ File @ $pacletDir ][ "PublisherID" ];
+
+(* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Command Line Arguments*)
 $scriptCommandLine := Select[ Flatten @ { Replace[ $ScriptCommandLine, { } :> $CommandLine ] }, StringQ ];
