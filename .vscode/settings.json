@@ -1,16 +1,20 @@
 {
     "cSpell.words": [
         "CICD",
+        "libgomp",
         "LOCALBASE",
         "Multicolumn",
         "noinit",
         "noprompt",
         "patt",
         "shdw",
+        "Stylesheet",
         "subcontexts",
         "Subsubsubsection",
         "unformat",
-        "USERBASE"
+        "USERBASE",
+        "wolframengine",
+        "wolframresearch"
     ],
     "cSpell.ignoreRegExpList": [
         "\\:\\:[a-z]+",             // message names

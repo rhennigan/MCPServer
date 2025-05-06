@@ -2,7 +2,7 @@ PacletObject[ <|
     "Name"             -> "RickHennigan/MCPServer",
     "Description"      -> "Implements a model context protocol server using Wolfram Language",
     "Creator"          -> "Richard Hennigan (Wolfram Research)",
-    "Version"          -> "0.0.4",
+    "Version"          -> "0.0.5",
     "WolframVersion"   -> "14.1+",
     "PublisherID"      -> "RickHennigan",
     "License"          -> "MIT",
@@ -12,14 +12,27 @@ PacletObject[ <|
     "ActionURL"        -> "$ACTION_URL$",
     "CommitURL"        -> "$COMMIT_URL$",
     "PrimaryContext"   -> "RickHennigan`MCPServer`",
-    "DocumentationURL" -> "https://resources.wolframcloud.com/PacletRepository/resources",
+    "DocumentationURL" -> "https://paclets.com",
     "Extensions"       -> {
         { "Kernel",
             "Root"         -> "Kernel",
             "Context"      -> { "RickHennigan`MCPServer`" },
             "HiddenImport" -> True,
             "Loading"      -> Automatic,
-            "Symbols"      -> { "RickHennigan`MCPServer`StartMCPServer" } (* only one symbol needs to autoload *)
+            "Symbols"      -> {
+                "RickHennigan`MCPServer`$LastMCPServerFailure",
+                "RickHennigan`MCPServer`$LastMCPServerFailureText",
+                "RickHennigan`MCPServer`$MCPServerContexts",
+                "RickHennigan`MCPServer`$MCPServerProtectedNames",
+                "RickHennigan`MCPServer`$MCPServerSymbolNames",
+                "RickHennigan`MCPServer`CreateMCPServer",
+                "RickHennigan`MCPServer`InstallMCPServer",
+                "RickHennigan`MCPServer`MCPServer",
+                "RickHennigan`MCPServer`MCPServerObject",
+                "RickHennigan`MCPServer`MCPServerObjectQ",
+                "RickHennigan`MCPServer`MCPServerObjects",
+                "RickHennigan`MCPServer`StartMCPServer"
+            }
         }
     }
 |> ]

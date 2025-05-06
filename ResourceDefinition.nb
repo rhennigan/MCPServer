@@ -965,6 +965,137 @@ Notebook[
                  TagBox[
                   TemplateBox[
                    {
+                    "\"BuildMX.wls\"",
+                    FileNameJoin[
+                     {NotebookDirectory[], "Scripts", "BuildMX.wls"}
+                    ]
+                   },
+                   "FileManagerFileOpenerTemplate"
+                  ],
+                  Function[
+                   Annotation[
+                    #1,
+                    DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                     1
+                    ]
+                   ]
+                  ]
+                 ],
+                 FileNameJoin[
+                  {NotebookDirectory[], "Scripts", "BuildMX.wls"}
+                 ],
+                 BoxID -> "FileTreePath",
+                 BaseStyle -> {"Text"}
+                ]
+               ],
+               "FileManagerFile",
+               CellMargins -> {{23 + Inherited, Inherited}, {Inherited, Inherited}},
+               CellGroupingRules -> {"SectionGrouping", 110},
+               CellFrameLabels -> {
+                {
+                 Cell[
+                  BoxData[TemplateBox[{}, "FileManagerWLIconTemplate"]],
+                  Background -> None
+                 ],
+                 Inherited
+                },
+                {Inherited, Inherited}
+               },
+               CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+               CellID -> 5010011
+              ],
+              Cell[
+               BoxData[
+                InterpretationBox[
+                 TagBox[
+                  TemplateBox[
+                   {
+                    "\"BuildPaclet.wls\"",
+                    FileNameJoin[
+                     {NotebookDirectory[], "Scripts", "BuildPaclet.wls"}
+                    ]
+                   },
+                   "FileManagerFileOpenerTemplate"
+                  ],
+                  Function[
+                   Annotation[
+                    #1,
+                    DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                     1
+                    ]
+                   ]
+                  ]
+                 ],
+                 FileNameJoin[
+                  {NotebookDirectory[], "Scripts", "BuildPaclet.wls"}
+                 ],
+                 BoxID -> "FileTreePath",
+                 BaseStyle -> {"Text"}
+                ]
+               ],
+               "FileManagerFile",
+               CellMargins -> {{23 + Inherited, Inherited}, {Inherited, Inherited}},
+               CellGroupingRules -> {"SectionGrouping", 110},
+               CellFrameLabels -> {
+                {
+                 Cell[
+                  BoxData[TemplateBox[{}, "FileManagerWLIconTemplate"]],
+                  Background -> None
+                 ],
+                 Inherited
+                },
+                {Inherited, Inherited}
+               },
+               CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+               CellID -> 151367649
+              ],
+              Cell[
+               BoxData[
+                InterpretationBox[
+                 TagBox[
+                  TemplateBox[
+                   {
+                    "\"Common.wl\"",
+                    FileNameJoin[{NotebookDirectory[], "Scripts", "Common.wl"}]
+                   },
+                   "FileManagerFileOpenerTemplate"
+                  ],
+                  Function[
+                   Annotation[
+                    #1,
+                    DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                     1
+                    ]
+                   ]
+                  ]
+                 ],
+                 FileNameJoin[{NotebookDirectory[], "Scripts", "Common.wl"}],
+                 BoxID -> "FileTreePath",
+                 BaseStyle -> {"Text"}
+                ]
+               ],
+               "FileManagerFile",
+               CellMargins -> {{23 + Inherited, Inherited}, {Inherited, Inherited}},
+               CellGroupingRules -> {"SectionGrouping", 110},
+               CellFrameLabels -> {
+                {
+                 Cell[
+                  BoxData[TemplateBox[{}, "FileManagerWLIconTemplate"]],
+                  Background -> None
+                 ],
+                 Inherited
+                },
+                {Inherited, Inherited}
+               },
+               CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+               CellID -> 555511034
+              ],
+              Cell[
+               BoxData[
+                InterpretationBox[
+                 TagBox[
+                  TemplateBox[
+                   {
                     "\"FormatFiles.wls\"",
                     FileNameJoin[
                      {NotebookDirectory[], "Scripts", "FormatFiles.wls"}
@@ -1010,6 +1141,186 @@ Notebook[
                  TagBox[
                   TemplateBox[
                    {
+                    "\"IncrementPacletVersion.wls\"",
+                    FileNameJoin[
+                     {
+                      NotebookDirectory[],
+                      "Scripts",
+                      "IncrementPacletVersion.wls"
+                     }
+                    ]
+                   },
+                   "FileManagerFileOpenerTemplate"
+                  ],
+                  Function[
+                   Annotation[
+                    #1,
+                    DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                     1
+                    ]
+                   ]
+                  ]
+                 ],
+                 FileNameJoin[
+                  {
+                   NotebookDirectory[],
+                   "Scripts",
+                   "IncrementPacletVersion.wls"
+                  }
+                 ],
+                 BoxID -> "FileTreePath",
+                 BaseStyle -> {"Text"}
+                ]
+               ],
+               "FileManagerFile",
+               CellMargins -> {{23 + Inherited, Inherited}, {Inherited, Inherited}},
+               CellGroupingRules -> {"SectionGrouping", 110},
+               CellFrameLabels -> {
+                {
+                 Cell[
+                  BoxData[TemplateBox[{}, "FileManagerWLIconTemplate"]],
+                  Background -> None
+                 ],
+                 Inherited
+                },
+                {Inherited, Inherited}
+               },
+               CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+               CellID -> 69140148
+              ],
+              Cell[
+               CellGroupData[
+                {
+                 Cell[
+                  TextData[
+                   Cell[
+                    BoxData[
+                     InterpretationBox[
+                      TagBox[
+                       ActionMenuBox[
+                        "\"Resources\"",
+                        {
+                         "\"Open/Close Group\"" :>
+                          (SelectionMove[ParentCell[EvaluationCell[]], All, Cell];
+                          FrontEndTokenExecute[
+                           EvaluationNotebook[],
+                           "OpenCloseGroup"
+                          ]),
+                         "\"Open Directory\"" :>
+                          DefinitionNotebookClient`FileTreeOpen[
+                           ParentCell[EvaluationCell[]]
+                          ],
+                         "\"Un/Mark as Excluded\"" :>
+                          DefinitionNotebookClient`FileTreeExclusionToggle[
+                           ParentCell[EvaluationCell[]]
+                          ],
+                         "\"Copy Path to Clipboard\"" :>
+                          DefinitionNotebookClient`FileTreeCopy[
+                           ParentCell[EvaluationCell[]]
+                          ]
+                        },
+                        Appearance -> None,
+                        BaseStyle -> {"Text"}
+                       ],
+                       Function[
+                        Annotation[
+                         #1,
+                         DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                          1
+                         ]
+                        ]
+                       ]
+                      ],
+                      FileNameJoin[{NotebookDirectory[], "Scripts", "Resources"}],
+                      BoxID -> "FileTreePath",
+                      BaseStyle -> {"Text"}
+                     ]
+                    ]
+                   ]
+                  ],
+                  "FileManagerDirectory",
+                  CellMargins -> {{23 + Inherited, Inherited}, {Inherited, Inherited}},
+                  CellGroupingRules -> {"SectionGrouping", 110},
+                  CellFrameLabels -> {
+                   {
+                    Cell[
+                     BoxData[
+                      TemplateBox[{}, "FileManagerDirectoryIconTemplate"]
+                     ],
+                     Background -> None
+                    ],
+                    Inherited
+                   },
+                   {Inherited, Inherited}
+                  },
+                  CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+                  CellID -> 132425021
+                 ],
+                 Cell[
+                  BoxData[
+                   InterpretationBox[
+                    TagBox[
+                     TemplateBox[
+                      {
+                       "\"CodeInspectorRules.wl\"",
+                       FileNameJoin[
+                        {
+                         NotebookDirectory[],
+                         "Scripts",
+                         "Resources",
+                         "CodeInspectorRules.wl"
+                        }
+                       ]
+                      },
+                      "FileManagerFileOpenerTemplate"
+                     ],
+                     Function[
+                      Annotation[
+                       #1,
+                       DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                        2
+                       ]
+                      ]
+                     ]
+                    ],
+                    FileNameJoin[
+                     {
+                      NotebookDirectory[],
+                      "Scripts",
+                      "Resources",
+                      "CodeInspectorRules.wl"
+                     }
+                    ],
+                    BoxID -> "FileTreePath",
+                    BaseStyle -> {"Text"}
+                   ]
+                  ],
+                  "FileManagerFile",
+                  CellMargins -> {{46 + Inherited, Inherited}, {Inherited, Inherited}},
+                  CellGroupingRules -> {"SectionGrouping", 120},
+                  CellFrameLabels -> {
+                   {
+                    Cell[
+                     BoxData[TemplateBox[{}, "FileManagerWLIconTemplate"]],
+                     Background -> None
+                    ],
+                    Inherited
+                   },
+                   {Inherited, Inherited}
+                  },
+                  CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+                  CellID -> 711445
+                 ]
+                },
+                Closed
+               ]
+              ],
+              Cell[
+               BoxData[
+                InterpretationBox[
+                 TagBox[
+                  TemplateBox[
+                   {
                     "\"StartMCPServer.wls\"",
                     FileNameJoin[
                      {NotebookDirectory[], "Scripts", "StartMCPServer.wls"}
@@ -1048,6 +1359,96 @@ Notebook[
                },
                CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
                CellID -> 114533981
+              ],
+              Cell[
+               BoxData[
+                InterpretationBox[
+                 TagBox[
+                  TemplateBox[
+                   {
+                    "\"SubmitPaclet.wls\"",
+                    FileNameJoin[
+                     {NotebookDirectory[], "Scripts", "SubmitPaclet.wls"}
+                    ]
+                   },
+                   "FileManagerFileOpenerTemplate"
+                  ],
+                  Function[
+                   Annotation[
+                    #1,
+                    DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                     1
+                    ]
+                   ]
+                  ]
+                 ],
+                 FileNameJoin[
+                  {NotebookDirectory[], "Scripts", "SubmitPaclet.wls"}
+                 ],
+                 BoxID -> "FileTreePath",
+                 BaseStyle -> {"Text"}
+                ]
+               ],
+               "FileManagerFile",
+               CellMargins -> {{23 + Inherited, Inherited}, {Inherited, Inherited}},
+               CellGroupingRules -> {"SectionGrouping", 110},
+               CellFrameLabels -> {
+                {
+                 Cell[
+                  BoxData[TemplateBox[{}, "FileManagerWLIconTemplate"]],
+                  Background -> None
+                 ],
+                 Inherited
+                },
+                {Inherited, Inherited}
+               },
+               CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+               CellID -> 75169276
+              ],
+              Cell[
+               BoxData[
+                InterpretationBox[
+                 TagBox[
+                  TemplateBox[
+                   {
+                    "\"TestPaclet.wls\"",
+                    FileNameJoin[
+                     {NotebookDirectory[], "Scripts", "TestPaclet.wls"}
+                    ]
+                   },
+                   "FileManagerFileOpenerTemplate"
+                  ],
+                  Function[
+                   Annotation[
+                    #1,
+                    DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                     1
+                    ]
+                   ]
+                  ]
+                 ],
+                 FileNameJoin[
+                  {NotebookDirectory[], "Scripts", "TestPaclet.wls"}
+                 ],
+                 BoxID -> "FileTreePath",
+                 BaseStyle -> {"Text"}
+                ]
+               ],
+               "FileManagerFile",
+               CellMargins -> {{23 + Inherited, Inherited}, {Inherited, Inherited}},
+               CellGroupingRules -> {"SectionGrouping", 110},
+               CellFrameLabels -> {
+                {
+                 Cell[
+                  BoxData[TemplateBox[{}, "FileManagerWLIconTemplate"]],
+                  Background -> None
+                 ],
+                 Inherited
+                },
+                {Inherited, Inherited}
+               },
+               CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+               CellID -> 313621522
               ]
              },
              Closed
@@ -1897,7 +2298,7 @@ Notebook[
             "Input",
             "Excluded",
             InitializationCell -> True,
-            CellLabel -> "In[8]:=",
+            CellLabel -> "In[81]:=",
             CellID -> 996717066
            ]
           },
@@ -2527,7 +2928,7 @@ Notebook[
                    TagBox["MCPServerObject", "SummaryHead"],
                    "[",
                    DynamicModuleBox[
-                    {Typeset`open$$ = False, Typeset`embedState$$ = "Ready"},
+                    {Typeset`open$$ = True, Typeset`embedState$$ = "Ready"},
                     TemplateBox[
                      {
                       PaneSelectorBox[
@@ -2539,11 +2940,12 @@ Notebook[
                             PaneBox[
                              ButtonBox[
                               DynamicBox[
-                               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxOpener"]
+                               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxOpener"],
+                               ImageSizeCache -> {10.869, {0.0, 10.869}}
                               ],
-                              ButtonFunction :> (Typeset`open$$ = True),
                               Appearance -> None,
                               BaseStyle -> { },
+                              ButtonFunction :> (Typeset`open$$ = True),
                               Evaluator -> Automatic,
                               Method -> "Preemptive"
                              ],
@@ -2565,102 +2967,87 @@ Notebook[
                             GraphicsBox[
                              {
                               Thickness[0.005979],
-                              StyleBox[
-                               {
-                                JoinedCurveBox[
-                                 {{{0, 2, 0}, {1, 3, 3}, {1, 3, 3}, {0, 1, 0}}},
+                              {
+                               Thickness[0.071749],
+                               CapForm["Round"],
+                               JoinForm[{"Miter", 1.0}],
+                               JoinedCurveBox[
+                                {{{0, 2, 0}, {1, 3, 3}, {1, 3, 3}, {0, 1, 0}}},
+                                {
                                  {
-                                  {
-                                   {25.0, 97.147},
-                                   {92.882, 165.03},
-                                   {102.25, 174.4},
-                                   {117.45, 174.4},
-                                   {126.82, 165.03},
-                                   {136.2, 155.66},
-                                   {136.2, 140.46},
-                                   {126.82, 131.09},
-                                   {75.558, 79.823}
-                                  }
-                                 },
-                                 CurveClosed -> {0}
-                                ]
-                               },
-                               {
-                                CapForm["Round"],
-                                JoinForm[{"Miter", 1.0}],
-                                Thickness[0.071749]
-                               },
-                               StripOnInput -> False
-                              ],
-                              StyleBox[
-                               {
-                                JoinedCurveBox[
+                                  {25.0, 97.147},
+                                  {92.882, 165.03},
+                                  {102.25, 174.4},
+                                  {117.45, 174.4},
+                                  {126.82, 165.03},
+                                  {136.2, 155.66},
+                                  {136.2, 140.46},
+                                  {126.82, 131.09},
+                                  {75.558, 79.823}
+                                 }
+                                },
+                                CurveClosed -> {0}
+                               ]
+                              },
+                              {
+                               Thickness[0.071749],
+                               CapForm["Round"],
+                               JoinForm[{"Miter", 1.0}],
+                               JoinedCurveBox[
+                                {
                                  {
-                                  {
-                                   {0, 2, 0},
-                                   {1, 3, 3},
-                                   {0, 1, 0},
-                                   {1, 3, 3},
-                                   {0, 1, 0},
-                                   {1, 3, 3},
-                                   {0, 1, 0}
-                                  }
-                                 },
+                                  {0, 2, 0},
+                                  {1, 3, 3},
+                                  {0, 1, 0},
+                                  {1, 3, 3},
+                                  {0, 1, 0},
+                                  {1, 3, 3},
+                                  {0, 1, 0}
+                                 }
+                                },
+                                {
                                  {
-                                  {
-                                   {76.265, 80.53},
-                                   {126.82, 131.09},
-                                   {136.2, 140.46},
-                                   {151.39, 140.46},
-                                   {160.76, 131.09},
-                                   {161.12, 130.73},
-                                   {170.49, 121.36},
-                                   {170.49, 106.17},
-                                   {161.12, 96.794},
-                                   {99.725, 35.4},
-                                   {96.601, 32.276},
-                                   {96.601, 27.211},
-                                   {99.725, 24.087},
-                                   {112.33, 11.48}
-                                  }
-                                 },
-                                 CurveClosed -> {0}
-                                ]
-                               },
-                               {
-                                CapForm["Round"],
-                                JoinForm[{"Miter", 1.0}],
-                                Thickness[0.071749]
-                               },
-                               StripOnInput -> False
-                              ],
-                              StyleBox[
-                               {
-                                JoinedCurveBox[
-                                 {{{0, 2, 0}, {1, 3, 3}, {1, 3, 3}, {0, 1, 0}}},
+                                  {76.265, 80.53},
+                                  {126.82, 131.09},
+                                  {136.2, 140.46},
+                                  {151.39, 140.46},
+                                  {160.76, 131.09},
+                                  {161.12, 130.73},
+                                  {170.49, 121.36},
+                                  {170.49, 106.17},
+                                  {161.12, 96.794},
+                                  {99.725, 35.4},
+                                  {96.601, 32.276},
+                                  {96.601, 27.211},
+                                  {99.725, 24.087},
+                                  {112.33, 11.48}
+                                 }
+                                },
+                                CurveClosed -> {0}
+                               ]
+                              },
+                              {
+                               Thickness[0.071749],
+                               CapForm["Round"],
+                               JoinForm[{"Miter", 1.0}],
+                               JoinedCurveBox[
+                                {{{0, 2, 0}, {1, 3, 3}, {1, 3, 3}, {0, 1, 0}}},
+                                {
                                  {
-                                  {
-                                   {109.85, 148.06},
-                                   {59.648, 97.854},
-                                   {50.276, 88.482},
-                                   {50.276, 73.286},
-                                   {59.648, 63.913},
-                                   {69.021, 54.541},
-                                   {84.217, 54.541},
-                                   {93.589, 63.913},
-                                   {143.79, 114.12}
-                                  }
-                                 },
-                                 CurveClosed -> {0}
-                                ]
-                               },
-                               {
-                                CapForm["Round"],
-                                JoinForm[{"Miter", 1.0}],
-                                Thickness[0.071749]
-                               },
-                               StripOnInput -> False
-                              ]
+                                  {109.85, 148.06},
+                                  {59.648, 97.854},
+                                  {50.276, 88.482},
+                                  {50.276, 73.286},
+                                  {59.648, 63.913},
+                                  {69.021, 54.541},
+                                  {84.217, 54.541},
+                                  {93.589, 63.913},
+                                  {143.79, 114.12}
+                                 }
+                                },
+                                CurveClosed -> {0}
+                               ]
+                              }
                              },
                              ImageSize -> 24
                             ],
@@ -2685,23 +3072,23 @@ Notebook[
                                ]
                               }
                              },
-                             GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Automatic}}},
                              AutoDelete -> False,
-                             GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
-                             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
                              BaseStyle -> {
                               ShowStringCharacters -> False,
                               NumberMarks -> False,
                               PrintPrecision -> 3,
                               ShowSyntaxStyles -> False
-                             }
+                             },
+                             GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Automatic}}},
+                             GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+                             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}}
                             ]
                            }
                           },
-                          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}},
                           AutoDelete -> False,
-                          GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
-                          BaselinePosition -> {1, 1}
+                          BaselinePosition -> {1, 1},
+                          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}},
+                          GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}
                          ],
                         True ->
                          GridBox[
@@ -2710,11 +3097,12 @@ Notebook[
                             PaneBox[
                              ButtonBox[
                               DynamicBox[
-                               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxCloser"]
+                               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxCloser"],
+                               ImageSizeCache -> {10.869, {0.0, 10.869}}
                               ],
-                              ButtonFunction :> (Typeset`open$$ = False),
                               Appearance -> None,
                               BaseStyle -> { },
+                              ButtonFunction :> (Typeset`open$$ = False),
                               Evaluator -> Automatic,
                               Method -> "Preemptive"
                              ],
@@ -2736,102 +3124,87 @@ Notebook[
                             GraphicsBox[
                              {
                               Thickness[0.005979],
-                              StyleBox[
-                               {
-                                JoinedCurveBox[
-                                 {{{0, 2, 0}, {1, 3, 3}, {1, 3, 3}, {0, 1, 0}}},
+                              {
+                               Thickness[0.071749],
+                               CapForm["Round"],
+                               JoinForm[{"Miter", 1.0}],
+                               JoinedCurveBox[
+                                {{{0, 2, 0}, {1, 3, 3}, {1, 3, 3}, {0, 1, 0}}},
+                                {
                                  {
-                                  {
-                                   {25.0, 97.147},
-                                   {92.882, 165.03},
-                                   {102.25, 174.4},
-                                   {117.45, 174.4},
-                                   {126.82, 165.03},
-                                   {136.2, 155.66},
-                                   {136.2, 140.46},
-                                   {126.82, 131.09},
-                                   {75.558, 79.823}
-                                  }
-                                 },
-                                 CurveClosed -> {0}
-                                ]
-                               },
-                               {
-                                CapForm["Round"],
-                                JoinForm[{"Miter", 1.0}],
-                                Thickness[0.071749]
-                               },
-                               StripOnInput -> False
-                              ],
-                              StyleBox[
-                               {
-                                JoinedCurveBox[
+                                  {25.0, 97.147},
+                                  {92.882, 165.03},
+                                  {102.25, 174.4},
+                                  {117.45, 174.4},
+                                  {126.82, 165.03},
+                                  {136.2, 155.66},
+                                  {136.2, 140.46},
+                                  {126.82, 131.09},
+                                  {75.558, 79.823}
+                                 }
+                                },
+                                CurveClosed -> {0}
+                               ]
+                              },
+                              {
+                               Thickness[0.071749],
+                               CapForm["Round"],
+                               JoinForm[{"Miter", 1.0}],
+                               JoinedCurveBox[
+                                {
                                  {
-                                  {
-                                   {0, 2, 0},
-                                   {1, 3, 3},
-                                   {0, 1, 0},
-                                   {1, 3, 3},
-                                   {0, 1, 0},
-                                   {1, 3, 3},
-                                   {0, 1, 0}
-                                  }
-                                 },
+                                  {0, 2, 0},
+                                  {1, 3, 3},
+                                  {0, 1, 0},
+                                  {1, 3, 3},
+                                  {0, 1, 0},
+                                  {1, 3, 3},
+                                  {0, 1, 0}
+                                 }
+                                },
+                                {
                                  {
-                                  {
-                                   {76.265, 80.53},
-                                   {126.82, 131.09},
-                                   {136.2, 140.46},
-                                   {151.39, 140.46},
-                                   {160.76, 131.09},
-                                   {161.12, 130.73},
-                                   {170.49, 121.36},
-                                   {170.49, 106.17},
-                                   {161.12, 96.794},
-                                   {99.725, 35.4},
-                                   {96.601, 32.276},
-                                   {96.601, 27.211},
-                                   {99.725, 24.087},
-                                   {112.33, 11.48}
-                                  }
-                                 },
-                                 CurveClosed -> {0}
-                                ]
-                               },
-                               {
-                                CapForm["Round"],
-                                JoinForm[{"Miter", 1.0}],
-                                Thickness[0.071749]
-                               },
-                               StripOnInput -> False
-                              ],
-                              StyleBox[
-                               {
-                                JoinedCurveBox[
-                                 {{{0, 2, 0}, {1, 3, 3}, {1, 3, 3}, {0, 1, 0}}},
+                                  {76.265, 80.53},
+                                  {126.82, 131.09},
+                                  {136.2, 140.46},
+                                  {151.39, 140.46},
+                                  {160.76, 131.09},
+                                  {161.12, 130.73},
+                                  {170.49, 121.36},
+                                  {170.49, 106.17},
+                                  {161.12, 96.794},
+                                  {99.725, 35.4},
+                                  {96.601, 32.276},
+                                  {96.601, 27.211},
+                                  {99.725, 24.087},
+                                  {112.33, 11.48}
+                                 }
+                                },
+                                CurveClosed -> {0}
+                               ]
+                              },
+                              {
+                               Thickness[0.071749],
+                               CapForm["Round"],
+                               JoinForm[{"Miter", 1.0}],
+                               JoinedCurveBox[
+                                {{{0, 2, 0}, {1, 3, 3}, {1, 3, 3}, {0, 1, 0}}},
+                                {
                                  {
-                                  {
-                                   {109.85, 148.06},
-                                   {59.648, 97.854},
-                                   {50.276, 88.482},
-                                   {50.276, 73.286},
-                                   {59.648, 63.913},
-                                   {69.021, 54.541},
-                                   {84.217, 54.541},
-                                   {93.589, 63.913},
-                                   {143.79, 114.12}
-                                  }
-                                 },
-                                 CurveClosed -> {0}
-                                ]
-                               },
-                               {
-                                CapForm["Round"],
-                                JoinForm[{"Miter", 1.0}],
-                                Thickness[0.071749]
-                               },
-                               StripOnInput -> False
-                              ]
+                                  {109.85, 148.06},
+                                  {59.648, 97.854},
+                                  {50.276, 88.482},
+                                  {50.276, 73.286},
+                                  {59.648, 63.913},
+                                  {69.021, 54.541},
+                                  {84.217, 54.541},
+                                  {93.589, 63.913},
+                                  {143.79, 114.12}
+                                 }
+                                },
+                                CurveClosed -> {0}
+                               ]
+                              }
                              },
                              ImageSize -> 24
                             ],
@@ -2872,6 +3245,21 @@ Notebook[
                                         BoxForm`Undeploy,
                                         DefaultBaseStyle -> {Deployed -> False}
                                        ],
+                                       Appearance -> {
+                                        "Default" -> None,
+                                        "Hover" ->
+                                         FrontEnd`FileName[
+                                          {"Typeset", "ClickToCopy"},
+                                          "Hover.9.png"
+                                         ],
+                                        "Pressed" ->
+                                         FrontEnd`FileName[
+                                          {"Typeset", "ClickToCopy"},
+                                          "Pressed.9.png"
+                                         ]
+                                       },
+                                       BaseStyle -> { },
+                                       BaselinePosition -> Baseline,
                                        ButtonFunction :> {
                                         CopyToClipboard[
                                          "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"RickHennigan`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
@@ -2889,23 +3277,8 @@ Notebook[
                                          ]
                                         ]
                                        },
-                                       Evaluator -> Automatic,
-                                       Appearance -> {
-                                        "Default" -> None,
-                                        "Hover" ->
-                                         FrontEnd`FileName[
-                                          {"Typeset", "ClickToCopy"},
-                                          "Hover.9.png"
-                                         ],
-                                        "Pressed" ->
-                                         FrontEnd`FileName[
-                                          {"Typeset", "ClickToCopy"},
-                                          "Pressed.9.png"
-                                         ]
-                                       },
-                                       BaseStyle -> { },
                                        DefaultBaseStyle -> { },
-                                       BaselinePosition -> Baseline,
+                                       Evaluator -> Automatic,
                                        FrameMargins -> 2,
                                        Method -> "Preemptive"
                                       ],
@@ -2931,10 +3304,10 @@ Notebook[
                                      ],
                                      MouseAppearanceTag["LinkHand"]
                                     ],
-                                    Initialization :> (boxObj = EvaluationBox[]),
+                                    BaseStyle -> {Editable -> False},
                                     DynamicModuleValues :> { },
-                                    UnsavedVariables :> {boxObj, cellObj},
-                                    BaseStyle -> {Editable -> False}
+                                    Initialization :> (boxObj = EvaluationBox[]),
+                                    UnsavedVariables :> {boxObj, cellObj}
                                    ],
                                    Deploy,
                                    DefaultBaseStyle -> "Deploy"
@@ -2953,8 +3326,8 @@ Notebook[
                                   TagBox[
                                    GridBox[
                                     {{"\"PrimeFinder\"", "", "", "", ""}},
-                                    GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
                                     AutoDelete -> False,
+                                    GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
                                     GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}
                                    ],
                                    "Grid"
@@ -2989,23 +3362,23 @@ Notebook[
                                ]
                               }
                              },
-                             GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Automatic}}},
                              AutoDelete -> False,
-                             GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
-                             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
                              BaseStyle -> {
                               ShowStringCharacters -> False,
                               NumberMarks -> False,
                               PrintPrecision -> 3,
                               ShowSyntaxStyles -> False
-                             }
+                             },
+                             GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Automatic}}},
+                             GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+                             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}}
                             ]
                            }
                           },
-                          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}},
                           AutoDelete -> False,
-                          GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
-                          BaselinePosition -> {1, 1}
+                          BaselinePosition -> {1, 1},
+                          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}},
+                          GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}
                          ]
                        },
                        Dynamic[Typeset`open$$],
@@ -7796,7 +8169,7 @@ Notebook[
                     {
                      TemplateBox[
                       {
-                       CheckboxBox[False, {False, "WLSystemSymbols"}],
+                       CheckboxBox["WLSystemSymbols", {False, "WLSystemSymbols"}],
                        "\" \"",
                        StyleBox[
                         TemplateBox[
@@ -7885,7 +8258,10 @@ Notebook[
                     {
                      TemplateBox[
                       {
-                       CheckboxBox[False, {False, "PacletDependencies"}],
+                       CheckboxBox[
+                        "PacletDependencies",
+                        {False, "PacletDependencies"}
+                       ],
                        "\" \"",
                        StyleBox[
                         TemplateBox[
@@ -8456,11 +8832,7 @@ Notebook[
   "ToolsOpen" -> False,
   "StatusMessage" -> "",
   "SubmissionReviewData" -> {"Review" -> False},
-  "AutoUpdate" -> True,
-  "PacletBuildData" -> {
-   "FileHashes" -> ByteArray["OEM6eJxz5NUNFvdOLcpLzdF3zs/Nzc8LrsxNys8p1ivPcWTSDWYLzi8tSk712RO8P5Hdtq0GKBKSWJSeWoIkIoCiH02j7dVjd4LLlMsQGhEikjCNRamJJam+zgHBqUVlqUVoJnyOjz/I0tTEhDABIcIPNcEtMycV3cl/ri5aeerdn2yEPoSICExfflFuYklJZl46muaUT9tE5q5wzEBoRohIQTV75hWXJObk4HL30c4ks0WfrXkQRiBE+KBG+CZmogdY5Pcj+c4+UWkIbQgRWIDBrfRPykpNLkEzoWYtY5xA6zJXhAkIEWF0E9D07tKR87CT/aqN0IsQEYLpTS0uTkzHCG/mhexFucvlUxFaESISUK3BJYlFJbjsnhq6uv6s0GNRhAEIEd6AxOSc1BLPvLR8NF15ffmWrEXPpRG6ECKCEF2+iXmZaanFaOFUzOKXn4fk2oQFk5qPOhxPBQDusR68"],
-   "LastBuiltArchive" -> "H:\\Documents\\MCPServer\\build\\RickHennigan__MCPServer-0.0.2.paclet"
-  }
+  "AutoUpdate" -> True
  },
  CreateCellID -> True,
  DynamicEvaluationTimeout -> 60,
