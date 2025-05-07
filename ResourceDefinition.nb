@@ -58,69 +58,802 @@ Notebook[
             CellID -> 16296355
            ],
            Cell[
-            TextData[
-             Cell[
-              BoxData[
-               InterpretationBox[
-                TagBox[
-                 ActionMenuBox[
-                  "\"Documentation\"",
-                  {
-                   "\"Open/Close Group\"" :>
-                    (SelectionMove[ParentCell[EvaluationCell[]], All, Cell];
-                    FrontEndTokenExecute[
-                     EvaluationNotebook[],
-                     "OpenCloseGroup"
-                    ]),
-                   "\"Open Directory\"" :>
-                    DefinitionNotebookClient`FileTreeOpen[
-                     ParentCell[EvaluationCell[]]
-                    ],
-                   "\"Un/Mark as Excluded\"" :>
-                    DefinitionNotebookClient`FileTreeExclusionToggle[
-                     ParentCell[EvaluationCell[]]
-                    ],
-                   "\"Copy Path to Clipboard\"" :>
-                    DefinitionNotebookClient`FileTreeCopy[
-                     ParentCell[EvaluationCell[]]
-                    ]
-                  },
-                  Appearance -> None,
-                  BaseStyle -> {"Text"}
-                 ],
-                 Function[
-                  Annotation[
-                   #1,
-                   DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
-                    0
-                   ]
-                  ]
-                 ]
-                ],
-                FileNameJoin[{NotebookDirectory[], "Documentation"}],
-                BoxID -> "FileTreePath",
-                BaseStyle -> {"Text"}
-               ]
-              ]
-             ]
-            ],
-            "FileManagerDirectory",
-            CellMargins -> {{Inherited, Inherited}, {Inherited, Inherited}},
-            CellGroupingRules -> {"SectionGrouping", 100},
-            CellFrameLabels -> {
+            CellGroupData[
              {
               Cell[
-               BoxData[
-                TemplateBox[{}, "FileManagerDocumentationIconTemplate"]
+               TextData[
+                Cell[
+                 BoxData[
+                  InterpretationBox[
+                   TagBox[
+                    ActionMenuBox[
+                     "\"Documentation\"",
+                     {
+                      "\"Open/Close Group\"" :>
+                       (SelectionMove[ParentCell[EvaluationCell[]], All, Cell];
+                       FrontEndTokenExecute[
+                        EvaluationNotebook[],
+                        "OpenCloseGroup"
+                       ]),
+                      "\"Open Directory\"" :>
+                       DefinitionNotebookClient`FileTreeOpen[
+                        ParentCell[EvaluationCell[]]
+                       ],
+                      "\"Un/Mark as Excluded\"" :>
+                       DefinitionNotebookClient`FileTreeExclusionToggle[
+                        ParentCell[EvaluationCell[]]
+                       ],
+                      "\"Copy Path to Clipboard\"" :>
+                       DefinitionNotebookClient`FileTreeCopy[
+                        ParentCell[EvaluationCell[]]
+                       ]
+                     },
+                     Appearance -> None,
+                     BaseStyle -> {"Text"}
+                    ],
+                    Function[
+                     Annotation[
+                      #1,
+                      DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                       0
+                      ]
+                     ]
+                    ]
+                   ],
+                   FileNameJoin[{NotebookDirectory[], "Documentation"}],
+                   BoxID -> "FileTreePath",
+                   BaseStyle -> {"Text"}
+                  ]
+                 ]
+                ]
                ],
-               Background -> None
+               "FileManagerDirectory",
+               CellMargins -> {{Inherited, Inherited}, {Inherited, Inherited}},
+               CellGroupingRules -> {"SectionGrouping", 100},
+               CellFrameLabels -> {
+                {
+                 Cell[
+                  BoxData[
+                   TemplateBox[{}, "FileManagerDocumentationIconTemplate"]
+                  ],
+                  Background -> None
+                 ],
+                 Inherited
+                },
+                {Inherited, Inherited}
+               },
+               CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+               CellID -> 193993848
               ],
-              Inherited
+              Cell[
+               CellGroupData[
+                {
+                 Cell[
+                  TextData[
+                   Cell[
+                    BoxData[
+                     InterpretationBox[
+                      TagBox[
+                       ActionMenuBox[
+                        "\"English\"",
+                        {
+                         "\"Open/Close Group\"" :>
+                          (SelectionMove[ParentCell[EvaluationCell[]], All, Cell];
+                          FrontEndTokenExecute[
+                           EvaluationNotebook[],
+                           "OpenCloseGroup"
+                          ]),
+                         "\"Open Directory\"" :>
+                          DefinitionNotebookClient`FileTreeOpen[
+                           ParentCell[EvaluationCell[]]
+                          ],
+                         "\"Un/Mark as Excluded\"" :>
+                          DefinitionNotebookClient`FileTreeExclusionToggle[
+                           ParentCell[EvaluationCell[]]
+                          ],
+                         "\"Copy Path to Clipboard\"" :>
+                          DefinitionNotebookClient`FileTreeCopy[
+                           ParentCell[EvaluationCell[]]
+                          ]
+                        },
+                        Appearance -> None,
+                        BaseStyle -> {"Text"}
+                       ],
+                       Function[
+                        Annotation[
+                         #1,
+                         DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                          1
+                         ]
+                        ]
+                       ]
+                      ],
+                      FileNameJoin[
+                       {NotebookDirectory[], "Documentation", "English"}
+                      ],
+                      BoxID -> "FileTreePath",
+                      BaseStyle -> {"Text"}
+                     ]
+                    ]
+                   ]
+                  ],
+                  "FileManagerDirectory",
+                  CellMargins -> {{23 + Inherited, Inherited}, {Inherited, Inherited}},
+                  CellGroupingRules -> {"SectionGrouping", 110},
+                  CellFrameLabels -> {
+                   {
+                    Cell[
+                     BoxData[
+                      TemplateBox[{}, "FileManagerDirectoryIconTemplate"]
+                     ],
+                     Background -> None
+                    ],
+                    Inherited
+                   },
+                   {Inherited, Inherited}
+                  },
+                  CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+                  CellID -> 283862417
+                 ],
+                 Cell[
+                  TextData[
+                   Cell[
+                    BoxData[
+                     InterpretationBox[
+                      TagBox[
+                       ActionMenuBox[
+                        "\"Guides\"",
+                        {
+                         "\"Open/Close Group\"" :>
+                          (SelectionMove[ParentCell[EvaluationCell[]], All, Cell];
+                          FrontEndTokenExecute[
+                           EvaluationNotebook[],
+                           "OpenCloseGroup"
+                          ]),
+                         "\"Open Directory\"" :>
+                          DefinitionNotebookClient`FileTreeOpen[
+                           ParentCell[EvaluationCell[]]
+                          ],
+                         "\"Un/Mark as Excluded\"" :>
+                          DefinitionNotebookClient`FileTreeExclusionToggle[
+                           ParentCell[EvaluationCell[]]
+                          ],
+                         "\"Copy Path to Clipboard\"" :>
+                          DefinitionNotebookClient`FileTreeCopy[
+                           ParentCell[EvaluationCell[]]
+                          ]
+                        },
+                        Appearance -> None,
+                        BaseStyle -> {"Text"}
+                       ],
+                       Function[
+                        Annotation[
+                         #1,
+                         DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                          2
+                         ]
+                        ]
+                       ]
+                      ],
+                      FileNameJoin[
+                       {NotebookDirectory[], "Documentation", "English", "Guides"}
+                      ],
+                      BoxID -> "FileTreePath",
+                      BaseStyle -> {"Text"}
+                     ]
+                    ]
+                   ]
+                  ],
+                  "FileManagerDirectory",
+                  CellMargins -> {{46 + Inherited, Inherited}, {Inherited, Inherited}},
+                  CellGroupingRules -> {"SectionGrouping", 120},
+                  CellFrameLabels -> {
+                   {
+                    Cell[
+                     BoxData[
+                      TemplateBox[{}, "FileManagerEmptyDirectoryIconTemplate"]
+                     ],
+                     Background -> None
+                    ],
+                    Inherited
+                   },
+                   {Inherited, Inherited}
+                  },
+                  CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+                  CellID -> 628795945
+                 ],
+                 Cell[
+                  CellGroupData[
+                   {
+                    Cell[
+                     TextData[
+                      Cell[
+                       BoxData[
+                        InterpretationBox[
+                         TagBox[
+                          ActionMenuBox[
+                           "\"ReferencePages\"",
+                           {
+                            "\"Open/Close Group\"" :>
+                             (SelectionMove[ParentCell[EvaluationCell[]], All, Cell];
+                             FrontEndTokenExecute[
+                              EvaluationNotebook[],
+                              "OpenCloseGroup"
+                             ]),
+                            "\"Open Directory\"" :>
+                             DefinitionNotebookClient`FileTreeOpen[
+                              ParentCell[EvaluationCell[]]
+                             ],
+                            "\"Un/Mark as Excluded\"" :>
+                             DefinitionNotebookClient`FileTreeExclusionToggle[
+                              ParentCell[EvaluationCell[]]
+                             ],
+                            "\"Copy Path to Clipboard\"" :>
+                             DefinitionNotebookClient`FileTreeCopy[
+                              ParentCell[EvaluationCell[]]
+                             ]
+                           },
+                           Appearance -> None,
+                           BaseStyle -> {"Text"}
+                          ],
+                          Function[
+                           Annotation[
+                            #1,
+                            DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                             2
+                            ]
+                           ]
+                          ]
+                         ],
+                         FileNameJoin[
+                          {
+                           NotebookDirectory[],
+                           "Documentation",
+                           "English",
+                           "ReferencePages"
+                          }
+                         ],
+                         BoxID -> "FileTreePath",
+                         BaseStyle -> {"Text"}
+                        ]
+                       ]
+                      ]
+                     ],
+                     "FileManagerDirectory",
+                     CellMargins -> {{46 + Inherited, Inherited}, {Inherited, Inherited}},
+                     CellGroupingRules -> {"SectionGrouping", 120},
+                     CellFrameLabels -> {
+                      {
+                       Cell[
+                        BoxData[
+                         TemplateBox[{}, "FileManagerDirectoryIconTemplate"]
+                        ],
+                        Background -> None
+                       ],
+                       Inherited
+                      },
+                      {Inherited, Inherited}
+                     },
+                     CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+                     CellID -> 285694130
+                    ],
+                    Cell[
+                     CellGroupData[
+                      {
+                       Cell[
+                        TextData[
+                         Cell[
+                          BoxData[
+                           InterpretationBox[
+                            TagBox[
+                             ActionMenuBox[
+                              "\"Symbols\"",
+                              {
+                               "\"Open/Close Group\"" :>
+                                (SelectionMove[ParentCell[EvaluationCell[]], All, Cell];
+                                FrontEndTokenExecute[
+                                 EvaluationNotebook[],
+                                 "OpenCloseGroup"
+                                ]),
+                               "\"Open Directory\"" :>
+                                DefinitionNotebookClient`FileTreeOpen[
+                                 ParentCell[EvaluationCell[]]
+                                ],
+                               "\"Un/Mark as Excluded\"" :>
+                                DefinitionNotebookClient`FileTreeExclusionToggle[
+                                 ParentCell[EvaluationCell[]]
+                                ],
+                               "\"Copy Path to Clipboard\"" :>
+                                DefinitionNotebookClient`FileTreeCopy[
+                                 ParentCell[EvaluationCell[]]
+                                ]
+                              },
+                              Appearance -> None,
+                              BaseStyle -> {"Text"}
+                             ],
+                             Function[
+                              Annotation[
+                               #1,
+                               DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                                3
+                               ]
+                              ]
+                             ]
+                            ],
+                            FileNameJoin[
+                             {
+                              NotebookDirectory[],
+                              "Documentation",
+                              "English",
+                              "ReferencePages",
+                              "Symbols"
+                             }
+                            ],
+                            BoxID -> "FileTreePath",
+                            BaseStyle -> {"Text"}
+                           ]
+                          ]
+                         ]
+                        ],
+                        "FileManagerDirectory",
+                        CellMargins -> {{69 + Inherited, Inherited}, {Inherited, Inherited}},
+                        CellGroupingRules -> {"SectionGrouping", 130},
+                        CellFrameLabels -> {
+                         {
+                          Cell[
+                           BoxData[
+                            TemplateBox[{}, "FileManagerDirectoryIconTemplate"]
+                           ],
+                           Background -> None
+                          ],
+                          Inherited
+                         },
+                         {Inherited, Inherited}
+                        },
+                        CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+                        CellID -> 54291417
+                       ],
+                       Cell[
+                        BoxData[
+                         InterpretationBox[
+                          TagBox[
+                           TemplateBox[
+                            {
+                             "\"CreateMCPServer.nb\"",
+                             FileNameJoin[
+                              {
+                               NotebookDirectory[],
+                               "Documentation",
+                               "English",
+                               "ReferencePages",
+                               "Symbols",
+                               "CreateMCPServer.nb"
+                              }
+                             ]
+                            },
+                            "FileManagerFileOpenerTemplate"
+                           ],
+                           Function[
+                            Annotation[
+                             #1,
+                             DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                              4
+                             ]
+                            ]
+                           ]
+                          ],
+                          FileNameJoin[
+                           {
+                            NotebookDirectory[],
+                            "Documentation",
+                            "English",
+                            "ReferencePages",
+                            "Symbols",
+                            "CreateMCPServer.nb"
+                           }
+                          ],
+                          BoxID -> "FileTreePath",
+                          BaseStyle -> {"Text"}
+                         ]
+                        ],
+                        "FileManagerFile",
+                        CellMargins -> {{92 + Inherited, Inherited}, {Inherited, Inherited}},
+                        CellGroupingRules -> {"SectionGrouping", 140},
+                        CellFrameLabels -> {
+                         {
+                          Cell[
+                           BoxData[TemplateBox[{}, "FileManagerNBIconTemplate"]],
+                           Background -> None
+                          ],
+                          Inherited
+                         },
+                         {Inherited, Inherited}
+                        },
+                        CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+                        CellID -> 44336387
+                       ],
+                       Cell[
+                        BoxData[
+                         InterpretationBox[
+                          TagBox[
+                           TemplateBox[
+                            {
+                             "\"InstallMCPServer.nb\"",
+                             FileNameJoin[
+                              {
+                               NotebookDirectory[],
+                               "Documentation",
+                               "English",
+                               "ReferencePages",
+                               "Symbols",
+                               "InstallMCPServer.nb"
+                              }
+                             ]
+                            },
+                            "FileManagerFileOpenerTemplate"
+                           ],
+                           Function[
+                            Annotation[
+                             #1,
+                             DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                              4
+                             ]
+                            ]
+                           ]
+                          ],
+                          FileNameJoin[
+                           {
+                            NotebookDirectory[],
+                            "Documentation",
+                            "English",
+                            "ReferencePages",
+                            "Symbols",
+                            "InstallMCPServer.nb"
+                           }
+                          ],
+                          BoxID -> "FileTreePath",
+                          BaseStyle -> {"Text"}
+                         ]
+                        ],
+                        "FileManagerFile",
+                        CellMargins -> {{92 + Inherited, Inherited}, {Inherited, Inherited}},
+                        CellGroupingRules -> {"SectionGrouping", 140},
+                        CellFrameLabels -> {
+                         {
+                          Cell[
+                           BoxData[TemplateBox[{}, "FileManagerNBIconTemplate"]],
+                           Background -> None
+                          ],
+                          Inherited
+                         },
+                         {Inherited, Inherited}
+                        },
+                        CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+                        CellID -> 201617594
+                       ],
+                       Cell[
+                        BoxData[
+                         InterpretationBox[
+                          TagBox[
+                           TemplateBox[
+                            {
+                             "\"MCPServerObject.nb\"",
+                             FileNameJoin[
+                              {
+                               NotebookDirectory[],
+                               "Documentation",
+                               "English",
+                               "ReferencePages",
+                               "Symbols",
+                               "MCPServerObject.nb"
+                              }
+                             ]
+                            },
+                            "FileManagerFileOpenerTemplate"
+                           ],
+                           Function[
+                            Annotation[
+                             #1,
+                             DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                              4
+                             ]
+                            ]
+                           ]
+                          ],
+                          FileNameJoin[
+                           {
+                            NotebookDirectory[],
+                            "Documentation",
+                            "English",
+                            "ReferencePages",
+                            "Symbols",
+                            "MCPServerObject.nb"
+                           }
+                          ],
+                          BoxID -> "FileTreePath",
+                          BaseStyle -> {"Text"}
+                         ]
+                        ],
+                        "FileManagerFile",
+                        CellMargins -> {{92 + Inherited, Inherited}, {Inherited, Inherited}},
+                        CellGroupingRules -> {"SectionGrouping", 140},
+                        CellFrameLabels -> {
+                         {
+                          Cell[
+                           BoxData[TemplateBox[{}, "FileManagerNBIconTemplate"]],
+                           Background -> None
+                          ],
+                          Inherited
+                         },
+                         {Inherited, Inherited}
+                        },
+                        CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+                        CellID -> 480180836
+                       ],
+                       Cell[
+                        BoxData[
+                         InterpretationBox[
+                          TagBox[
+                           TemplateBox[
+                            {
+                             "\"MCPServerObjectQ.nb\"",
+                             FileNameJoin[
+                              {
+                               NotebookDirectory[],
+                               "Documentation",
+                               "English",
+                               "ReferencePages",
+                               "Symbols",
+                               "MCPServerObjectQ.nb"
+                              }
+                             ]
+                            },
+                            "FileManagerFileOpenerTemplate"
+                           ],
+                           Function[
+                            Annotation[
+                             #1,
+                             DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                              4
+                             ]
+                            ]
+                           ]
+                          ],
+                          FileNameJoin[
+                           {
+                            NotebookDirectory[],
+                            "Documentation",
+                            "English",
+                            "ReferencePages",
+                            "Symbols",
+                            "MCPServerObjectQ.nb"
+                           }
+                          ],
+                          BoxID -> "FileTreePath",
+                          BaseStyle -> {"Text"}
+                         ]
+                        ],
+                        "FileManagerFile",
+                        CellMargins -> {{92 + Inherited, Inherited}, {Inherited, Inherited}},
+                        CellGroupingRules -> {"SectionGrouping", 140},
+                        CellFrameLabels -> {
+                         {
+                          Cell[
+                           BoxData[TemplateBox[{}, "FileManagerNBIconTemplate"]],
+                           Background -> None
+                          ],
+                          Inherited
+                         },
+                         {Inherited, Inherited}
+                        },
+                        CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+                        CellID -> 381783865
+                       ],
+                       Cell[
+                        BoxData[
+                         InterpretationBox[
+                          TagBox[
+                           TemplateBox[
+                            {
+                             "\"MCPServerObjects.nb\"",
+                             FileNameJoin[
+                              {
+                               NotebookDirectory[],
+                               "Documentation",
+                               "English",
+                               "ReferencePages",
+                               "Symbols",
+                               "MCPServerObjects.nb"
+                              }
+                             ]
+                            },
+                            "FileManagerFileOpenerTemplate"
+                           ],
+                           Function[
+                            Annotation[
+                             #1,
+                             DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                              4
+                             ]
+                            ]
+                           ]
+                          ],
+                          FileNameJoin[
+                           {
+                            NotebookDirectory[],
+                            "Documentation",
+                            "English",
+                            "ReferencePages",
+                            "Symbols",
+                            "MCPServerObjects.nb"
+                           }
+                          ],
+                          BoxID -> "FileTreePath",
+                          BaseStyle -> {"Text"}
+                         ]
+                        ],
+                        "FileManagerFile",
+                        CellMargins -> {{92 + Inherited, Inherited}, {Inherited, Inherited}},
+                        CellGroupingRules -> {"SectionGrouping", 140},
+                        CellFrameLabels -> {
+                         {
+                          Cell[
+                           BoxData[TemplateBox[{}, "FileManagerNBIconTemplate"]],
+                           Background -> None
+                          ],
+                          Inherited
+                         },
+                         {Inherited, Inherited}
+                        },
+                        CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+                        CellID -> 67273024
+                       ],
+                       Cell[
+                        BoxData[
+                         InterpretationBox[
+                          TagBox[
+                           TemplateBox[
+                            {
+                             "\"UninstallMCPServer.nb\"",
+                             FileNameJoin[
+                              {
+                               NotebookDirectory[],
+                               "Documentation",
+                               "English",
+                               "ReferencePages",
+                               "Symbols",
+                               "UninstallMCPServer.nb"
+                              }
+                             ]
+                            },
+                            "FileManagerFileOpenerTemplate"
+                           ],
+                           Function[
+                            Annotation[
+                             #1,
+                             DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                              4
+                             ]
+                            ]
+                           ]
+                          ],
+                          FileNameJoin[
+                           {
+                            NotebookDirectory[],
+                            "Documentation",
+                            "English",
+                            "ReferencePages",
+                            "Symbols",
+                            "UninstallMCPServer.nb"
+                           }
+                          ],
+                          BoxID -> "FileTreePath",
+                          BaseStyle -> {"Text"}
+                         ]
+                        ],
+                        "FileManagerFile",
+                        CellMargins -> {{92 + Inherited, Inherited}, {Inherited, Inherited}},
+                        CellGroupingRules -> {"SectionGrouping", 140},
+                        CellFrameLabels -> {
+                         {
+                          Cell[
+                           BoxData[TemplateBox[{}, "FileManagerNBIconTemplate"]],
+                           Background -> None
+                          ],
+                          Inherited
+                         },
+                         {Inherited, Inherited}
+                        },
+                        CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+                        CellID -> 363646922
+                       ]
+                      },
+                      Closed
+                     ]
+                    ]
+                   },
+                   Closed
+                  ]
+                 ],
+                 Cell[
+                  TextData[
+                   Cell[
+                    BoxData[
+                     InterpretationBox[
+                      TagBox[
+                       ActionMenuBox[
+                        "\"Tutorials\"",
+                        {
+                         "\"Open/Close Group\"" :>
+                          (SelectionMove[ParentCell[EvaluationCell[]], All, Cell];
+                          FrontEndTokenExecute[
+                           EvaluationNotebook[],
+                           "OpenCloseGroup"
+                          ]),
+                         "\"Open Directory\"" :>
+                          DefinitionNotebookClient`FileTreeOpen[
+                           ParentCell[EvaluationCell[]]
+                          ],
+                         "\"Un/Mark as Excluded\"" :>
+                          DefinitionNotebookClient`FileTreeExclusionToggle[
+                           ParentCell[EvaluationCell[]]
+                          ],
+                         "\"Copy Path to Clipboard\"" :>
+                          DefinitionNotebookClient`FileTreeCopy[
+                           ParentCell[EvaluationCell[]]
+                          ]
+                        },
+                        Appearance -> None,
+                        BaseStyle -> {"Text"}
+                       ],
+                       Function[
+                        Annotation[
+                         #1,
+                         DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                          2
+                         ]
+                        ]
+                       ]
+                      ],
+                      FileNameJoin[
+                       {
+                        NotebookDirectory[],
+                        "Documentation",
+                        "English",
+                        "Tutorials"
+                       }
+                      ],
+                      BoxID -> "FileTreePath",
+                      BaseStyle -> {"Text"}
+                     ]
+                    ]
+                   ]
+                  ],
+                  "FileManagerDirectory",
+                  CellMargins -> {{46 + Inherited, Inherited}, {Inherited, Inherited}},
+                  CellGroupingRules -> {"SectionGrouping", 120},
+                  CellFrameLabels -> {
+                   {
+                    Cell[
+                     BoxData[
+                      TemplateBox[{}, "FileManagerEmptyDirectoryIconTemplate"]
+                     ],
+                     Background -> None
+                    ],
+                    Inherited
+                   },
+                   {Inherited, Inherited}
+                  },
+                  CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+                  CellID -> 106598724
+                 ]
+                },
+                Closed
+               ]
+              ]
              },
-             {Inherited, Inherited}
-            },
-            CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
-            CellID -> 193993848
+             Closed
+            ]
            ],
            Cell[
             CellGroupData[
@@ -187,6 +920,123 @@ Notebook[
                },
                CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
                CellID -> 572062511
+              ],
+              Cell[
+               CellGroupData[
+                {
+                 Cell[
+                  TextData[
+                   Cell[
+                    BoxData[
+                     InterpretationBox[
+                      TagBox[
+                       ActionMenuBox[
+                        "\"64Bit\"",
+                        {
+                         "\"Open/Close Group\"" :>
+                          (SelectionMove[ParentCell[EvaluationCell[]], All, Cell];
+                          FrontEndTokenExecute[
+                           EvaluationNotebook[],
+                           "OpenCloseGroup"
+                          ]),
+                         "\"Open Directory\"" :>
+                          DefinitionNotebookClient`FileTreeOpen[
+                           ParentCell[EvaluationCell[]]
+                          ],
+                         "\"Un/Mark as Excluded\"" :>
+                          DefinitionNotebookClient`FileTreeExclusionToggle[
+                           ParentCell[EvaluationCell[]]
+                          ],
+                         "\"Copy Path to Clipboard\"" :>
+                          DefinitionNotebookClient`FileTreeCopy[
+                           ParentCell[EvaluationCell[]]
+                          ]
+                        },
+                        Appearance -> None,
+                        BaseStyle -> {"Text"}
+                       ],
+                       Function[
+                        Annotation[
+                         #1,
+                         DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                          1
+                         ]
+                        ]
+                       ]
+                      ],
+                      FileNameJoin[{NotebookDirectory[], "Kernel", "64Bit"}],
+                      BoxID -> "FileTreePath",
+                      BaseStyle -> {"Text"}
+                     ]
+                    ]
+                   ]
+                  ],
+                  "FileManagerDirectory",
+                  CellMargins -> {{23 + Inherited, Inherited}, {Inherited, Inherited}},
+                  CellGroupingRules -> {"SectionGrouping", 110},
+                  CellFrameLabels -> {
+                   {
+                    Cell[
+                     BoxData[
+                      TemplateBox[{}, "FileManagerDirectoryIconTemplate"]
+                     ],
+                     Background -> None
+                    ],
+                    Inherited
+                   },
+                   {Inherited, Inherited}
+                  },
+                  CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+                  CellID -> 51898293
+                 ],
+                 Cell[
+                  BoxData[
+                   InterpretationBox[
+                    TagBox[
+                     TemplateBox[
+                      {
+                       "\"MCPServer.mx\"",
+                       FileNameJoin[
+                        {NotebookDirectory[], "Kernel", "64Bit", "MCPServer.mx"}
+                       ]
+                      },
+                      "FileManagerFileOpenerTemplate"
+                     ],
+                     Function[
+                      Annotation[
+                       #1,
+                       DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                        2
+                       ]
+                      ]
+                     ]
+                    ],
+                    FileNameJoin[
+                     {NotebookDirectory[], "Kernel", "64Bit", "MCPServer.mx"}
+                    ],
+                    BoxID -> "FileTreePath",
+                    BaseStyle -> {"Text"}
+                   ]
+                  ],
+                  "FileManagerFile",
+                  CellMargins -> {{46 + Inherited, Inherited}, {Inherited, Inherited}},
+                  CellGroupingRules -> {"SectionGrouping", 120},
+                  CellFrameLabels -> {
+                   {
+                    Cell[
+                     BoxData[TemplateBox[{}, "FileManagerWLIconTemplate"]],
+                     Background -> None
+                    ],
+                    Inherited
+                   },
+                   {Inherited, Inherited}
+                  },
+                  CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+                  CellID -> 67956764
+                 ]
+                },
+                Closed
+               ]
               ],
               Cell[
                BoxData[
@@ -7883,7 +8733,7 @@ Notebook[
                },
                CellID -> 267876551
               ],
-              Cell["14.1+", "Text", CellID -> 450354368]
+              Cell["14.2+", "Text", CellID -> 450354368]
              },
              Open
             ]
@@ -9875,9 +10725,13 @@ Notebook[
   "StatusMessage" -> "",
   "SubmissionReviewData" -> {"Review" -> False},
   "AutoUpdate" -> True,
+  "Openers" -> {
+   "ExampleSubsection" -> {"0" -> Closed},
+   "ExampleSection" -> {"1" -> Closed, "2" -> Closed}
+  },
   "PacletBuildData" -> {
-   "FileHashes" -> ByteArray["OEM6eJxz5NMNFvdOLcpLzdF3zs/Nzc8LrsxNys8p1ivPcWTSDWYLzi8tSk71Sc5meZzyMVUEKBKSWJSeWoIkIoCiH03j3ZP8nbYv8iIRGhEikjCNRamJJam+zgHBqUVlqUVoJhyq1G7Lj55XiDABISIBNcElNS2xNKcEoh/d7RrvfY4s5v+bgjAAIcIPNcAtMycVXR/73agN86VjvBH6ECIiMH35RbmJJSWZeelomt07tqtfW/8wDKEZISIF1eyZV1ySmJODy+N1q6y+/9VQrEcYgRDhgxrhm5iJHuJeR/L41JhncyG0IURgIQ630j8pKzW5BN2EyrUS+Zdtq5FMgIsIo5uApneXjpyHnexXbYRehIgQTG9qcXFiOkZ4q/+6XRO5djILQitCBBbRwSWJRSW47BZuM98mJG5oizAAIcIbkJick1rimZeWj6arumx6QdSFcH2ELoSIIESXb2JeZlpqMVo4FbP45eelIrRtWuEaVTtZ0B0AnHQxmQ=="],
-   "LastBuiltArchive" -> "H:\\Documents\\MCPServer\\build\\RickHennigan__MCPServer-0.0.9.paclet"
+   "LastBuiltArchive" -> "H:\\Documents\\MCPServer\\build\\RickHennigan__MCPServer-1.0.0.paclet",
+   "FileHashes" -> ByteArray["OEM6eJyllWtIFEEAx6muF1RqCpmhlFmaNnuejx5Wpl1lR6epU5GKyLg3t67uzl67c70oowKjD9KDvkRvK+hDIhJUmlKERYmYkgRBRYZhD8qKDIKe4p3jbbne0afj/sv/99uZ2ZnJjAYwerXCu2VMKKKiQsxriCCJWpnZRhx4h7kkkeOdWuZYACdAxa3yWDPlKAT/+bsRqQKm9ku1+yoyqpMtAM434mhYGHiklSQbsFKnn679WfclHcA4f1icgIkB7X1cZTB41bMYwJX/puVjJ1Yx4XEuErBmhjvlUkXSzFYVI4qzrbkQq9uwypHSYRJ7S2da8q3QcBfzvHgSG3tPKNkMYEZAHhvRKJKkkUTCr6eWI1MOhjGRNX+y3dw8yRXogIYMG0rLMU91nk234l9eq2yJYZ77+x2uz7MtpkAHpPPk6URtwQeqHm28l8hExOoMOzvvO/lPkaYTwRC+pdKSOZGJwu8rxftuokgAVwUk2kRE40X6oE5srNk9P46pVrwz5R1907YHwPh/qyBGKl82+CWnDu4vbPAVw+rjvQsLr3OB8Iz26+4bh2PauwvcAC7wk6eJBriQtCbpQ2ljDoDAH5xTxJJD47ZLBsisMmctiHBvATDFH6Q48JuNKXIgiozJkVnVhTHtUUsA5PwhD51ZSQbMfnfbctuVvbP9ZG5XRYo5SeErDJidy471dOQcHA9g7AhMF5YkzwGdPMqCN/N99bd7HqQAmDAqbGjESw2A5x6nyg2z5NSRl/xv4ChH9fOai5ejr7qWAThzPVYJlsyLUlaJlG10Tt4xfNu1t87VohJ6ISOwZIaHYFVkWSGenez7XdjvOtLkkP7uMazPkmCfvq747EHQoRWvSQErssT76vr7w5dwZ2dClVJ0ZisjsCTcQ1iNncgt0cG+/t3j+uwtF4J+OBiAJUEewFpRwvre4pLWRd/mxBezHkvCvD1FlRGlIhF05foqW/nJitY1rMySCE/5r/vMF6FmCUvPva1MYgiWTPMgspGon/GITw97T4ypGc9qLPHOuP6C8yWcqkvfM9nEDZswloTqCbpu48KodemR/Qmsy5Lp3i7WtIFbQ1et2DVn3sddRRmsyhLvQkOKVDqS++sRy/mG76ZyBmDJ1FzES5jaiFPRa8eOi3R0meKHaYeSkMFWNiKiE2vU+LBEF/q6LE0dtt+NJ60o"]
   }
  },
  CreateCellID -> True,

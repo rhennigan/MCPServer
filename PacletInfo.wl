@@ -2,7 +2,7 @@ PacletObject[ <|
     "Name"             -> "RickHennigan/MCPServer",
     "Description"      -> "Implements a model context protocol server using Wolfram Language",
     "Creator"          -> "Richard Hennigan (Wolfram Research)",
-    "Version"          -> "0.0.11",
+    "Version"          -> "1.0.0",
     "WolframVersion"   -> "14.2+",
     "PublisherID"      -> "RickHennigan",
     "License"          -> "MIT",
@@ -34,6 +34,10 @@ PacletObject[ <|
                 "RickHennigan`MCPServer`StartMCPServer",
                 "RickHennigan`MCPServer`UninstallMCPServer"
             }
+        },
+        { "Documentation",
+            "Root"     -> "Documentation",
+            "Language" -> "English"
         }
     }
 |> ]

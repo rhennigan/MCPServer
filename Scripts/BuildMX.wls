@@ -22,8 +22,7 @@ $assertions = getBooleanArgument[ { "a", "assertions" }, True ];
 (*Paths*)
 $mxFile = cStr @ FileNameJoin @ {
     $pacletDir,
-    "Source",
-    "MCPServer",
+    "Kernel",
     ToString @ $SystemWordLength <> "Bit",
     "MCPServer.mx"
 };
