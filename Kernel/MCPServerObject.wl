@@ -70,9 +70,9 @@ MCPServerObject[ name_String ] := catchMine @ getMCPServerObjectByName @ name;
 getMCPServerObjectByName // beginDefinition;
 
 getMCPServerObjectByName[ name_String ] := Enclose[
-    Module[ { file, data },
+    Catch @ Module[ { file, data },
         file = ConfirmBy[ mcpServerFile @ name, fileQ, "File" ];
-        If[ ! FileExistsQ @ file, throwFailure[ "MCPServerNotFound", name ] ];
+        If[ ! FileExistsQ @ file, Throw @ checkBuiltInMCPServer @ name ];
         data = readMetadataFile @ file;
         If[ ! AssociationQ @ data, throwFailure[ "MCPServerNotFound", name ] ];
         ConfirmBy[ MCPServerObject @ data, MCPServerObjectQ, "MCPServerObject" ]
@@ -81,6 +81,21 @@ getMCPServerObjectByName[ name_String ] := Enclose[
 ];
 
 getMCPServerObjectByName // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*checkBuiltInMCPServer*)
+checkBuiltInMCPServer // beginDefinition;
+
+checkBuiltInMCPServer[ name_String ] :=
+    With[ { server = $DefaultMCPServers[ name ] },
+        If[ MCPServerObjectQ @ server,
+            server,
+            throwFailure[ "MCPServerNotFound", name ]
+        ]
+    ];
+
+checkBuiltInMCPServer // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -266,6 +281,9 @@ deleteMCPServer // beginDefinition;
 
 deleteMCPServer[ obj_ ] :=
     deleteMCPServer[ obj[ "Name" ], obj[ "Location" ] ];
+
+deleteMCPServer[ name_, "BuiltIn" ] :=
+    throwFailure[ "DeleteBuiltInMCPServer", name ];
 
 deleteMCPServer[ name_, location_File ] := Enclose[
     If[ DirectoryQ @ location,

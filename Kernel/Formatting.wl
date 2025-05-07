@@ -63,7 +63,7 @@ makeHiddenSummaryRows // beginDefinition;
 makeHiddenSummaryRows[ obj_ ] :=
     makeHiddenSummaryRows[ obj[ "Name" ], obj[ "LLMEvaluator" ], obj[ "Location" ], obj[ "JSONConfiguration" ] ];
 
-makeHiddenSummaryRows[ name_String, evaluator_Association, location_File, json_String ] :=
+makeHiddenSummaryRows[ name_String, evaluator_Association, location: _File | "BuiltIn", json_String ] :=
     Module[ { toolNames, copyJSONButton },
         toolNames = Select[ Cases[ Flatten @ { evaluator[ "Tools" ] }, tool: $$llmTool :> toolName @ tool ], StringQ ];
         copyJSONButton = clickToCopy[ "{\[Ellipsis]}", json ];
