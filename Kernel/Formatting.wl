@@ -6,6 +6,8 @@ Begin[ "`Private`" ];
 Needs[ "RickHennigan`MCPServer`"        ];
 Needs[ "RickHennigan`MCPServer`Common`" ];
 
+(* TODO: show installations in formatted boxes *)
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Argument Patterns*)

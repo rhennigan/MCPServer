@@ -149,24 +149,53 @@ validMetadataQ // endDefinition;
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Flat*)
-MCPServerObject[ obj_MCPServerObject? MCPServerObjectQ ] := obj;
+MCPServerObject[ obj_MCPServerObject ] := catchMine[
+    If[ MCPServerObjectQ @ obj,
+        obj,
+        throwFailure[ "DeletedMCPServerObject", obj[ "Name" ] ]
+    ]
+];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*ensureMCPServerExists*)
+ensureMCPServerExists // beginDefinition;
+
+ensureMCPServerExists[ obj_MCPServerObject ] :=
+    If[ MCPServerObjectQ @ obj,
+        obj,
+        throwFailure[ "DeletedMCPServerObject", obj[ "Name" ] ]
+    ];
+
+ensureMCPServerExists // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Properties*)
+MCPServerObject[ KeyValuePattern[ prop_ -> value_ ] ][ prop_String ] :=
+    value;
+
 (MCPServerObject[ data_Association ]? MCPServerObjectQ)[ prop_String ] :=
     catchTop[ getMCPServerObjectProperty[ data, prop ], MCPServerObject ];
+
+(obj_MCPServerObject)[ prop_String ] :=
+    catchTop[ getMCPServerObjectProperty[ ensureMCPServerExists @ obj, prop ], MCPServerObject ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
 (*getMCPServerObjectProperty*)
 getMCPServerObjectProperty // beginDefinition;
 
+getMCPServerObjectProperty[ MCPServerObject[ data_Association ], prop_ ] :=
+    getMCPServerObjectProperty[ data, prop ];
+
 (* Special properties *)
+getMCPServerObjectProperty[ data_Association, "Data"              ] := data;
 getMCPServerObjectProperty[ data_Association, "LLMConfiguration"  ] := makeLLMConfiguration @ data;
 getMCPServerObjectProperty[ data_Association, "PromptData"        ] := getPromptData @ data;
 getMCPServerObjectProperty[ data_Association, "Tools"             ] := getToolList @ data;
 getMCPServerObjectProperty[ data_Association, "JSONConfiguration" ] := makeJSONConfiguration @ data;
+getMCPServerObjectProperty[ data_Association, "Installations"     ] := getInstallations @ data;
 
 (* Standard properties *)
 getMCPServerObjectProperty[ KeyValuePattern[ key_ -> value_ ], key_ ] := value;
@@ -175,6 +204,18 @@ getMCPServerObjectProperty[ KeyValuePattern[ "LLMEvaluator" -> KeyValuePattern[ 
 (* Unknown property *)
 getMCPServerObjectProperty[ _, prop_ ] := Missing[ "UnknownProperty", prop ];
 getMCPServerObjectProperty // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*getInstallations*)
+getInstallations // beginDefinition;
+
+getInstallations[ data_Association ] := Enclose[
+    ConfirmMatch[ mcpServerInstallations @ data, { ___? fileQ }, "Installations" ],
+    throwInternalFailure
+];
+
+getInstallations // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -264,13 +305,13 @@ convertStringTools0 // endDefinition;
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*UpValues*)
-MCPServerObject /: DeleteObject[ obj_MCPServerObject? MCPServerObjectQ ] := catchTop[
-    deleteMCPServer @ obj,
+MCPServerObject /: DeleteObject[ obj_MCPServerObject ] := catchTop[
+    deleteMCPServer @ ensureMCPServerExists @ obj,
     MCPServerObject
 ];
 
-MCPServerObject /: LLMConfiguration[ obj_MCPServerObject? MCPServerObjectQ ] := catchTop[
-    obj[ "LLMConfiguration" ],
+MCPServerObject /: LLMConfiguration[ obj_MCPServerObject ] := catchTop[
+    ensureMCPServerExists[ obj ][ "LLMConfiguration" ],
     MCPServerObject
 ];
 
@@ -279,8 +320,10 @@ MCPServerObject /: LLMConfiguration[ obj_MCPServerObject? MCPServerObjectQ ] := 
 (*deleteMCPServer*)
 deleteMCPServer // beginDefinition;
 
-deleteMCPServer[ obj_ ] :=
-    deleteMCPServer[ obj[ "Name" ], obj[ "Location" ] ];
+deleteMCPServer[ obj_ ] := (
+    UninstallMCPServer @ obj;
+    deleteMCPServer[ obj[ "Name" ], obj[ "Location" ] ]
+);
 
 deleteMCPServer[ name_, "BuiltIn" ] :=
     throwFailure[ "DeleteBuiltInMCPServer", name ];
@@ -321,9 +364,18 @@ MCPServerObject[ args___ ]? sp`HoldNotValidQ := catchTop[
 (* ::Section::Closed:: *)
 (*MCPServerObjectQ*)
 MCPServerObjectQ // beginDefinition;
-MCPServerObjectQ[ obj_MCPServerObject ] := sp`HoldValidQ @ obj;
+MCPServerObjectQ[ obj_MCPServerObject ] := sp`HoldValidQ @ obj && mcpServerExistsQ @ obj;
 MCPServerObjectQ[ _ ] := False;
 MCPServerObjectQ // endExportedDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*mcpServerExistsQ*)
+mcpServerExistsQ // beginDefinition;
+mcpServerExistsQ[ HoldPattern @ MCPServerObject[ as_Association ] ] := mcpServerExistsQ[ as, as[ "Location" ] ];
+mcpServerExistsQ[ as_, "BuiltIn" ] := True;
+mcpServerExistsQ[ as_, location_File ] := FileExistsQ @ location;
+mcpServerExistsQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -348,7 +400,7 @@ getMatchingMCPServerObjects[ pattern_String? StringQ ] :=
     ];
 
 getMatchingMCPServerObjects[ dirs: { ___String } ] :=
-    Select[ Quiet @ catchTop @ MCPServerObject @ File[ # ] & /@ dirs, MCPServerObjectQ ];
+    Select[ Quiet @ catchAlways @ MCPServerObject @ File[ # ] & /@ dirs, MCPServerObjectQ ];
 
 getMatchingMCPServerObjects // endDefinition;
 

@@ -15,6 +15,7 @@ BeginPackage[ "RickHennigan`MCPServer`" ];
 `MCPServerObjectQ;
 `MCPServerObjects;
 `StartMCPServer;
+`UninstallMCPServer;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -76,7 +77,8 @@ $MCPServerProtectedNames = "RickHennigan`MCPServer`" <> # & /@ {
     "MCPServerObject",
     "MCPServerObjectQ",
     "MCPServerObjects",
-    "StartMCPServer"
+    "StartMCPServer",
+    "UninstallMCPServer"
 };
 
 (* ::**************************************************************************************************************:: *)
