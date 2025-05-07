@@ -40,8 +40,18 @@ mcpServerFile // endDefinition;
 (* ::Subsection::Closed:: *)
 (*mcpServerDirectory*)
 mcpServerDirectory // beginDefinition;
-mcpServerDirectory[ name_String ] := fileNameJoin[ $storagePath, URLEncode @ name ];
-mcpServerDirectory[ obj_MCPServerObject? MCPServerObjectQ ] := obj[ "Location" ];
+
+mcpServerDirectory[ name_String ] :=
+    fileNameJoin[ $storagePath, URLEncode @ name ];
+
+mcpServerDirectory[ obj_MCPServerObject? MCPServerObjectQ ] :=
+    With[ { location = obj[ "Location" ] },
+        If[ location === "BuiltIn",
+            mcpServerDirectory @ obj[ "Name" ],
+            location
+        ]
+    ];
+
 mcpServerDirectory // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
@@ -137,6 +147,27 @@ toFile // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*readWXFFile*)
+readWXFFile // beginDefinition;
+readWXFFile[ file_ ] := Developer`ReadWXFFile @ ExpandFileName @ file;
+readWXFFile // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*writeWXFFile*)
+writeWXFFile // beginDefinition;
+
+writeWXFFile[ file_, data_, opts: OptionsPattern[ ] ] :=
+    Developer`WriteWXFFile[
+        ExpandFileName @ ensureFilePath @ file,
+        data,
+        opts
+    ];
+
+writeWXFFile // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*readRawJSONFile*)
 readRawJSONFile // beginDefinition;
 readRawJSONFile[ file_, opts: OptionsPattern[ ] ] := Developer`ReadRawJSONFile[ ExpandFileName @ file, opts ];
@@ -149,7 +180,7 @@ writeRawJSONFile // beginDefinition;
 
 writeRawJSONFile[ file_, data_, opts: OptionsPattern[ ] ] :=
     Developer`WriteRawJSONFile[
-        ExpandFileName @ file,
+        ExpandFileName @ ensureFilePath @ file,
         data,
         opts
     ];

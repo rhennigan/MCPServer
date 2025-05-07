@@ -18,7 +18,7 @@ StartMCPServer // beginDefinition;
 StartMCPServer[ ] := catchMine @ StartMCPServer @ Environment[ "MCP_SERVER_NAME" ];
 StartMCPServer[ $Failed ] := catchMine @ StartMCPServer @ $defaultMCPServer;
 StartMCPServer[ name_String ] := catchMine @ StartMCPServer @ MCPServerObject @ name;
-StartMCPServer[ obj_MCPServerObject? MCPServerObjectQ ] := catchMine @ startMCPServer @ obj;
+StartMCPServer[ obj_MCPServerObject ] := catchMine @ startMCPServer @ ensureMCPServerExists @ obj;
 StartMCPServer // endExportedDefinition;
 
 (* ::**************************************************************************************************************:: *)
@@ -31,7 +31,7 @@ startMCPServer[ obj_ ] /; $Notebooks :=
 
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
-startMCPServer[ obj_MCPServerObject? MCPServerObjectQ ] := Enclose[
+startMCPServer[ obj_MCPServerObject ] := Enclose[
     superQuiet @ Module[ { logFile, llmTools, toolList, promptList, promptLookup, init, response },
 
         logFile = ConfirmBy[ ensureFilePath @ mcpServerLogFile @ obj, fileQ, "LogFile" ];

@@ -24,11 +24,10 @@ InstallMCPServer[ target_, Automatic, opts: OptionsPattern[ ] ] :=
     catchMine @ InstallMCPServer[ target, $defaultMCPServer, opts ];
 
 InstallMCPServer[ target_File, server_, opts: OptionsPattern[ ] ] :=
-    catchMine @ With[ { obj = MCPServerObject @ server },
-        If[ MCPServerObjectQ @ obj,
-            installMCPServer[ target, obj, OptionValue @ ProcessEnvironment ],
-            obj
-        ]
+    catchMine @ installMCPServer[
+        target,
+        ensureMCPServerExists @ MCPServerObject @ server,
+        OptionValue @ ProcessEnvironment
     ];
 
 InstallMCPServer[ name_String, server_, opts: OptionsPattern[ ] ] :=
@@ -61,12 +60,72 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association ] := Enclos
         ConfirmBy[ writeRawJSONFile[ target, existing ], FileExistsQ, "Export" ];
         ConfirmAssert[ readRawJSONFile @ target === existing, "ExportCheck" ];
 
+        ConfirmBy[ recordMCPInstallation[ target, obj ], FileExistsQ, "Record" ];
+
         installSuccess[ name, target, obj ]
     ],
     throwInternalFailure
 ];
 
 installMCPServer // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*recordMCPInstallation*)
+recordMCPInstallation // beginDefinition;
+
+recordMCPInstallation[ target_? fileQ, obj_MCPServerObject ] := Enclose[
+    Module[ { file, existing, new },
+        file = ConfirmBy[ mcpServerFile[ obj, "Installations.wxf" ], fileQ, "File" ];
+        existing = mcpServerInstallations @ obj;
+        new = Select[ If[ ListQ @ existing, Union[ existing, { target } ], { target } ], FileExistsQ ];
+        ConfirmBy[ writeWXFFile[ file, new ], FileExistsQ, "Export" ]
+    ],
+    throwInternalFailure
+];
+
+recordMCPInstallation // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*clearRecordedInstallation*)
+clearRecordedInstallation // beginDefinition;
+
+clearRecordedInstallation[ target_? fileQ, obj_MCPServerObject ] := Enclose[
+    Module[ { file, existing, new },
+        file = ConfirmBy[ mcpServerFile[ obj, "Installations.wxf" ], fileQ, "File" ];
+        existing = mcpServerInstallations @ obj;
+        new = DeleteCases[ If[ ListQ @ existing, existing, { } ], target ];
+        If[ new === { },
+            Quiet @ DeleteFile @ file,
+            ConfirmBy[ writeWXFFile[ file, new ], FileExistsQ, "Export" ]
+        ];
+        new
+    ],
+    throwInternalFailure
+];
+
+clearRecordedInstallation // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*mcpServerInstallations*)
+mcpServerInstallations // beginDefinition;
+
+mcpServerInstallations[ obj0_ ] := Enclose[
+    Module[ { obj, file, installations },
+        obj = ConfirmBy[ MCPServerObject @ obj0, MCPServerObjectQ, "MCPServerObject" ];
+        file = ConfirmBy[ mcpServerFile[ obj, "Installations.wxf" ], fileQ, "File" ];
+        installations = If[ FileExistsQ @ file, Quiet @ readWXFFile @ file, { } ];
+        If[ ListQ @ installations,
+            Select[ installations, FileExistsQ ],
+            { }
+        ]
+    ],
+    throwInternalFailure
+];
+
+mcpServerInstallations // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -173,7 +232,108 @@ readExistingMCPConfig // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*Named Install Locations*)
+(*UninstallMCPServer*)
+UninstallMCPServer // beginDefinition;
+
+UninstallMCPServer[ target_File ] :=
+    catchMine @ UninstallMCPServer[ target, All ];
+
+UninstallMCPServer[ name_String ] :=
+    catchMine @ UninstallMCPServer[ name, All ];
+
+UninstallMCPServer[ obj_ ] :=
+    catchMine @ UninstallMCPServer[ All, obj ];
+
+UninstallMCPServer[ target: _File | All, All ] :=
+    catchMine @ UninstallMCPServer[ target, allMCPServers[ ] ];
+
+UninstallMCPServer[ target: _File | All, servers_List ] :=
+    catchMine @ DeleteMissing @ Flatten[ catchAlways @ UninstallMCPServer[ target, # ] & /@ servers ];
+
+UninstallMCPServer[ All, obj_MCPServerObject ] :=
+    catchMine @ UninstallMCPServer[ mcpServerInstallations @ obj, obj ];
+
+UninstallMCPServer[ targets_List, obj_MCPServerObject ] :=
+    catchMine @ DeleteMissing[ catchAlways @ UninstallMCPServer[ #, obj ] & /@ targets ];
+
+UninstallMCPServer[ target_File, obj_ ] :=
+    catchMine @ uninstallMCPServer[ target, ensureMCPServerExists @ MCPServerObject @ obj ];
+
+UninstallMCPServer[ name_String, obj_ ] :=
+    catchMine @ Block[ { $installName = toInstallName @ name },
+        UninstallMCPServer[ installLocation @ name, obj ]
+    ];
+
+UninstallMCPServer // endExportedDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*allMCPServers*)
+allMCPServers // beginDefinition;
+allMCPServers[ ] := Union[ MCPServerObjects @ All, Values @ $DefaultMCPServers ];
+allMCPServers // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*uninstallMCPServer*)
+uninstallMCPServer // beginDefinition;
+
+uninstallMCPServer[ target0_File, obj_MCPServerObject ] := Enclose[
+    Catch @ Module[ { target, name, existing },
+
+        target = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
+        If[ ! FileExistsQ @ target, Throw @ Missing[ "NotInstalled", target ] ];
+
+        name = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
+        existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
+
+        If[ ! KeyExistsQ[ existing, "mcpServers" ], Throw @ Missing[ "NotInstalled", target ] ];
+        If[ ! KeyExistsQ[ existing[ "mcpServers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
+
+        KeyDropFrom[ existing[ "mcpServers" ], name ];
+        ConfirmBy[ writeRawJSONFile[ target, existing ], FileExistsQ, "Export" ];
+
+        ConfirmAssert[ readRawJSONFile @ target === existing, "ExportCheck" ];
+        ConfirmMatch[ clearRecordedInstallation[ target, obj ], { ___? fileQ }, "Clear" ];
+
+        uninstallSuccess[ name, target, obj ]
+    ],
+    throwInternalFailure
+];
+
+uninstallMCPServer // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*uninstallSuccess*)
+uninstallSuccess // beginDefinition;
+
+uninstallSuccess[ serverName_, installLocation_, obj_ ] :=
+    uninstallSuccess[ serverName, installLocation, obj, installDisplayName @ $installName ];
+
+uninstallSuccess[ serverName_String, installLocation_File? fileQ, obj_MCPServerObject, installName_String ] :=
+    Success[
+        "UninstallMCPServer",
+        <|
+            "MessageTemplate"   :> MCPServer::UninstallMCPServerNamed,
+            "MessageParameters" -> { serverName, installName },
+            "Location"          -> installLocation,
+            "MCPServerObject"   -> obj
+        |>
+    ];
+
+uninstallSuccess[ serverName_String, installLocation_File? fileQ, obj_MCPServerObject, installName_ ] :=
+    Success[
+        "UninstallMCPServer",
+        <|
+            "MessageTemplate"   :> MCPServer::UninstallMCPServer,
+            "MessageParameters" -> { serverName },
+            "Location"          -> installLocation,
+            "MCPServerObject"   -> obj
+        |>
+    ];
+
+uninstallSuccess // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)

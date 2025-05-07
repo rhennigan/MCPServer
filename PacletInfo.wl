@@ -31,7 +31,8 @@ PacletObject[ <|
                 "RickHennigan`MCPServer`MCPServerObject",
                 "RickHennigan`MCPServer`MCPServerObjectQ",
                 "RickHennigan`MCPServer`MCPServerObjects",
-                "RickHennigan`MCPServer`StartMCPServer"
+                "RickHennigan`MCPServer`StartMCPServer",
+                "RickHennigan`MCPServer`UninstallMCPServer"
             }
         }
     }
