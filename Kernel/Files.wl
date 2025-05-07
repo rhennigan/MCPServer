@@ -9,7 +9,9 @@ Needs[ "RickHennigan`MCPServer`Common`" ];
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Configuration*)
-$storagePath := FileNameJoin @ { $UserBaseDirectory, "ApplicationData", "RickHennigan", "MCPServer" };
+$rootPath    := FileNameJoin @ { $UserBaseDirectory, "ApplicationData", "RickHennigan", "MCPServer" };
+$storagePath := FileNameJoin @ { $rootPath, "Servers" };
+$imagePath   := FileNameJoin @ { $rootPath, "Images"  };
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

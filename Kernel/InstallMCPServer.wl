@@ -17,6 +17,12 @@ $installName = None;
 InstallMCPServer // beginDefinition;
 InstallMCPServer // Options = { ProcessEnvironment -> Automatic };
 
+InstallMCPServer[ target_, opts: OptionsPattern[ ] ] :=
+    catchMine @ InstallMCPServer[ target, Automatic, opts ];
+
+InstallMCPServer[ target_, Automatic, opts: OptionsPattern[ ] ] :=
+    catchMine @ InstallMCPServer[ target, $defaultMCPServer, opts ];
+
 InstallMCPServer[ target_File, server_, opts: OptionsPattern[ ] ] :=
     catchMine @ With[ { obj = MCPServerObject @ server },
         If[ MCPServerObjectQ @ obj,

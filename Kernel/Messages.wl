@@ -1,6 +1,7 @@
 BeginPackage[ "RickHennigan`MCPServer`" ];
 
 MCPServer::usage                   = "MCPServer is a symbol for miscellaneous messages.";
+MCPServer::DeleteBuiltInMCPServer  = "The MCP server named \"`1`\" is built-in and cannot be deleted.";
 MCPServer::Internal                = "An unexpected error occurred. `1`";
 MCPServer::InstallMCPServer        = "Successfully installed MCP server \"`1`\".";
 MCPServer::InstallMCPServerNamed   = "Successfully installed MCP server \"`1`\" for `2`.";

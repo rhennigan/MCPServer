@@ -5,14 +5,15 @@ BeginPackage[ "RickHennigan`MCPServer`" ];
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Exported Symbols*)
+`$DefaultMCPServers;
 `$LastMCPServerFailure;
 `$LastMCPServerFailureText;
 `CreateMCPServer;
 `InstallMCPServer;
 `MCPServer;
 `MCPServerObject;
-`MCPServerObjects;
 `MCPServerObjectQ;
+`MCPServerObjects;
 `StartMCPServer;
 
 (* ::**************************************************************************************************************:: *)
@@ -44,6 +45,7 @@ $MCPServerContexts = {
     "RickHennigan`MCPServer`",
     "RickHennigan`MCPServer`Common`",
     "RickHennigan`MCPServer`CreateMCPServer`",
+    "RickHennigan`MCPServer`DefaultServers`",
     "RickHennigan`MCPServer`Files`",
     "RickHennigan`MCPServer`Formatting`",
     "RickHennigan`MCPServer`InstallMCPServer`",
@@ -65,6 +67,7 @@ $MCPServerSymbolNames = $MCPServerSymbolNames =
 (* ::Section::Closed:: *)
 (*Protected Symbols*)
 $MCPServerProtectedNames = "RickHennigan`MCPServer`" <> # & /@ {
+    "$DefaultMCPServers",
     "$LastMCPServerFailure",
     "$LastMCPServerFailureText",
     "CreateMCPServer",

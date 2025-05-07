@@ -16,6 +16,7 @@ $protocolVersion = "2024-11-05";
 (*StartMCPServer*)
 StartMCPServer // beginDefinition;
 StartMCPServer[ ] := catchMine @ StartMCPServer @ Environment[ "MCP_SERVER_NAME" ];
+StartMCPServer[ $Failed ] := catchMine @ StartMCPServer @ $defaultMCPServer;
 StartMCPServer[ name_String ] := catchMine @ StartMCPServer @ MCPServerObject @ name;
 StartMCPServer[ obj_MCPServerObject? MCPServerObjectQ ] := catchMine @ startMCPServer @ obj;
 StartMCPServer // endExportedDefinition;
@@ -28,6 +29,8 @@ startMCPServer // beginDefinition;
 startMCPServer[ obj_ ] /; $Notebooks :=
     throwFailure[ "InvalidSession" ];
 
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
 startMCPServer[ obj_MCPServerObject? MCPServerObjectQ ] := Enclose[
     superQuiet @ Module[ { logFile, llmTools, toolList, promptList, promptLookup, init, response },
 
@@ -68,7 +71,7 @@ startMCPServer[ obj_MCPServerObject? MCPServerObjectQ ] := Enclose[
                     And[
                         Or[ $OperatingSystem === "MacOSX", $OperatingSystem === "Unix" ],
                         $ParentProcessID === 1
-                        ],
+                    ],
                     Exit[0]
                 ];
                 response = catchAlways @ processRequest[ ];
@@ -82,6 +85,7 @@ startMCPServer[ obj_MCPServerObject? MCPServerObjectQ ] := Enclose[
     ],
     throwInternalFailure
 ];
+(* :!CodeAnalysis::EndBlock:: *)
 
 startMCPServer // endDefinition;
 
