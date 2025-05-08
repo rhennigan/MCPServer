@@ -27,11 +27,18 @@ $wolframAlphaToolDescription = StringJoin[
     "Always use the Wolfram context tool before using this tool to make sure you have the most up-to-date information."
 ];
 
-$wolframLanguageEvaluatorToolDescription = StringJoin[
-    cb`$DefaultTools[ "WolframLanguageEvaluator" ][ "Description" ],
-    "\n",
-    "Always use the Wolfram context tool before using this tool to make sure you have the most up-to-date information."
-];
+$wolframLanguageEvaluatorToolDescription = "\
+Evaluates Wolfram Language code for the user in a Wolfram Language kernel.
+The user does not automatically see the result, so you must include the result in your response \
+in order for them to see it.
+If a formatted result is provided as a markdown link, use that in your response instead of typing out the output.
+Do not ask permission to evaluate code.
+You have read access to local files.
+Parse natural language input with `\[FreeformPrompt][\"query\"]`, which is analogous to ctrl-= input in notebooks.
+Natural language input is parsed before evaluation, so it works like macro expansion.
+You should ALWAYS use this natural language input to obtain things like `Quantity`, `DateObject`, `Entity`, etc.
+\[FreeformPrompt] should be written as \\uf351 in JSON.
+Always use the Wolfram context tool before using this tool to make sure you have the most up-to-date information.";
 
 $wolframContextToolDescription = "\
 Uses semantic search to retrieve any relevant information from Wolfram. Always use this tool at the start of \
