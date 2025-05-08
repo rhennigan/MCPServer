@@ -87,6 +87,9 @@ pacletSymbolInstallCheck[ paclet_String, resource_String ] :=
         $thisPaclet
     ];
 
+pacletSymbolInstallCheck[ _, _ ] :=
+    $thisPaclet;
+
 pacletSymbolInstallCheck // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
