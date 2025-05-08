@@ -72,8 +72,8 @@ $snippetTemplate = StringTemplate[ "<result url='`URI`'>\n\n`Text`\n\n</result>"
 (*WolframAlpha*)
 $wolframAlphaTool = LLMTool[
     { "WolframAlpha", $wolframAlphaToolDescription },
-    cb`$DefaultTools[ "WolframAlpha" ][ "Parameters" ],
-    cb`$DefaultTools[ "WolframAlpha" ][ "Function"   ]
+    { "query" -> <| "Interpreter" -> "String", "Help" -> "the input", "Required" -> True |> },
+    cb`$DefaultTools[ "WolframAlpha" ][ "Function" ]
 ];
 
 (* ::**************************************************************************************************************:: *)
