@@ -28,6 +28,8 @@ $resourceFunctionContext = "RickHennigan`MCPServer`ResourceFunctions`";
 
 $resourceVersions = <|
     "BinarySerializeWithDefinitions" -> "1.0.0",
+    "ExportMarkdownString"           -> "1.0.0",
+    "ImportMarkdownString"           -> "1.0.0",
     "ReplaceContext"                 -> "1.0.0",
     "MessageFailure"                 -> "1.0.1"
 |>;
