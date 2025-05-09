@@ -80,7 +80,7 @@ $defaultMCPTools[ "WolframAlpha" ] := LLMTool @ <|
     "Name"        -> "WolframAlpha",
     "DisplayName" -> "Wolfram|Alpha",
     "Description" -> $wolframAlphaToolDescription,
-    "Function"    -> cb`$DefaultTools[ "WolframAlpha" ][ "Function" ],
+    "Function"    -> Function[ cb`$DefaultTools[ "WolframAlpha" ][ # ][ "String" ] ],
     "Options"     -> { },
     "Parameters"  -> {
         "query" -> <|
