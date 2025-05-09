@@ -40,6 +40,7 @@ BeginPackage[ "RickHennigan`MCPServer`Common`" ];
 `throwFailure;
 `throwInternalFailure;
 `throwTop;
+`validateMCPServerObjectData;
 `writeRawJSONFile;
 `writeWXFFile;
 
