@@ -21,17 +21,23 @@ $line                   = 1;
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Prompts*)
-$wolframAlphaToolDescription = StringJoin[
-    cb`$DefaultTools[ "WolframAlpha" ][ "Description" ],
-    "\n",
-    "Always use the Wolfram context tool before using this tool to make sure you have the most up-to-date information."
-];
+$wolframAlphaToolDescription = "\
+Use natural language queries with Wolfram|Alpha to get up-to-date computational results about entities in \
+chemistry, physics, geography, history, art, astronomy, and more.
+Always use the Wolfram context tool before using this tool to make sure you have the most up-to-date information.";
 
-$wolframLanguageEvaluatorToolDescription = StringJoin[
-    cb`$DefaultTools[ "WolframLanguageEvaluator" ][ "Description" ],
-    "\n",
-    "Always use the Wolfram context tool before using this tool to make sure you have the most up-to-date information."
-];
+$wolframLanguageEvaluatorToolDescription = "\
+Evaluates Wolfram Language code for the user in a Wolfram Language kernel.
+The user does not automatically see the result, so you must include the result in your response \
+in order for them to see it.
+If a formatted result is provided as a markdown link, use that in your response instead of typing out the output.
+Do not ask permission to evaluate code.
+You have read access to local files.
+Parse natural language input with `\[FreeformPrompt][\"query\"]`, which is analogous to ctrl-= input in notebooks.
+Natural language input is parsed before evaluation, so it works like macro expansion.
+You should ALWAYS use this natural language input to obtain things like `Quantity`, `DateObject`, `Entity`, etc.
+\[FreeformPrompt] should be written as \\uf351 in JSON.
+Always use the Wolfram context tool before using this tool to make sure you have the most up-to-date information.";
 
 $wolframContextToolDescription = "\
 Uses semantic search to retrieve any relevant information from Wolfram. Always use this tool at the start of \
@@ -58,23 +64,43 @@ $snippetTemplate = StringTemplate[ "<result url='`URI`'>\n\n`Text`\n\n</result>"
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*Standard Tools*)
+(*Default Tools*)
+$DefaultMCPTools := WithCleanup[
+    Unprotect @ $DefaultMCPTools,
+    $DefaultMCPTools = AssociationMap[ Apply @ Rule, $defaultMCPTools ],
+    Protect @ $DefaultMCPTools
+];
+
+$defaultMCPTools = <| |>;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*WolframAlpha*)
-$wolframAlphaTool = LLMTool[
-    { "WolframAlpha", $wolframAlphaToolDescription },
-    cb`$DefaultTools[ "WolframAlpha" ][ "Parameters" ],
-    cb`$DefaultTools[ "WolframAlpha" ][ "Function"   ]
-];
+$defaultMCPTools[ "WolframAlpha" ] := LLMTool @ <|
+    "Name"        -> "WolframAlpha",
+    "DisplayName" -> "Wolfram|Alpha",
+    "Description" -> $wolframAlphaToolDescription,
+    "Function"    -> cb`$DefaultTools[ "WolframAlpha" ][ "Function" ],
+    "Options"     -> { },
+    "Parameters"  -> {
+        "query" -> <|
+            "Interpreter" -> "String",
+            "Help"        -> "the input",
+            "Required"    -> True
+        |>
+    }
+|>;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*WolframLanguageEvaluator*)
-$wolframLanguageEvaluatorTool = LLMTool[
-    { "WolframLanguageEvaluator", $wolframLanguageEvaluatorToolDescription },
-    {
+$defaultMCPTools[ "WolframLanguageEvaluator" ] := LLMTool @ <|
+    "Name"        -> "WolframLanguageEvaluator",
+    "DisplayName" -> "Wolfram Language Evaluator",
+    "Description" -> $wolframLanguageEvaluatorToolDescription,
+    "Function"    -> evaluateWolframLanguage,
+    "Options"     -> { },
+    "Parameters"  -> {
         "code" -> <|
             "Interpreter" -> "String",
             "Help"        -> "The Wolfram Language code to evaluate.",
@@ -85,9 +111,8 @@ $wolframLanguageEvaluatorTool = LLMTool[
             "Help"        -> "The time constraint for the evaluation (default is 60 seconds).",
             "Required"    -> False
         |>
-    },
-    evaluateWolframLanguage
-];
+    }
+|>;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -207,17 +232,20 @@ exportImage // endDefinition;
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*WolframContext*)
-$wolframContextTool = LLMTool[
-    { "WolframContext", $wolframContextToolDescription },
-    {
+$defaultMCPTools[ "WolframContext" ] := LLMTool @ <|
+    "Name"        -> "WolframContext",
+    "DisplayName" -> "Wolfram Context",
+    "Description" -> $wolframContextToolDescription,
+    "Function"    -> relatedWolframContext,
+    "Options"     -> { },
+    "Parameters"  -> {
         "context" -> <|
             "Interpreter" -> "String",
             "Help"        -> "A detailed summary of what the user is trying to achieve or learn about.",
             "Required"    -> True
         |>
-    },
-    relatedWolframContext
-];
+    }
+|>;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -243,17 +271,22 @@ relatedWolframContext[ context_String ] := Enclose[
 relatedWolframContext // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
-$wolframAlphaContextTool = LLMTool[
-    { "WolframAlphaContext", $waContextToolDescription },
-    {
+(* ::Subsection::Closed:: *)
+(*WolframAlphaContext*)
+$defaultMCPTools[ "WolframAlphaContext" ] := LLMTool @ <|
+    "Name"        -> "WolframAlphaContext",
+    "DisplayName" -> "Wolfram|Alpha Context",
+    "Description" -> $waContextToolDescription,
+    "Function"    -> relatedWolframAlphaResults,
+    "Options"     -> { },
+    "Parameters"  -> {
         "context" -> <|
             "Interpreter" -> "String",
             "Help"        -> "A detailed summary of what the user is trying to achieve or learn about.",
             "Required"    -> True
         |>
-    },
-    relatedWolframAlphaResults
-];
+    }
+|>;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -276,17 +309,20 @@ relatedWolframAlphaResults // endDefinition;
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*WolframLanguageContext*)
-$wolframLanguageContextTool = LLMTool[
-    { "WolframLanguageContext", $wlContextToolDescription },
-    {
+$defaultMCPTools[ "WolframLanguageContext" ] := LLMTool @ <|
+    "Name"        -> "WolframLanguageContext",
+    "DisplayName" -> "Wolfram Language Context",
+    "Description" -> $wlContextToolDescription,
+    "Function"    -> relatedDocumentation,
+    "Options"     -> { },
+    "Parameters"  -> {
         "context" -> <|
             "Interpreter" -> "String",
             "Help"        -> "A detailed summary of what the user is trying to achieve or learn about.",
             "Required"    -> True
         |>
-    },
-    relatedDocumentation
-];
+    }
+|>;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -390,14 +426,18 @@ toDocumentationURL // endDefinition;
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*$DefaultMCPServers*)
-$DefaultMCPServers := $DefaultMCPServers = MCPServerObject /@ $defaultMCPServers;
+$DefaultMCPServers := WithCleanup[
+    Unprotect @ $DefaultMCPServers,
+    $DefaultMCPServers = MCPServerObject /@ AssociationMap[ Apply @ Rule, $defaultMCPServers ],
+    Protect @ $DefaultMCPServers
+];
 
 $defaultMCPServers = <| |>;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Wolfram*)
-$defaultMCPServers[ "Wolfram" ] = <|
+$defaultMCPServers[ "Wolfram" ] := <|
     "Name"          -> "Wolfram",
     "Location"      -> "BuiltIn",
     "Transport"     -> "StandardInputOutput",
@@ -405,9 +445,9 @@ $defaultMCPServers[ "Wolfram" ] = <|
     "ObjectVersion" -> $objectVersion,
     "LLMEvaluator"  -> <|
         "Tools" -> {
-            $wolframContextTool,
-            $wolframLanguageEvaluatorTool,
-            $wolframAlphaTool
+            "WolframContext",
+            "WolframLanguageEvaluator",
+            "WolframAlpha"
         }
     |>
 |>;
@@ -415,7 +455,7 @@ $defaultMCPServers[ "Wolfram" ] = <|
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*WolframAlpha*)
-$defaultMCPServers[ "WolframAlpha" ] = <|
+$defaultMCPServers[ "WolframAlpha" ] := <|
     "Name"          -> "WolframAlpha",
     "Location"      -> "BuiltIn",
     "Transport"     -> "StandardInputOutput",
@@ -423,8 +463,8 @@ $defaultMCPServers[ "WolframAlpha" ] = <|
     "ObjectVersion" -> $objectVersion,
     "LLMEvaluator"  -> <|
         "Tools" -> {
-            $wolframAlphaContextTool,
-            $wolframAlphaTool
+            "WolframAlphaContext",
+            "WolframAlpha"
         }
     |>
 |>;
@@ -432,7 +472,7 @@ $defaultMCPServers[ "WolframAlpha" ] = <|
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*WolframLanguage*)
-$defaultMCPServers[ "WolframLanguage" ] = <|
+$defaultMCPServers[ "WolframLanguage" ] := <|
     "Name"          -> "WolframLanguage",
     "Location"      -> "BuiltIn",
     "Transport"     -> "StandardInputOutput",
@@ -440,8 +480,8 @@ $defaultMCPServers[ "WolframLanguage" ] = <|
     "ObjectVersion" -> $objectVersion,
     "LLMEvaluator"  -> <|
         "Tools" -> {
-            $wolframLanguageContextTool,
-            $wolframLanguageEvaluatorTool
+            "WolframLanguageContext",
+            "WolframLanguageEvaluator"
         }
     |>
 |>;
@@ -450,7 +490,8 @@ $defaultMCPServers[ "WolframLanguage" ] = <|
 (* ::Section::Closed:: *)
 (*Package Footer*)
 addToMXInitialization[
-    $DefaultMCPServers
+    $DefaultMCPServers,
+    $DefaultMCPTools
 ];
 
 End[ ];
