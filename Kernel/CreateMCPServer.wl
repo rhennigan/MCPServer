@@ -82,16 +82,21 @@ createMCPServer // endDefinition;
 createMCPServerData // beginDefinition;
 
 createMCPServerData[ name_String, evaluator_Association ] := Enclose[
-    Module[ { dir },
+    Module[ { dir, validated },
         dir = ConfirmBy[ ensureDirectory @ mcpServerDirectory @ name, directoryQ, "Directory" ];
-        <|
+        validated = catchAlways @ validateMCPServerObjectData @ <|
             "Name"          -> name,
             "LLMEvaluator"  -> evaluator,
             "Location"      -> dir,
             "Transport"     -> "StandardInputOutput",
             "ServerVersion" -> $serverVersion,
             "ObjectVersion" -> $objectVersion
-        |>
+        |>;
+        If[ AssociationQ @ validated,
+            validated,
+            DeleteDirectory[ dir, DeleteContents -> True ];
+            throwTop @ validated
+        ]
     ],
     throwInternalFailure
 ];

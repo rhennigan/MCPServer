@@ -6,6 +6,7 @@ Begin[ "`Private`" ];
 Needs[ "RickHennigan`MCPServer`"        ];
 Needs[ "RickHennigan`MCPServer`Common`" ];
 
+$ContextAliases[ "cb`" ] = "Wolfram`Chatbook`";
 $ContextAliases[ "sp`" ] = "System`Private`";
 
 (* ::**************************************************************************************************************:: *)
@@ -17,12 +18,20 @@ $$transport = "StandardInputOutput" | "HTTP" | "ServerSentEvents";
 
 $$metadata = KeyValuePattern @ {
     "LLMEvaluator"  -> _Association? AssociationQ,
-    "Location"      -> _File? fileQ,
+    "Location"      -> _File? fileQ | "BuiltIn",
     "Name"          -> _String? StringQ,
     "ObjectVersion" -> _Integer? IntegerQ,
     "ServerVersion" -> _String? StringQ,
     "Transport"     -> $$transport
 };
+
+$defaultMetadata := <|
+    "LLMEvaluator"  -> Automatic,
+    "Name"          -> CreateUUID[ ],
+    "ObjectVersion" -> $objectVersion,
+    "ServerVersion" -> $serverVersion,
+    "Transport"     -> "StandardInputOutput"
+|>;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -55,9 +64,74 @@ createMCPServerObject // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*validateMCPServerObjectData*)
 validateMCPServerObjectData // beginDefinition;
-validateMCPServerObjectData[ data_Association? AssociationQ ] := data; (* TODO: validate the data *)
-validateMCPServerObjectData[ _ ] := $Failed;
+
+validateMCPServerObjectData[ data_Association? AssociationQ ] :=
+    Module[ { valid, combined },
+        valid = Association @ KeyValueMap[ #1 -> validateMCPServerObjectData0[ #1, #2 ] &, data ];
+        combined = <| $defaultMetadata, valid |>;
+        If[ MatchQ[ combined, $$metadata ], combined, $Failed ]
+    ];
+
+validateMCPServerObjectData[ _ ] :=
+    $Failed;
+
 validateMCPServerObjectData // endDefinition;
+
+
+validateMCPServerObjectData0 // beginDefinition;
+validateMCPServerObjectData0[ "LLMEvaluator", config_ ] := validateLLMEvaluator @ config;
+validateMCPServerObjectData0[ key_String, value_ ] := value;
+validateMCPServerObjectData0 // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*validateLLMEvaluator*)
+validateLLMEvaluator // beginDefinition;
+
+validateLLMEvaluator[ Automatic ] :=
+    validateLLMEvaluator @ $LLMEvaluator;
+
+validateLLMEvaluator[ HoldPattern @ LLMConfiguration[ config_ ] ] :=
+    validateLLMEvaluator @ config;
+
+validateLLMEvaluator[ config_Association? AssociationQ ] :=
+    Association @ KeyValueMap[ #1 -> validateLLMEvaluator0[ #1, #2 ] &, config ];
+
+validateLLMEvaluator // endDefinition;
+
+
+validateLLMEvaluator0 // beginDefinition;
+validateLLMEvaluator0[ "Tools", tools_ ] := validateTools @ tools;
+validateLLMEvaluator0[ key_String, value_ ] := value;
+validateLLMEvaluator0 // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*validateTools*)
+validateTools // beginDefinition;
+
+validateTools[ tool_LLMTool ] := validateTools @ { tool };
+validateTools[ tool_String  ] := validateTools @ { tool };
+
+validateTools[ tools_List ] :=
+    With[ { v = validateTool /@ Flatten @ { tools } },
+        Flatten @ { tools } /; MatchQ[ v, { ___LLMTool } ]
+    ];
+
+validateTools[ tools_ ] :=
+    throwFailure[ "InvalidToolsSpecification", tools ];
+
+validateTools // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*validateTool*)
+validateTool // beginDefinition;
+validateTool[ tool_LLMTool ] := tool;
+validateTool[ tool_String ] := convertStringTools @ tool;
+validateTool[ tool_TemplateObject ] := TemplateApply @ tool;
+validateTool[ other_ ] := throwFailure[ "InvalidToolSpecification", other ];
+validateTool // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -230,10 +304,32 @@ getPromptData // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*getToolList*)
 getToolList // beginDefinition;
-getToolList[ as_Association ] := getToolList[ as, convertStringTools[ as[ "LLMEvaluator" ] ][ "Tools" ] ];
-getToolList[ as_Association, tools_List ] := tools;
-getToolList[ as_Association, tools_ ] := { };
+
+getToolList[ as_Association ] := Enclose[
+    ConfirmMatch[
+        toLLMTools @ as[ "LLMEvaluator" ][ "Tools" ],
+        { ___LLMTool },
+        "GetToolList"
+    ],
+    throwInternalFailure
+];
+
 getToolList // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*toLLMTools*)
+toLLMTools // beginDefinition;
+
+toLLMTools[ _Missing ] := { };
+
+toLLMTools[ tools_ ] := Replace[
+    convertStringTools @ Flatten @ { tools },
+    t_TemplateObject :> TemplateApply @ t,
+    { 1 }
+];
+
+toLLMTools // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -289,18 +385,37 @@ makeLLMConfiguration // endDefinition;
 (*convertStringTools*)
 convertStringTools // beginDefinition;
 
-convertStringTools[ evaluator: KeyValuePattern[ "Tools" -> tools_ ] ] :=
-    <| evaluator, "Tools" -> Map[ convertStringTools0, Flatten @ { tools } ] |>;
+convertStringTools[ as: KeyValuePattern[ "Tools" -> tools_ ] ] :=
+    <| as, "Tools" -> convertStringTools @ Flatten @ { tools } |>;
 
-convertStringTools[ evaluator_ ] := evaluator;
+convertStringTools[ tools_List ] :=
+    convertStringTools0 /@ Flatten @ { tools };
+
+convertStringTools[ tool_String ] :=
+    convertStringTools0 @ tool;
+
+convertStringTools[ other_ ] :=
+    other;
 
 convertStringTools // endDefinition;
 
 
 convertStringTools0 // beginDefinition;
-convertStringTools0[ name_String ] := Lookup[ Wolfram`Chatbook`$AvailableTools, name, name ];
+convertStringTools0[ name_String ] /; KeyExistsQ[ $DefaultMCPTools, name ] := $DefaultMCPTools[ name ];
+convertStringTools0[ name_String ] := Lookup[ cb`$AvailableTools, name, tryResourceTool @ name ];
+convertStringTools0[ template_TemplateObject ] := TemplateApply @ template;
 convertStringTools0[ tool_ ] := tool;
 convertStringTools0 // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*tryResourceTool*)
+tryResourceTool // beginDefinition;
+tryResourceTool[ name_String ] := tryResourceTool[ name, Quiet @ Block[ { PrintTemporary }, LLMResourceTool @ name ] ];
+tryResourceTool[ name_String, tool_TemplateObject ] := tryResourceTool[ name, Quiet @ TemplateApply @ tool ];
+tryResourceTool[ name_String, tool_LLMTool ] := tool;
+tryResourceTool[ name_String, other_ ] := throwFailure[ "ToolNameNotFound", name ];
+tryResourceTool // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
