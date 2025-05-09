@@ -4,9 +4,29 @@ BeginPackage[ "RickHennigan`MCPServerScripts`" ];
 
 If[ ! TrueQ @ $loadedDefinitions, Get @ FileNameJoin @ { DirectoryName @ $InputFileName, "Common.wl" } ];
 
+Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
+
 SetOptions[ TestReport, ProgressReporting -> False ];
 
-result = UsingFrontEnd @ checkResult @ Wolfram`PacletCICD`TestPaclet @ $defNB;
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
+If[ StringQ @ Environment[ "GITHUB_ACTIONS" ]
+    ,
+    result = UsingFrontEnd @ checkResult @ Wolfram`PacletCICD`TestPaclet @ $defNB
+    ,
+    report = UsingFrontEnd @ TestReport @ FileNames[ "*.wlt", FileNameJoin @ { $pacletDir, "Tests" } ];
+    failed = Cases[ report[ "TestsFailed" ], _TestObject, Infinity ];
+    If[ Length @ failed === 0, Exit[ 0 ] ];
+    cicd`ConsoleError @ SequenceForm[ Length @ failed, " tests failed" ];
+    Print[ "Failed tests: " ];
+    Cases[
+        failed,
+        t_TestObject :> Print[ "\n\t", t[ "TestID" ], ": ", ToString[ t, InputForm ] ],
+        Infinity
+    ];
+    Exit[ 1 ]
+];
+(* :!CodeAnalysis::EndBlock:: *)
 
 EndPackage[ ];
 
