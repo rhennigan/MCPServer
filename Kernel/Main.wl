@@ -6,6 +6,7 @@ BeginPackage[ "RickHennigan`MCPServer`" ];
 (* ::Section::Closed:: *)
 (*Exported Symbols*)
 `$DefaultMCPServers;
+`$DefaultMCPTools;
 `$LastMCPServerFailure;
 `$LastMCPServerFailureText;
 `CreateMCPServer;
@@ -69,6 +70,7 @@ $MCPServerSymbolNames = $MCPServerSymbolNames =
 (*Protected Symbols*)
 $MCPServerProtectedNames = "RickHennigan`MCPServer`" <> # & /@ {
     "$DefaultMCPServers",
+    "$DefaultMCPTools",
     "$LastMCPServerFailure",
     "$LastMCPServerFailureText",
     "CreateMCPServer",
@@ -80,6 +82,8 @@ $MCPServerProtectedNames = "RickHennigan`MCPServer`" <> # & /@ {
     "StartMCPServer",
     "UninstallMCPServer"
 };
+
+Scan[ Protect, $MCPServerProtectedNames ];
 
 (* ::**************************************************************************************************************:: *)
 (*Package Footer*)

@@ -9,6 +9,7 @@ BeginPackage[ "RickHennigan`MCPServer`Common`" ];
 `$imagePath;
 `$objectVersion;
 `$rootPath;
+`$serverVersion;
 `$settingsData;
 `$storagePath;
 `$thisPaclet;

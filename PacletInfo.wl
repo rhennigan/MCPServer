@@ -20,6 +20,8 @@ PacletObject[ <|
             "HiddenImport" -> True,
             "Loading"      -> Automatic,
             "Symbols"      -> {
+                "RickHennigan`MCPServer`$DefaultMCPServers",
+                "RickHennigan`MCPServer`$DefaultMCPTools",
                 "RickHennigan`MCPServer`$LastMCPServerFailure",
                 "RickHennigan`MCPServer`$LastMCPServerFailureText",
                 "RickHennigan`MCPServer`$MCPServerContexts",
