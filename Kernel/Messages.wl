@@ -10,6 +10,7 @@ MCPServer::InvalidArguments          = "Invalid arguments given for `1` in `2`."
 MCPServer::InvalidMCPConfiguration   = "Invalid MCP configuration file: `1`.";
 MCPServer::InvalidMCPServerFile      = "Invalid MCPServerObject file: \"`1`\".";
 MCPServer::InvalidMCPServerObject    = "Invalid MCPServerObject argument: `1`.";
+MCPServer::InvalidProperty           = "Invalid property specification: `1`.";
 MCPServer::InvalidSession            = "StartMCPServer must run in a standalone kernel.";
 MCPServer::InvalidToolSpecification  = "Invalid tool specification: `1`.";
 MCPServer::InvalidToolsSpecification = "Invalid tools specification: `1`.";

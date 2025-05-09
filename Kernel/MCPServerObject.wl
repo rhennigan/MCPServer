@@ -249,11 +249,14 @@ ensureMCPServerExists // endDefinition;
 MCPServerObject[ KeyValuePattern[ prop_ -> value_ ] ][ prop_String ] :=
     value;
 
-(MCPServerObject[ data_Association ]? MCPServerObjectQ)[ prop_String ] :=
+(MCPServerObject[ data_Association ]? MCPServerObjectQ)[ prop: _String | { ___String } ] :=
     catchTop[ getMCPServerObjectProperty[ data, prop ], MCPServerObject ];
 
-(obj_MCPServerObject)[ prop_String ] :=
+(obj_MCPServerObject)[ prop: _String | { ___String } ] :=
     catchTop[ getMCPServerObjectProperty[ ensureMCPServerExists @ obj, prop ], MCPServerObject ];
+
+_MCPServerObject[ invalid_ ] :=
+    catchTop[ throwFailure[ "InvalidProperty", invalid ], MCPServerObject ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -270,14 +273,36 @@ getMCPServerObjectProperty[ data_Association, "PromptData"        ] := getPrompt
 getMCPServerObjectProperty[ data_Association, "Tools"             ] := getToolList @ data;
 getMCPServerObjectProperty[ data_Association, "JSONConfiguration" ] := makeJSONConfiguration @ data;
 getMCPServerObjectProperty[ data_Association, "Installations"     ] := getInstallations @ data;
+getMCPServerObjectProperty[ data_Association, "Properties"        ] := getProperties @ data;
 
 (* Standard properties *)
 getMCPServerObjectProperty[ KeyValuePattern[ key_ -> value_ ], key_ ] := value;
 getMCPServerObjectProperty[ KeyValuePattern[ "LLMEvaluator" -> KeyValuePattern[ prop_ -> value_ ] ], prop_ ] := value;
 
+(* Property list *)
+getMCPServerObjectProperty[ data_Association, props: { ___String } ] :=
+    AssociationMap[ getMCPServerObjectProperty[ data, # ] &, props ];
+
 (* Unknown property *)
 getMCPServerObjectProperty[ _, prop_ ] := Missing[ "UnknownProperty", prop ];
 getMCPServerObjectProperty // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*getProperties*)
+getProperties // beginDefinition;
+getProperties[ data_Association ] := Union[ Keys @ data, Keys @ data[ "LLMEvaluator" ], $specialProperties ];
+getProperties // endDefinition;
+
+$specialProperties = {
+    "Data",
+    "Installations",
+    "JSONConfiguration",
+    "LLMConfiguration",
+    "PromptData",
+    "Properties",
+    "Tools"
+};
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
