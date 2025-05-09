@@ -192,24 +192,26 @@ VerificationTest[
 (*Error Cases*)
 VerificationTest[
     configFile = testConfigFile[];
-    Export[configFile, "{}", "JSON"];
+    Export[configFile, <| "mcpServers" -> <| |> |>, "RawJSON"];
     UninstallMCPServer[configFile, "NonExistentServer"],
     _Missing,
+    {MCPServerObject::MCPServerNotFound},
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-NonExistentServer@@Tests/UninstallMCPServer.wlt:193,1-200,2"
+    TestID   -> "UninstallMCPServer-NonExistentServer@@Tests/UninstallMCPServer.wlt:193,1-201,2"
 ]
 
 VerificationTest[
     nonExistentFile = File @ FileNameJoin[{$TemporaryDirectory, "non_existent_config.json"}];
     UninstallMCPServer[nonExistentFile, "WolframLanguage"],
     _Missing,
+    { },  (* No messages expected since notFoundQ just returns Missing *)
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-NonExistentFile@@Tests/UninstallMCPServer.wlt:202,1-208,2"
+    TestID   -> "UninstallMCPServer-NonExistentFile@@Tests/UninstallMCPServer.wlt:203,1-210,2"
 ]
 
 VerificationTest[
     cleanupTestFiles[configFile],
     {Null},
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-ErrorCleanup@@Tests/UninstallMCPServer.wlt:210,1-215,2"
+    TestID   -> "UninstallMCPServer-ErrorCleanup@@Tests/UninstallMCPServer.wlt:212,1-217,2"
 ]
