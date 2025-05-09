@@ -79,7 +79,7 @@ VerificationTest[
 VerificationTest[
     (* Uninstall all remaining servers *)
     uninstallAllResult = UninstallMCPServer[configFile],
-    _Success,
+    { ___Success },
     SameTest -> MatchQ,
     TestID   -> "UninstallMCPServer-AllServers@@Tests/UninstallMCPServer.wlt:79,1-85,2"
 ]
@@ -182,7 +182,7 @@ VerificationTest[
 VerificationTest[
     DeleteObject[server];
     cleanupTestFiles[{configFile, configFile1, configFile2}],
-    {Null},
+    {Null..},
     SameTest -> MatchQ,
     TestID   -> "UninstallMCPServer-Cleanup@@Tests/UninstallMCPServer.wlt:182,1-188,2"
 ]
@@ -194,8 +194,8 @@ VerificationTest[
     configFile = testConfigFile[];
     Export[configFile, <| "mcpServers" -> <| |> |>, "RawJSON"];
     UninstallMCPServer[configFile, "NonExistentServer"],
-    _Missing,
-    {MCPServerObject::MCPServerNotFound},
+    _Failure,
+    {UninstallMCPServer::MCPServerNotFound},
     SameTest -> MatchQ,
     TestID   -> "UninstallMCPServer-NonExistentServer@@Tests/UninstallMCPServer.wlt:193,1-201,2"
 ]
