@@ -196,7 +196,7 @@ VerificationTest[
 VerificationTest[
     MCPServerObject[ <| "InvalidKey" -> "Value" |> ],
     _Failure,
-    { PatternTest::InvalidArguments },
+    { MCPServerObject::InvalidArguments },
     SameTest -> MatchQ,
     TestID   -> "MCPServerObject-InvalidAssociation@@Tests/MCPServerObject.wlt:196,1-202,2"
 ]
