@@ -1,71 +1,110 @@
-# MCPServer
+# [MCPServer](https://paclets.com/RickHennigan/MCPServer)
 
-Implements a [model context protocol](https://modelcontextprotocol.io) server using Wolfram Language.
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Wolfram Version](https://img.shields.io/badge/Wolfram-14.2%2B-red.svg)](https://www.wolfram.com/language/)
+
+Implements a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server using Wolfram Language, enabling LLMs to access Wolfram Language computation capabilities.
+
+## Features
+
+- Create custom MCP servers with tailored tools
+- Easily integrate with popular AI assistants like Claude and Cursor
+- Use Wolfram Language's computational power directly in AI conversations
+- Pre-configured servers for common use cases
+
+## Requirements
+
+- Wolfram Language 14.2 or higher
+- Claude Desktop, Cursor, or other MCP-compatible client applications
 
 ## Installation
 
-Install the paclet:
+### Install the Paclet
 
-```wl
-PacletInstall["RickHennigan/MCPServer"];
+```wolfram
+PacletInstall["RickHennigan/MCPServer"]
 ```
 
-Load the paclet:
+### Load the Package
 
-```wl
-Needs["RickHennigan`MCPServer`"];
+```wolfram
+Needs["RickHennigan`MCPServer`"]
 ```
 
-### Basic Examples (2)
+## Quick Start
 
-Install a Wolfram MCP server for use in Claude desktop:
+### Using Pre-configured Servers
 
-```wl
-In[1]:= InstallMCPServer["ClaudeDesktop"]
+Install a Wolfram MCP server for Claude Desktop:
 
-Out[1]= Success["InstallMCPServer", <|...|>]
+```wolfram
+InstallMCPServer["ClaudeDesktop"]
+(* Out: Success["InstallMCPServer", <|...|>] *)
 ```
 
-Restart Claude desktop and then it will have access to Wolfram knowledge and tools:
+After restarting Claude Desktop, it will have access to Wolfram knowledge and tools:
 
-![Claude Desktop Screenshot](.github\images\sk6raevruc0q.png)
+![Claude Desktop Screenshot](.github/images/sk6raevruc0q.png)
 
-### Scope (6)
+### Creating Custom Servers
 
-Create an MCP server from an [LLMConfiguration](https://reference.wolfram.com/languageref/LLMConfiguration) :
+1. Create an MCP server with custom tools using [LLMConfiguration](https://reference.wolfram.com/language/ref/LLMConfiguration.html):
 
-```wl
-In[1]:= config = LLMConfiguration[<|"Tools" -> {LLMTool["PrimeFinder", {"n" -> "Integer"}, Prime[#n]&]}|>];
+```wolfram
+config = LLMConfiguration[<|
+    "Tools" -> {LLMTool["PrimeFinder", {"n" -> "Integer"}, Prime[#n]&]}
+|>];
 
-In[2]:= server = CreateMCPServer["My MCP Server", config]
-
-Out[2]= MCPServerObject[...]
+server = CreateMCPServer["My MCP Server", config]
+(* Out: MCPServerObject[...] *)
 ```
 
-Install the server for use in Claude desktop:
+2. Install for use in Claude Desktop:
 
-```wl
-In[3]:= InstallMCPServer["ClaudeDesktop", server]
-
-Out[3]= Success["InstallMCPServer", <|...|>]
+```wolfram
+InstallMCPServer["ClaudeDesktop", server]
+(* Out: Success["InstallMCPServer", <|...|>] *)
 ```
 
-Restart Claude desktop and then your tools will now be usable by Claude:
+After restarting Claude Desktop, your custom tools will be available:
 
-![Claude Desktop Screenshot](.github\images\1j9zrhp9b1y8.png)
+![Claude Desktop Screenshot](.github/images/1j9zrhp9b1y8.png)
 
-Install the server for use in Cursor:
+## Supported Clients
 
-```wl
-In[4]:= InstallMCPServer["Cursor", server]
+### Claude Desktop
 
-Out[4]= Success["InstallMCPServer", <|...|>]
+Claude Desktop offers an excellent integration experience with MCPServer, providing seamless access to Wolfram Language's computational capabilities.
+
+### Cursor
+
+Install an MCP server for use in Cursor:
+
+```wolfram
+InstallMCPServer["Cursor", server]
+(* Out: Success["InstallMCPServer", <|...|>] *)
 ```
 
-Check the MCP tab in Cursor settings to verify that the server is recognized:
+Check the MCP tab in Cursor settings to verify the server connection:
 
-![Cursor MCP Settings Screenshot](.github\images\nldzo3f42xid.png)
+![Cursor MCP Settings Screenshot](.github/images/nldzo3f42xid.png)
 
-Your tools should now be available in Cursor agent chat:
+Your Wolfram tools will now be available in Cursor agent chat:
 
-![Cursor MCP Chat Screenshot](.github\images\o6ltldxumzkx.png)
+![Cursor MCP Chat Screenshot](.github/images/o6ltldxumzkx.png)
+
+## Advanced Usage
+
+For more details on creating custom MCP servers, configuring tools, and advanced options, please refer to the [documentation](https://paclets.com/RickHennigan/MCPServer).
+
+## Development
+
+See [CLAUDE.md](CLAUDE.md) for development guidelines and commands.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Author
+
+Richard Hennigan (Wolfram Research)
