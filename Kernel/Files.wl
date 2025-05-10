@@ -58,8 +58,18 @@ mcpServerDirectory // endDefinition;
 (* ::Subsection::Closed:: *)
 (*mcpServerLogFile*)
 mcpServerLogFile // beginDefinition;
-mcpServerLogFile[ name_String ] := fileNameJoin[ mcpServerDirectory @ name, "Log.wl" ];
-mcpServerLogFile[ obj_MCPServerObject? MCPServerObjectQ ] := fileNameJoin[ obj[ "Location" ], "Log.wl" ];
+
+mcpServerLogFile[ name_String ] :=
+    fileNameJoin[ mcpServerDirectory @ name, "Log.wl" ];
+
+mcpServerLogFile[ obj_MCPServerObject? MCPServerObjectQ ] :=
+    With[ { location = obj[ "Location" ] },
+        If[ location === "BuiltIn",
+            mcpServerLogFile @ obj[ "Name" ],
+            fileNameJoin[ location, "Log.wl" ]
+        ]
+    ];
+
 mcpServerLogFile // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
