@@ -75,7 +75,7 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
                     Exit[0]
                 ];
                 response = catchAlways @ processRequest[ ];
-                writeLog[ "Response" -> response ];
+                If[ response =!= EndOfFile, writeLog[ "Response" -> response ] ];
                 If[ AssociationQ @ response,
                     WriteLine[ "stdout", Developer`WriteRawJSONString[ response, "Compact" -> True ] ],
                     Pause[ 0.1 ]
