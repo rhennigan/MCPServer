@@ -67,7 +67,9 @@ createMCPServer[ name_String, evaluator_Association ] := Enclose[
             "WXF"
         ];
 
-        exported = ConfirmBy[ Export[ path, wxf, "Binary" ], FileExistsQ, "Exported" ];
+        exported = ConfirmBy[ exportBinary[ path, wxf ], FileExistsQ, "Exported" ];
+
+        ConfirmAssert[ Developer`ReadWXFFile @ exported === data, "ExportCheck" ];
 
         ConfirmBy[ MCPServerObject @ data, MCPServerObjectQ, "MCPServerObject" ]
     ],
@@ -75,6 +77,23 @@ createMCPServer[ name_String, evaluator_Association ] := Enclose[
 ];
 
 createMCPServer // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*exportBinary*)
+exportBinary // beginDefinition;
+
+exportBinary[ File[ file_ ], bytes_ ] :=
+    exportBinary[ file, bytes ];
+
+exportBinary[ file_String, bytes_ByteArray ] :=
+    WithCleanup[
+        Quiet @ Close @ file,
+        BinaryWrite[ file, bytes ],
+        Quiet @ Close @ file
+    ];
+
+exportBinary // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)

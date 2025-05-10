@@ -41,7 +41,8 @@ MCPServerObject // ClearAll;
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Main Definition*)
-MCPServerObject[ data_Association ]? sp`HoldNotValidQ := catchMine @ createMCPServerObject @ data;
+MCPServerObject[ data_Association ]? sp`HoldNotValidQ :=
+    catchTop[ createMCPServerObject @ data, MCPServerObject ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)

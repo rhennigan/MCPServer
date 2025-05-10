@@ -34,8 +34,8 @@ jobs:
     - name: Build
       run: wolframscript -f Scripts/BuildPaclet.wls --check=true
 
-    # - name: Test
-    #   run: wolframscript -f Scripts/TestPaclet.wls
+    - name: Test
+      run: wolframscript -f Scripts/TestPaclet.wls
 
   Release:
     name: Release
