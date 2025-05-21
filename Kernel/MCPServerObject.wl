@@ -12,7 +12,12 @@ $ContextAliases[ "sp`" ] = "System`Private`";
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Argument Patterns*)
-$defaultCommandLineArguments = { "-run", "RickHennigan`MCPServer`StartMCPServer[]", "-noinit", "-noprompt" };
+$defaultCommandLineArguments = {
+    "-run",
+    "PacletSymbol[\"RickHennigan/MCPServer\",\"RickHennigan`MCPServer`StartMCPServer\"][]",
+    "-noinit",
+    "-noprompt"
+};
 
 $$transport = "StandardInputOutput" | "HTTP" | "ServerSentEvents";
 
