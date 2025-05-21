@@ -106,7 +106,11 @@ Notebook[
        {
         Cell[
          BoxData[
-          TagBox[FrameBox["\"XXXX\""], "FunctionPlaceholder"]
+          ButtonBox[
+           "MCPServerObject",
+           BaseStyle -> "Link",
+           ButtonData -> "paclet:RickHennigan/MCPServer/ref/MCPServerObject"
+          ]
          ],
          "InlineSeeAlsoFunction",
          TaggingRules -> {"PageType" -> "Function"}
@@ -124,13 +128,13 @@ Notebook[
              {
               nbobj$$ = 
                NotebookObject[
-                "7e5256bd-bf08-f845-ba1a-b20726c02659",
-                "75aa8be1-0325-d04e-b242-18bf84a11c9e"
+                "0f0299d8-65d4-434a-85dc-7d5909ef6d58",
+                "c6173e88-1bd7-d041-b3a9-629f511a60fd"
                ],
               cellobj$$ = 
                CellObject[
-                "c8cc0e1a-dc3d-9a49-a715-b3e7243c1fb1",
-                "ef6c3754-349f-8a47-af1b-3e5b3f346cdb"
+                "ffa5237d-2dec-134e-b5c8-b0b63605659c",
+                "bd2281f7-a422-6b42-a8d6-99ce77374799"
                ]
              },
              TemplateBox[

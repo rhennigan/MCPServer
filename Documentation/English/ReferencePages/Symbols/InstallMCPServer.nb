@@ -379,23 +379,39 @@ Notebook[
       TextData[
        {
         Cell[
-         BoxData["CreateMCPServer"],
+         BoxData[
+          ButtonBox[
+           "CreateMCPServer",
+           BaseStyle -> "Link",
+           ButtonData -> "paclet:RickHennigan/MCPServer/ref/CreateMCPServer"
+          ]
+         ],
          "InlineSeeAlsoFunction",
          TaggingRules -> {"PageType" -> "Function"}
         ],
         StyleBox[" \[FilledVerySmallSquare] ", "InlineSeparator"],
         Cell[
-         BoxData["UninstallMCPServer"],
+         BoxData[
+          ButtonBox[
+           "UninstallMCPServer",
+           BaseStyle -> "Link",
+           ButtonData -> "paclet:RickHennigan/MCPServer/ref/UninstallMCPServer"
+          ]
+         ],
          "InlineSeeAlsoFunction",
-         TaggingRules -> {"PageType" -> "Function"},
-         CellTags -> "1a8202ed-c9c9-4859-80db-4f3d1c57b13b"
+         TaggingRules -> {"PageType" -> "Function"}
         ],
         StyleBox[" \[FilledVerySmallSquare] ", "InlineSeparator"],
         Cell[
-         BoxData["MCPServerObject"],
+         BoxData[
+          ButtonBox[
+           "MCPServerObject",
+           BaseStyle -> "Link",
+           ButtonData -> "paclet:RickHennigan/MCPServer/ref/MCPServerObject"
+          ]
+         ],
          "InlineSeeAlsoFunction",
-         TaggingRules -> {"PageType" -> "Function"},
-         CellTags -> "c935c178-ba7d-457a-9f45-19f47440ed1a"
+         TaggingRules -> {"PageType" -> "Function"}
         ],
         Cell[
          BoxData[
@@ -410,13 +426,13 @@ Notebook[
              {
               nbobj$$ = 
                NotebookObject[
-                "ec588808-a643-d54c-9b44-7bb4bf2d5b32",
-                "2c1f7dd7-e452-894d-b8ea-0dd3e633eebc"
+                "9179ba90-6301-6042-a7ba-ccd1d07c0d49",
+                "8ed368e0-72b6-684b-8625-c989204b546f"
                ],
               cellobj$$ = 
                CellObject[
-                "01412d0c-10b2-9047-b6c7-d6c62813242d",
-                "6b6a2cac-c9b0-1a42-a14e-3a7293741d65"
+                "ec435cdb-3f35-fd46-9eaf-e15416866d40",
+                "22dd334a-5f76-4640-ac90-0a86e255d580"
                ]
              },
              TemplateBox[

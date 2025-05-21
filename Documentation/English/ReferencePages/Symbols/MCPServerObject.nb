@@ -240,30 +240,51 @@ Notebook[
       TextData[
        {
         Cell[
-         BoxData["CreateMCPServer"],
+         BoxData[
+          ButtonBox[
+           "CreateMCPServer",
+           BaseStyle -> "Link",
+           ButtonData -> "paclet:RickHennigan/MCPServer/ref/CreateMCPServer"
+          ]
+         ],
          "InlineSeeAlsoFunction",
          TaggingRules -> {"PageType" -> "Function"}
         ],
         StyleBox[" \[FilledVerySmallSquare] ", "InlineSeparator"],
         Cell[
-         BoxData["InstallMCPServer"],
+         BoxData[
+          ButtonBox[
+           "InstallMCPServer",
+           BaseStyle -> "Link",
+           ButtonData -> "paclet:RickHennigan/MCPServer/ref/InstallMCPServer"
+          ]
+         ],
          "InlineSeeAlsoFunction",
-         TaggingRules -> {"PageType" -> "Function"},
-         CellTags -> "ba008f84-2c50-4366-ae25-adf73b5365fa"
+         TaggingRules -> {"PageType" -> "Function"}
         ],
         StyleBox[" \[FilledVerySmallSquare] ", "InlineSeparator"],
         Cell[
-         BoxData["MCPServerObjectQ"],
+         BoxData[
+          ButtonBox[
+           "MCPServerObjectQ",
+           BaseStyle -> "Link",
+           ButtonData -> "paclet:RickHennigan/MCPServer/ref/MCPServerObjectQ"
+          ]
+         ],
          "InlineSeeAlsoFunction",
-         TaggingRules -> {"PageType" -> "Function"},
-         CellTags -> "eaa3e7c3-02f6-46ad-9829-de4ec8532e5d"
+         TaggingRules -> {"PageType" -> "Function"}
         ],
         StyleBox[" \[FilledVerySmallSquare] ", "InlineSeparator"],
         Cell[
-         BoxData["MCPServerObjects"],
+         BoxData[
+          ButtonBox[
+           "MCPServerObjects",
+           BaseStyle -> "Link",
+           ButtonData -> "paclet:RickHennigan/MCPServer/ref/MCPServerObjects"
+          ]
+         ],
          "InlineSeeAlsoFunction",
-         TaggingRules -> {"PageType" -> "Function"},
-         CellTags -> "1070a897-1e0a-4674-93f7-8070274ddee4"
+         TaggingRules -> {"PageType" -> "Function"}
         ],
         Cell[
          BoxData[
@@ -278,13 +299,13 @@ Notebook[
              {
               nbobj$$ = 
                NotebookObject[
-                "6f573024-b3d3-684e-b577-61910a8cf4bb",
-                "89dd0819-377a-1348-8515-a0860c5ef66e"
+                "676291a0-5d78-0647-99c9-a978c93f6023",
+                "b742fbe5-aeb5-1043-9bd0-e725636c713d"
                ],
               cellobj$$ = 
                CellObject[
-                "699f820e-ddbb-614b-8611-3a7703543b07",
-                "8dfb80dd-3fe0-b145-8dc2-74f07f5a02d2"
+                "7aeff7bd-9c94-4b47-9148-1445bf794490",
+                "c412c916-728d-2940-bb75-d8c57bb6718d"
                ]
              },
              TemplateBox[
