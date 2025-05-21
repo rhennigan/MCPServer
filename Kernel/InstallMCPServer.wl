@@ -15,7 +15,10 @@ $installName = None;
 (* ::Section::Closed:: *)
 (*InstallMCPServer*)
 InstallMCPServer // beginDefinition;
-InstallMCPServer // Options = { ProcessEnvironment -> Automatic };
+InstallMCPServer // Options = {
+    ProcessEnvironment -> Automatic,
+    "VerifyLLMKit"     -> True
+};
 
 InstallMCPServer[ target_, opts: OptionsPattern[ ] ] :=
     catchMine @ InstallMCPServer[ target, Automatic, opts ];
@@ -27,7 +30,8 @@ InstallMCPServer[ target_File, server_, opts: OptionsPattern[ ] ] :=
     catchMine @ installMCPServer[
         target,
         ensureMCPServerExists @ MCPServerObject @ server,
-        OptionValue @ ProcessEnvironment
+        OptionValue @ ProcessEnvironment,
+        OptionValue @ VerifyLLMKit
     ];
 
 InstallMCPServer[ name_String, server_, opts: OptionsPattern[ ] ] :=
@@ -42,13 +46,13 @@ InstallMCPServer // endExportedDefinition;
 (*installMCPServer*)
 installMCPServer // beginDefinition;
 
-installMCPServer[ target_, obj_, Automatic|Inherited ] :=
-    installMCPServer[ target, obj, defaultEnvironment[ ] ];
+installMCPServer[ target_, obj_, Automatic|Inherited, verifyLLMKit_ ] :=
+    installMCPServer[ target, obj, defaultEnvironment[ ], verifyLLMKit ];
 
-installMCPServer[ target0_File, obj_MCPServerObject, env_Association ] := Enclose[
+installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_ ] := Enclose[
     Module[ { target, name, json, data, server, existing },
 
-        ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ];
+        If[ verifyLLMKit, ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ] ];
 
         target   = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
         name     = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
