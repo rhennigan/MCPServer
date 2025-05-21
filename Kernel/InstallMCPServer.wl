@@ -48,10 +48,6 @@ installMCPServer[ target_, obj_, Automatic|Inherited ] :=
 installMCPServer[ target0_File, obj_MCPServerObject, env_Association ] := Enclose[
     Module[ { target, name, json, data, server, existing },
 
-        (* If InstallMCPServer was called via PacletSymbol, we need to make sure the paclet is installed so the
-           MCP server will run when it starts up. This does a one-time check to ensure the paclet is installed. *)
-        ConfirmBy[ pacletSymbolInstallCheck[ ], PacletObjectQ, "PacletInstallCheck" ];
-
         target   = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
         name     = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
         json     = ConfirmBy[ obj[ "JSONConfiguration" ], StringQ, "JSONConfiguration" ];
@@ -72,25 +68,6 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association ] := Enclos
 ];
 
 installMCPServer // endDefinition;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*pacletSymbolInstallCheck*)
-pacletSymbolInstallCheck // beginDefinition;
-
-pacletSymbolInstallCheck[ ] := pacletSymbolInstallCheck[ ] =
-    pacletSymbolInstallCheck[ $thisPaclet[ "Location" ], ResourceSystemClient`ResourceObjectDirectory[ ] ];
-
-pacletSymbolInstallCheck[ paclet_String, resource_String ] :=
-    If[ StringStartsQ[ paclet, resource ],
-        PacletInstall @ ResourceObject[ "RickHennigan/MCPServer" ],
-        $thisPaclet
-    ];
-
-pacletSymbolInstallCheck[ _, _ ] :=
-    $thisPaclet;
-
-pacletSymbolInstallCheck // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)

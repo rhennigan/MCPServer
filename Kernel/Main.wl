@@ -86,6 +86,7 @@ $MCPServerProtectedNames = "RickHennigan`MCPServer`" <> # & /@ {
 Scan[ Protect, $MCPServerProtectedNames ];
 
 (* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Package Footer*)
 addToMXInitialization[
     $MCPServerContexts;
