@@ -179,16 +179,27 @@ Notebook[
       TextData[
        {
         Cell[
-         BoxData["MCPServerObject"],
+         BoxData[
+          ButtonBox[
+           "MCPServerObject",
+           BaseStyle -> "Link",
+           ButtonData -> "paclet:RickHennigan/MCPServer/ref/MCPServerObject"
+          ]
+         ],
          "InlineSeeAlsoFunction",
          TaggingRules -> {"PageType" -> "Function"}
         ],
         StyleBox[" \[FilledVerySmallSquare] ", "InlineSeparator"],
         Cell[
-         BoxData["CreateMCPServer"],
+         BoxData[
+          ButtonBox[
+           "CreateMCPServer",
+           BaseStyle -> "Link",
+           ButtonData -> "paclet:RickHennigan/MCPServer/ref/CreateMCPServer"
+          ]
+         ],
          "InlineSeeAlsoFunction",
-         TaggingRules -> {"PageType" -> "Function"},
-         CellTags -> "2915ca94-02f2-4a5c-ae7f-5be4622388b7"
+         TaggingRules -> {"PageType" -> "Function"}
         ],
         Cell[
          BoxData[
@@ -203,13 +214,13 @@ Notebook[
              {
               nbobj$$ = 
                NotebookObject[
-                "bf5d22f7-fdc4-354f-8320-8448d7d771a1",
-                "7246b39f-eb77-c048-8b97-5a45c59d0f02"
+                "9a3f012e-baa4-ab49-a870-3b1c0a3bbf52",
+                "24b29e21-17f6-1f47-9b4c-e4fe8064eb10"
                ],
               cellobj$$ = 
                CellObject[
-                "eba19d3a-78f8-724c-b3b4-b8632a786e41",
-                "0c16bdcd-f0a2-2c44-8f9f-c071647229a6"
+                "c4a50066-0284-df49-87d5-5ae5370f6783",
+                "f7cd74d0-1584-5143-82b3-e7f124d0c9ce"
                ]
              },
              TemplateBox[
