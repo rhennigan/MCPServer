@@ -552,10 +552,11 @@ $maxBugReportURLSize = 7000;
 
 $maxPartLength = 500;
 
-$thisPaclet   := PacletObject[ "RickHennigan/MCPServer" ];
-$debugData    := debugData @ $thisPaclet[ "PacletInfo" ];
-$settingsData := $settings;
-$releaseID    := $releaseID = getReleaseID @ $thisPaclet;
+$thisPaclet    := PacletObject[ "RickHennigan/MCPServer" ];
+$pacletVersion := $thisPaclet[ "Version" ];
+$debugData     := debugData @ $thisPaclet[ "PacletInfo" ];
+$settingsData  := $settings;
+$releaseID     := $releaseID = getReleaseID @ $thisPaclet;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)

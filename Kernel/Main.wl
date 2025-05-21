@@ -52,7 +52,8 @@ $MCPServerContexts = {
     "RickHennigan`MCPServer`Formatting`",
     "RickHennigan`MCPServer`InstallMCPServer`",
     "RickHennigan`MCPServer`MCPServerObject`",
-    "RickHennigan`MCPServer`StartMCPServer`"
+    "RickHennigan`MCPServer`StartMCPServer`",
+    "RickHennigan`MCPServer`Utilities`"
 };
 
 Scan[ Needs[ # -> None ] &, $MCPServerContexts ];

@@ -48,6 +48,8 @@ installMCPServer[ target_, obj_, Automatic|Inherited ] :=
 installMCPServer[ target0_File, obj_MCPServerObject, env_Association ] := Enclose[
     Module[ { target, name, json, data, server, existing },
 
+        ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ];
+
         target   = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
         name     = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
         json     = ConfirmBy[ obj[ "JSONConfiguration" ], StringQ, "JSONConfiguration" ];
@@ -68,6 +70,83 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association ] := Enclos
 ];
 
 installMCPServer // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*checkLLMKitRequirements*)
+checkLLMKitRequirements // beginDefinition;
+
+checkLLMKitRequirements[ obj_MCPServerObject ] /; llmKitSubscribedQ[ ] :=
+    None;
+
+checkLLMKitRequirements[ obj_MCPServerObject ] :=
+    checkLLMKitRequirements[ obj[ "Name" ], obj[ "Tools" ] ];
+
+checkLLMKitRequirements[ name_String, tools: { ___LLMTool } ] := Enclose[
+    Module[ { requirements, result },
+
+        requirements = ConfirmMatch[
+            checkLLMKitRequirements[ name, # ] & /@ tools,
+            { (_String|None)... },
+            "LLMKitCheck"
+        ];
+
+        result = Which[
+            MemberQ[ requirements, "Required"  ], "Required",
+            MemberQ[ requirements, "Suggested" ], "Suggested",
+            True, None
+        ];
+
+        issueLLMKitMessage[ name, result ]
+    ],
+    throwInternalFailure
+];
+
+
+checkLLMKitRequirements[ name_String, tool_LLMTool ] :=
+    checkLLMKitRequirements[ name, tool[ "Data" ][ "LLMKit" ] ];
+
+checkLLMKitRequirements[ name_String, type: "Required"|"Suggested" ] :=
+    type;
+
+checkLLMKitRequirements[ name_String, _ ] :=
+    None;
+
+checkLLMKitRequirements // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*issueLLMKitMessage*)
+issueLLMKitMessage // beginDefinition;
+
+issueLLMKitMessage[ name_String, None ] := None;
+
+issueLLMKitMessage[ name_String, "Required" ] := Enclose[
+    throwFailure[
+        "LLMKitRequired",
+        name,
+        ConfirmMatch[ $llmKitSubscribeLink, Hyperlink[ _String, _String ], "LLMKitSubscribeLink" ],
+        ConfirmMatch[ $llmKitSubscribeURL, _String, "LLMKitSubscribeURL" ]
+    ],
+    throwInternalFailure
+];
+
+issueLLMKitMessage[ name_String, "Suggested" ] := Enclose[
+    messagePrint[
+        "LLMKitSuggested",
+        name,
+        ConfirmMatch[ $llmKitSubscribeLink, Hyperlink[ _String, _String ], "LLMKitSubscribeLink" ],
+        ConfirmMatch[ $llmKitSubscribeURL, _String, "LLMKitSubscribeURL" ]
+    ];
+    "Suggested",
+    throwInternalFailure
+];
+
+issueLLMKitMessage // endDefinition;
+
+
+$llmKitSubscribeURL  := getLLMKitInfo[ ][ "buyNowUrl" ];
+$llmKitSubscribeLink := Hyperlink[ "here", $llmKitSubscribeURL ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)

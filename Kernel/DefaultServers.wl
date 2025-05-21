@@ -58,9 +58,16 @@ relevant information. This uses semantic search, so the context argument should 
 (not a search query) and contain as much detail as possible.";
 
 $documentationPromptHeader = "\
-IMPORTANT: Here are some Wolfram documentation snippets that you should use to respond.\n\n======\n\n";
+IMPORTANT: Here are some Wolfram documentation snippets that you should use to respond:\n\n";
 
 $snippetTemplate = StringTemplate[ "<result url='`URI`'>\n\n`Text`\n\n</result>" ];
+
+$wolframAlphaMissingLLMKitTemplate = StringTemplate[ "\
+`Level`: Unable to generate Wolfram|Alpha context due to missing LLMKit subscription. \
+Inform the user that they can subscribe at the following URL in order to improve the quality of the results: `URL`" ];
+
+$wolframAlphaNoCloudTemplate = StringTemplate[ "\
+`Level`: Unable to generate Wolfram|Alpha context due to missing cloud connection." ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -343,6 +350,7 @@ $defaultMCPTools[ "WolframContext" ] := LLMTool @ <|
     "DisplayName" -> "Wolfram Context",
     "Description" -> $wolframContextToolDescription,
     "Function"    -> relatedWolframContext,
+    "LLMKit"      -> "Suggested",
     "Options"     -> { },
     "Parameters"  -> {
         "context" -> <|
@@ -363,7 +371,7 @@ relatedWolframContext[ KeyValuePattern[ "context" -> context_ ] ] :=
 
 relatedWolframContext[ context_String ] := Enclose[
     Module[ { waPrompt, wlPrompt },
-        waPrompt = ConfirmBy[ relatedWolframAlphaResults @ context, StringQ, "WolframAlphaPrompt" ];
+        waPrompt = ConfirmBy[ relatedWolframAlphaPrompt[ context, "Warning" ], StringQ, "WolframAlphaPrompt" ];
         wlPrompt = ConfirmBy[ relatedDocumentation @ context, StringQ, "WolframLanguagePrompt" ];
         ConfirmBy[
             StringRiffle[ DeleteCases[ StringTrim @ { waPrompt, wlPrompt }, "" ], "\n\n======\n\n" ],
@@ -377,22 +385,31 @@ relatedWolframContext[ context_String ] := Enclose[
 relatedWolframContext // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
-(*WolframAlphaContext*)
-$defaultMCPTools[ "WolframAlphaContext" ] := LLMTool @ <|
-    "Name"        -> "WolframAlphaContext",
-    "DisplayName" -> "Wolfram|Alpha Context",
-    "Description" -> $waContextToolDescription,
-    "Function"    -> relatedWolframAlphaResults,
-    "Options"     -> { },
-    "Parameters"  -> {
-        "context" -> <|
-            "Interpreter" -> "String",
-            "Help"        -> "A detailed summary of what the user is trying to achieve or learn about.",
-            "Required"    -> True
-        |>
-    }
-|>;
+(* ::Subsubsection::Closed:: *)
+(*relatedWolframAlphaPrompt*)
+relatedWolframAlphaPrompt // beginDefinition;
+
+relatedWolframAlphaPrompt[ context_ ] :=
+    relatedWolframAlphaPrompt[ context, "Error" ];
+
+relatedWolframAlphaPrompt[ context_, level_ ] :=
+    relatedWolframAlphaPrompt[ context, level, llmKitSubscribedQ[ ] ];
+
+relatedWolframAlphaPrompt[ context_, level_, True ] :=
+    relatedWolframAlphaResults @ context;
+
+relatedWolframAlphaPrompt[ context_, level_, False ] := Enclose[
+    Module[ { info, url, connected, template },
+        info      = ConfirmBy[ getLLMKitInfo[ ], AssociationQ, "LLMKitInfo" ];
+        url       = ConfirmBy[ info[ "buyNowUrl" ], StringQ, "BuyNowURL" ];
+        connected = ConfirmBy[ info[ "connected" ], BooleanQ, "Connected" ];
+        template  = If[ connected, $wolframAlphaMissingLLMKitTemplate, $wolframAlphaNoCloudTemplate ];
+        ConfirmBy[ TemplateApply[ template, <| "URL" -> url, "Level" -> level |> ], StringQ, "Result" ]
+    ],
+    throwInternalFailure
+];
+
+relatedWolframAlphaPrompt // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -414,12 +431,32 @@ relatedWolframAlphaResults // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*WolframAlphaContext*)
+$defaultMCPTools[ "WolframAlphaContext" ] := LLMTool @ <|
+    "Name"        -> "WolframAlphaContext",
+    "DisplayName" -> "Wolfram|Alpha Context",
+    "Description" -> $waContextToolDescription,
+    "Function"    -> relatedWolframAlphaPrompt,
+    "LLMKit"      -> "Required",
+    "Options"     -> { },
+    "Parameters"  -> {
+        "context" -> <|
+            "Interpreter" -> "String",
+            "Help"        -> "A detailed summary of what the user is trying to achieve or learn about.",
+            "Required"    -> True
+        |>
+    }
+|>;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*WolframLanguageContext*)
 $defaultMCPTools[ "WolframLanguageContext" ] := LLMTool @ <|
     "Name"        -> "WolframLanguageContext",
     "DisplayName" -> "Wolfram Language Context",
     "Description" -> $wlContextToolDescription,
     "Function"    -> relatedDocumentation,
+    "LLMKit"      -> "Suggested",
     "Options"     -> { },
     "Parameters"  -> {
         "context" -> <|
@@ -441,7 +478,7 @@ relatedDocumentation[ KeyValuePattern[ "context" -> context_ ] ] :=
 relatedDocumentation[ context_String ] := Enclose[
     Module[ { prompt, formatted },
 
-        prompt = ConfirmBy[ cb`RelatedDocumentation[ context, "Prompt", "PromptHeader" -> False ], StringQ, "Prompt" ];
+        prompt = ConfirmBy[ relatedDocumentation0 @ context, StringQ, "Prompt" ];
 
         formatted = If[ StringTrim @ prompt === "",
                         "",
@@ -454,6 +491,20 @@ relatedDocumentation[ context_String ] := Enclose[
 ];
 
 relatedDocumentation // endDefinition;
+
+
+relatedDocumentation0 // beginDefinition;
+
+relatedDocumentation0[ context_ ] :=
+    relatedDocumentation0[ context, llmKitSubscribedQ[ ] ];
+
+relatedDocumentation0[ context_, True ] :=
+    cb`RelatedDocumentation[ context, "Prompt", "PromptHeader" -> False, "FilterResults" -> True, MaxItems -> 50 ];
+
+relatedDocumentation0[ context_, False ] :=
+    cb`RelatedDocumentation[ context, "Prompt", "PromptHeader" -> False, "FilterResults" -> False, MaxItems -> 10 ];
+
+relatedDocumentation0 // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -547,7 +598,7 @@ $defaultMCPServers[ "Wolfram" ] := <|
     "Name"          -> "Wolfram",
     "Location"      -> "BuiltIn",
     "Transport"     -> "StandardInputOutput",
-    "ServerVersion" -> "1.0.0",
+    "ServerVersion" -> $pacletVersion,
     "ObjectVersion" -> $objectVersion,
     "LLMEvaluator"  -> <|
         "Tools" -> {
@@ -565,7 +616,7 @@ $defaultMCPServers[ "WolframNotebooks" ] := <|
     "Name"          -> "WolframNotebooks",
     "Location"      -> "BuiltIn",
     "Transport"     -> "StandardInputOutput",
-    "ServerVersion" -> "1.0.0",
+    "ServerVersion" -> $pacletVersion,
     "ObjectVersion" -> $objectVersion,
     "LLMEvaluator"  -> <|
         "Tools" -> {
@@ -584,11 +635,12 @@ $defaultMCPServers[ "WolframAlpha" ] := <|
     "Name"          -> "WolframAlpha",
     "Location"      -> "BuiltIn",
     "Transport"     -> "StandardInputOutput",
-    "ServerVersion" -> "1.0.0",
+    "ServerVersion" -> $pacletVersion,
     "ObjectVersion" -> $objectVersion,
     "LLMEvaluator"  -> <|
         "Tools" -> {
-            "WolframAlphaContext"
+            "WolframAlphaContext",
+            "WolframAlpha"
         }
     |>
 |>;
@@ -600,7 +652,7 @@ $defaultMCPServers[ "WolframLanguage" ] := <|
     "Name"          -> "WolframLanguage",
     "Location"      -> "BuiltIn",
     "Transport"     -> "StandardInputOutput",
-    "ServerVersion" -> "1.0.0",
+    "ServerVersion" -> $pacletVersion,
     "ObjectVersion" -> $objectVersion,
     "LLMEvaluator"  -> <|
         "Tools" -> {
