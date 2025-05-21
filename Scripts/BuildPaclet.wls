@@ -50,6 +50,14 @@ If[ $install,
     cicd`ConsoleNotice @ SequenceForm[ "Installed paclet: ", cDir @ installed[ "Location" ] ];
 ];
 
+(* Remove the built MX file: *)
+If[ $mx,
+    DeleteDirectory[
+        FileNameJoin @ { $pacletDir, "Kernel", ToString @ $SystemWordLength <> "Bit" },
+        DeleteContents -> True
+    ]
+];
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Package Footer*)
