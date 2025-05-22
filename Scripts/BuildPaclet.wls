@@ -14,6 +14,7 @@ If[ ! StringQ @ Environment[ "GITHUB_ACTIONS" ], System`$PublisherID = "RickHenn
 $check   = getBooleanArgument[ { "c", "check"    }, True  ];
 $install = getBooleanArgument[ { "i", "install"  }, False ];
 $mx      = getBooleanArgument[ { "m", "mx"       }, True  ];
+$keepMX  = getBooleanArgument[ { "k", "keep-mx"  }, StringQ @ Environment[ "GITHUB_ACTIONS" ] ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -50,12 +51,11 @@ If[ $install,
     cicd`ConsoleNotice @ SequenceForm[ "Installed paclet: ", cDir @ installed[ "Location" ] ];
 ];
 
-(* Remove the built MX file: *)
-If[ $mx,
-    DeleteDirectory[
-        FileNameJoin @ { $pacletDir, "Kernel", ToString @ $SystemWordLength <> "Bit" },
-        DeleteContents -> True
-    ]
+(* Remove the built MX file if running locally: *)
+If[ $mx && ! $keepMX,
+    mxDir = FileNameJoin @ { $pacletDir, "Kernel", ToString @ $SystemWordLength <> "Bit" };
+    cicd`ConsoleNotice @ SequenceForm[ "Removing MX directory: ", mxDir ];
+    DeleteDirectory[ mxDir, DeleteContents -> True ]
 ];
 
 (* ::**************************************************************************************************************:: *)
