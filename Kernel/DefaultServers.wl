@@ -60,6 +60,10 @@ relevant information. This uses semantic search, so the context argument should 
 $documentationPromptHeader = "\
 IMPORTANT: Here are some Wolfram documentation snippets that you should use to respond:\n\n";
 
+$markdownImageHint = "\
+<system-reminder>The user does not see the images in the tool response. \
+Use the markdown image in your response to show them.</system-reminder>";
+
 $snippetTemplate = StringTemplate[ "<result url='`URI`'>\n\n`Text`\n\n</result>" ];
 
 $wolframAlphaMissingLLMKitTemplate = StringTemplate[ "\
@@ -277,17 +281,23 @@ evaluateWolframLanguage0 // endDefinition;
 exportImages // beginDefinition;
 
 exportImages[ str_String ] := Enclose[
-    Module[ { content, exported },
+    Module[ { content, hasImages, exported, result },
 
         content = ConfirmMatch[ cb`GetExpressionURIs @ str, { __ }, "Content" ];
 
+        hasImages = False;
         exported = ConfirmMatch[
-            Replace[ content, expr: Except[ _String ] :> exportImage @ expr, { 1 } ],
+            Replace[ content, expr: Except[ _String ] :> (hasImages = True; exportImage @ expr), { 1 } ],
             { __String },
             "Exported"
         ];
 
-        ConfirmBy[ StringJoin @ exported, StringQ, "Result" ]
+        result = ConfirmBy[ StringJoin @ exported, StringQ, "Result" ];
+
+        If[ TrueQ @ hasImages,
+            result <> "\n\n" <> $markdownImageHint,
+            result
+        ]
     ],
     throwInternalFailure
 ];
