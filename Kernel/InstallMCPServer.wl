@@ -50,7 +50,7 @@ installMCPServer[ target_, obj_, Automatic|Inherited, verifyLLMKit_ ] :=
     installMCPServer[ target, obj, defaultEnvironment[ ], verifyLLMKit ];
 
 installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_ ] := Enclose[
-    Module[ { target, name, json, data, server, existing },
+    Module[ { target, name, json, data, server, existing, isVSCode },
 
         If[ verifyLLMKit, ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ] ];
 
@@ -60,8 +60,12 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
         data     = ConfirmBy[ Developer`ReadRawJSONString @ json, AssociationQ, "JSONConfiguration" ];
         server   = ConfirmBy[ addEnvironmentVariables[ data[ "mcpServers", name ], env ], AssociationQ, "Server" ];
         existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
+        isVSCode = $installName === "VisualStudioCode";
 
-        existing[ "mcpServers", name ] = server;
+        If[ isVSCode,
+            existing[ "mcp", "servers", name ] = server,
+            existing[ "mcpServers", name ] = server
+        ];
 
         ConfirmBy[ writeRawJSONFile[ target, existing ], FileExistsQ, "Export" ];
         ConfirmAssert[ readRawJSONFile @ target === existing, "ExportCheck" ];
@@ -300,13 +304,36 @@ installSuccess // endDefinition;
 readExistingMCPConfig // beginDefinition;
 
 readExistingMCPConfig[ file_ ] := Enclose[
-    Catch @ Module[ { data },
-        If[ ! FileExistsQ @ file, Throw @ <| "mcpServers" -> <| |> |> ];
-        data = readRawJSONFile @ ExpandFileName @ file;
-        If[ ! MatchQ[ data, KeyValuePattern[ "mcpServers" -> _Association ] ],
-            throwFailure[ "InvalidMCPConfiguration", file ]
+    Catch @ Module[ { data, isVSCode },
+        isVSCode = $installName === "VisualStudioCode";
+        
+        If[ ! FileExistsQ @ file, 
+            If[ isVSCode,
+                Throw @ <| "mcp" -> <| "servers" -> <| |> |> |>,
+                Throw @ <| "mcpServers" -> <| |> |>
+            ]
         ];
-        data
+        
+        data = readRawJSONFile @ ExpandFileName @ file;
+        
+        (* Handle VS Code format *)
+        If[ isVSCode,
+            If[ ! MatchQ[ data, _Association ],
+                data = <| |>
+            ];
+            If[ ! KeyExistsQ[ data, "mcp" ],
+                data[ "mcp" ] = <| "servers" -> <| |> |>
+            ];
+            If[ ! MatchQ[ data[ "mcp" ], KeyValuePattern[ "servers" -> _Association ] ],
+                data[ "mcp" ] = <| "servers" -> <| |> |>
+            ];
+            data,
+            (* Handle standard format *)
+            If[ ! MatchQ[ data, KeyValuePattern[ "mcpServers" -> _Association ] ],
+                throwFailure[ "InvalidMCPConfiguration", file ]
+            ];
+            data
+        ]
     ],
     throwInternalFailure
 ];
@@ -362,18 +389,26 @@ allMCPServers // endDefinition;
 uninstallMCPServer // beginDefinition;
 
 uninstallMCPServer[ target0_File, obj_MCPServerObject ] := Enclose[
-    Catch @ Module[ { target, name, existing },
+    Catch @ Module[ { target, name, existing, isVSCode },
 
         target = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
         If[ ! FileExistsQ @ target, Throw @ Missing[ "NotInstalled", target ] ];
 
         name = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
         existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
+        isVSCode = $installName === "VisualStudioCode";
 
-        If[ ! KeyExistsQ[ existing, "mcpServers" ], Throw @ Missing[ "NotInstalled", target ] ];
-        If[ ! KeyExistsQ[ existing[ "mcpServers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
-
-        KeyDropFrom[ existing[ "mcpServers" ], name ];
+        If[ isVSCode,
+            (* Handle VS Code format *)
+            If[ ! KeyExistsQ[ existing, "mcp", "servers" ], Throw @ Missing[ "NotInstalled", target ] ];
+            If[ ! KeyExistsQ[ existing[ "mcp", "servers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
+            KeyDropFrom[ existing[ "mcp", "servers" ], name ],
+            (* Handle standard format *)
+            If[ ! KeyExistsQ[ existing, "mcpServers" ], Throw @ Missing[ "NotInstalled", target ] ];
+            If[ ! KeyExistsQ[ existing[ "mcpServers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
+            KeyDropFrom[ existing[ "mcpServers" ], name ]
+        ];
+        
         ConfirmBy[ writeRawJSONFile[ target, existing ], FileExistsQ, "Export" ];
 
         ConfirmAssert[ readRawJSONFile @ target === existing, "ExportCheck" ];
@@ -440,6 +475,18 @@ installLocation[ "Cursor", _ ] := fileNameJoin[ $HomeDirectory, ".cursor", "mcp.
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*Visual Studio Code*)
+installLocation[ "VisualStudioCode", "MacOSX" ] :=
+    fileNameJoin[ $HomeDirectory, "Library", "Application Support", "Code", "User", "settings.json" ];
+
+installLocation[ "VisualStudioCode", "Windows" ] :=
+    fileNameJoin[ $HomeDirectory, "AppData", "Roaming", "Code", "User", "settings.json" ];
+
+installLocation[ "VisualStudioCode", "Linux" ] :=
+    fileNameJoin[ $HomeDirectory, ".config", "Code", "User", "settings.json" ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*Unknown*)
 installLocation[ name_String, os_String ] := throwFailure[ "UnknownInstallLocation", name, os ];
 installLocation // endDefinition;
@@ -449,6 +496,8 @@ installLocation // endDefinition;
 (*toInstallName*)
 toInstallName // beginDefinition;
 toInstallName[ "Claude" ] := "ClaudeDesktop";
+toInstallName[ "VSCode" ] := "VisualStudioCode";
+toInstallName[ "Code" ] := "VisualStudioCode";
 toInstallName[ name_String ] := name;
 toInstallName // endDefinition;
 
@@ -457,6 +506,7 @@ toInstallName // endDefinition;
 (*installDisplayName*)
 installDisplayName // beginDefinition;
 installDisplayName[ "ClaudeDesktop" ] := "Claude Desktop";
+installDisplayName[ "VisualStudioCode" ] := "Visual Studio Code";
 installDisplayName[ name_String ] := name;
 installDisplayName[ None ] := None;
 installDisplayName // endDefinition;
