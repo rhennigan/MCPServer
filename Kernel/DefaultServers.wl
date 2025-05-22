@@ -269,7 +269,7 @@ evaluateWolframLanguage0[ code_String, timeConstraint_Integer ] :=
             Wolfram`Chatbook`Sandbox`Private`$sandboxEvaluationTimeout = timeConstraint,
             $Line = $line++
         },
-        Wolfram`Chatbook`Common`catchTop @ Wolfram`Chatbook`Common`sandboxEvaluate[ code ][ "String" ]
+        Wolfram`Chatbook`Common`catchTop @ Wolfram`Chatbook`Common`sandboxEvaluate[ StackBegin @ code ][ "String" ]
     ];
 (* :!CodeAnalysis::EndBlock:: *)
 
