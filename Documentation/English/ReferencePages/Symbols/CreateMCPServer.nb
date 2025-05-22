@@ -215,13 +215,13 @@ Notebook[
              {
               nbobj$$ = 
                NotebookObject[
-                "b8c4ef5b-caf5-2045-8b7c-b9acc784eda1",
-                "326afc31-c440-7743-8c30-cfc58ea80886"
+                "03e75b7c-8adc-6d4f-9dd6-2efe90add320",
+                "03e7a0aa-72fd-aa41-8d8b-fc5a5023ae08"
                ],
               cellobj$$ = 
                CellObject[
-                "0db3eafd-d060-c849-8e94-4fe4791d5a6b",
-                "ebf82852-2baf-5a49-a263-a4d71dcfdab6"
+                "9ec67b14-10cf-0541-9575-a8283117d397",
+                "81473496-27bb-7340-9c34-cf69916fe762"
                ]
              },
              TemplateBox[
@@ -1574,7 +1574,18 @@ Notebook[
       ]
      ],
      Cell[
-      "Install the server for use in Claude desktop:",
+      TextData[
+       {
+        "Install the server for use in ",
+        ButtonBox[
+         "Claude desktop",
+         BaseStyle -> "Hyperlink",
+         ButtonData -> {URL["https://claude.ai/download"], None},
+         ButtonNote -> "https://claude.ai/download"
+        ],
+        ":"
+       }
+      ],
       "ExampleText",
       CellID -> 624404051
      ],
