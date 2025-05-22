@@ -43,13 +43,13 @@ $wolframContextToolDescription = "\
 Uses semantic search to retrieve any relevant information from Wolfram. Always use this tool at the start of \
 new conversations or if the topic changes to ensure you have up-to-date relevant information. This uses semantic \
 search, so the context argument should be written in natural language (not a search query) and contain as much detail \
-as possible.";
+as possible (up to 250 words).";
 
 $waContextToolDescription = "\
 Uses semantic search to retrieve any relevant information from Wolfram Alpha. Always use this tool at the start of \
 new conversations or if the topic changes to ensure you have up-to-date relevant information. This uses semantic \
 search, so the context argument should be written in natural language (not a search query) and contain as much detail \
-as possible.";
+as possible (up to 250 words).";
 
 $wlContextToolDescription = "\
 Uses semantic search to retrieve information from various sources that can be used to help write Wolfram Language \
