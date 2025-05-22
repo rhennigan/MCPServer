@@ -13,21 +13,37 @@ $protocolVersion = "2024-11-05";
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*$MCPEvaluationEnvironment*)
+$MCPEvaluationEnvironment = None;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*StartMCPServer*)
 StartMCPServer // beginDefinition;
-StartMCPServer[ ] := catchMine @ StartMCPServer @ Environment[ "MCP_SERVER_NAME" ];
-StartMCPServer[ $Failed ] := catchMine @ StartMCPServer @ $defaultMCPServer;
-StartMCPServer[ name_String ] := catchMine @ StartMCPServer @ MCPServerObject @ name;
-StartMCPServer[ obj_MCPServerObject ] := catchMine @ startMCPServer @ ensureMCPServerExists @ obj;
+StartMCPServer[ ___ ] /; $Notebooks := catchMine @ throwFailure[ "InvalidSession" ];
+StartMCPServer[ ] := inStdIO @ StartMCPServer @ Environment[ "MCP_SERVER_NAME" ];
+StartMCPServer[ $Failed ] := inStdIO @ StartMCPServer @ $defaultMCPServer;
+StartMCPServer[ name_String ] := inStdIO @ StartMCPServer @ MCPServerObject @ name;
+StartMCPServer[ obj_MCPServerObject ] := inStdIO @ startMCPServer @ ensureMCPServerExists @ obj;
 StartMCPServer // endExportedDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inStdIO*)
+inStdIO // beginDefinition;
+inStdIO // Attributes = { HoldFirst };
+
+inStdIO[ eval_ ] :=
+    Block[ { $MCPEvaluationEnvironment = "StandardInputOutput", inStdIO = # & },
+        catchTop[ eval, StartMCPServer ]
+    ];
+
+inStdIO // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*startMCPServer*)
 startMCPServer // beginDefinition;
-
-startMCPServer[ obj_ ] /; $Notebooks :=
-    throwFailure[ "InvalidSession" ];
 
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)

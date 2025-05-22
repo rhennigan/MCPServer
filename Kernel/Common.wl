@@ -362,10 +362,17 @@ catchTop[ eval_, sym_Symbol ] :=
             catchTop       = # &,
             catchTopAs     = (#1 &) &
         },
-        Catch[ eval, $catchTopTag ]
+        Catch[ eval, $catchTopTag, catchTopHandler ]
     ];
 
 catchTop // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*catchTopHandler*)
+catchTopHandler // beginDefinition;
+catchTopHandler[ expr_, $catchTopTag ] := expr;
+catchTopHandler // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)

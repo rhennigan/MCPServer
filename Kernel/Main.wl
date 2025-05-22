@@ -9,6 +9,7 @@ BeginPackage[ "RickHennigan`MCPServer`" ];
 `$DefaultMCPTools;
 `$LastMCPServerFailure;
 `$LastMCPServerFailureText;
+`$MCPEvaluationEnvironment;
 `CreateMCPServer;
 `InstallMCPServer;
 `MCPServer;
@@ -74,6 +75,7 @@ $MCPServerProtectedNames = "RickHennigan`MCPServer`" <> # & /@ {
     "$DefaultMCPTools",
     "$LastMCPServerFailure",
     "$LastMCPServerFailureText",
+    "$MCPEvaluationEnvironment",
     "CreateMCPServer",
     "InstallMCPServer",
     "MCPServer",
