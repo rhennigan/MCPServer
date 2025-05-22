@@ -621,25 +621,6 @@ $defaultMCPServers[ "Wolfram" ] := <|
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*WolframDeveloper*)
-$defaultMCPServers[ "WolframNotebooks" ] := <|
-    "Name"          -> "WolframNotebooks",
-    "Location"      -> "BuiltIn",
-    "Transport"     -> "StandardInputOutput",
-    "ServerVersion" -> $pacletVersion,
-    "ObjectVersion" -> $objectVersion,
-    "LLMEvaluator"  -> <|
-        "Tools" -> {
-            "WolframLanguageContext",
-            "WolframLanguageEvaluator",
-            "ReadNotebook",
-            "WriteNotebook"
-        }
-    |>
-|>;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
 (*WolframAlpha*)
 $defaultMCPServers[ "WolframAlpha" ] := <|
     "Name"          -> "WolframAlpha",
@@ -667,7 +648,9 @@ $defaultMCPServers[ "WolframLanguage" ] := <|
     "LLMEvaluator"  -> <|
         "Tools" -> {
             "WolframLanguageContext",
-            "WolframLanguageEvaluator"
+            "WolframLanguageEvaluator",
+            "ReadNotebook",
+            "WriteNotebook"
         }
     |>
 |>;
