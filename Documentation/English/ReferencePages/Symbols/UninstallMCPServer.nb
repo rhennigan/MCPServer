@@ -466,13 +466,13 @@ Notebook[
              {
               nbobj$$ = 
                NotebookObject[
-                "62aa5f2d-5300-3242-993e-68cb5eb27f64",
-                "030bb078-3826-aa47-92cd-0262501caffa"
+                "08a3ec78-df1d-2c45-96a1-67259166e93a",
+                "0d6288ef-350a-c745-8b48-32396059ae54"
                ],
               cellobj$$ = 
                CellObject[
-                "90d27f16-c630-2a46-86eb-cc0cfe55576a",
-                "b7e416fe-c001-8942-bdf4-7028b5692ecc"
+                "526b4995-c4b7-714e-84d0-99b3cb941b64",
+                "995f2b9c-8727-0443-a957-ee979fbd2f8d"
                ]
              },
              TemplateBox[
@@ -690,7 +690,18 @@ Notebook[
       CellID -> 48149727
      ],
      Cell[
-      "Install the default MCP server for Claude Desktop:",
+      TextData[
+       {
+        "Install the default MCP server for ",
+        ButtonBox[
+         "Claude Desktop",
+         BaseStyle -> "Hyperlink",
+         ButtonData -> {URL["https://claude.ai/download"], None},
+         ButtonNote -> "https://claude.ai/download"
+        ],
+        ":"
+       }
+      ],
       "ExampleText",
       CellID -> 12425924
      ],

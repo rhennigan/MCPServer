@@ -1535,6 +1535,51 @@ Notebook[
                },
                CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
                CellID -> 573206756
+              ],
+              Cell[
+               BoxData[
+                InterpretationBox[
+                 TagBox[
+                  TemplateBox[
+                   {
+                    "\"Utilities.wl\"",
+                    FileNameJoin[
+                     {NotebookDirectory[], "Kernel", "Utilities.wl"}
+                    ]
+                   },
+                   "FileManagerFileOpenerTemplate"
+                  ],
+                  Function[
+                   Annotation[
+                    #1,
+                    DefinitionNotebookClient`TemplateCells`PackagePrivate`fileDepth[
+                     1
+                    ]
+                   ]
+                  ]
+                 ],
+                 FileNameJoin[
+                  {NotebookDirectory[], "Kernel", "Utilities.wl"}
+                 ],
+                 BoxID -> "FileTreePath",
+                 BaseStyle -> {"Text"}
+                ]
+               ],
+               "FileManagerFile",
+               CellMargins -> {{23 + Inherited, Inherited}, {Inherited, Inherited}},
+               CellGroupingRules -> {"SectionGrouping", 110},
+               CellFrameLabels -> {
+                {
+                 Cell[
+                  BoxData[TemplateBox[{}, "FileManagerWLIconTemplate"]],
+                  Background -> None
+                 ],
+                 Inherited
+                },
+                {Inherited, Inherited}
+               },
+               CellTags -> {"FileManagerCell", "FileManager-PacletFiles"},
+               CellID -> 681907196
               ]
              },
              Closed
@@ -4829,7 +4874,18 @@ Notebook[
             CellID -> 462042388
            ],
            Cell[
-            "Install a Wolfram MCP server for use in Claude desktop:",
+            TextData[
+             {
+              "Install a Wolfram MCP server for use in ",
+              ButtonBox[
+               "Claude desktop",
+               BaseStyle -> "Hyperlink",
+               ButtonData -> {URL["https://claude.ai/download"], None},
+               ButtonNote -> "https://claude.ai/download"
+              ],
+              ":"
+             }
+            ],
             "Text",
             CellID -> 123043414
            ],
@@ -6959,7 +7015,18 @@ Notebook[
             ]
            ],
            Cell[
-            "Install the server for use in Claude desktop:",
+            TextData[
+             {
+              "Install the server for use in ",
+              ButtonBox[
+               "Claude desktop",
+               BaseStyle -> "Hyperlink",
+               ButtonData -> {URL["https://claude.ai/download"], None},
+               ButtonNote -> "https://claude.ai/download"
+              ],
+              ":"
+             }
+            ],
             "Text",
             CellID -> 51620632
            ],
@@ -7901,7 +7968,18 @@ Notebook[
             CellID -> 219287272
            ],
            Cell[
-            "Install the server for use in Cursor:",
+            TextData[
+             {
+              "Install the server for use in ",
+              ButtonBox[
+               "Cursor",
+               BaseStyle -> "Hyperlink",
+               ButtonData -> {URL["https://www.cursor.com/"], None},
+               ButtonNote -> "https://www.cursor.com/"
+              ],
+              ":"
+             }
+            ],
             "Text",
             CellID -> 531944945
            ],
@@ -10429,34 +10507,57 @@ Notebook[
             CellID -> 179193585
            ],
            Cell[
-            "Link to other related material",
-            "Item",
-            CellEventActions -> {
-             Inherited,
-             {"KeyDown", "\t"} :>
-              Replace[
-               SelectionMove[SelectedNotebook[], After, Cell];
-               NotebookFind[
-                SelectedNotebook[],
-                "TabNext",
-                Next,
-                CellTags,
-                AutoScroll -> True,
-                WrapAround -> True
+            TextData[
+             ButtonBox[
+              "Introducing the Model Context Protocol | Anthropic",
+              BaseStyle -> "Hyperlink",
+              ButtonData -> {
+               URL[
+                "https://www.anthropic.com/news/model-context-protocol"
                ],
-               Blank[NotebookSelection] :>
-                SelectionMove[
-                 SelectedNotebook[],
-                 All,
-                 CellContents,
-                 AutoScroll -> True
-                ]
-              ],
-             PassEventsDown -> False,
-             PassEventsUp -> False
-            },
-            CellTags -> {"DefaultContent", "TabNext"},
-            CellID -> 938599834
+               None
+              },
+              ButtonNote -> "https://www.anthropic.com/news/model-context-protocol"
+             ]
+            ],
+            "Item",
+            CellID -> 370045657
+           ],
+           Cell[
+            TextData[
+             ButtonBox[
+              "Model Context Protocol Documentation",
+              BaseStyle -> "Hyperlink",
+              ButtonData -> {URL["https://modelcontextprotocol.io"], None},
+              ButtonNote -> "https://modelcontextprotocol.io"
+             ]
+            ],
+            "Item",
+            CellID -> 100632674
+           ],
+           Cell[
+            TextData[
+             ButtonBox[
+              "Cursor - The AI Code Editor",
+              BaseStyle -> "Hyperlink",
+              ButtonData -> {URL["https://www.cursor.com"], None},
+              ButtonNote -> "https://www.cursor.com"
+             ]
+            ],
+            "Item",
+            CellID -> 82382368
+           ],
+           Cell[
+            TextData[
+             ButtonBox[
+              "Claude Desktop",
+              BaseStyle -> "Hyperlink",
+              ButtonData -> {URL["https://claude.ai/download"], None},
+              ButtonNote -> "https://claude.ai/download"
+             ]
+            ],
+            "Item",
+            CellID -> 335921242
            ]
           },
           Open
@@ -12583,10 +12684,7 @@ Notebook[
    "ExampleSubsection" -> {"0" -> Closed},
    "ExampleSection" -> {"1" -> Closed, "2" -> Closed}
   },
-  "PacletBuildData" -> {
-   "LastBuiltArchive" -> "H:\\Documents\\MCPServer\\build\\RickHennigan__MCPServer-1.1.1.paclet",
-   "FileHashes" -> ByteArray["OEM6eJyllXtIU1Ecx8seRmRphVqU9lAz3dk0e1iaaZq23HR5tKRCu17Ptqt358o9x0wsIyr6q+wJEiRYCREpvaAHFCFqBEUaZYnhP5kVEuuB1B9hJW472y2vG/019h2fz3fnnHt+N20xgEsyJL7ShjDlqCBh3SZsEQVi1elxKdqrK47T8maS5gfgVChVyjwik3MkjP58zedkC6KGpuaD5anHEuIBjFLzEGQZ+YkUJ6i4NGeCkzPbOwiA0d64tBaEVWyfomsDwbv+NQBu+LctD5mRjDCPTJwFER2stpVIItGly4ijyJhugkjeg2QtLnErMeRrahJvT3yynvVkpbbsvWc8YgAw1acePSaUE8WximbFJQ2s7S60sqIew3F9W+i1JF8X5GrILSlDPFX0pDeuDsoipgLWs6+jwR4e+aLc1wUperYqit7WXrn7MnhBLiv6MtwZE1zWqv/PIqLcuWxNL7aXaljRNFtV24/6nlAAN/pUVIAF9UP6OsN6MqodulVtyDgRQO8GJQMY8+8qiDiZt44+yatG7xdSeYorwvc/8hdMMb741O5rwfC61jvfoiIBXO6ljwgquoiP8xpbcdEKAIE3OrOAxFKirRJVlFlWczOYX1kI4EpvlMLIpxFRrpSjnLo5r0loeW+9WgOg1huza2atUHH+6OwIGUr1x146q2SBIq0o8eUqzq6kU/2dOUenALhsDGcFEkXHgE4Y58Dv8/brD/sfrwQwdlyZa8VrVYTdvfu3xL25uGnsI/9bOM6o7rtw6fKSmxV/JltINpIxEnXpks0mYcc99DxVw6+6RdpDg2GrGc+SQA9eAZ7NHrjVXRZhYCBL5jlBxfT3NHx6bh/2tx9OdHvLuJJQhyEDmblKkY7yyv9uP/h69+n67WFMwJJZDkGmICIl96X6QMDA9MWc2/B0JXOdnCTbOEoFbFHAN85/eBq+Z53bulky3wH/9TbyVAw+aPg8oWgKzxQsmelQGDlBueNy4LM1keB9McNY4txx5evJ07BjUkEE6ejWMQNL5igNCvaeJmxzysKhWMayZLaTRYSMzHwFui035fiEc2cBQ1niPGhIOZmO1X2k5vPS+3Vd5UzAkgATx4uI6rFZUlCJ6NWuvp9FJYxiSdAoZeSwYEaEqo+6236Fw9/jJ+/8DYKBnYk="]
-  }
+  "Paclet" -> "None"
  },
  CreateCellID -> True,
  DynamicEvaluationTimeout -> 60,

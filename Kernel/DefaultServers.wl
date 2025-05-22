@@ -43,13 +43,13 @@ $wolframContextToolDescription = "\
 Uses semantic search to retrieve any relevant information from Wolfram. Always use this tool at the start of \
 new conversations or if the topic changes to ensure you have up-to-date relevant information. This uses semantic \
 search, so the context argument should be written in natural language (not a search query) and contain as much detail \
-as possible.";
+as possible (up to 250 words).";
 
 $waContextToolDescription = "\
 Uses semantic search to retrieve any relevant information from Wolfram Alpha. Always use this tool at the start of \
 new conversations or if the topic changes to ensure you have up-to-date relevant information. This uses semantic \
 search, so the context argument should be written in natural language (not a search query) and contain as much detail \
-as possible.";
+as possible (up to 250 words).";
 
 $wlContextToolDescription = "\
 Uses semantic search to retrieve information from various sources that can be used to help write Wolfram Language \
@@ -59,6 +59,10 @@ relevant information. This uses semantic search, so the context argument should 
 
 $documentationPromptHeader = "\
 IMPORTANT: Here are some Wolfram documentation snippets that you should use to respond:\n\n";
+
+$markdownImageHint = "\
+<system-reminder>The user does not see the images in the tool response. \
+Use the markdown image in your response to show them.</system-reminder>";
 
 $snippetTemplate = StringTemplate[ "<result url='`URI`'>\n\n`Text`\n\n</result>" ];
 
@@ -265,7 +269,7 @@ evaluateWolframLanguage0[ code_String, timeConstraint_Integer ] :=
             Wolfram`Chatbook`Sandbox`Private`$sandboxEvaluationTimeout = timeConstraint,
             $Line = $line++
         },
-        Wolfram`Chatbook`Common`catchTop @ Wolfram`Chatbook`Common`sandboxEvaluate[ code ][ "String" ]
+        Wolfram`Chatbook`Common`catchTop @ Wolfram`Chatbook`Common`sandboxEvaluate[ StackBegin @ code ][ "String" ]
     ];
 (* :!CodeAnalysis::EndBlock:: *)
 
@@ -277,17 +281,23 @@ evaluateWolframLanguage0 // endDefinition;
 exportImages // beginDefinition;
 
 exportImages[ str_String ] := Enclose[
-    Module[ { content, exported },
+    Module[ { content, hasImages, exported, result },
 
         content = ConfirmMatch[ cb`GetExpressionURIs @ str, { __ }, "Content" ];
 
+        hasImages = False;
         exported = ConfirmMatch[
-            Replace[ content, expr: Except[ _String ] :> exportImage @ expr, { 1 } ],
+            Replace[ content, expr: Except[ _String ] :> (hasImages = True; exportImage @ expr), { 1 } ],
             { __String },
             "Exported"
         ];
 
-        ConfirmBy[ StringJoin @ exported, StringQ, "Result" ]
+        result = ConfirmBy[ StringJoin @ exported, StringQ, "Result" ];
+
+        If[ TrueQ @ hasImages,
+            result <> "\n\n" <> $markdownImageHint,
+            result
+        ]
     ],
     throwInternalFailure
 ];
@@ -611,25 +621,6 @@ $defaultMCPServers[ "Wolfram" ] := <|
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*WolframDeveloper*)
-$defaultMCPServers[ "WolframNotebooks" ] := <|
-    "Name"          -> "WolframNotebooks",
-    "Location"      -> "BuiltIn",
-    "Transport"     -> "StandardInputOutput",
-    "ServerVersion" -> $pacletVersion,
-    "ObjectVersion" -> $objectVersion,
-    "LLMEvaluator"  -> <|
-        "Tools" -> {
-            "WolframLanguageContext",
-            "WolframLanguageEvaluator",
-            "ReadNotebook",
-            "WriteNotebook"
-        }
-    |>
-|>;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
 (*WolframAlpha*)
 $defaultMCPServers[ "WolframAlpha" ] := <|
     "Name"          -> "WolframAlpha",
@@ -657,7 +648,9 @@ $defaultMCPServers[ "WolframLanguage" ] := <|
     "LLMEvaluator"  -> <|
         "Tools" -> {
             "WolframLanguageContext",
-            "WolframLanguageEvaluator"
+            "WolframLanguageEvaluator",
+            "ReadNotebook",
+            "WriteNotebook"
         }
     |>
 |>;

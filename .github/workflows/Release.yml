@@ -75,8 +75,7 @@ jobs:
             --target="${{ github.ref }}" \
             --repo="${{ env.GITHUB_REPOSITORY }}" \
             --title="Release ${{ env.PACLET_RELEASE_TAG }}" \
-            --generate-notes \
-            --prerelease
+            --generate-notes
 
   Submit:
     name: Submit

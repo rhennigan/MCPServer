@@ -426,13 +426,13 @@ Notebook[
              {
               nbobj$$ = 
                NotebookObject[
-                "9179ba90-6301-6042-a7ba-ccd1d07c0d49",
-                "8ed368e0-72b6-684b-8625-c989204b546f"
+                "78b86d0e-b66a-d743-a729-c2224d3dda0e",
+                "03d3fb3f-dd7b-f547-b3ea-86c9c79b8f23"
                ],
               cellobj$$ = 
                CellObject[
-                "ec435cdb-3f35-fd46-9eaf-e15416866d40",
-                "22dd334a-5f76-4640-ac90-0a86e255d580"
+                "e8354fd8-cc4f-a546-996f-f35b757bc76d",
+                "0715ea5d-51f7-2947-9010-53ae79838d9c"
                ]
              },
              TemplateBox[
@@ -650,7 +650,18 @@ Notebook[
       CellID -> 858458711
      ],
      Cell[
-      "Install the default MCP server for Claude Desktop:",
+      TextData[
+       {
+        "Install the default MCP server for ",
+        ButtonBox[
+         "Claude Desktop",
+         BaseStyle -> "Hyperlink",
+         ButtonData -> {URL["https://claude.ai/download"], None},
+         ButtonNote -> "https://claude.ai/download"
+        ],
+        ":"
+       }
+      ],
       "ExampleText",
       CellID -> 12425924
      ],
@@ -4453,7 +4464,18 @@ Notebook[
             CellID -> 5261232
            ],
            Cell[
-            "Install a Wolfram Language MCP server for Cursor:",
+            TextData[
+             {
+              "Install a Wolfram Language MCP server for ",
+              ButtonBox[
+               "Cursor",
+               BaseStyle -> "Hyperlink",
+               ButtonData -> {URL["https://www.cursor.com/"], None},
+               ButtonNote -> "https://www.cursor.com/"
+              ],
+              ":"
+             }
+            ],
             "ExampleText",
             CellID -> 120840969
            ],
