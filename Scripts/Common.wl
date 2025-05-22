@@ -21,6 +21,7 @@ cStr  = cicd`ScriptConfirmBy[ #, StringQ     ] &;
 Needs[ "DefinitionNotebookClient`" -> None ];
 DefinitionNotebookClient`$DisabledHints = <| "MessageTag" -> #, "Level" -> All, "ID" -> All |> & /@ {
     "CodeInspectionFileIssue/TopLevel",
+    "HeroImageSquashed",
     "InternalContextWarning"
 };
 
