@@ -330,6 +330,21 @@ Notebook[
            ],
            "TableText"
           ]
+         },
+         {
+          Cell["      ", "ModInfo"],
+          "\"VisualStudioCode\"",
+          Cell[
+           TextData[
+            ButtonBox[
+             "Visual Studio Code",
+             BaseStyle -> "Hyperlink",
+             ButtonData -> {URL["https://code.visualstudio.com"], None},
+             ButtonNote -> "https://code.visualstudio.com"
+            ]
+           ],
+           "TableText"
+          ]
          }
         }
        ]
@@ -426,13 +441,13 @@ Notebook[
              {
               nbobj$$ = 
                NotebookObject[
-                "78b86d0e-b66a-d743-a729-c2224d3dda0e",
-                "03d3fb3f-dd7b-f547-b3ea-86c9c79b8f23"
+                "0dc267aa-922a-9f44-a150-2a3c2ea1ddc6",
+                "c2631fbb-f525-5b43-85a3-e51b17c59d6e"
                ],
               cellobj$$ = 
                CellObject[
-                "e8354fd8-cc4f-a546-996f-f35b757bc76d",
-                "0715ea5d-51f7-2947-9010-53ae79838d9c"
+                "8c28e625-3364-f045-a4ea-b601d457de68",
+                "6c526cb7-7fb6-2c4c-acf4-85d53df4e6eb"
                ]
              },
              TemplateBox[
