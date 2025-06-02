@@ -394,11 +394,11 @@ uninstallMCPServer[ target0_File, obj_MCPServerObject ] := Enclose[
 
         If[ isVSCode,
             (* Handle VS Code format *)
-            If[ ! KeyExistsQ[ existing, "mcp", "servers" ], Throw @ Missing[ "NotInstalled", target ] ];
+            If[ ! AssociationQ @ existing[ "mcp", "servers" ], Throw @ Missing[ "NotInstalled", target ] ];
             If[ ! KeyExistsQ[ existing[ "mcp", "servers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
             KeyDropFrom[ existing[ "mcp", "servers" ], name ],
             (* Handle standard format *)
-            If[ ! KeyExistsQ[ existing, "mcpServers" ], Throw @ Missing[ "NotInstalled", target ] ];
+            If[ ! AssociationQ @ existing[ "mcpServers" ], Throw @ Missing[ "NotInstalled", target ] ];
             If[ ! KeyExistsQ[ existing[ "mcpServers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
             KeyDropFrom[ existing[ "mcpServers" ], name ]
         ];
