@@ -1,10 +1,10 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "RickHennigan`MCPServer`InstallMCPServer`" ];
+BeginPackage[ "Wolfram`MCPServer`InstallMCPServer`" ];
 Begin[ "`Private`" ];
 
-Needs[ "RickHennigan`MCPServer`"        ];
-Needs[ "RickHennigan`MCPServer`Common`" ];
+Needs[ "Wolfram`MCPServer`"        ];
+Needs[ "Wolfram`MCPServer`Common`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

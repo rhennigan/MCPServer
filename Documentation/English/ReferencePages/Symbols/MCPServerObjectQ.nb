@@ -23,7 +23,7 @@ Notebook[
             ButtonBox[
              "MCPServerObjectQ",
              BaseStyle -> "Link",
-             ButtonData -> "paclet:RickHennigan/MCPServer/ref/MCPServerObjectQ"
+             ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObjectQ"
             ],
             "[",
             StyleBox["server", "TI"],
@@ -46,7 +46,7 @@ Notebook[
           ButtonBox[
            "MCPServerObject",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:RickHennigan/MCPServer/ref/MCPServerObject"
+           ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObject"
           ]
          ],
          "InlineFormula"
@@ -109,7 +109,7 @@ Notebook[
           ButtonBox[
            "MCPServerObject",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:RickHennigan/MCPServer/ref/MCPServerObject"
+           ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObject"
           ]
          ],
          "InlineSeeAlsoFunction",
@@ -309,7 +309,7 @@ Notebook[
      ],
      Cell[
       BoxData[
-       RowBox[{"Needs", "[", "\"RickHennigan`MCPServer`\"", "]"}]
+       RowBox[{"Needs", "[", "\"Wolfram`MCPServer`\"", "]"}]
       ],
       "ExampleInitialization",
       CellID -> 932189874
@@ -360,7 +360,7 @@ Notebook[
           ButtonBox[
            "MCPServerObject",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:RickHennigan/MCPServer/ref/MCPServerObject"
+           ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObject"
           ]
          ],
          "InlineFormula"
@@ -743,7 +743,7 @@ Notebook[
                                  ],
                                  ButtonFunction :> {
                                   CopyToClipboard[
-                                   "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"RickHennigan`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                   "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                   ],
                                   NotebookDelete[cellObj],
                                   FrontEndExecute[
@@ -881,7 +881,7 @@ Notebook[
              "]"
             }
            ],
-           RickHennigan`MCPServer`MCPServerObject[
+           Wolfram`MCPServer`MCPServerObject[
             <|
              "Name" -> "Wolfram",
              "Location" -> "BuiltIn",
@@ -901,7 +901,7 @@ Notebook[
                    "Required" -> True
                   |>
                  },
-                 "Function" -> RickHennigan`MCPServer`DefaultServers`Private`relatedWolframContext,
+                 "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedWolframContext,
                  "Options" -> { },
                  "LLMPacletVersion" -> "1.6.10"
                 |>
@@ -922,7 +922,7 @@ Notebook[
                    "Required" -> False
                   |>
                  },
-                 "Function" -> RickHennigan`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                 "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
                  "Options" -> { },
                  "LLMPacletVersion" -> "1.6.10"
                 |>
@@ -1045,7 +1045,7 @@ Notebook[
              ButtonBox[
               "MCPServerObject",
               BaseStyle -> "Link",
-              ButtonData -> "paclet:RickHennigan/MCPServer/ref/MCPServerObject"
+              ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObject"
              ]
             ],
             "InlineFormula"
@@ -1474,7 +1474,7 @@ Notebook[
                                     ],
                                     ButtonFunction :> {
                                      CopyToClipboard[
-                                      "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"RickHennigan`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                      "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                      ],
                                      NotebookDelete[cellObj],
                                      FrontEndExecute[
@@ -1576,7 +1576,7 @@ Notebook[
                                  "[",
                                  TemplateBox[
                                   {
-                                   "\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\ApplicationData\\\\RickHennigan\\\\MCPServer\\\\Servers\\\\My%20MCP%20Server\""
+                                   "\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\ApplicationData\\\\Wolfram\\\\MCPServer\\\\Servers\\\\My%20MCP%20Server\""
                                   },
                                   "FileArgument"
                                  ],
@@ -1619,7 +1619,7 @@ Notebook[
                 "]"
                }
               ],
-              RickHennigan`MCPServer`MCPServerObject[
+              Wolfram`MCPServer`MCPServerObject[
                <|
                 "Name" -> "My MCP Server",
                 "LLMEvaluator" -> <|
@@ -1644,7 +1644,7 @@ Notebook[
                 |>,
                 "Location" ->
                  File[
-                  "C:\\Users\\rhennigan\\AppData\\Roaming\\Wolfram\\ApplicationData\\RickHennigan\\MCPServer\\Servers\\My%20MCP%20Server"
+                  "C:\\Users\\rhennigan\\AppData\\Roaming\\Wolfram\\ApplicationData\\Wolfram\\MCPServer\\Servers\\My%20MCP%20Server"
                  ],
                 "Transport" -> "StandardInputOutput",
                 "ServerVersion" -> "1.0.0",
@@ -1877,19 +1877,19 @@ Notebook[
          CellID -> 405114878
         ],
         Cell[
-         "RickHennigan/MCPServer",
+         "Wolfram/MCPServer",
          "Categorization",
          CellLabel -> "Paclet Name",
          CellID -> 2308871
         ],
         Cell[
-         "RickHennigan`MCPServer`",
+         "Wolfram`MCPServer`",
          "Categorization",
          CellLabel -> "Context",
          CellID -> 204971323
         ],
         Cell[
-         "RickHennigan/MCPServer/ref/MCPServerObjectQ",
+         "Wolfram/MCPServer/ref/MCPServerObjectQ",
          "Categorization",
          CellLabel -> "URI",
          CellID -> 286126405
@@ -1948,7 +1948,7 @@ Notebook[
    ]
   ]
  },
- TaggingRules -> <|"Paclet" -> "RickHennigan/MCPServer"|>,
+ TaggingRules -> <|"Paclet" -> "Wolfram/MCPServer"|>,
  StyleDefinitions ->
   FrontEnd`FileName[
    {"Wolfram"},

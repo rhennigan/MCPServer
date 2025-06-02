@@ -1,6 +1,6 @@
 #!/usr/bin/env wolframscript
 
-BeginPackage[ "RickHennigan`MCPServerScripts`" ];
+BeginPackage[ "Wolfram`MCPServerScripts`" ];
 
 If[ ! TrueQ @ $loadedDefinitions, Get @ FileNameJoin @ { DirectoryName @ $InputFileName, "Common.wl" } ];
 
@@ -29,4 +29,4 @@ If[ StringQ @ Environment[ "GITHUB_ACTIONS" ]
 
 EndPackage[ ];
 
-RickHennigan`MCPServerScripts`result
+Wolfram`MCPServerScripts`result

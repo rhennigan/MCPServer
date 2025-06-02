@@ -1,42 +1,42 @@
-PreemptProtect[ BeginPackage[ "RickHennigan`MCPServer`" ]; EndPackage[ ] ];
+PreemptProtect[ BeginPackage[ "Wolfram`MCPServer`" ]; EndPackage[ ] ];
 
-RickHennigan`MCPServerLoader`$MXFile = FileNameJoin @ {
+Wolfram`MCPServerLoader`$MXFile = FileNameJoin @ {
     DirectoryName @ $InputFileName,
     ToString @ $SystemWordLength <> "Bit",
     "MCPServer.mx"
 };
 
-If[ MemberQ[ $Packages, "RickHennigan`MCPServer`" ]
+If[ MemberQ[ $Packages, "Wolfram`MCPServer`" ]
     ,
-    RickHennigan`MCPServerLoader`$protectedNames = Replace[
-        RickHennigan`MCPServer`$MCPServerProtectedNames,
-        Except[ _List ] :> Names[ "RickHennigan`MCPServer`*" ]
+    Wolfram`MCPServerLoader`$protectedNames = Replace[
+        Wolfram`MCPServer`$MCPServerProtectedNames,
+        Except[ _List ] :> Names[ "Wolfram`MCPServer`*" ]
     ];
 
-    RickHennigan`MCPServerLoader`$allNames = Replace[
-        RickHennigan`MCPServer`$MCPServerSymbolNames,
-        Except[ _List ] :> Union[ RickHennigan`MCPServerLoader`$protectedNames, Names[ "RickHennigan`MCPServer`*`*" ] ]
+    Wolfram`MCPServerLoader`$allNames = Replace[
+        Wolfram`MCPServer`$MCPServerSymbolNames,
+        Except[ _List ] :> Union[ Wolfram`MCPServerLoader`$protectedNames, Names[ "Wolfram`MCPServer`*`*" ] ]
     ];
 
-    Unprotect @@ RickHennigan`MCPServerLoader`$protectedNames;
-    ClearAll @@ RickHennigan`MCPServerLoader`$allNames;
+    Unprotect @@ Wolfram`MCPServerLoader`$protectedNames;
+    ClearAll @@ Wolfram`MCPServerLoader`$allNames;
 ];
 
 Quiet[
-    If[ FileExistsQ @ RickHennigan`MCPServerLoader`$MXFile
+    If[ FileExistsQ @ Wolfram`MCPServerLoader`$MXFile
         ,
-        Get @ RickHennigan`MCPServerLoader`$MXFile;
+        Get @ Wolfram`MCPServerLoader`$MXFile;
         (* Ensure all subcontexts are in $Packages to avoid reloading subcontexts out of order: *)
-        If[ MatchQ[ RickHennigan`MCPServer`$MCPServerContexts, { __String } ],
+        If[ MatchQ[ Wolfram`MCPServer`$MCPServerContexts, { __String } ],
             WithCleanup[
                 Unprotect @ $Packages,
-                $Packages = DeleteDuplicates @ Join[ $Packages, RickHennigan`MCPServer`$MCPServerContexts ],
+                $Packages = DeleteDuplicates @ Join[ $Packages, Wolfram`MCPServer`$MCPServerContexts ],
                 Protect @ $Packages
             ]
         ]
         ,
         WithCleanup[
-            PreemptProtect @ Get[ "RickHennigan`MCPServer`Main`" ],
+            PreemptProtect @ Get[ "Wolfram`MCPServer`Main`" ],
             { $Context, $ContextPath, $ContextAliases } = { ## }
         ] & [ $Context, $ContextPath, $ContextAliases ]
     ],
@@ -44,4 +44,4 @@ Quiet[
 ];
 
 (* Set the paclet object for this paclet, ensuring that it corresponds to the one that's actually loaded: *)
-RickHennigan`MCPServer`Common`$thisPaclet = PacletObject @ File @ DirectoryName[ $InputFileName, 2 ];
+Wolfram`MCPServer`Common`$thisPaclet = PacletObject @ File @ DirectoryName[ $InputFileName, 2 ];

@@ -1,12 +1,12 @@
 #!/usr/bin/env wolframscript
 
-BeginPackage[ "RickHennigan`MCPServerScripts`" ];
+BeginPackage[ "Wolfram`MCPServerScripts`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Initialization*)
 If[ ! TrueQ @ $loadedDefinitions, Get @ FileNameJoin @ { DirectoryName @ $InputFileName, "Common.wl" } ];
-If[ ! StringQ @ Environment[ "GITHUB_ACTIONS" ], System`$PublisherID = "RickHennigan" ];
+If[ ! StringQ @ Environment[ "GITHUB_ACTIONS" ], System`$PublisherID = "Wolfram" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -63,4 +63,4 @@ If[ $mx && ! $keepMX,
 (*Package Footer*)
 EndPackage[ ];
 
-RickHennigan`MCPServerScripts`result
+Wolfram`MCPServerScripts`result

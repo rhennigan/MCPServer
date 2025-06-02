@@ -1,6 +1,6 @@
 #!/usr/bin/env wolframscript
 
-BeginPackage[ "RickHennigan`MCPServerScripts`" ];
+BeginPackage[ "Wolfram`MCPServerScripts`" ];
 If[ ! TrueQ @ $loadedDefinitions, Get @ FileNameJoin @ { DirectoryName @ $InputFileName, "Common.wl" } ];
 
 (* :!CodeAnalysis::BeginBlock:: *)
@@ -14,7 +14,7 @@ Needs[ "GeneralUtilities`"   -> "gu`"   ];
 Needs[ "PacletTools`"        -> "pt`"   ];
 Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
 
-RickHennigan`MCPServerInternal`$BuildingMX = True;
+Wolfram`MCPServerInternal`$BuildingMX = True;
 $assertions = getBooleanArgument[ { "a", "assertions" }, True ];
 
 (* ::**************************************************************************************************************:: *)
@@ -163,13 +163,13 @@ PacletDirectoryUnload @ $pacletDir;
 cicd`ScriptConfirmBy[ PacletDirectoryLoad @ tmp, MemberQ @ tmp ];
 
 Quiet[
-    Unprotect[ "RickHennigan`MCPServer`*" ];
-    Remove[ "RickHennigan`MCPServer`*" ];
-    Remove[ "RickHennigan`MCPServer`*`*" ];
+    Unprotect[ "Wolfram`MCPServer`*" ];
+    Remove[ "Wolfram`MCPServer`*" ];
+    Remove[ "Wolfram`MCPServer`*`*" ];
 ];
 
-cicd`ScriptConfirmAssert[ Names[ "RickHennigan`MCPServer`*" ] === Names[ "RickHennigan`MCPServer`*`*" ] === { }, "Names" ];
-cicd`ScriptConfirm @ CheckAbort[ Get[ "RickHennigan`MCPServer`" ], $Failed ];
+cicd`ScriptConfirmAssert[ Names[ "Wolfram`MCPServer`*" ] === Names[ "Wolfram`MCPServer`*`*" ] === { }, "Names" ];
+cicd`ScriptConfirm @ CheckAbort[ Get[ "Wolfram`MCPServer`" ], $Failed ];
 
 cicd`ScriptConfirmMatch[ DeleteDirectory[ tmp, DeleteContents -> True ], Null ];
 
@@ -177,7 +177,7 @@ $mxDir = cDir @ gu`EnsureDirectory @ DirectoryName @ $mxFile;
 cicd`ConsoleLog @ SequenceForm[ "MX target directory: ", $mxDir  ];
 cicd`ConsoleLog @ SequenceForm[ "Building MX file: "   , $mxFile ];
 
-DumpSave[ $mxFile, { "RickHennigan`MCPServer`" }, "SymbolAttributes" -> False ];
+DumpSave[ $mxFile, { "Wolfram`MCPServer`" }, "SymbolAttributes" -> False ];
 
 PacletDirectoryUnload @ tmp;
 PacletDirectoryLoad @ $pacletDir;
@@ -191,4 +191,4 @@ result = If[ ! FileExistsQ @ $mxFile,
 
 EndPackage[ ];
 
-RickHennigan`MCPServerScripts`result
+Wolfram`MCPServerScripts`result

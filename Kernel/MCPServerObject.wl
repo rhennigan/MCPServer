@@ -1,10 +1,10 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "RickHennigan`MCPServer`MCPServerObject`" ];
+BeginPackage[ "Wolfram`MCPServer`MCPServerObject`" ];
 Begin[ "`Private`" ];
 
-Needs[ "RickHennigan`MCPServer`"        ];
-Needs[ "RickHennigan`MCPServer`Common`" ];
+Needs[ "Wolfram`MCPServer`"        ];
+Needs[ "Wolfram`MCPServer`Common`" ];
 
 $ContextAliases[ "cb`" ] = "Wolfram`Chatbook`";
 $ContextAliases[ "sp`" ] = "System`Private`";
@@ -14,7 +14,7 @@ $ContextAliases[ "sp`" ] = "System`Private`";
 (*Argument Patterns*)
 $defaultCommandLineArguments = {
     "-run",
-    "PacletSymbol[\"RickHennigan/MCPServer\",\"RickHennigan`MCPServer`StartMCPServer\"][]",
+    "PacletSymbol[\"Wolfram/MCPServer\",\"Wolfram`MCPServer`StartMCPServer\"][]",
     "-noinit",
     "-noprompt"
 };

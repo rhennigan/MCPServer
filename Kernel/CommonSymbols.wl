@@ -1,4 +1,4 @@
-BeginPackage[ "RickHennigan`MCPServer`Common`" ];
+BeginPackage[ "Wolfram`MCPServer`Common`" ];
 
 `$catching;
 `$catchTopTag;

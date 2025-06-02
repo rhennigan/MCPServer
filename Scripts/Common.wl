@@ -1,4 +1,4 @@
-BeginPackage[ "RickHennigan`MCPServerScripts`" ];
+BeginPackage[ "Wolfram`MCPServerScripts`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -461,10 +461,10 @@ Print[ "Definition Notebook: ", $defNB ];
 
 cicd`ScriptConfirmBy[ PacletDirectoryLoad @ $pacletDir, MemberQ @ $pacletDir ];
 cicd`ScriptConfirmAssert[
-    StringStartsQ[ FindFile[ "RickHennigan`MCPServer`" ], $pacletDir ],
+    StringStartsQ[ FindFile[ "Wolfram`MCPServer`" ], $pacletDir ],
     TemplateApply[
         "MCPServer context points to \"`1`\" which is not contained in the expected paclet directory \"`2`\".",
-        { FindFile[ "RickHennigan`MCPServer`" ], $pacletDir }
+        { FindFile[ "Wolfram`MCPServer`" ], $pacletDir }
     ]
 ];
 

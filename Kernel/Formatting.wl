@@ -1,10 +1,10 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "RickHennigan`MCPServer`Formatting`" ];
+BeginPackage[ "Wolfram`MCPServer`Formatting`" ];
 Begin[ "`Private`" ];
 
-Needs[ "RickHennigan`MCPServer`"        ];
-Needs[ "RickHennigan`MCPServer`Common`" ];
+Needs[ "Wolfram`MCPServer`"        ];
+Needs[ "Wolfram`MCPServer`Common`" ];
 
 (* TODO: show installations in formatted boxes *)
 
