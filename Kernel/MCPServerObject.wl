@@ -372,7 +372,7 @@ makeJSONConfiguration[ data_Association ] := Enclose[
         name = ConfirmBy[ data[ "Name" ], StringQ, "Name" ];
         env = <| "MCP_SERVER_NAME" -> name |>;
         cmd = ConfirmBy[ getWolframCommand @ $OperatingSystem, StringQ, "WolframCommand" ];
-        config = <| "command" -> cmd, "args" -> $defaultCommandLineArguments, "env" -> env |>;
+        config = <| "type" -> "stdio", "command" -> cmd, "args" -> $defaultCommandLineArguments, "env" -> env |>;
         full = <| "mcpServers" -> <| name -> config |> |>;
         ConfirmBy[ Developer`WriteRawJSONString @ full, StringQ, "JSONConfiguration" ]
     ],
