@@ -2,7 +2,7 @@ PacletObject[ <|
     "Name"             -> "RickHennigan/MCPServer",
     "Description"      -> "Implements a model context protocol server using Wolfram Language",
     "Creator"          -> "Richard Hennigan (Wolfram Research)",
-    "Version"          -> "1.3.0",
+    "Version"          -> "1.3.1",
     "WolframVersion"   -> "14.2+",
     "PublisherID"      -> "RickHennigan",
     "License"          -> "MIT",
@@ -15,11 +15,9 @@ PacletObject[ <|
     "DocumentationURL" -> "https://paclets.com",
     "Extensions"       -> {
         { "Kernel",
-            "Root"         -> "Kernel",
-            "Context"      -> { "RickHennigan`MCPServer`" },
-            "HiddenImport" -> True,
-            "Loading"      -> Automatic,
-            "Symbols"      -> {
+            "Root"    -> "Kernel",
+            "Context" -> { "RickHennigan`MCPServer`" },
+            "Symbols" -> {
                 "RickHennigan`MCPServer`$DefaultMCPServers",
                 "RickHennigan`MCPServer`$DefaultMCPTools",
                 "RickHennigan`MCPServer`$LastMCPServerFailure",
