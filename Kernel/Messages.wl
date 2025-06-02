@@ -1,4 +1,4 @@
-BeginPackage[ "RickHennigan`MCPServer`" ];
+BeginPackage[ "Wolfram`MCPServer`" ];
 
 MCPServer::usage                     = "MCPServer is a symbol for miscellaneous messages.";
 MCPServer::DeleteBuiltInMCPServer    = "The MCP server named \"`1`\" is built-in and cannot be deleted.";

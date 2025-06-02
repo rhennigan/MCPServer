@@ -44,7 +44,7 @@ jobs:
       run: wolframscript -f Scripts/BuildPaclet.wls
 
     - name: Rename Paclet File
-      run: mv "${{ env.PACLET_PATH }}" "${{ env.PACLET_BUILD_DIR }}/RickHennigan__MCPServer.paclet"
+      run: mv "${{ env.PACLET_PATH }}" "${{ env.PACLET_BUILD_DIR }}/Wolfram__MCPServer.paclet"
 
     - name: Update Release
       run: |
@@ -60,6 +60,6 @@ jobs:
         fi
 
         gh release upload experimental \
-          "${{ env.PACLET_BUILD_DIR }}/RickHennigan__MCPServer.paclet" \
+          "${{ env.PACLET_BUILD_DIR }}/Wolfram__MCPServer.paclet" \
           --clobber \
           --repo="${{ github.repository }}"

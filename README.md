@@ -1,4 +1,4 @@
-# [MCPServer](https://paclets.com/RickHennigan/MCPServer)
+# [MCPServer](https://paclets.com/Wolfram/MCPServer)
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Wolfram Version](https://img.shields.io/badge/Wolfram-14.2%2B-red.svg)](https://www.wolfram.com/language/)
@@ -22,13 +22,13 @@ Implements a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) ser
 ### Install the Paclet
 
 ```wolfram
-PacletInstall["RickHennigan/MCPServer"]
+PacletInstall["Wolfram/MCPServer"]
 ```
 
 ### Load the Package
 
 ```wolfram
-Needs["RickHennigan`MCPServer`"]
+Needs["Wolfram`MCPServer`"]
 ```
 
 ## Quick Start
@@ -95,7 +95,7 @@ Your Wolfram tools will now be available in Cursor agent chat:
 
 ## Advanced Usage
 
-For more details on creating custom MCP servers, configuring tools, and advanced options, please refer to the [documentation](https://paclets.com/RickHennigan/MCPServer).
+For more details on creating custom MCP servers, configuring tools, and advanced options, please refer to the [documentation](https://paclets.com/Wolfram/MCPServer).
 
 ## Development
 

@@ -1,30 +1,30 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "RickHennigan`MCPServer`Common`" ];
+BeginPackage[ "Wolfram`MCPServer`Common`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Symbols defined elsewhere in the paclet*)
-Get[ "RickHennigan`MCPServer`CommonSymbols`" ];
+Get[ "Wolfram`MCPServer`CommonSymbols`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Messages*)
-Get[ "RickHennigan`MCPServer`Messages`" ];
+Get[ "Wolfram`MCPServer`Messages`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Begin Private Context*)
 Begin[ "`Private`" ];
 
-Needs[ "RickHennigan`MCPServer`" ];
+Needs[ "Wolfram`MCPServer`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Config*)
 $cloudNotebooks         := TrueQ @ CloudSystem`$CloudNotebooks;
-$mxFlag                 := RickHennigan`MCPServerInternal`$BuildingMX;
-$resourceFunctionContext = "RickHennigan`MCPServer`ResourceFunctions`";
+$mxFlag                 := Wolfram`MCPServerInternal`$BuildingMX;
+$resourceFunctionContext = "Wolfram`MCPServer`ResourceFunctions`";
 
 $resourceVersions = <|
     "BinarySerializeWithDefinitions" -> "1.0.0",
@@ -552,7 +552,7 @@ $maxBugReportURLSize = 7000;
 
 $maxPartLength = 500;
 
-$thisPaclet    := PacletObject[ "RickHennigan/MCPServer" ];
+$thisPaclet    := PacletObject[ "Wolfram/MCPServer" ];
 $pacletVersion := $thisPaclet[ "Version" ];
 $debugData     := debugData @ $thisPaclet[ "PacletInfo" ];
 $settingsData  := $settings;
@@ -739,7 +739,7 @@ $bugReportStack := StringRiffle[
         DeleteAdjacentDuplicates @ Cases[
             Stack[ _ ],
             HoldForm[ (s_Symbol) | (s_Symbol)[ ___ ] | (s_Symbol)[ ___ ][ ___ ] ] /;
-                AtomQ @ Unevaluated @ s && StringStartsQ[ Context @ s, "RickHennigan`MCPServer`" ] :>
+                AtomQ @ Unevaluated @ s && StringStartsQ[ Context @ s, "Wolfram`MCPServer`" ] :>
                     SymbolName @ Unevaluated @ s
         ],
         { a___, "throwInternalFailure", ___ } :> { a, "throwInternalFailure" }

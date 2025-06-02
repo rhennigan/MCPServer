@@ -1,15 +1,15 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "RickHennigan`MCPServer`Files`" ];
+BeginPackage[ "Wolfram`MCPServer`Files`" ];
 Begin[ "`Private`" ];
 
-Needs[ "RickHennigan`MCPServer`"        ];
-Needs[ "RickHennigan`MCPServer`Common`" ];
+Needs[ "Wolfram`MCPServer`"        ];
+Needs[ "Wolfram`MCPServer`Common`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Configuration*)
-$rootPath    := FileNameJoin @ { $UserBaseDirectory, "ApplicationData", "RickHennigan", "MCPServer" };
+$rootPath    := FileNameJoin @ { $UserBaseDirectory, "ApplicationData", "Wolfram", "MCPServer" };
 $storagePath := FileNameJoin @ { $rootPath, "Servers" };
 $imagePath   := FileNameJoin @ { $rootPath, "Images"  };
 

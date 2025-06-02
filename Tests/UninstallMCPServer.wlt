@@ -2,7 +2,7 @@
 (* ::Section::Closed:: *)
 (*Initialization*)
 VerificationTest[
-    If[ ! TrueQ @ RickHennigan`MCPServerTests`$TestDefinitionsLoaded,
+    If[ ! TrueQ @ Wolfram`MCPServerTests`$TestDefinitionsLoaded,
         Get @ FileNameJoin @ { DirectoryName[ $TestFileName ], "Common.wl" }
     ],
     Null,
@@ -11,7 +11,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Needs[ "RickHennigan`MCPServer`" ],
+    Needs[ "Wolfram`MCPServer`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/UninstallMCPServer.wlt:13,1-18,2"

@@ -1,6 +1,6 @@
 #!/usr/bin/env wolframscript
 
-BeginPackage[ "RickHennigan`MCPServerScripts`" ];
+BeginPackage[ "Wolfram`MCPServerScripts`" ];
 
 If[ ! TrueQ @ $loadedDefinitions, Get @ FileNameJoin @ { DirectoryName @ $InputFileName, "Common.wl" } ];
 
@@ -73,4 +73,4 @@ result = cicd`ScriptConfirmBy[ incrementPacletVersion @ $pacletDir, StringQ ];
 
 EndPackage[ ];
 
-RickHennigan`MCPServerScripts`result
+Wolfram`MCPServerScripts`result

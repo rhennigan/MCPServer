@@ -1,4 +1,4 @@
-BeginPackage[ "RickHennigan`MCPServerScripts`" ];
+BeginPackage[ "Wolfram`MCPServerScripts`" ];
 
 Needs[ "CodeInspector`" -> "ci`" ];
 Needs[ "CodeParser`"    -> "cp`" ];

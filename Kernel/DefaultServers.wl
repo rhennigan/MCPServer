@@ -1,12 +1,12 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "RickHennigan`MCPServer`DefaultServers`" ];
+BeginPackage[ "Wolfram`MCPServer`DefaultServers`" ];
 Begin[ "`Private`" ];
 
-Needs[ "RickHennigan`MCPServer`"        ];
-Needs[ "RickHennigan`MCPServer`Common`" ];
+Needs[ "Wolfram`MCPServer`"        ];
+Needs[ "Wolfram`MCPServer`Common`" ];
 
-Needs[ "RickHennigan`MCPServer`CreateMCPServer`" -> None ];
+Needs[ "Wolfram`MCPServer`CreateMCPServer`" -> None ];
 Needs[ "Wolfram`Chatbook`" -> "cb`" ];
 
 (* ::**************************************************************************************************************:: *)

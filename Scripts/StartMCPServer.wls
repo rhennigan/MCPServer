@@ -22,7 +22,7 @@ debugEcho[ expr_ ] := (WriteLine[ "stderr", ToString[ expr, InputForm ] ]; expr)
 initialize // ClearAll;
 
 initialize[ name_ ] :=
-    If[ StringQ @ name, initialize[ name, PersistentSymbol[ "RickHennigan/MCPServer/Initialization/"<>name ] ] ];
+    If[ StringQ @ name, initialize[ name, PersistentSymbol[ "Wolfram/MCPServer/Initialization/"<>name ] ] ];
 
 initialize[ name_String, _Missing ] :=
     Null;
@@ -51,9 +51,9 @@ initialize[ Environment[ "MCP_SERVER_NAME" ] ];
 (* ::Subsection::Closed:: *)
 (*Load Current Paclet*)
 PacletDirectoryLoad @ DirectoryName[ $InputFileName, 2 ];
-Get[ "RickHennigan`MCPServer`" ];
+Get[ "Wolfram`MCPServer`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Start MCP Server*)
-RickHennigan`MCPServer`StartMCPServer[ ]
+Wolfram`MCPServer`StartMCPServer[ ]

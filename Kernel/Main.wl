@@ -1,6 +1,6 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "RickHennigan`MCPServer`" ];
+BeginPackage[ "Wolfram`MCPServer`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -23,7 +23,7 @@ BeginPackage[ "RickHennigan`MCPServer`" ];
 (*Begin Private Context*)
 Begin[ "`Private`" ];
 
-Needs[ "RickHennigan`MCPServer`Common`" ];
+Needs[ "Wolfram`MCPServer`Common`" ];
 
 (* Avoiding context aliasing due to bug 434990: *)
 Needs[ "GeneralUtilities`" -> None ];
@@ -31,7 +31,7 @@ Needs[ "GeneralUtilities`" -> None ];
 (* Clear subcontexts from `$Packages` to force `Needs` to run again: *)
 WithCleanup[
     Unprotect @ $Packages,
-    $Packages = Select[ $Packages, Not @* StringStartsQ[ "RickHennigan`MCPServer`"~~__~~"`" ] ],
+    $Packages = Select[ $Packages, Not @* StringStartsQ[ "Wolfram`MCPServer`"~~__~~"`" ] ],
     Protect @ $Packages
 ];
 
@@ -44,16 +44,16 @@ GeneralUtilities`SetUsage[ MCPServer, "MCPServer is a symbol for miscellaneous m
 (* ::Section::Closed:: *)
 (*Load Files*)
 $MCPServerContexts = {
-    "RickHennigan`MCPServer`",
-    "RickHennigan`MCPServer`Common`",
-    "RickHennigan`MCPServer`CreateMCPServer`",
-    "RickHennigan`MCPServer`DefaultServers`",
-    "RickHennigan`MCPServer`Files`",
-    "RickHennigan`MCPServer`Formatting`",
-    "RickHennigan`MCPServer`InstallMCPServer`",
-    "RickHennigan`MCPServer`MCPServerObject`",
-    "RickHennigan`MCPServer`StartMCPServer`",
-    "RickHennigan`MCPServer`Utilities`"
+    "Wolfram`MCPServer`",
+    "Wolfram`MCPServer`Common`",
+    "Wolfram`MCPServer`CreateMCPServer`",
+    "Wolfram`MCPServer`DefaultServers`",
+    "Wolfram`MCPServer`Files`",
+    "Wolfram`MCPServer`Formatting`",
+    "Wolfram`MCPServer`InstallMCPServer`",
+    "Wolfram`MCPServer`MCPServerObject`",
+    "Wolfram`MCPServer`StartMCPServer`",
+    "Wolfram`MCPServer`Utilities`"
 };
 
 Scan[ Needs[ # -> None ] &, $MCPServerContexts ];
@@ -63,13 +63,13 @@ Scan[ Needs[ # -> None ] &, $MCPServerContexts ];
 (*Names*)
 $MCPServerSymbolNames = $MCPServerSymbolNames =
     Block[ { $Context, $ContextPath },
-        Union[ Names[ "RickHennigan`MCPServer`*" ], Names[ "RickHennigan`MCPServer`*`*" ] ]
+        Union[ Names[ "Wolfram`MCPServer`*" ], Names[ "Wolfram`MCPServer`*`*" ] ]
     ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Protected Symbols*)
-$MCPServerProtectedNames = "RickHennigan`MCPServer`" <> # & /@ {
+$MCPServerProtectedNames = "Wolfram`MCPServer`" <> # & /@ {
     "$DefaultMCPServers",
     "$DefaultMCPTools",
     "$LastMCPServerFailure",
@@ -92,7 +92,7 @@ Scan[ Protect, $MCPServerProtectedNames ];
 addToMXInitialization[
     $MCPServerContexts;
     $MCPServerSymbolNames;
-    SetAttributes[ Evaluate @ Names[ "RickHennigan`MCPServer`*" ], ReadProtected ];
+    SetAttributes[ Evaluate @ Names[ "Wolfram`MCPServer`*" ], ReadProtected ];
 ];
 
 mxInitialize[ ];

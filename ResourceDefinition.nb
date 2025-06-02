@@ -12,7 +12,7 @@ Notebook[
    CellGroupData[
     {
      Cell[
-      "RickHennigan/MCPServer",
+      "Wolfram/MCPServer",
       "Title",
       Deletable -> False,
       CellTags -> {"Name", "TemplateCell", "Title"},
@@ -4557,11 +4557,7 @@ Notebook[
             CellTags -> {"Primary Context", "PrimaryContext", "TemplateCellGroup"},
             CellID -> 945361513
            ],
-           Cell[
-            "RickHennigan`MCPServer`",
-            "Text",
-            CellID -> 291105961
-           ]
+           Cell["Wolfram`MCPServer`", "Text", CellID -> 291105961]
           },
           Open
          ]
@@ -4814,7 +4810,7 @@ Notebook[
               "\n",
               RowBox[
                {
-                RowBox[{"Needs", "[", "\"RickHennigan`MCPServer`\"", "]"}],
+                RowBox[{"Needs", "[", "\"Wolfram`MCPServer`\"", "]"}],
                 ";"
                }
               ],
@@ -5478,7 +5474,7 @@ Notebook[
                                                          ],
                                                          ButtonFunction :> {
                                                           CopyToClipboard[
-                                                           "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"RickHennigan`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                           "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                           ],
                                                           NotebookDelete[cellObj],
                                                           FrontEndExecute[
@@ -5616,7 +5612,7 @@ Notebook[
                                      "]"
                                     }
                                    ],
-                                   RickHennigan`MCPServer`MCPServerObject[
+                                   Wolfram`MCPServer`MCPServerObject[
                                     <|
                                      "Name" -> "Wolfram",
                                      "Location" -> "BuiltIn",
@@ -5636,7 +5632,7 @@ Notebook[
                                            "Required" -> True
                                           |>
                                          },
-                                         "Function" -> RickHennigan`MCPServer`DefaultServers`Private`relatedWolframContext,
+                                         "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedWolframContext,
                                          "Options" -> { },
                                          "LLMPacletVersion" -> "1.6.10"
                                         |>
@@ -5657,7 +5653,7 @@ Notebook[
                                            "Required" -> False
                                           |>
                                          },
-                                         "Function" -> RickHennigan`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                                         "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
                                          "Options" -> { },
                                          "LLMPacletVersion" -> "1.6.10"
                                         |>
@@ -5744,7 +5740,7 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     RickHennigan`MCPServer`MCPServer,
+                     Wolfram`MCPServer`MCPServer,
                      "InstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"Wolfram", "Claude Desktop"},
@@ -5753,7 +5749,7 @@ Notebook[
                      "C:/Users/rhennigan/AppData/Roaming/Claude/claude_desktop_config.json"
                     ],
                    "MCPServerObject" ->
-                    RickHennigan`MCPServer`MCPServerObject[
+                    Wolfram`MCPServer`MCPServerObject[
                      <|
                       "Name" -> "Wolfram",
                       "Location" -> "BuiltIn",
@@ -5773,7 +5769,7 @@ Notebook[
                             "Required" -> True
                            |>
                           },
-                          "Function" -> RickHennigan`MCPServer`DefaultServers`Private`relatedWolframContext,
+                          "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedWolframContext,
                           "Options" -> { },
                           "LLMPacletVersion" -> "1.6.10"
                          |>
@@ -5794,7 +5790,7 @@ Notebook[
                             "Required" -> False
                            |>
                           },
-                          "Function" -> RickHennigan`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                          "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
                           "Options" -> { },
                           "LLMPacletVersion" -> "1.6.10"
                          |>
@@ -6830,7 +6826,7 @@ Notebook[
                                        BaselinePosition -> Baseline,
                                        ButtonFunction :> {
                                         CopyToClipboard[
-                                         "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"RickHennigan`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                         "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                         ],
                                         NotebookDelete[cellObj],
                                         FrontEndExecute[
@@ -6917,7 +6913,7 @@ Notebook[
                                     "[",
                                     TemplateBox[
                                      {
-                                      "\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\ApplicationData\\\\RickHennigan\\\\MCPServer\\\\My%20MCP%20Server\""
+                                      "\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\ApplicationData\\\\Wolfram\\\\MCPServer\\\\My%20MCP%20Server\""
                                      },
                                      "FileArgument"
                                     ],
@@ -6960,7 +6956,7 @@ Notebook[
                    "]"
                   }
                  ],
-                 RickHennigan`MCPServer`MCPServerObject[
+                 Wolfram`MCPServer`MCPServerObject[
                   <|
                    "Name" -> "My MCP Server",
                    "LLMEvaluator" -> <|
@@ -6994,7 +6990,7 @@ Notebook[
                    |>,
                    "Location" ->
                     File[
-                     "C:\\Users\\rhennigan\\AppData\\Roaming\\Wolfram\\ApplicationData\\RickHennigan\\MCPServer\\My%20MCP%20Server"
+                     "C:\\Users\\rhennigan\\AppData\\Roaming\\Wolfram\\ApplicationData\\Wolfram\\MCPServer\\My%20MCP%20Server"
                     ],
                    "Transport" -> "StandardInputOutput",
                    "ServerVersion" -> "1.0.0",
@@ -7626,7 +7622,7 @@ Notebook[
                                                          ],
                                                          ButtonFunction :> {
                                                           CopyToClipboard[
-                                                           "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"RickHennigan`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                           "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                           ],
                                                           NotebookDelete[cellObj],
                                                           FrontEndExecute[
@@ -7728,7 +7724,7 @@ Notebook[
                                                       "[",
                                                       TemplateBox[
                                                        {
-                                                        "\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\ApplicationData\\\\RickHennigan\\\\MCPServer\\\\My%20MCP%20Server\""
+                                                        "\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\ApplicationData\\\\Wolfram\\\\MCPServer\\\\My%20MCP%20Server\""
                                                        },
                                                        "FileArgument"
                                                       ],
@@ -7771,7 +7767,7 @@ Notebook[
                                      "]"
                                     }
                                    ],
-                                   RickHennigan`MCPServer`MCPServerObject[
+                                   Wolfram`MCPServer`MCPServerObject[
                                     <|
                                      "Name" -> "My MCP Server",
                                      "LLMEvaluator" -> <|
@@ -7805,7 +7801,7 @@ Notebook[
                                      |>,
                                      "Location" ->
                                       File[
-                                       "C:\\Users\\rhennigan\\AppData\\Roaming\\Wolfram\\ApplicationData\\RickHennigan\\MCPServer\\My%20MCP%20Server"
+                                       "C:\\Users\\rhennigan\\AppData\\Roaming\\Wolfram\\ApplicationData\\Wolfram\\MCPServer\\My%20MCP%20Server"
                                       ],
                                      "Transport" -> "StandardInputOutput",
                                      "ServerVersion" -> "1.0.0",
@@ -7869,7 +7865,7 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     RickHennigan`MCPServer`MCPServer,
+                     Wolfram`MCPServer`MCPServer,
                      "InstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"My MCP Server", "Claude Desktop"},
@@ -7878,7 +7874,7 @@ Notebook[
                      "C:/Users/rhennigan/AppData/Roaming/Claude/claude_desktop_config.json"
                     ],
                    "MCPServerObject" ->
-                    RickHennigan`MCPServer`MCPServerObject[
+                    Wolfram`MCPServer`MCPServerObject[
                      <|
                       "Name" -> "My MCP Server",
                       "LLMEvaluator" -> <|
@@ -7912,7 +7908,7 @@ Notebook[
                       |>,
                       "Location" ->
                        File[
-                        "C:\\Users\\rhennigan\\AppData\\Roaming\\Wolfram\\ApplicationData\\RickHennigan\\MCPServer\\My%20MCP%20Server"
+                        "C:\\Users\\rhennigan\\AppData\\Roaming\\Wolfram\\ApplicationData\\Wolfram\\MCPServer\\My%20MCP%20Server"
                        ],
                       "Transport" -> "StandardInputOutput",
                       "ServerVersion" -> "1.0.0",
@@ -8575,7 +8571,7 @@ Notebook[
                                                          ],
                                                          ButtonFunction :> {
                                                           CopyToClipboard[
-                                                           "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"RickHennigan`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                           "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                           ],
                                                           NotebookDelete[cellObj],
                                                           FrontEndExecute[
@@ -8677,7 +8673,7 @@ Notebook[
                                                       "[",
                                                       TemplateBox[
                                                        {
-                                                        "\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\ApplicationData\\\\RickHennigan\\\\MCPServer\\\\My%20MCP%20Server\""
+                                                        "\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\ApplicationData\\\\Wolfram\\\\MCPServer\\\\My%20MCP%20Server\""
                                                        },
                                                        "FileArgument"
                                                       ],
@@ -8720,7 +8716,7 @@ Notebook[
                                      "]"
                                     }
                                    ],
-                                   RickHennigan`MCPServer`MCPServerObject[
+                                   Wolfram`MCPServer`MCPServerObject[
                                     <|
                                      "Name" -> "My MCP Server",
                                      "LLMEvaluator" -> <|
@@ -8754,7 +8750,7 @@ Notebook[
                                      |>,
                                      "Location" ->
                                       File[
-                                       "C:\\Users\\rhennigan\\AppData\\Roaming\\Wolfram\\ApplicationData\\RickHennigan\\MCPServer\\My%20MCP%20Server"
+                                       "C:\\Users\\rhennigan\\AppData\\Roaming\\Wolfram\\ApplicationData\\Wolfram\\MCPServer\\My%20MCP%20Server"
                                       ],
                                      "Transport" -> "StandardInputOutput",
                                      "ServerVersion" -> "1.0.0",
@@ -8818,13 +8814,13 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     RickHennigan`MCPServer`MCPServer,
+                     Wolfram`MCPServer`MCPServer,
                      "InstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"My MCP Server", "Cursor"},
                    "Location" -> File["C:/Users/rhennigan/.cursor/mcp.json"],
                    "MCPServerObject" ->
-                    RickHennigan`MCPServer`MCPServerObject[
+                    Wolfram`MCPServer`MCPServerObject[
                      <|
                       "Name" -> "My MCP Server",
                       "LLMEvaluator" -> <|
@@ -8858,7 +8854,7 @@ Notebook[
                       |>,
                       "Location" ->
                        File[
-                        "C:\\Users\\rhennigan\\AppData\\Roaming\\Wolfram\\ApplicationData\\RickHennigan\\MCPServer\\My%20MCP%20Server"
+                        "C:\\Users\\rhennigan\\AppData\\Roaming\\Wolfram\\ApplicationData\\Wolfram\\MCPServer\\My%20MCP%20Server"
                        ],
                       "Transport" -> "StandardInputOutput",
                       "ServerVersion" -> "1.0.0",
