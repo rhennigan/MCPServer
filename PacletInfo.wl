@@ -15,11 +15,9 @@ PacletObject[ <|
     "DocumentationURL" -> "https://paclets.com",
     "Extensions"       -> {
         { "Kernel",
-            "Root"         -> "Kernel",
-            "Context"      -> { "RickHennigan`MCPServer`" },
-            "HiddenImport" -> True,
-            "Loading"      -> Automatic,
-            "Symbols"      -> {
+            "Root"    -> "Kernel",
+            "Context" -> { "RickHennigan`MCPServer`" },
+            "Symbols" -> {
                 "RickHennigan`MCPServer`$DefaultMCPServers",
                 "RickHennigan`MCPServer`$DefaultMCPTools",
                 "RickHennigan`MCPServer`$LastMCPServerFailure",
