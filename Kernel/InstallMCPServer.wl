@@ -306,27 +306,21 @@ readExistingMCPConfig // beginDefinition;
 readExistingMCPConfig[ file_ ] := Enclose[
     Catch @ Module[ { data, isVSCode },
         isVSCode = $installName === "VisualStudioCode";
-        
-        If[ ! FileExistsQ @ file, 
+
+        If[ ! FileExistsQ @ file,
             If[ isVSCode,
                 Throw @ <| "mcp" -> <| "servers" -> <| |> |> |>,
                 Throw @ <| "mcpServers" -> <| |> |>
             ]
         ];
-        
+
         data = readRawJSONFile @ ExpandFileName @ file;
-        
+
         (* Handle VS Code format *)
         If[ isVSCode,
-            If[ ! MatchQ[ data, _Association ],
-                data = <| |>
-            ];
-            If[ ! KeyExistsQ[ data, "mcp" ],
-                data[ "mcp" ] = <| "servers" -> <| |> |>
-            ];
-            If[ ! MatchQ[ data[ "mcp" ], KeyValuePattern[ "servers" -> _Association ] ],
-                data[ "mcp" ] = <| "servers" -> <| |> |>
-            ];
+            If[ ! AssociationQ @ data, throwFailure[ "InvalidMCPConfiguration", file ] ];
+            If[ ! AssociationQ @ data[ "mcp" ], data[ "mcp" ] = <| "servers" -> <| |> |> ];
+            If[ ! AssociationQ @ data[ "mcp", "servers" ], data[ "mcp", "servers" ] = <| |> ];
             data,
             (* Handle standard format *)
             If[ ! MatchQ[ data, KeyValuePattern[ "mcpServers" -> _Association ] ],
@@ -408,7 +402,7 @@ uninstallMCPServer[ target0_File, obj_MCPServerObject ] := Enclose[
             If[ ! KeyExistsQ[ existing[ "mcpServers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
             KeyDropFrom[ existing[ "mcpServers" ], name ]
         ];
-        
+
         ConfirmBy[ writeRawJSONFile[ target, existing ], FileExistsQ, "Export" ];
 
         ConfirmAssert[ readRawJSONFile @ target === existing, "ExportCheck" ];
