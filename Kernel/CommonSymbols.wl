@@ -20,6 +20,7 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `catchMine;
 `catchTop;
 `catchTopAs;
+`chatbookVersionCheck;
 `directoryQ;
 `endDefinition;
 `endExportedDefinition;
