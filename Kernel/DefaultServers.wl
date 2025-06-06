@@ -114,6 +114,7 @@ readNotebook[ file_String ] /; FileExistsQ @ file := Enclose[
     Catch @ Module[ { nb },
         nb = Import[ file, "NB" ];
         If[ ! MatchQ[ nb, _Notebook ], Throw[ "File is not a valid Wolfram notebook: " <> file ] ];
+        ConfirmMatch[ chatbookVersionCheck[ ], True, "ChatbookVersionCheck" ];
         ConfirmBy[ exportMarkdownString @ nb, StringQ, "Result" ]
     ],
     throwInternalFailure
@@ -126,6 +127,7 @@ readNotebook[ nbo0_String ] := Enclose[
             Throw[ "Invalid notebook specification: " <> nbo0 ]
         ];
         nbo = ConfirmMatch[ ReleaseHold @ held, NotebookObject[ __String ], "NotebookObject" ];
+        ConfirmMatch[ chatbookVersionCheck[ ], True, "ChatbookVersionCheck" ];
         ConfirmBy[ exportMarkdownString @ nbo, StringQ, "Result" ]
     ],
     throwInternalFailure
@@ -177,6 +179,7 @@ writeNotebook[ KeyValuePattern @ { "markdown" -> markdown_, "file" -> file_, "ov
 writeNotebook[ markdown_String, file_String, overwrite: True|False ] := Enclose[
     Catch @ Module[ { nb },
         If[ FileExistsQ @ file && ! overwrite, Throw[ "File already exists: " <> file ] ];
+        ConfirmMatch[ chatbookVersionCheck[ ], True, "ChatbookVersionCheck" ];
         nb = ConfirmMatch[ importMarkdownString[ markdown, "Notebook" ], _Notebook, "Notebook" ];
         ConfirmBy[ Export[ file, nb, "NB" ], FileExistsQ, "File" ]
     ],
@@ -244,6 +247,7 @@ evaluateWolframLanguage[ code_String, _Missing ] :=
 
 evaluateWolframLanguage[ code_String, timeConstraint_Integer ] := Enclose[
     Module[ { string, exported },
+        ConfirmMatch[ chatbookVersionCheck[ ], True, "ChatbookVersionCheck" ];
         string   = ConfirmBy[ evaluateWolframLanguage0[ code, timeConstraint ], StringQ, "Result" ];
         exported = ConfirmBy[ exportImages @ string, StringQ, "Result" ];
         StringTrim @ exported
@@ -431,6 +435,7 @@ relatedWolframAlphaResults[ KeyValuePattern[ "context" -> context_ ] ] :=
 
 relatedWolframAlphaResults[ context_String ] := Enclose[
     Module[ { prompt },
+        ConfirmMatch[ chatbookVersionCheck[ ], True, "ChatbookVersionCheck" ];
         prompt = ConfirmBy[ cb`RelatedWolframAlphaResults[ context, "Prompt" ], StringQ, "Prompt" ];
         StringTrim @ prompt
     ],
@@ -487,6 +492,8 @@ relatedDocumentation[ KeyValuePattern[ "context" -> context_ ] ] :=
 
 relatedDocumentation[ context_String ] := Enclose[
     Module[ { prompt, formatted },
+
+        ConfirmMatch[ chatbookVersionCheck[ ], True, "ChatbookVersionCheck" ];
 
         prompt = ConfirmBy[ relatedDocumentation0 @ context, StringQ, "Prompt" ];
 
