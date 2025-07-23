@@ -315,17 +315,15 @@ readExistingMCPConfig[ file_ ] := Enclose[
         ];
 
         data = readRawJSONFile @ ExpandFileName @ file;
+        If[ ! AssociationQ @ data, throwFailure[ "InvalidMCPConfiguration", file ] ];
 
         (* Handle VS Code format *)
         If[ isVSCode,
-            If[ ! AssociationQ @ data, throwFailure[ "InvalidMCPConfiguration", file ] ];
             If[ ! AssociationQ @ data[ "mcp" ], data[ "mcp" ] = <| "servers" -> <| |> |> ];
             If[ ! AssociationQ @ data[ "mcp", "servers" ], data[ "mcp", "servers" ] = <| |> ];
             data,
             (* Handle standard format *)
-            If[ ! MatchQ[ data, KeyValuePattern[ "mcpServers" -> _Association ] ],
-                throwFailure[ "InvalidMCPConfiguration", file ]
-            ];
+            If[ ! AssociationQ @ data[ "mcpServers" ], data[ "mcpServers" ] = <| |> ];
             data
         ]
     ],
@@ -469,6 +467,12 @@ installLocation[ "Cursor", _ ] := fileNameJoin[ $HomeDirectory, ".cursor", "mcp.
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*Gemini CLI*)
+installLocation[ "GeminiCLI", _ ] :=
+    fileNameJoin[ $HomeDirectory, ".gemini", "settings.json" ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*Visual Studio Code*)
 installLocation[ "VisualStudioCode", "MacOSX" ] :=
     fileNameJoin[ $HomeDirectory, "Library", "Application Support", "Code", "User", "settings.json" ];
@@ -492,6 +496,7 @@ toInstallName // beginDefinition;
 toInstallName[ "Claude" ] := "ClaudeDesktop";
 toInstallName[ "VSCode" ] := "VisualStudioCode";
 toInstallName[ "Code" ] := "VisualStudioCode";
+toInstallName[ "Gemini" ] := "GeminiCLI";
 toInstallName[ name_String ] := name;
 toInstallName // endDefinition;
 
@@ -501,6 +506,7 @@ toInstallName // endDefinition;
 installDisplayName // beginDefinition;
 installDisplayName[ "ClaudeDesktop" ] := "Claude Desktop";
 installDisplayName[ "VisualStudioCode" ] := "Visual Studio Code";
+installDisplayName[ "GeminiCLI" ] := "Gemini CLI";
 installDisplayName[ name_String ] := name;
 installDisplayName[ None ] := None;
 installDisplayName // endDefinition;
