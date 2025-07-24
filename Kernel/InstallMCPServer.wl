@@ -493,10 +493,10 @@ installLocation // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*toInstallName*)
 toInstallName // beginDefinition;
-toInstallName[ "Claude" ] := "ClaudeDesktop";
-toInstallName[ "VSCode" ] := "VisualStudioCode";
-toInstallName[ "Code" ] := "VisualStudioCode";
-toInstallName[ "Gemini" ] := "GeminiCLI";
+toInstallName[ "Claude"    ] := "ClaudeDesktop";
+toInstallName[ "VSCode"    ] := "VisualStudioCode";
+toInstallName[ "Code"      ] := "VisualStudioCode";
+toInstallName[ "Gemini"    ] := "GeminiCLI";
 toInstallName[ name_String ] := name;
 toInstallName // endDefinition;
 
@@ -504,11 +504,11 @@ toInstallName // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*installDisplayName*)
 installDisplayName // beginDefinition;
-installDisplayName[ "ClaudeDesktop" ] := "Claude Desktop";
+installDisplayName[ "ClaudeDesktop"    ] := "Claude Desktop";
 installDisplayName[ "VisualStudioCode" ] := "Visual Studio Code";
-installDisplayName[ "GeminiCLI" ] := "Gemini CLI";
-installDisplayName[ name_String ] := name;
-installDisplayName[ None ] := None;
+installDisplayName[ "GeminiCLI"        ] := "Gemini CLI";
+installDisplayName[ name_String        ] := name;
+installDisplayName[ None               ] := None;
 installDisplayName // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
