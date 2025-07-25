@@ -12,7 +12,7 @@ SetOptions[ TestReport, ProgressReporting -> False ];
 (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
 If[ StringQ @ Environment[ "GITHUB_ACTIONS" ]
     ,
-    result = UsingFrontEnd @ checkResult @ Wolfram`PacletCICD`TestPaclet @ $defNB
+    result = UsingFrontEnd @ Block[ { messagePrint }, checkResult @ Wolfram`PacletCICD`TestPaclet @ $defNB ]
     ,
     report = UsingFrontEnd @ TestReport @ FileNames[ "*.wlt", FileNameJoin @ { $pacletDir, "Tests" } ];
     failed = Cases[ report[ "TestsFailed" ], _TestObject, Infinity ];
