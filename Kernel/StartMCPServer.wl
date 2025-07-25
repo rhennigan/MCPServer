@@ -6,10 +6,23 @@ Begin[ "`Private`" ];
 Needs[ "Wolfram`MCPServer`"        ];
 Needs[ "Wolfram`MCPServer`Common`" ];
 
+Needs[ "Wolfram`Chatbook`" -> "cb`" ];
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Configuration*)
 $protocolVersion = "2024-11-05";
+$toolWarmupDelay = 5; (* seconds *)
+
+$logTimeStamp := DateString[
+    {
+        "Year", "-", "Month", "-", "Day",
+        "T",
+        "Hour", ":", "Minute", ":", "Second", ".", "Millisecond",
+        "Z"
+    },
+    TimeZone -> 0
+];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -76,7 +89,8 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
                 response = catchAlways @ processRequest[ ];
                 If[ response =!= EndOfFile, writeLog[ "Response" -> response ] ];
                 If[ AssociationQ @ response,
-                    WriteLine[ "stdout", Developer`WriteRawJSONString[ response, "Compact" -> True ] ],
+                    WriteLine[ "stdout", Developer`WriteRawJSONString[ response, "Compact" -> True ] ];
+                    startToolWarmup @ $toolList,
                     Pause[ 0.1 ]
                 ]
             ]
@@ -87,6 +101,59 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
 (* :!CodeAnalysis::EndBlock:: *)
 
 startMCPServer // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*startToolWarmup*)
+startToolWarmup // beginDefinition;
+
+startToolWarmup[ tools_ ] := (
+    Quiet @ TaskRemove @ $warmupTask;
+    If[ MatchQ[ $warmupTask, _TaskObject ],
+        debugPrint[ "Restarting tool warmup delay" ],
+        debugPrint[ "Starting tool warmup delay" ]
+    ];
+    $warmupTask = SessionSubmit @ ScheduledTask[
+        startToolWarmup[ tools ] = Null;
+        debugPrint[ "Warming up tools" ];
+        toolWarmup @ tools,
+        { $toolWarmupDelay }
+    ]
+);
+
+startToolWarmup // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*toolWarmup*)
+toolWarmup // beginDefinition;
+toolWarmup[ ] := toolWarmup @ $toolList;
+toolWarmup[ tools_List ] := toolWarmup /@ tools;
+toolWarmup[ KeyValuePattern[ "name" -> name_String ] ] := toolWarmup @ name;
+toolWarmup[ "WolframContext" ] := toolWarmup @ { "WolframAlphaContext", "WolframLanguageContext" };
+toolWarmup[ name_String ] := toolWarmup0 @ name;
+toolWarmup[ _ ] := Null;
+toolWarmup // endDefinition;
+
+
+toolWarmup0 // beginDefinition;
+
+toolWarmup0[ "WolframLanguageContext" ] := toolWarmup0[ "WolframLanguageContext" ] =
+    debugPrint[
+        "Warmed up WolframLanguageContext: ",
+        First @ AbsoluteTiming @ cb`RelatedDocumentation[ "test" ]
+    ];
+
+toolWarmup0[ "WolframAlphaContext" ] := toolWarmup0[ "WolframAlphaContext" ] =
+    debugPrint[
+        "Warmed up WolframAlphaContext: ",
+        First @ AbsoluteTiming @ cb`RelatedWolframAlphaQueries[ "test" ]
+    ];
+
+toolWarmup0[ _ ] :=
+    Null;
+
+toolWarmup0 // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -201,6 +268,7 @@ evaluateTool // beginDefinition;
 
 evaluateTool[ msg_, req_ ] := Enclose[
     Catch @ Module[ { params, toolName, args, result, string },
+        Quiet @ TaskRemove @ $warmupTask; (* We're in a tool call, so it no longer makes sense to warm up tools *)
         writeLog[ "ToolCall" -> msg ];
         params = ConfirmBy[ Lookup[ msg, "params", <| |> ], AssociationQ ];
         toolName = ConfirmBy[ Lookup[ params, "name" ], StringQ ];
@@ -336,9 +404,40 @@ writeLog // endDefinition;
 (* ::Subsection::Closed:: *)
 (*writeError*)
 writeError // beginDefinition;
-writeError[ str_String ] := WriteLine[ "stderr", str ];
-writeError[ expr_ ] := WriteLine[ "stderr", ToString[ Unevaluated @ expr, InputForm ] ];
+
+writeError[ args___ ] :=
+    With[ { time = $logTimeStamp },
+        WriteLine[ "stderr", sequenceString[ time, " [Wolfram/MCPServer] [error] ", args ] ]
+    ];
+
 writeError // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*debugEcho*)
+debugEcho // beginDefinition;
+debugEcho[ expr_ ] := (debugPrint @ Unevaluated @ expr; expr);
+debugEcho // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*debugPrint*)
+debugPrint // beginDefinition;
+
+debugPrint[ args___ ] :=
+    With[ { time = $logTimeStamp },
+        WriteLine[ "stderr", sequenceString[ time, " [Wolfram/MCPServer] [info] ", args ] ]
+    ];
+
+debugPrint // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*sequenceString*)
+sequenceString // beginDefinition;
+sequenceString // Attributes = { HoldAll };
+sequenceString[ args___ ] := ToString @ Unevaluated @ SequenceForm @ args;
+sequenceString // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
