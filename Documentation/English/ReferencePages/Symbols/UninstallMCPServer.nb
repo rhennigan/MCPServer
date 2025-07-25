@@ -385,6 +385,26 @@ Notebook[
            ],
            "TableText"
           ]
+         },
+         {
+          Cell["      ", "ModInfo"],
+          "\"GeminiCLI\"",
+          Cell[
+           TextData[
+            ButtonBox[
+             "Gemini CLI",
+             BaseStyle -> "Hyperlink",
+             ButtonData -> {
+              URL[
+               "https://github.com/google-gemini/gemini-cli?tab=readme-ov-file#gemini-cli"
+              ],
+              None
+             },
+             ButtonNote -> "https://github.com/google-gemini/gemini-cli?tab=readme-ov-file#gemini-cli"
+            ]
+           ],
+           "TableText"
+          ]
          }
         }
        ]
@@ -481,13 +501,13 @@ Notebook[
              {
               nbobj$$ = 
                NotebookObject[
-                "1f8ac4a0-1553-c143-9181-bb31f745e3e2",
-                "f216e6a1-5a27-b443-ae58-0afe1b3b4a00"
+                "5c676cf0-dcfe-4e47-8c1a-3d5bdd6c63b8",
+                "18182b26-306c-3948-9c1f-fc28db54fd72"
                ],
               cellobj$$ = 
                CellObject[
-                "56f50ad1-b31b-2b4a-b43c-425aabee746f",
-                "90ff0843-6984-c646-ad6f-07dab0f6fc37"
+                "d66f2859-16cb-a34e-94dd-e58ca9c57571",
+                "c91f29a4-7ff4-884f-848a-05ae52ea5927"
                ]
              },
              TemplateBox[
