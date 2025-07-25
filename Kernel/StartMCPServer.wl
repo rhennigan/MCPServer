@@ -34,6 +34,9 @@ startMCPServer[ obj_ ] /; $Notebooks :=
 startMCPServer[ obj_MCPServerObject ] := Enclose[
     superQuiet @ Module[ { logFile, llmTools, toolList, promptList, promptLookup, init, response },
 
+        SetOptions[ First @ Streams[ "stdout" ], CharacterEncoding -> "UTF-8" ];
+        SetOptions[ First @ Streams[ "stderr" ], CharacterEncoding -> "UTF-8" ];
+
         logFile = ConfirmBy[ ensureFilePath @ mcpServerLogFile @ obj, fileQ, "LogFile" ];
         If[ FileExistsQ @ logFile, DeleteFile @ logFile ];
         writeLog[ "LogFile" -> logFile ];
@@ -49,13 +52,9 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
             Values @ llmTools
         ];
 
-        promptList = ConfirmMatch[ makePromptData @ obj[ "PromptData" ], { ___Association }, "PromptData" ];
-        writeError[ "promptList: " <> ToString[ promptList, InputForm ] ];
-
+        promptList   = ConfirmMatch[ makePromptData @ obj[ "PromptData" ], { ___Association }, "PromptData" ];
         promptLookup = ConfirmBy[ makePromptLookup @ obj[ "PromptData" ], AssociationQ, "PromptLookup" ];
-        writeError[ "promptLookup: " <> ToString[ promptLookup, InputForm ] ];
-
-        init = ConfirmBy[ initResponse @ obj, AssociationQ, "InitResponse" ];
+        init         = ConfirmBy[ initResponse @ obj, AssociationQ, "InitResponse" ];
 
         Block[
             {
@@ -113,7 +112,7 @@ processRequest // beginDefinition;
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
 processRequest[ ] :=
-    Catch @ Enclose @ Module[ { stdin, message, method, id, response },
+    Catch @ Enclose @ Module[ { stdin, message, method, id, req, response },
         stdin = InputString[ "" ];
         If[ stdin === "Quit", Exit[ 0 ] ];
         If[ ! StringQ @ stdin, Throw @ EndOfFile ];
@@ -121,9 +120,13 @@ processRequest[ ] :=
         writeLog[ "Request" -> message ];
         method = Lookup[ message, "method", None ];
         id = Lookup[ message, "id", Null ];
-        response = handleMethod[ method, message, <| "jsonrpc" -> "2.0", "id" -> id |> ];
+        req = <| "jsonrpc" -> "2.0", "id" -> id |>;
+        response = catchAlways @ handleMethod[ method, message, req ];
         writeLog[ "Response" -> response ];
-        response
+        If[ FailureQ @ response,
+            <| req, "error" -> <| "code" -> -32603, "message" -> "Internal error" |> |>,
+            response
+        ]
     ];
 (* :!CodeAnalysis::EndBlock:: *)
 
@@ -184,7 +187,7 @@ makePromptContent[ KeyValuePattern[ "Content" -> content_ ], arguments_ ] :=
     makePromptContent[ content, arguments ];
 
 makePromptContent[ content_String, arguments_ ] :=
-    <| "type" -> "text", "text" -> content |>
+    <| "type" -> "text", "text" -> content |>;
 
 makePromptContent[ template_TemplateObject, arguments_Association ] :=
     makePromptContent[ TemplateApply[ template, arguments ], arguments ];
@@ -202,10 +205,14 @@ evaluateTool[ msg_, req_ ] := Enclose[
         params = ConfirmBy[ Lookup[ msg, "params", <| |> ], AssociationQ ];
         toolName = ConfirmBy[ Lookup[ params, "name" ], StringQ ];
         args = Lookup[ params, "arguments", <| |> ];
-        result = $llmTools[ toolName ][ args ];
+        result = catchAlways @ $llmTools[ toolName ][ args ];
         If[ StringQ @ result[ "String" ], result = result[ "String" ] ];
+        (* TODO: return multimodal content here when appropriate *)
         string = ConfirmBy[ safeString @ result, StringQ, "String" ];
-        <| "content" -> { <| "type" -> "text", "text" -> string |> } |>
+        <|
+            "content" -> { <| "type" -> "text", "text" -> string |> },
+            "isError" -> FailureQ @ result
+        |>
     ],
     throwInternalFailure
 ];
@@ -216,8 +223,25 @@ evaluateTool // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*safeString*)
 safeString // beginDefinition;
-safeString[ arg_ ] := ToString[ arg, CharacterEncoding -> "PrintableASCII" ];
+safeString[ failure_Failure ] := With[ { s = failure[ "Message" ] }, "[Error] " <> safeString @ s /; StringQ @ s ];
+safeString[ arg_ ] := convertPUACharacters @ ToString @ Unevaluated @ arg;
 safeString // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*convertPUACharacters*)
+convertPUACharacters // beginDefinition;
+convertPUACharacters[ str_String ] := StringJoin[ convertPUACharacters /@ ToCharacterCode @ str ];
+convertPUACharacters[ n_Integer ] /; 57344 <= n <= 63743 := toPrintableASCII @ FromCharacterCode @ n;
+convertPUACharacters[ n_Integer ] := FromCharacterCode @ n;
+convertPUACharacters // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*toPrintableASCII*)
+toPrintableASCII // beginDefinition;
+toPrintableASCII[ expr_ ] := ToString[ Unevaluated @ expr, CharacterEncoding -> "PrintableASCII" ];
+toPrintableASCII // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
