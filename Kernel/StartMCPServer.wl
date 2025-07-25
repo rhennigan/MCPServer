@@ -268,6 +268,7 @@ evaluateTool // beginDefinition;
 
 evaluateTool[ msg_, req_ ] := Enclose[
     Catch @ Module[ { params, toolName, args, result, string },
+        Quiet @ TaskRemove @ $warmupTask; (* We're in a tool call, so it no longer makes sense to warm up tools *)
         writeLog[ "ToolCall" -> msg ];
         params = ConfirmBy[ Lookup[ msg, "params", <| |> ], AssociationQ ];
         toolName = ConfirmBy[ Lookup[ params, "name" ], StringQ ];
