@@ -53,6 +53,7 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
     Module[ { target, name, json, data, server, existing, isVSCode },
 
         If[ verifyLLMKit, ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ] ];
+        initializeTools @ obj;
 
         target   = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
         name     = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
@@ -78,6 +79,16 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
 ];
 
 installMCPServer // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*initializeTools*)
+initializeTools // beginDefinition;
+initializeTools[ obj_MCPServerObject ] := initializeTools @ obj[ "Tools" ];
+initializeTools[ tools_List ] := initializeTools /@ tools;
+initializeTools[ tool_LLMTool ] := initializeTools @ tool[ "Data" ];
+initializeTools[ as_Association ] := Lookup[ as, "Initialization", Null ];
+initializeTools // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
