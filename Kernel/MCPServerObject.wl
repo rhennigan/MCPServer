@@ -371,7 +371,7 @@ makeJSONConfiguration[ data_Association ] := Enclose[
     Module[ { name, env, cmd, config, full },
         name = ConfirmBy[ data[ "Name" ], StringQ, "Name" ];
         env = <| "MCP_SERVER_NAME" -> name |>;
-        cmd = ConfirmBy[ getWolframCommand @ $OperatingSystem, StringQ, "WolframCommand" ];
+        cmd = ConfirmBy[ getWolframCommand[ ], StringQ, "WolframCommand" ];
         config = <| "type" -> "stdio", "command" -> cmd, "args" -> $defaultCommandLineArguments, "env" -> env |>;
         full = <| "mcpServers" -> <| name -> config |> |>;
         ConfirmBy[ Developer`WriteRawJSONString @ full, StringQ, "JSONConfiguration" ]
@@ -385,22 +385,11 @@ makeJSONConfiguration // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*getWolframCommand*)
 getWolframCommand // beginDefinition;
-
-getWolframCommand[ "Windows" ] := getWolframCommand[ "Windows", "wolfram.exe" ];
-getWolframCommand[ os_String ] := getWolframCommand[ os, "wolfram" ];
-
-getWolframCommand[ os_String, wolfram_String ] :=
-    getWolframCommand[ os, wolfram, Quiet @ RunProcess @ { wolfram, "-version" } ];
-
-getWolframCommand[ os_, wolfram_String, KeyValuePattern @ { "ExitCode" -> 0, "StandardOutput" -> v_String } ] :=
-    If[ StringStartsQ[ v, DigitCharacter.. ~~ "." ~~ DigitCharacter.. ],
-        "wolfram",
-        FileNameJoin @ { $InstallationDirectory, wolfram }
-    ];
-
-getWolframCommand[ os_, wolfram_String, _ ] :=
-    FileNameJoin @ { $InstallationDirectory, If[ os === "MacOSX", "MacOS", Nothing ], wolfram };
-
+getWolframCommand[           ] := getWolframCommand @ $OperatingSystem;
+getWolframCommand[ "Windows" ] := FileNameJoin @ { $InstallationDirectory, "wolfram.exe" };
+getWolframCommand[ "MacOSX"  ] := FileNameJoin @ { $InstallationDirectory, "MacOS", "wolfram" };
+getWolframCommand[ "Unix"    ] := FileNameJoin @ { $InstallationDirectory, "Executables", "wolfram" };
+getWolframCommand[ os_String ] := throwFailure[ "UnsupportedOperatingSystem", os ];
 getWolframCommand // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
