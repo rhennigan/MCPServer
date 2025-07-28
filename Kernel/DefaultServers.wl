@@ -360,13 +360,14 @@ exportImage // endDefinition;
 (* ::Subsection::Closed:: *)
 (*WolframContext*)
 $defaultMCPTools[ "WolframContext" ] := LLMTool @ <|
-    "Name"        -> "WolframContext",
-    "DisplayName" -> "Wolfram Context",
-    "Description" -> $wolframContextToolDescription,
-    "Function"    -> relatedWolframContext,
-    "LLMKit"      -> "Suggested",
-    "Options"     -> { },
-    "Parameters"  -> {
+    "Name"           -> "WolframContext",
+    "DisplayName"    -> "Wolfram Context",
+    "Description"    -> $wolframContextToolDescription,
+    "Function"       -> relatedWolframContext,
+    "LLMKit"         -> "Suggested",
+    "Initialization" :> initializeVectorDatabases[ ],
+    "Options"        -> { },
+    "Parameters"     -> {
         "context" -> <|
             "Interpreter" -> "String",
             "Help"        -> "A detailed summary of what the user is trying to achieve or learn about.",
@@ -448,13 +449,14 @@ relatedWolframAlphaResults // endDefinition;
 (* ::Subsection::Closed:: *)
 (*WolframAlphaContext*)
 $defaultMCPTools[ "WolframAlphaContext" ] := LLMTool @ <|
-    "Name"        -> "WolframAlphaContext",
-    "DisplayName" -> "Wolfram|Alpha Context",
-    "Description" -> $waContextToolDescription,
-    "Function"    -> relatedWolframAlphaPrompt,
-    "LLMKit"      -> "Required",
-    "Options"     -> { },
-    "Parameters"  -> {
+    "Name"           -> "WolframAlphaContext",
+    "DisplayName"    -> "Wolfram|Alpha Context",
+    "Description"    -> $waContextToolDescription,
+    "Function"       -> relatedWolframAlphaPrompt,
+    "LLMKit"         -> "Required",
+    "Initialization" :> initializeVectorDatabases[ ],
+    "Options"        -> { },
+    "Parameters"     -> {
         "context" -> <|
             "Interpreter" -> "String",
             "Help"        -> "A detailed summary of what the user is trying to achieve or learn about.",
@@ -467,13 +469,14 @@ $defaultMCPTools[ "WolframAlphaContext" ] := LLMTool @ <|
 (* ::Subsection::Closed:: *)
 (*WolframLanguageContext*)
 $defaultMCPTools[ "WolframLanguageContext" ] := LLMTool @ <|
-    "Name"        -> "WolframLanguageContext",
-    "DisplayName" -> "Wolfram Language Context",
-    "Description" -> $wlContextToolDescription,
-    "Function"    -> relatedDocumentation,
-    "LLMKit"      -> "Suggested",
-    "Options"     -> { },
-    "Parameters"  -> {
+    "Name"           -> "WolframLanguageContext",
+    "DisplayName"    -> "Wolfram Language Context",
+    "Description"    -> $wlContextToolDescription,
+    "Function"       -> relatedDocumentation,
+    "LLMKit"         -> "Suggested",
+    "Initialization" :> initializeVectorDatabases[ ],
+    "Options"        -> { },
+    "Parameters"     -> {
         "context" -> <|
             "Interpreter" -> "String",
             "Help"        -> "A detailed summary of what the user is trying to achieve or learn about.",
@@ -661,6 +664,17 @@ $defaultMCPServers[ "WolframLanguage" ] := <|
         }
     |>
 |>;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Initialization*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*initializeVectorDatabases*)
+initializeVectorDatabases // beginDefinition;
+initializeVectorDatabases[ ] := initializeVectorDatabases[ ] = cb`InstallVectorDatabases[ ];
+initializeVectorDatabases // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
