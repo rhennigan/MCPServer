@@ -519,10 +519,14 @@ relatedDocumentation0[ context_ ] :=
     relatedDocumentation0[ context, llmKitSubscribedQ[ ] ];
 
 relatedDocumentation0[ context_, True ] :=
-    cb`RelatedDocumentation[ context, "Prompt", "PromptHeader" -> False, "FilterResults" -> True, MaxItems -> 50 ];
+    Block[ { $EvaluationEnvironment = "Script" },
+        cb`RelatedDocumentation[ context, "Prompt", "PromptHeader" -> False, "FilterResults" -> True, MaxItems -> 50 ]
+    ];
 
 relatedDocumentation0[ context_, False ] :=
-    cb`RelatedDocumentation[ context, "Prompt", "PromptHeader" -> False, "FilterResults" -> False, MaxItems -> 10 ];
+    Block[ { $EvaluationEnvironment = "Script" },
+        cb`RelatedDocumentation[ context, "Prompt", "PromptHeader" -> False, "FilterResults" -> False, MaxItems -> 10 ]
+    ];
 
 relatedDocumentation0 // endDefinition;
 
