@@ -104,9 +104,9 @@ If[ StringQ @ Environment[ "GITHUB_ACTIONS" ],
         setOutput[ "MCPB_PATH"     , mcpbPath     ];
         setOutput[ "MCPB_FILE"     , mcpbFile     ];
 
-        cicd`ConsoleNotice @ SequenceForm[ "MCPB_BUILD_DIR: ", mcpbBuildDir ];
-        cicd`ConsoleNotice @ SequenceForm[ "MCPB_PATH: "     , mcpbPath     ];
-        cicd`ConsoleNotice @ SequenceForm[ "MCPB_FILE: "     , mcpbFile     ];
+        cicd`ConsoleLog @ SequenceForm[ "MCPB_BUILD_DIR: ", mcpbBuildDir ];
+        cicd`ConsoleLog @ SequenceForm[ "MCPB_PATH: "     , mcpbPath     ];
+        cicd`ConsoleLog @ SequenceForm[ "MCPB_FILE: "     , mcpbFile     ];
     ]
 ];
 (* :!CodeAnalysis::EndBlock:: *)

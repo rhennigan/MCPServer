@@ -49,9 +49,6 @@ jobs:
     - name: Rename Paclet File
       run: mv "${{ env.PACLET_PATH }}" "${{ env.PACLET_BUILD_DIR }}/Wolfram__MCPServer.paclet"
 
-    - name: Rename MCPB File
-      run: mv "${{ env.MCPB_PATH }}" "build/Wolfram__MCPServer.mcpb"
-
     - name: Update Release
       run: |
         git config --global --add safe.directory $(pwd)
@@ -67,6 +64,6 @@ jobs:
 
         gh release upload experimental \
           "${{ env.PACLET_BUILD_DIR }}/Wolfram__MCPServer.paclet" \
-          "build/Wolfram__MCPServer.mcpb" \
+          "${{ env.MCPB_PATH }}" \
           --clobber \
           --repo="${{ github.repository }}"
