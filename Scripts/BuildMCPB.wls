@@ -86,4 +86,27 @@ zip = cicd`ScriptConfirmBy[
 builtMCPB = CopyFile[ zip, StringReplace[ zip, ".zip"~~EndOfString -> ".mcpb" ], OverwriteTarget -> True ];
 
 cicd`ConsoleLog @ SequenceForm[ "Built MCPB package: ", ToString @ builtMCPB ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Export Environment Variables*)
+
+(* Export environment variables for GitHub Actions *)
+If[ StringQ @ Environment[ "GITHUB_ACTIONS" ],
+    Module[ { setOutput, mcpbPath, mcpbFile, mcpbBuildDir },
+        setOutput = Wolfram`PacletCICD`Private`setOutput;
+
+        mcpbBuildDir = buildDir;
+        mcpbPath     = ToString @ builtMCPB;
+        mcpbFile     = FileNameTake @ mcpbPath;
+
+        setOutput[ "MCPB_BUILD_DIR", mcpbBuildDir ];
+        setOutput[ "MCPB_PATH"     , mcpbPath     ];
+        setOutput[ "MCPB_FILE"     , mcpbFile     ];
+
+        cicd`ConsoleNotice @ SequenceForm[ "MCPB_BUILD_DIR: ", mcpbBuildDir ];
+        cicd`ConsoleNotice @ SequenceForm[ "MCPB_PATH: "     , mcpbPath     ];
+        cicd`ConsoleNotice @ SequenceForm[ "MCPB_FILE: "     , mcpbFile     ];
+    ]
+];
 (* :!CodeAnalysis::EndBlock:: *)
