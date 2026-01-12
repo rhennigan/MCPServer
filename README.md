@@ -99,7 +99,7 @@ For more details on creating custom MCP servers, configuring tools, and advanced
 
 ## Development
 
-See [CLAUDE.md](CLAUDE.md) for development guidelines and commands.
+See [AGENTS.md](AGENTS.md) for development guidelines and commands.
 
 ## License
 

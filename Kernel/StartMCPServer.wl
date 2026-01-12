@@ -205,6 +205,7 @@ processRequest // endDefinition;
 handleMethod // beginDefinition;
 
 handleMethod[ "initialize"    , msg_, req_ ] := <| req, "result" -> $initResult |>;
+handleMethod[ "ping"          , msg_, req_ ] := <| req, "result" -> <| |> |>;
 handleMethod[ "resources/list", msg_, req_ ] := <| req, "result" -> <| "resources" -> { } |> |>;
 handleMethod[ "prompts/list"  , msg_, req_ ] := <| req, "result" -> <| "prompts" -> $promptList |> |>;
 handleMethod[ "prompts/get"   , msg_, req_ ] := <| req, "result" -> getPrompt[ msg, req ] |>;
