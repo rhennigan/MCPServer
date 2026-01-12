@@ -358,6 +358,21 @@ Notebook[
          },
          {
           Cell["      ", "ModInfo"],
+          "\"ClaudeCode\"",
+          Cell[
+           TextData[
+            ButtonBox[
+             "Claude Code",
+             BaseStyle -> "Hyperlink",
+             ButtonData -> {URL["https://code.claude.com"], None},
+             ButtonNote -> "https://code.claude.com"
+            ]
+           ],
+           "TableText"
+          ]
+         },
+         {
+          Cell["      ", "ModInfo"],
           "\"Cursor\"",
           Cell[
            TextData[
@@ -501,13 +516,13 @@ Notebook[
              {
               nbobj$$ = 
                NotebookObject[
-                "5c676cf0-dcfe-4e47-8c1a-3d5bdd6c63b8",
-                "18182b26-306c-3948-9c1f-fc28db54fd72"
+                "f5993923-4672-354e-9ccd-6547de36e93d",
+                "d5e4e5bb-9754-f442-b65e-b1259b3c777f"
                ],
               cellobj$$ = 
                CellObject[
-                "d66f2859-16cb-a34e-94dd-e58ca9c57571",
-                "c91f29a4-7ff4-884f-848a-05ae52ea5927"
+                "a296b295-c609-fd4c-a9b8-9fb98cf711c4",
+                "14b34b77-acc3-2445-a251-242aaa51b955"
                ]
              },
              TemplateBox[
