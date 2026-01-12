@@ -1,5 +1,5 @@
 <|
-    "dxt_version"      -> "0.1",
+    "manifest_version" -> "0.3",
     "name"             -> "wolfram-engine",
     "display_name"     -> "Wolfram Engine",
     "version"          -> TemplateSlot[ "PacletVersion" ],

@@ -34,10 +34,20 @@ jobs:
     - name: Build
       run: wolframscript -f Scripts/BuildPaclet.wls
 
-    - name: Upload Artifact
+    - name: Build MCPB
+      run: wolframscript -f Scripts/BuildMCPB.wls
+
+    - name: Upload Paclet Artifact
       uses: actions/upload-artifact@v4
       with:
+        name: paclet
         path: ${{ env.PACLET_BUILD_DIR }}
+
+    - name: Upload MCPB Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: mcpb
+        path: ${{ env.MCPB_PATH }}
 
     - name: Test
       run: wolframscript -f Scripts/TestPaclet.wls

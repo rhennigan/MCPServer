@@ -43,6 +43,9 @@ jobs:
     - name: Build Paclet
       run: wolframscript -f Scripts/BuildPaclet.wls
 
+    - name: Build MCPB
+      run: wolframscript -f Scripts/BuildMCPB.wls
+
     - name: Rename Paclet File
       run: mv "${{ env.PACLET_PATH }}" "${{ env.PACLET_BUILD_DIR }}/Wolfram__MCPServer.paclet"
 
@@ -61,5 +64,6 @@ jobs:
 
         gh release upload experimental \
           "${{ env.PACLET_BUILD_DIR }}/Wolfram__MCPServer.paclet" \
+          "${{ env.MCPB_PATH }}" \
           --clobber \
           --repo="${{ github.repository }}"

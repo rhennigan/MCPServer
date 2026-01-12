@@ -1,9 +1,12 @@
 {
     "cSpell.words": [
         "CICD",
+        "dpkg",
+        "ENTITLEMENTID",
         "libgomp",
         "llmkit",
         "LOCALBASE",
+        "MCPB",
         "Multicolumn",
         "noinit",
         "noprompt",
