@@ -7,9 +7,9 @@ If[ ! PacletObjectQ @ PacletObject[ "Wolfram/PacletCICD" ],
 ];
 Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
 
-pacletDir    = cicd`ScriptConfirmBy[ DirectoryName[ $InputFileName, 2 ], DirectoryQ ];
-dxtSourceDir = cicd`ScriptConfirmBy[ FileNameJoin @ { pacletDir, "DXT" }, DirectoryQ ];
-buildDir     = cicd`ScriptConfirmBy[ GeneralUtilities`EnsureDirectory @ { pacletDir, "build", "dxt" }, DirectoryQ ];
+pacletDir     = cicd`ScriptConfirmBy[ DirectoryName[ $InputFileName, 2 ], DirectoryQ ];
+mcpbSourceDir = cicd`ScriptConfirmBy[ FileNameJoin @ { pacletDir, "MCPB" }, DirectoryQ ];
+buildDir      = cicd`ScriptConfirmBy[ GeneralUtilities`EnsureDirectory @ { pacletDir, "build", "mcpb" }, DirectoryQ ];
 
 Quiet @ DeleteDirectory[ buildDir, DeleteContents -> True ];
 cicd`ScriptConfirmBy[ CreateDirectory[ buildDir, CreateIntermediateDirectories -> True ], DirectoryQ ];
@@ -32,14 +32,14 @@ version = cicd`ScriptConfirmBy[ paclet[ "Version" ], StringQ ];
 (* ::Subsubsection::Closed:: *)
 (*LongDescription*)
 longDescription = cicd`ScriptConfirmBy[
-    ByteArrayToString @ ReadByteArray @ FileNameJoin @ { dxtSourceDir, "Description.md" },
+    ByteArrayToString @ ReadByteArray @ FileNameJoin @ { mcpbSourceDir, "Description.md" },
     StringQ
 ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Template*)
-manifestTemplate = cicd`ScriptConfirmBy[ Get @ FileNameJoin @ { dxtSourceDir, "Manifest.wl" }, AssociationQ ];
+manifestTemplate = cicd`ScriptConfirmBy[ Get @ FileNameJoin @ { mcpbSourceDir, "Manifest.wl" }, AssociationQ ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -67,13 +67,13 @@ builtManifest = cicd`ScriptConfirmBy[
 CreateFile[ FileNameJoin @ { buildDir, "server", "empty" }, CreateIntermediateDirectories -> True ];
 
 cicd`ScriptConfirmBy[
-    CopyDirectory[ FileNameJoin @ { dxtSourceDir, "Images" }, FileNameJoin @ { buildDir, "Images" } ],
+    CopyDirectory[ FileNameJoin @ { mcpbSourceDir, "Images" }, FileNameJoin @ { buildDir, "Images" } ],
     DirectoryQ
 ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*Build DXT Package*)
+(*Build MCPB Package*)
 zip = cicd`ScriptConfirmBy[
     CreateArchive[
         FileNames[ All, buildDir ],
@@ -83,7 +83,7 @@ zip = cicd`ScriptConfirmBy[
     FileExistsQ
 ];
 
-builtDXT = CopyFile[ zip, StringReplace[ zip, ".zip"~~EndOfString -> ".dxt" ], OverwriteTarget -> True ];
+builtMCPB = CopyFile[ zip, StringReplace[ zip, ".zip"~~EndOfString -> ".mcpb" ], OverwriteTarget -> True ];
 
-cicd`ConsoleLog @ SequenceForm[ "Built DXT package: ", ToString @ builtDXT ];
+cicd`ConsoleLog @ SequenceForm[ "Built MCPB package: ", ToString @ builtMCPB ];
 (* :!CodeAnalysis::EndBlock:: *)
