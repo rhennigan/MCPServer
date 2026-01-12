@@ -232,6 +232,49 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*Named Client Installations*)
+VerificationTest[
+    (* Create a temporary .claude.json-like file with existing data *)
+    configFile = testConfigFile[];
+    Export[configFile, <|"numStartups" -> 1, "mcpServers" -> <||>|>, "JSON"];
+    installResult = InstallMCPServer[configFile, "WolframLanguage"],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-ClaudeCodeLike@@Tests/InstallMCPServer.wlt"
+]
+
+VerificationTest[
+    (* Verify the server was added and other data preserved *)
+    jsonContent = Import[configFile, "RawJSON"];
+    KeyExistsQ[jsonContent, "mcpServers"] &&
+    KeyExistsQ[jsonContent["mcpServers"], "WolframLanguage"] &&
+    KeyExistsQ[jsonContent, "numStartups"] &&
+    jsonContent["numStartups"] === 1,
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-PreservesOtherData@@Tests/InstallMCPServer.wlt"
+]
+
+VerificationTest[
+    (* Install a second server to verify multiple installations work *)
+    installResult2 = InstallMCPServer[configFile, "WolframAlpha"];
+    jsonContent = Import[configFile, "RawJSON"];
+    Length[Keys[jsonContent["mcpServers"]]] === 2,
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-MultipleInClaudeCodeLike@@Tests/InstallMCPServer.wlt"
+]
+
+VerificationTest[
+    UninstallMCPServer[configFile];
+    cleanupTestFiles[configFile],
+    {Null},
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-CleanupClaudeCodeLike@@Tests/InstallMCPServer.wlt"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*Error Cases*)
 VerificationTest[
     configFile = testConfigFile[];

@@ -473,6 +473,12 @@ installLocation[ "ClaudeDesktop", "Windows" ] :=
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*Claude Code*)
+installLocation[ "ClaudeCode", _ ] :=
+    fileNameJoin[ $HomeDirectory, ".claude.json" ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*Cursor*)
 installLocation[ "Cursor", _ ] := fileNameJoin[ $HomeDirectory, ".cursor", "mcp.json" ];
 
@@ -504,11 +510,12 @@ installLocation // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*toInstallName*)
 toInstallName // beginDefinition;
-toInstallName[ "Claude"    ] := "ClaudeDesktop";
-toInstallName[ "VSCode"    ] := "VisualStudioCode";
-toInstallName[ "Code"      ] := "VisualStudioCode";
-toInstallName[ "Gemini"    ] := "GeminiCLI";
-toInstallName[ name_String ] := name;
+toInstallName[ "Claude"      ] := "ClaudeDesktop";
+toInstallName[ "claude-code" ] := "ClaudeCode";
+toInstallName[ "VSCode"      ] := "VisualStudioCode";
+toInstallName[ "Code"        ] := "VisualStudioCode";
+toInstallName[ "Gemini"      ] := "GeminiCLI";
+toInstallName[ name_String   ] := name;
 toInstallName // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
@@ -516,6 +523,7 @@ toInstallName // endDefinition;
 (*installDisplayName*)
 installDisplayName // beginDefinition;
 installDisplayName[ "ClaudeDesktop"    ] := "Claude Desktop";
+installDisplayName[ "ClaudeCode"       ] := "Claude Code";
 installDisplayName[ "VisualStudioCode" ] := "Visual Studio Code";
 installDisplayName[ "GeminiCLI"        ] := "Gemini CLI";
 installDisplayName[ name_String        ] := name;
