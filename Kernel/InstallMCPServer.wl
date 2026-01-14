@@ -411,6 +411,11 @@ UninstallMCPServer[ target: _File | All, servers_List ] :=
 UninstallMCPServer[ All, obj_MCPServerObject ] :=
     catchMine @ UninstallMCPServer[ mcpServerInstallations @ obj, obj ];
 
+UninstallMCPServer[ { name_String, dir_ }, obj_ ] :=
+    catchMine @ Block[ { $installName = toInstallName @ name },
+        UninstallMCPServer[ projectInstallLocation[ $installName, dir ], obj ]
+    ];
+
 UninstallMCPServer[ targets_List, obj_MCPServerObject ] :=
     catchMine @ DeleteMissing[ catchAlways @ UninstallMCPServer[ #, obj ] & /@ targets ];
 
