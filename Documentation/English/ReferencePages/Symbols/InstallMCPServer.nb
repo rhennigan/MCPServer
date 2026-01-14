@@ -303,21 +303,6 @@ Notebook[
         {
          {
           Cell["      ", "ModInfo"],
-          "\"ClaudeDesktop\"",
-          Cell[
-           TextData[
-            ButtonBox[
-             "Claude Desktop",
-             BaseStyle -> "Hyperlink",
-             ButtonData -> {URL["https://claude.ai/download"], None},
-             ButtonNote -> "https://claude.ai/download"
-            ]
-           ],
-           "TableText"
-          ]
-         },
-         {
-          Cell["      ", "ModInfo"],
           "\"ClaudeCode\"",
           Cell[
            TextData[
@@ -333,6 +318,21 @@ Notebook[
          },
          {
           Cell["      ", "ModInfo"],
+          "\"ClaudeDesktop\"",
+          Cell[
+           TextData[
+            ButtonBox[
+             "Claude Desktop",
+             BaseStyle -> "Hyperlink",
+             ButtonData -> {URL["https://claude.ai/download"], None},
+             ButtonNote -> "https://claude.ai/download"
+            ]
+           ],
+           "TableText"
+          ]
+         },
+         {
+          Cell["      ", "ModInfo"],
           "\"Cursor\"",
           Cell[
            TextData[
@@ -341,21 +341,6 @@ Notebook[
              BaseStyle -> "Hyperlink",
              ButtonData -> {URL["https://www.cursor.com/"], None},
              ButtonNote -> "https://www.cursor.com/"
-            ]
-           ],
-           "TableText"
-          ]
-         },
-         {
-          Cell["      ", "ModInfo"],
-          "\"VisualStudioCode\"",
-          Cell[
-           TextData[
-            ButtonBox[
-             "Visual Studio Code",
-             BaseStyle -> "Hyperlink",
-             ButtonData -> {URL["https://code.visualstudio.com"], None},
-             ButtonNote -> "https://code.visualstudio.com"
             ]
            ],
            "TableText"
@@ -380,11 +365,42 @@ Notebook[
            ],
            "TableText"
           ]
+         },
+         {
+          Cell["      ", "ModInfo"],
+          "\"OpenCode\"",
+          Cell[
+           TextData[
+            ButtonBox[
+             "OpenCode",
+             BaseStyle -> "Hyperlink",
+             ButtonData -> {URL["https://opencode.ai"], None},
+             ButtonNote -> "https://opencode.ai"
+            ]
+           ],
+           "TableText"
+          ]
+         },
+         {
+          Cell["      ", "ModInfo"],
+          "\"VisualStudioCode\"",
+          Cell[
+           TextData[
+            ButtonBox[
+             "Visual Studio Code",
+             BaseStyle -> "Hyperlink",
+             ButtonData -> {URL["https://code.visualstudio.com"], None},
+             ButtonNote -> "https://code.visualstudio.com"
+            ]
+           ],
+           "TableText"
+          ]
          }
         }
        ]
       ],
       "2ColumnTableMod",
+      TaggingRules -> {"Alphabetized" -> True},
       CellID -> 822744168
      ]
     },
@@ -476,13 +492,13 @@ Notebook[
              {
               nbobj$$ = 
                NotebookObject[
-                "bac93223-3760-7848-808c-e368a714f78f",
-                "624c5e3a-c30c-524c-9819-04403ed4dafd"
+                "54dfbbb5-eccc-3749-ba92-511367fc7b10",
+                "33b460c3-b851-4844-8462-e811b46a8ab9"
                ],
               cellobj$$ = 
                CellObject[
-                "b3976000-14dc-d946-aaee-fd643fc9bbbc",
-                "51e73cfc-8faa-3042-b366-f520c0bef15b"
+                "06b19c57-cd0d-8f4b-a80a-3f04fdcc27ba",
+                "ad8fb154-6046-e342-b860-750b7d43817f"
                ]
              },
              TemplateBox[

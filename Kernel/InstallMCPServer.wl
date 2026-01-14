@@ -50,7 +50,7 @@ installMCPServer[ target_, obj_, Automatic|Inherited, verifyLLMKit_ ] :=
     installMCPServer[ target, obj, defaultEnvironment[ ], verifyLLMKit ];
 
 installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_ ] := Enclose[
-    Module[ { target, name, json, data, server, existing, isVSCode },
+    Module[ { target, name, json, data, server, existing },
 
         If[ verifyLLMKit, ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ] ];
         initializeTools @ obj;
@@ -61,10 +61,13 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
         data     = ConfirmBy[ Developer`ReadRawJSONString @ json, AssociationQ, "JSONConfiguration" ];
         server   = ConfirmBy[ addEnvironmentVariables[ data[ "mcpServers", name ], env ], AssociationQ, "Server" ];
         existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
-        isVSCode = $installName === "VisualStudioCode";
 
-        If[ isVSCode,
+        Switch[ $installName,
+            "VisualStudioCode",
             existing[ "mcp", "servers", name ] = server,
+            "OpenCode",
+            existing[ "mcp", name ] = ConfirmBy[ convertToOpenCodeFormat @ server, AssociationQ, "OpenCodeServer" ],
+            _,
             existing[ "mcpServers", name ] = server
         ];
 
@@ -245,6 +248,34 @@ addEnvironmentVariables // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*convertToOpenCodeFormat*)
+convertToOpenCodeFormat // beginDefinition;
+
+convertToOpenCodeFormat[ server_Association ] := Enclose[
+    Module[ { command, args, env, result },
+        command = ConfirmMatch[ Lookup[ server, "command", Missing[ ] ], _String | _Missing, "Command" ];
+        args = Lookup[ server, "args", { } ];
+        env = Lookup[ server, "env", <| |> ];
+
+        result = <|
+            "type" -> "local",
+            "command" -> If[ command === Missing[ ], { }, Prepend[ args, command ] ],
+            "enabled" -> True
+        |>;
+
+        If[ AssociationQ @ env && Length @ env > 0,
+            result[ "environment" ] = env
+        ];
+
+        result
+    ],
+    throwInternalFailure
+];
+
+convertToOpenCodeFormat // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*defaultEnvironment*)
 defaultEnvironment // beginDefinition;
 
@@ -315,12 +346,15 @@ installSuccess // endDefinition;
 readExistingMCPConfig // beginDefinition;
 
 readExistingMCPConfig[ file_ ] := Enclose[
-    Catch @ Module[ { data, isVSCode },
-        isVSCode = $installName === "VisualStudioCode";
+    Catch @ Module[ { data },
 
         If[ ! FileExistsQ @ file,
-            If[ isVSCode,
+            Switch[ $installName,
+                "VisualStudioCode",
                 Throw @ <| "mcp" -> <| "servers" -> <| |> |> |>,
+                "OpenCode",
+                Throw @ <| "mcp" -> <| |> |>,
+                _,
                 Throw @ <| "mcpServers" -> <| |> |>
             ]
         ];
@@ -328,12 +362,18 @@ readExistingMCPConfig[ file_ ] := Enclose[
         data = readRawJSONFile @ ExpandFileName @ file;
         If[ ! AssociationQ @ data, throwFailure[ "InvalidMCPConfiguration", file ] ];
 
-        (* Handle VS Code format *)
-        If[ isVSCode,
+        Switch[ $installName,
+            (* Handle VS Code format *)
+            "VisualStudioCode",
             If[ ! AssociationQ @ data[ "mcp" ], data[ "mcp" ] = <| "servers" -> <| |> |> ];
             If[ ! AssociationQ @ data[ "mcp", "servers" ], data[ "mcp", "servers" ] = <| |> ];
             data,
+            (* Handle OpenCode format *)
+            "OpenCode",
+            If[ ! AssociationQ @ data[ "mcp" ], data[ "mcp" ] = <| |> ];
+            data,
             (* Handle standard format *)
+            _,
             If[ ! AssociationQ @ data[ "mcpServers" ], data[ "mcpServers" ] = <| |> ];
             data
         ]
@@ -392,21 +432,27 @@ allMCPServers // endDefinition;
 uninstallMCPServer // beginDefinition;
 
 uninstallMCPServer[ target0_File, obj_MCPServerObject ] := Enclose[
-    Catch @ Module[ { target, name, existing, isVSCode },
+    Catch @ Module[ { target, name, existing },
 
         target = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
         If[ ! FileExistsQ @ target, Throw @ Missing[ "NotInstalled", target ] ];
 
         name = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
         existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
-        isVSCode = $installName === "VisualStudioCode";
 
-        If[ isVSCode,
+        Switch[ $installName,
             (* Handle VS Code format *)
+            "VisualStudioCode",
             If[ ! AssociationQ @ existing[ "mcp", "servers" ], Throw @ Missing[ "NotInstalled", target ] ];
             If[ ! KeyExistsQ[ existing[ "mcp", "servers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
             KeyDropFrom[ existing[ "mcp", "servers" ], name ],
+            (* Handle OpenCode format *)
+            "OpenCode",
+            If[ ! AssociationQ @ existing[ "mcp" ], Throw @ Missing[ "NotInstalled", target ] ];
+            If[ ! KeyExistsQ[ existing[ "mcp" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
+            KeyDropFrom[ existing[ "mcp" ], name ],
             (* Handle standard format *)
+            _,
             If[ ! AssociationQ @ existing[ "mcpServers" ], Throw @ Missing[ "NotInstalled", target ] ];
             If[ ! KeyExistsQ[ existing[ "mcpServers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
             KeyDropFrom[ existing[ "mcpServers" ], name ]
@@ -490,6 +536,12 @@ installLocation[ "GeminiCLI", _ ] :=
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*OpenCode*)
+installLocation[ "OpenCode", _ ] :=
+    fileNameJoin[ $HomeDirectory, ".config", "opencode", "opencode.json" ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*Visual Studio Code*)
 installLocation[ "VisualStudioCode", "MacOSX" ] :=
     fileNameJoin[ $HomeDirectory, "Library", "Application Support", "Code", "User", "settings.json" ];
@@ -526,6 +578,7 @@ installDisplayName[ "ClaudeDesktop"    ] := "Claude Desktop";
 installDisplayName[ "ClaudeCode"       ] := "Claude Code";
 installDisplayName[ "VisualStudioCode" ] := "Visual Studio Code";
 installDisplayName[ "GeminiCLI"        ] := "Gemini CLI";
+installDisplayName[ "OpenCode"         ] := "OpenCode";
 installDisplayName[ name_String        ] := name;
 installDisplayName[ None               ] := None;
 installDisplayName // endDefinition;
