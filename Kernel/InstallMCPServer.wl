@@ -39,6 +39,11 @@ InstallMCPServer[ name_String, server_, opts: OptionsPattern[ ] ] :=
         InstallMCPServer[ installLocation @ name, server, opts ]
     ];
 
+InstallMCPServer[ { name_String, dir_ }, server_, opts: OptionsPattern[ ] ] :=
+    catchMine @ Block[ { $installName = toInstallName @ name },
+        InstallMCPServer[ projectInstallLocation[ $installName, dir ], server, opts ]
+    ];
+
 InstallMCPServer // endExportedDefinition;
 
 (* ::**************************************************************************************************************:: *)
@@ -557,6 +562,25 @@ installLocation[ "VisualStudioCode", "Linux" ] :=
 (*Unknown*)
 installLocation[ name_String, os_String ] := throwFailure[ "UnknownInstallLocation", name, os ];
 installLocation // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*projectInstallLocation*)
+projectInstallLocation // beginDefinition;
+
+projectInstallLocation[ "ClaudeCode", dir_ ] :=
+    fileNameJoin[ dir, ".claude.json" ];
+
+projectInstallLocation[ "OpenCode", dir_ ] :=
+    fileNameJoin[ dir, "opencode.json" ];
+
+projectInstallLocation[ "VisualStudioCode", dir_ ] :=
+    fileNameJoin[ dir, ".vscode", "settings.json" ];
+
+projectInstallLocation[ name_, dir_ ] :=
+    throwFailure[ "UnknownProjectInstallLocation", name ];
+
+projectInstallLocation // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
