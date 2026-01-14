@@ -50,7 +50,7 @@ installMCPServer[ target_, obj_, Automatic|Inherited, verifyLLMKit_ ] :=
     installMCPServer[ target, obj, defaultEnvironment[ ], verifyLLMKit ];
 
 installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_ ] := Enclose[
-    Module[ { target, name, json, data, server, existing, isVSCode, isOpenCode },
+    Module[ { target, name, json, data, server, existing },
 
         If[ verifyLLMKit, ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ] ];
         initializeTools @ obj;
@@ -61,15 +61,13 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
         data     = ConfirmBy[ Developer`ReadRawJSONString @ json, AssociationQ, "JSONConfiguration" ];
         server   = ConfirmBy[ addEnvironmentVariables[ data[ "mcpServers", name ], env ], AssociationQ, "Server" ];
         existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
-        isVSCode = $installName === "VisualStudioCode";
-        isOpenCode = $installName === "OpenCode";
 
-        Which[
-            isVSCode,
+        Switch[ $installName,
+            "VisualStudioCode",
             existing[ "mcp", "servers", name ] = server,
-            isOpenCode,
+            "OpenCode",
             existing[ "mcp", name ] = ConfirmBy[ convertToOpenCodeFormat @ server, AssociationQ, "OpenCodeServer" ],
-            True,
+            _,
             existing[ "mcpServers", name ] = server
         ];
 
@@ -348,17 +346,15 @@ installSuccess // endDefinition;
 readExistingMCPConfig // beginDefinition;
 
 readExistingMCPConfig[ file_ ] := Enclose[
-    Catch @ Module[ { data, isVSCode, isOpenCode },
-        isVSCode = $installName === "VisualStudioCode";
-        isOpenCode = $installName === "OpenCode";
+    Catch @ Module[ { data },
 
         If[ ! FileExistsQ @ file,
-            Which[
-                isVSCode,
+            Switch[ $installName,
+                "VisualStudioCode",
                 Throw @ <| "mcp" -> <| "servers" -> <| |> |> |>,
-                isOpenCode,
+                "OpenCode",
                 Throw @ <| "mcp" -> <| |> |>,
-                True,
+                _,
                 Throw @ <| "mcpServers" -> <| |> |>
             ]
         ];
@@ -366,18 +362,18 @@ readExistingMCPConfig[ file_ ] := Enclose[
         data = readRawJSONFile @ ExpandFileName @ file;
         If[ ! AssociationQ @ data, throwFailure[ "InvalidMCPConfiguration", file ] ];
 
-        Which[
+        Switch[ $installName,
             (* Handle VS Code format *)
-            isVSCode,
+            "VisualStudioCode",
             If[ ! AssociationQ @ data[ "mcp" ], data[ "mcp" ] = <| "servers" -> <| |> |> ];
             If[ ! AssociationQ @ data[ "mcp", "servers" ], data[ "mcp", "servers" ] = <| |> ];
             data,
             (* Handle OpenCode format *)
-            isOpenCode,
+            "OpenCode",
             If[ ! AssociationQ @ data[ "mcp" ], data[ "mcp" ] = <| |> ];
             data,
             (* Handle standard format *)
-            True,
+            _,
             If[ ! AssociationQ @ data[ "mcpServers" ], data[ "mcpServers" ] = <| |> ];
             data
         ]
@@ -436,29 +432,27 @@ allMCPServers // endDefinition;
 uninstallMCPServer // beginDefinition;
 
 uninstallMCPServer[ target0_File, obj_MCPServerObject ] := Enclose[
-    Catch @ Module[ { target, name, existing, isVSCode, isOpenCode },
+    Catch @ Module[ { target, name, existing },
 
         target = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
         If[ ! FileExistsQ @ target, Throw @ Missing[ "NotInstalled", target ] ];
 
         name = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
         existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
-        isVSCode = $installName === "VisualStudioCode";
-        isOpenCode = $installName === "OpenCode";
 
-        Which[
+        Switch[ $installName,
             (* Handle VS Code format *)
-            isVSCode,
+            "VisualStudioCode",
             If[ ! AssociationQ @ existing[ "mcp", "servers" ], Throw @ Missing[ "NotInstalled", target ] ];
             If[ ! KeyExistsQ[ existing[ "mcp", "servers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
             KeyDropFrom[ existing[ "mcp", "servers" ], name ],
             (* Handle OpenCode format *)
-            isOpenCode,
+            "OpenCode",
             If[ ! AssociationQ @ existing[ "mcp" ], Throw @ Missing[ "NotInstalled", target ] ];
             If[ ! KeyExistsQ[ existing[ "mcp" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
             KeyDropFrom[ existing[ "mcp" ], name ],
             (* Handle standard format *)
-            True,
+            _,
             If[ ! AssociationQ @ existing[ "mcpServers" ], Throw @ Missing[ "NotInstalled", target ] ];
             If[ ! KeyExistsQ[ existing[ "mcpServers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
             KeyDropFrom[ existing[ "mcpServers" ], name ]
