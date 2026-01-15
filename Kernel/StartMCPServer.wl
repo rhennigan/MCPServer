@@ -108,6 +108,7 @@ startMCPServer // endDefinition;
 startToolWarmup // beginDefinition;
 
 startToolWarmup[ tools_ ] := (
+    toolPreWarmup @ tools;
     Quiet @ TaskRemove @ $warmupTask;
     If[ MatchQ[ $warmupTask, _TaskObject ],
         debugPrint[ "Restarting tool warmup delay" ],
@@ -122,6 +123,31 @@ startToolWarmup[ tools_ ] := (
 );
 
 startToolWarmup // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*toolPreWarmup*)
+(* InstallVectorDatabases cannot be run in a scheduled task since it also spawns asynchronous tasks. *)
+toolPreWarmup // beginDefinition;
+toolPreWarmup[ tools_List ] := toolPreWarmup /@ tools;
+toolPreWarmup[ KeyValuePattern[ "name" -> name_String ] ] := toolPreWarmup @ name;
+toolPreWarmup[ "WolframContext" ] := toolPreWarmup @ { "WolframAlphaContext", "WolframLanguageContext" };
+toolPreWarmup[ name_String ] := toolPreWarmup0 @ name;
+toolPreWarmup[ _ ] := Null;
+toolPreWarmup // endDefinition;
+
+
+toolPreWarmup0 // beginDefinition;
+
+toolPreWarmup0[ tool: "WolframLanguageContext"|"WolframAlphaContext" ] := toolPreWarmup0[ tool ] =
+    debugPrint[
+        "Pre-warmed up " <> tool <> ": ",
+        First @ AbsoluteTiming @ cb`InstallVectorDatabases[ ]
+    ];
+
+toolPreWarmup0[ _ ] := Null;
+
+toolPreWarmup0 // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
