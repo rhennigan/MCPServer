@@ -39,6 +39,11 @@ InstallMCPServer[ name_String, server_, opts: OptionsPattern[ ] ] :=
         InstallMCPServer[ installLocation @ name, server, opts ]
     ];
 
+InstallMCPServer[ { name_String, dir_ }, server_, opts: OptionsPattern[ ] ] :=
+    catchMine @ Block[ { $installName = toInstallName @ name },
+        InstallMCPServer[ projectInstallLocation[ $installName, dir ], server, opts ]
+    ];
+
 InstallMCPServer // endExportedDefinition;
 
 (* ::**************************************************************************************************************:: *)
@@ -406,6 +411,11 @@ UninstallMCPServer[ target: _File | All, servers_List ] :=
 UninstallMCPServer[ All, obj_MCPServerObject ] :=
     catchMine @ UninstallMCPServer[ mcpServerInstallations @ obj, obj ];
 
+UninstallMCPServer[ { name_String, dir_ }, obj_ ] :=
+    catchMine @ Block[ { $installName = toInstallName @ name },
+        UninstallMCPServer[ projectInstallLocation[ $installName, dir ], obj ]
+    ];
+
 UninstallMCPServer[ targets_List, obj_MCPServerObject ] :=
     catchMine @ DeleteMissing[ catchAlways @ UninstallMCPServer[ #, obj ] & /@ targets ];
 
@@ -557,6 +567,25 @@ installLocation[ "VisualStudioCode", "Linux" ] :=
 (*Unknown*)
 installLocation[ name_String, os_String ] := throwFailure[ "UnknownInstallLocation", name, os ];
 installLocation // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*projectInstallLocation*)
+projectInstallLocation // beginDefinition;
+
+projectInstallLocation[ "ClaudeCode", dir_ ] :=
+    fileNameJoin[ dir, ".claude.json" ];
+
+projectInstallLocation[ "OpenCode", dir_ ] :=
+    fileNameJoin[ dir, "opencode.json" ];
+
+projectInstallLocation[ "VisualStudioCode", dir_ ] :=
+    fileNameJoin[ dir, ".vscode", "settings.json" ];
+
+projectInstallLocation[ name_, dir_ ] :=
+    throwFailure[ "UnknownProjectInstallLocation", name ];
+
+projectInstallLocation // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)

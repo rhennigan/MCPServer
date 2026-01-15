@@ -136,6 +136,45 @@ Notebook[
              ButtonData -> "paclet:Wolfram/MCPServer/ref/UninstallMCPServer"
             ],
             "[",
+            RowBox[
+             {
+              RowBox[
+               {
+                "{",
+                RowBox[
+                 {
+                  "\"\!\(\*StyleBox[\"application\", \"TI\"]\)\"",
+                  ",",
+                  StyleBox["directory", "TI"]
+                 }
+                ],
+                "}"
+               }
+              ],
+              ",",
+              StyleBox["server", "TI"]
+             }
+            ],
+            "]"
+           }
+          ]
+         ],
+         "InlineFormula"
+        ],
+        "\[LineSeparator]uninstalls the MCP server for a project contained in ",
+        Cell[BoxData[StyleBox["directory", "TI"]], "InlineFormula"],
+        ".\n",
+        Cell["   ", "ModInfo"],
+        Cell[
+         BoxData[
+          RowBox[
+           {
+            ButtonBox[
+             "UninstallMCPServer",
+             BaseStyle -> "Link",
+             ButtonData -> "paclet:Wolfram/MCPServer/ref/UninstallMCPServer"
+            ],
+            "[",
             ButtonBox["All", BaseStyle -> "Link"],
             "]"
            }
@@ -143,7 +182,7 @@ Notebook[
          ],
          "InlineFormula"
         ],
-        "\[LineSeparator]uninstalls all previously installed MCP servers"
+        "\[LineSeparator]uninstalls all previously installed MCP servers."
        }
       ],
       "Usage",
@@ -442,6 +481,54 @@ Notebook[
       "2ColumnTableMod",
       TaggingRules -> {"Alphabetized" -> True},
       CellID -> 822744168
+     ],
+     Cell[
+      TextData[
+       {
+        Cell[
+         BoxData[
+          RowBox[
+           {
+            ButtonBox[
+             "UninstallMCPServer",
+             BaseStyle -> "Link",
+             ButtonData -> "paclet:Wolfram/MCPServer/ref/UninstallMCPServer"
+            ],
+            "[",
+            RowBox[
+             {
+              RowBox[
+               {
+                "{",
+                RowBox[
+                 {
+                  "\"\!\(\*StyleBox[\"application\", \"TI\"]\)\"",
+                  ",",
+                  StyleBox["directory", "TI"]
+                 }
+                ],
+                "}"
+               }
+              ],
+              ",",
+              StyleBox["server", "TI"]
+             }
+            ],
+            "]"
+           }
+          ]
+         ],
+         "InlineFormula"
+        ],
+        " is used for applications that support directory-based projects, such as ",
+        Cell[BoxData["\"ClaudeCode\""], "InlineFormula"],
+        ", and ",
+        Cell[BoxData["\"OpenCode\""], "InlineFormula"],
+        "."
+       }
+      ],
+      "Notes",
+      CellID -> 157338048
      ]
     },
     Open
@@ -532,13 +619,13 @@ Notebook[
              {
               nbobj$$ = 
                NotebookObject[
-                "55620b79-e41d-b64a-8734-c1c4567c8d52",
-                "9c42c603-4b0a-484c-bf31-afc51233393b"
+                "c2eb6a80-4534-a947-8adb-e5dbf64f33a5",
+                "ae02bf3f-2d31-ec44-a536-e1956a55b157"
                ],
               cellobj$$ = 
                CellObject[
-                "6467be7d-1a7e-214e-95e0-6edb9bbd0ee0",
-                "6dd4acd6-a772-c840-ba2f-ce65ab645f53"
+                "d5c29b4c-cdae-9442-8c3f-e666751c9c78",
+                "6b482c82-b386-034f-972b-3bab64f83e11"
                ]
              },
              TemplateBox[
