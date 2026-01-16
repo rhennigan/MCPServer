@@ -235,6 +235,42 @@ $defaultMCPTools[ "WolframLanguageEvaluator" ] := LLMTool @ <|
 |>;
 
 (* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*DocumentationSearcher*)
+$defaultMCPTools[ "DocumentationSearcher" ] := LLMTool @ <|
+    "Name"        -> "DocumentationSearcher",
+    "DisplayName" -> "Documentation Searcher",
+    "Description" -> "Discover relevant Wolfram Language documentation snippets using semantic search.",
+    "Function"    -> Function[ cb`$DefaultTools[ "DocumentationSearcher" ][ # ][ "String" ] ],
+    "Options"     -> { },
+    "Parameters"  -> {
+        "query" -> <|
+            "Interpreter" -> "String",
+            "Help"        -> "The search query for finding relevant documentation.",
+            "Required"    -> True
+        |>
+    }
+|>;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*DocumentationLookup*)
+$defaultMCPTools[ "DocumentationLookup" ] := LLMTool @ <|
+    "Name"        -> "DocumentationLookup",
+    "DisplayName" -> "Documentation Lookup",
+    "Description" -> "Get full Wolfram Language documentation pages.",
+    "Function"    -> Function[ cb`$DefaultTools[ "DocumentationLookup" ][ # ][ "String" ] ],
+    "Options"     -> { },
+    "Parameters"  -> {
+        "ids" -> <|
+            "Interpreter" -> "String",
+            "Help"        -> "One or more symbol names or documentation URIs separated by commas, e.g. 'Table', 'paclet:ref/Table', or 'paclet:ref/Table,paclet:tutorial/Lists,guide/ListManipulation'",
+            "Required"    -> True
+        |>
+    }
+|>;
+
+(* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
 (*evaluateWolframLanguage*)
 evaluateWolframLanguage // beginDefinition;
@@ -628,7 +664,9 @@ $defaultMCPServers[ "Wolfram" ] := <|
         "Tools" -> {
             "WolframContext",
             "WolframLanguageEvaluator",
-            "WolframAlpha"
+            "WolframAlpha",
+            "DocumentationSearcher",
+            "DocumentationLookup"
         }
     |>
 |>;
