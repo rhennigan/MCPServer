@@ -4,9 +4,7 @@ BeginPackage[ "Wolfram`MCPServerTests`" ];
 
 (* :!CodeAnalysis::BeginBlock:: *)
 
-HoldComplete[
-    `$TestDefinitionsLoaded
-];
+`$TestDefinitionsLoaded = True;
 
 Begin[ "`Private`" ];
 
@@ -14,6 +12,7 @@ Begin[ "`Private`" ];
 (* ::Section::Closed:: *)
 (*Initialization*)
 Wolfram`PacletCICD`$Debug = True;
+LLMConfiguration; (* Trigger autoload for LLMFunctions paclet *)
 
 Off[ General::shdw           ];
 Off[ PacletInstall::samevers ];
@@ -54,6 +53,10 @@ $sourceDirectory = DirectoryName[ $InputFileName, 2 ];
 $buildDirectory  = FileNameJoin @ { $sourceDirectory, "build", "Wolfram__MCPServer" };
 $pacletDirectory = Quiet @ SelectFirst[ { $buildDirectory, $sourceDirectory }, PacletObjectQ @* PacletObject @* File ];
 
+If[ $pacletDirectory === $sourceDirectory,
+    cicd`ConsoleWarning[ "Running tests on source directory instead of built paclet" ]
+];
+
 $$rules = (Rule|RuleDelayed)[ _, _ ]..;
 
 (* ::**************************************************************************************************************:: *)
@@ -65,7 +68,7 @@ PacletDataRebuild[ ];
 PacletDirectoryLoad @ $pacletDirectory;
 Get[ "Wolfram`MCPServer`" ];
 If[ ! MemberQ[ $LoadedFiles, FileNameJoin @ { $pacletDirectory, "Kernel", "64Bit", "MCPServer.mx" } ],
-    abort[ "Paclet MX file was not loaded!" ]
+    cicd`ConsoleWarning[ "Paclet MX file was not loaded" ]
 ];
 
 (* ::**************************************************************************************************************:: *)

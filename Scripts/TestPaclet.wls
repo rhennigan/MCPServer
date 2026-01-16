@@ -14,7 +14,7 @@ If[ StringQ @ Environment[ "GITHUB_ACTIONS" ]
     ,
     result = UsingFrontEnd @ Block[ { messagePrint }, checkResult @ Wolfram`PacletCICD`TestPaclet @ $defNB ]
     ,
-    report = UsingFrontEnd @ TestReport @ FileNames[ "*.wlt", FileNameJoin @ { $pacletDir, "Tests" } ];
+    report = UsingFrontEnd @ Block[ { messagePrint }, TestReport @ FileNames[ "*.wlt", FileNameJoin @ { $pacletDir, "Tests" } ] ];
     failed = Cases[ report[ "TestsFailed" ], _TestObject, Infinity ];
     If[ Length @ failed === 0, Exit[ 0 ] ];
     Print[ "Failed tests: " ];
