@@ -31,6 +31,7 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `fileQ;
 `getLLMKitInfo;
 `importResourceFunction;
+`initializeVectorDatabases;
 `llmKitSubscribedQ;
 `makeMCPServerObjectBoxes;
 `mcpServerDirectory;

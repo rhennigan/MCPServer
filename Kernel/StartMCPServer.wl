@@ -121,7 +121,7 @@ preinstallVectorDatabases // beginDefinition;
 
 preinstallVectorDatabases[ ] := preinstallVectorDatabases[ ] = (
     debugPrint[ "Warming up vector databases" ];
-    debugPrint[ "Warmed up vector databases: ", First @ AbsoluteTiming @ cb`InstallVectorDatabases[ ] ]
+    debugPrint[ "Warmed up vector databases: ", First @ AbsoluteTiming @ initializeVectorDatabases[ ] ]
 );
 
 preinstallVectorDatabases // endDefinition;
@@ -133,6 +133,13 @@ preinstallVectorDatabases // endDefinition;
 {"method":"tools/call","params":{"name":"WolframContext","arguments":{"context":"What's the 123456789th prime?"}},"jsonrpc":"2.0","id":2}
 ```
 *)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*initializeVectorDatabases*)
+initializeVectorDatabases // beginDefinition;
+initializeVectorDatabases[ ] := initializeVectorDatabases[ ] = cb`InstallVectorDatabases[ ];
+initializeVectorDatabases // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)

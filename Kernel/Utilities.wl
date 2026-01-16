@@ -43,6 +43,7 @@ getLLMKitInfo[ connected_, user_, cloudBase_ ] := Enclose[
         ];
 
         If[ TrueQ @ info[ "userHasSubscription" ],
+            Wolfram`LLMFunctions`Common`$LLMKitSubscribed = True;
             getLLMKitInfo[ connected, user, cloudBase ] = info,
             info
         ]
