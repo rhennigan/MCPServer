@@ -13,7 +13,8 @@ Needs[ "Wolfram`Chatbook`" -> "cb`" ];
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Prompts*)
-$wolframAlphaToolDescription = "\
+(* TODO: multiple queries aren't supported until the next Chatbook paclet update *)
+(* $wolframAlphaToolDescription = "\
 Use natural language queries with Wolfram|Alpha to get up-to-date computational results about entities in \
 chemistry, physics, geography, history, art, astronomy, and more.
 Always use the Wolfram context tool before using this tool to make sure you have the most up-to-date information.
@@ -21,7 +22,14 @@ IMPORTANT: If you need the results of multiple queries, it's important that you 
 whenever possible to save on token usage and time.";
 
 $wolframAlphaToolQueryHelp = "\
-The query (or queries) to send to Wolfram|Alpha. Separate multiple queries with tab characters (\\t).";
+The query (or queries) to send to Wolfram|Alpha. Separate multiple queries with tab characters (\\t)."; *)
+
+$wolframAlphaToolDescription = "\
+Use natural language queries with Wolfram|Alpha to get up-to-date computational results about entities in \
+chemistry, physics, geography, history, art, astronomy, and more.
+Always use the Wolfram context tool before using this tool to make sure you have the most up-to-date information.";
+
+$wolframAlphaToolQueryHelp = "The query to send to Wolfram|Alpha.";
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

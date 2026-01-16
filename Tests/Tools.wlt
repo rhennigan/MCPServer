@@ -276,7 +276,8 @@ VerificationTest[
     TestID   -> "WolframAlpha-NonEmptyResult@@Tests/Tools.wlt:272,1-277,2"
 ]
 
-VerificationTest[
+(* TODO: multiple queries aren't supported until the next Chatbook paclet update *)
+(* VerificationTest[
     $waResult = $wolframAlphaTool[ <| "query" -> "population of France\tpopulation of Germany" |> ],
     _String? StringQ,
     SameTest -> MatchQ,
@@ -288,7 +289,7 @@ VerificationTest[
     2,
     SameTest -> SameQ,
     TestID   -> "WolframAlpha-MultipleQueriesResultCount@@Tests/Tools.wlt:286,1-291,2"
-]
+] *)
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -301,28 +302,28 @@ VerificationTest[
     $wlContextTool = $DefaultMCPTools[ "WolframLanguageContext" ],
     _LLMTool,
     SameTest -> MatchQ,
-    TestID   -> "WolframLanguageContext-GetTool@@Tests/Tools.wlt:300,1-305,2"
+    TestID   -> "WolframLanguageContext-GetTool@@Tests/Tools.wlt:301,1-306,2"
 ]
 
 VerificationTest[
     $wlContextResult = $wlContextTool[ <| "context" -> "How to create a list of prime numbers in Wolfram Language" |> ],
     _String? StringQ,
     SameTest -> MatchQ,
-    TestID   -> "WolframLanguageContext-BasicQuery@@Tests/Tools.wlt:307,1-312,2"
+    TestID   -> "WolframLanguageContext-BasicQuery@@Tests/Tools.wlt:308,1-313,2"
 ]
 
 VerificationTest[
     StringLength[ $wlContextResult ] > 0,
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframLanguageContext-NonEmptyResult@@Tests/Tools.wlt:314,1-319,2"
+    TestID   -> "WolframLanguageContext-NonEmptyResult@@Tests/Tools.wlt:315,1-320,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $wlContextResult, "Prime" | "prime" | "Table" | "Range", IgnoreCase -> True ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframLanguageContext-RelevantContent@@Tests/Tools.wlt:321,1-326,2"
+    TestID   -> "WolframLanguageContext-RelevantContent@@Tests/Tools.wlt:322,1-327,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -336,21 +337,21 @@ VerificationTest[
     $waContextTool = $DefaultMCPTools[ "WolframAlphaContext" ],
     _LLMTool,
     SameTest -> MatchQ,
-    TestID   -> "WolframAlphaContext-GetTool@@Tests/Tools.wlt:335,1-340,2"
+    TestID   -> "WolframAlphaContext-GetTool@@Tests/Tools.wlt:336,1-341,2"
 ]
 
 VerificationTest[
     $waContextResult = $waContextTool[ <| "context" -> "What is the distance from Earth to Mars" |> ],
     _String? StringQ,
     SameTest -> MatchQ,
-    TestID   -> "WolframAlphaContext-BasicQuery@@Tests/Tools.wlt:342,1-347,2"
+    TestID   -> "WolframAlphaContext-BasicQuery@@Tests/Tools.wlt:343,1-348,2"
 ]
 
 VerificationTest[
     StringLength[ $waContextResult ] > 0,
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframAlphaContext-NonEmptyResult@@Tests/Tools.wlt:349,1-354,2"
+    TestID   -> "WolframAlphaContext-NonEmptyResult@@Tests/Tools.wlt:350,1-355,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -364,21 +365,21 @@ VerificationTest[
     $wolframContextTool = $DefaultMCPTools[ "WolframContext" ],
     _LLMTool,
     SameTest -> MatchQ,
-    TestID   -> "WolframContext-GetTool@@Tests/Tools.wlt:363,1-368,2"
+    TestID   -> "WolframContext-GetTool@@Tests/Tools.wlt:364,1-369,2"
 ]
 
 VerificationTest[
     $wolframContextResult = $wolframContextTool[ <| "context" -> "How to compute derivatives symbolically" |> ],
     _String? StringQ,
     SameTest -> MatchQ,
-    TestID   -> "WolframContext-BasicQuery@@Tests/Tools.wlt:370,1-375,2"
+    TestID   -> "WolframContext-BasicQuery@@Tests/Tools.wlt:371,1-376,2"
 ]
 
 VerificationTest[
     StringLength[ $wolframContextResult ] > 0,
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframContext-NonEmptyResult@@Tests/Tools.wlt:377,1-382,2"
+    TestID   -> "WolframContext-NonEmptyResult@@Tests/Tools.wlt:378,1-383,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -395,7 +396,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveNames@@Tests/Tools.wlt:391,1-399,2"
+    TestID   -> "ToolProperties-AllHaveNames@@Tests/Tools.wlt:392,1-400,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -408,7 +409,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveDescriptions@@Tests/Tools.wlt:404,1-412,2"
+    TestID   -> "ToolProperties-AllHaveDescriptions@@Tests/Tools.wlt:405,1-413,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -421,5 +422,5 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveParameters@@Tests/Tools.wlt:417,1-425,2"
+    TestID   -> "ToolProperties-AllHaveParameters@@Tests/Tools.wlt:418,1-426,2"
 ]
