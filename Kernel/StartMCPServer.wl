@@ -90,7 +90,7 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
                 If[ response =!= EndOfFile, writeLog[ "Response" -> response ] ];
                 If[ AssociationQ @ response,
                     WriteLine[ "stdout", Developer`WriteRawJSONString[ response, "Compact" -> True ] ];
-                    startToolWarmup @ $toolList,
+                    If[ TrueQ @ $warmupTools, toolWarmup @ $toolList ],
                     Pause[ 0.1 ]
                 ]
             ]
@@ -104,56 +104,35 @@ startMCPServer // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
-(*startToolWarmup*)
-startToolWarmup // beginDefinition;
-
-startToolWarmup[ tools_ ] := (
-    Quiet @ TaskRemove @ $warmupTask;
-    If[ MatchQ[ $warmupTask, _TaskObject ],
-        debugPrint[ "Restarting tool warmup delay" ],
-        debugPrint[ "Starting tool warmup delay" ]
-    ];
-    $warmupTask = SessionSubmit @ ScheduledTask[
-        startToolWarmup[ tools ] = Null;
-        debugPrint[ "Warming up tools" ];
-        toolWarmup @ tools,
-        { $toolWarmupDelay }
-    ]
-);
-
-startToolWarmup // endDefinition;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
 (*toolWarmup*)
 toolWarmup // beginDefinition;
 toolWarmup[ ] := toolWarmup @ $toolList;
 toolWarmup[ tools_List ] := toolWarmup /@ tools;
 toolWarmup[ KeyValuePattern[ "name" -> name_String ] ] := toolWarmup @ name;
 toolWarmup[ "WolframContext" ] := toolWarmup @ { "WolframAlphaContext", "WolframLanguageContext" };
-toolWarmup[ name_String ] := toolWarmup0 @ name;
+toolWarmup[ "WolframLanguageContext"|"WolframAlphaContext" ] := preinstallVectorDatabases[ ];
 toolWarmup[ _ ] := Null;
 toolWarmup // endDefinition;
 
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*preinstallVectorDatabases*)
+preinstallVectorDatabases // beginDefinition;
 
-toolWarmup0 // beginDefinition;
+preinstallVectorDatabases[ ] := preinstallVectorDatabases[ ] = (
+    debugPrint[ "Warming up vector databases" ];
+    debugPrint[ "Warmed up vector databases: ", First @ AbsoluteTiming @ cb`InstallVectorDatabases[ ] ]
+);
 
-toolWarmup0[ "WolframLanguageContext" ] := toolWarmup0[ "WolframLanguageContext" ] =
-    debugPrint[
-        "Warmed up WolframLanguageContext: ",
-        First @ AbsoluteTiming @ cb`RelatedDocumentation[ "test" ]
-    ];
+preinstallVectorDatabases // endDefinition;
 
-toolWarmup0[ "WolframAlphaContext" ] := toolWarmup0[ "WolframAlphaContext" ] =
-    debugPrint[
-        "Warmed up WolframAlphaContext: ",
-        First @ AbsoluteTiming @ cb`RelatedWolframAlphaQueries[ "test" ]
-    ];
+(* Test messages:
 
-toolWarmup0[ _ ] :=
-    Null;
-
-toolWarmup0 // endDefinition;
+```
+{"method":"tools/list","params":{},"jsonrpc":"2.0","id":1}
+{"method":"tools/call","params":{"name":"WolframContext","arguments":{"context":"What's the 123456789th prime?"}},"jsonrpc":"2.0","id":2}
+```
+*)
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -189,6 +168,7 @@ processRequest[ ] :=
         id = Lookup[ message, "id", Null ];
         req = <| "jsonrpc" -> "2.0", "id" -> id |>;
         response = catchAlways @ handleMethod[ method, message, req ];
+        If[ method === "tools/list", $warmupTools = True ];
         writeLog[ "Response" -> response ];
         If[ FailureQ @ response,
             <| req, "error" -> <| "code" -> -32603, "message" -> "Internal error" |> |>,
