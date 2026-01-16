@@ -56,7 +56,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    $exampleNotebook = FindFile[ "ExampleData/document.nb" ],
+    $exampleNotebook = FileNameJoin @ { DirectoryName @ $TestFileName, "Resources", "document.nb" },
     _String? FileExistsQ,
     SameTest -> MatchQ,
     TestID   -> "ReadNotebook-FindExampleFile@@Tests/Tools.wlt:58,1-63,2"
