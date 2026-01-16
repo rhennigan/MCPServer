@@ -16,7 +16,12 @@ Needs[ "Wolfram`Chatbook`" -> "cb`" ];
 $wolframAlphaToolDescription = "\
 Use natural language queries with Wolfram|Alpha to get up-to-date computational results about entities in \
 chemistry, physics, geography, history, art, astronomy, and more.
-Always use the Wolfram context tool before using this tool to make sure you have the most up-to-date information.";
+Always use the Wolfram context tool before using this tool to make sure you have the most up-to-date information.
+IMPORTANT: If you need the results of multiple queries, it's important that you combine them into a single tool call \
+whenever possible to save on token usage and time.";
+
+$wolframAlphaToolQueryHelp = "\
+The query (or queries) to send to Wolfram|Alpha. Separate multiple queries with tab characters (\\t).";
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -25,16 +30,29 @@ $defaultMCPTools[ "WolframAlpha" ] := LLMTool @ <|
     "Name"        -> "WolframAlpha",
     "DisplayName" -> "Wolfram|Alpha",
     "Description" -> $wolframAlphaToolDescription,
-    "Function"    -> Function[ cb`$DefaultTools[ "WolframAlpha" ][ # ][ "String" ] ],
+    "Function"    -> wolframAlphaToolEvaluate,
     "Options"     -> { },
     "Parameters"  -> {
         "query" -> <|
             "Interpreter" -> "String",
-            "Help"        -> "the input",
+            "Help"        -> $wolframAlphaToolQueryHelp,
             "Required"    -> True
         |>
     }
 |>;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Definitions*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*wolframAlphaToolEvaluate*)
+wolframAlphaToolEvaluate // beginDefinition;
+wolframAlphaToolEvaluate[ as_ ] := wolframAlphaToolEvaluate[ as, cb`$DefaultTools[ "WolframAlpha" ][ as ] ];
+wolframAlphaToolEvaluate[ as_, result_String ] := result;
+wolframAlphaToolEvaluate[ as_, KeyValuePattern[ "String" -> result_String ] ] := result;
+wolframAlphaToolEvaluate // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
