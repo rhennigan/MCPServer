@@ -53,6 +53,7 @@ $MCPServerContexts = {
     "Wolfram`MCPServer`InstallMCPServer`",
     "Wolfram`MCPServer`MCPServerObject`",
     "Wolfram`MCPServer`StartMCPServer`",
+    "Wolfram`MCPServer`Tools`",
     "Wolfram`MCPServer`Utilities`"
 };
 
