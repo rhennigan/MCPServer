@@ -328,7 +328,7 @@ formatTime[ sec_? NumericQ ] :=
         True,        ToString @ Round[ sec / 3600, 0.1 ] <> " h"
     ];
 
-formatTime[ Quantity[ val_, _ ] ] := formatTime @ val; (* FIXME: UnitConvert/QuantityMagnitude to get proper units *)
+formatTime[ q_Quantity ] := formatTime @ QuantityMagnitude @ UnitConvert[ q, "Seconds" ];
 
 formatTime[ _ ] := "N/A";
 
@@ -347,7 +347,7 @@ formatMemory[ bytes_? NumericQ ] :=
         True,           ToString @ Round[ bytes / 1024.0^3, 0.001 ] <> " GB"
     ];
 
-formatMemory[ Quantity[ val_, _ ] ] := formatMemory @ val; (* FIXME: UnitConvert/QuantityMagnitude to get proper units *)
+formatMemory[ q_Quantity ] := formatMemory @ QuantityMagnitude @ UnitConvert[ q, "Bytes" ];
 
 formatMemory[ _ ] := "N/A";
 
