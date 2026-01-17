@@ -6,12 +6,21 @@ If[ ! TrueQ @ $loadedDefinitions, Get @ FileNameJoin @ { DirectoryName @ $InputF
 
 Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
 
-SetOptions[ TestReport, ProgressReporting -> False ];
-
-$testDirectory = FileNameJoin @ { $pacletDir, "Tests" };
-
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
+(* Improve readability of GitHub Actions output by writing some test events to stdout. *)
+SetOptions[
+    TestReport,
+    HandlerFunctions -> <|
+        "FileStarted"  -> Function @ Print[ "Starting test file: ", #[ "TestFileName" ] ],
+        "FileFinished" -> Function @ Print[ "Finished test file: ", #[ "TestFileName" ] ],
+        "TestCreated"  -> Function @ Print[ "\tCurrent test: " , #[ "TestObject" ][ "TestID" ] ]
+    |>,
+    HandlerFunctionsKeys -> { "TestFileName", "TestObject" },
+    ProgressReporting    -> False
+];
+
+$testDirectory = FileNameJoin @ { $pacletDir, "Tests" };
 If[ StringQ @ Environment[ "GITHUB_ACTIONS" ]
     ,
     result = UsingFrontEnd @ Block[ { messagePrint }, checkResult @ Wolfram`PacletCICD`TestPaclet @ $testDirectory ]
