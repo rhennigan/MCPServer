@@ -67,7 +67,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    $exampleNotebook = FileNameJoin @ { DirectoryName @ $TestFileName, "Resources", "document.nb" },
+    $exampleNotebook = FileNameJoin @ { DirectoryName[ $TestFileName, 2 ], "TestResources", "document.nb" },
     _String? FileExistsQ,
     SameTest -> MatchQ,
     TestID   -> "ReadNotebook-FindExampleFile@@Tests/Tools.wlt:69,1-74,2"
@@ -395,6 +395,56 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*TestReport*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Basic Examples*)
+VerificationTest[
+    $testReportTool = $DefaultMCPTools[ "TestReport" ],
+    _LLMTool,
+    SameTest -> MatchQ,
+    TestID   -> "TestReport-GetTool@@Tests/Tools.wlt:403,1-408,2"
+]
+
+VerificationTest[
+    $testResourceDirectory = FileNameJoin @ { DirectoryName[ $TestFileName, 2 ], "TestResources" },
+    _String? DirectoryQ,
+    SameTest -> MatchQ,
+    TestID   -> "TestReport-TestResourceDirectory@@Tests/Tools.wlt:410,1-415,2"
+]
+
+VerificationTest[
+    $testReportResult = $testReportTool @ <|
+        "paths" -> FileNameJoin @ { $testResourceDirectory, "TestFile1.wlt" }
+    |>,
+    _String? (StringContainsQ[ "# Test Results Summary"~~__~~"TestFile1.wlt" ]),
+    SameTest -> MatchQ,
+    TestID   -> "TestReport-SingleFile@@Tests/Tools.wlt:417,1-424,2"
+]
+
+VerificationTest[
+    $testReportResult = $testReportTool @ <|
+        "paths" -> StringJoin[
+            FileNameJoin @ { $testResourceDirectory, "TestFile1.wlt" },
+            ", ",
+            FileNameJoin @ { $testResourceDirectory, "TestFile2.wlt" }
+        ]
+    |>,
+    _String? (StringContainsQ[ "# Test Results Summary"~~__~~"TestFile1.wlt"~~__~~"TestFile2.wlt" ]),
+    SameTest -> MatchQ,
+    TestID   -> "TestReport-MultipleFiles@@Tests/Tools.wlt:426,1-437,2"
+]
+
+VerificationTest[
+    $testReportResult = $testReportTool @ <| "paths" -> $testResourceDirectory |>,
+    _String? (StringContainsQ[ "# Test Results Summary"~~__~~"TestFile1.wlt"~~__~~"TestFile2.wlt" ]),
+    SameTest -> MatchQ,
+    TestID   -> "TestReport-Directory@@Tests/Tools.wlt:439,1-444,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Tool Properties*)
 
 (* ::**************************************************************************************************************:: *)
@@ -407,7 +457,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveNames@@Tests/Tools.wlt:403,1-411,2"
+    TestID   -> "ToolProperties-AllHaveNames@@Tests/Tools.wlt:453,1-461,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -420,7 +470,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveDescriptions@@Tests/Tools.wlt:416,1-424,2"
+    TestID   -> "ToolProperties-AllHaveDescriptions@@Tests/Tools.wlt:466,1-474,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -433,5 +483,5 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveParameters@@Tests/Tools.wlt:429,1-437,2"
+    TestID   -> "ToolProperties-AllHaveParameters@@Tests/Tools.wlt:479,1-487,2"
 ]

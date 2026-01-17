@@ -14,7 +14,7 @@ VerificationTest[
 VerificationTest[
     Pause[ 2 ],
     Null,
-    TimeConstraint -> Quantity[ 1, "Seconds" ],
+    TimeConstraint -> Quantity[ 0.1, "Seconds" ],
     TestID         -> "TestFile2-Pause@@Tests/Resources/TestFile2.wlt:14,1-19,2"
 ]
 
