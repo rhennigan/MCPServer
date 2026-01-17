@@ -202,7 +202,7 @@ createSymbolPacletDocumentation[ params_Association ] := Enclose[
         (* Check if file already exists *)
         outputFile = FileNameJoin @ { outputDir, symbolName <> ".nb" };
         If[ FileExistsQ @ outputFile,
-            Throw @ Failure[ "FileExists", <| "MessageTemplate" -> "Notebook already exists: `1`", "MessageParameters" -> { outputFile } |> ]
+            throwFailure[ "NotebookFileExists", outputFile ]
         ];
 
         (* Generate the notebook *)
@@ -606,6 +606,8 @@ generateInputOutputCells // endDefinition;
 (*exampleDelimiterCell*)
 exampleDelimiterCell // beginDefinition;
 
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
 exampleDelimiterCell[ ] := Cell[
     CellGroupData[
         {
@@ -618,6 +620,7 @@ exampleDelimiterCell[ ] := Cell[
         Open
     ]
 ];
+(* :!CodeAnalysis::EndBlock:: *)
 
 exampleDelimiterCell // endDefinition;
 
@@ -638,10 +641,7 @@ editSymbolPacletDocumentation[ params_Association ] := Enclose[
 
         (* Load the notebook *)
         If[ ! FileExistsQ @ notebookPath,
-            Throw @ Failure[ "NotebookNotFound", <|
-                "MessageTemplate" -> "Notebook not found: `1`",
-                "MessageParameters" -> { notebookPath }
-            |> ]
+            throwFailure[ "NotebookNotFound", notebookPath ]
         ];
 
         notebook = ConfirmMatch[ Import[ notebookPath, "NB" ], _Notebook, "Notebook" ];
@@ -707,10 +707,7 @@ performEditOperation[ notebook_Notebook, "clearExamples", params_ ] :=
     { clearExamplesInNotebook[ notebook, params[ "section" ], params[ "subsection" ] ], None };
 
 performEditOperation[ notebook_Notebook, op_String, params_ ] :=
-    Throw @ Failure[ "InvalidOperation", <|
-        "MessageTemplate"   -> "Unknown operation: `1`",
-        "MessageParameters" -> { op }
-    |> ];
+    throwFailure[ "InvalidOperation", op ];
 
 performEditOperation // endDefinition;
 
