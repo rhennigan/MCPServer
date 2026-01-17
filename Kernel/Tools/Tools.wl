@@ -39,6 +39,9 @@ $subcontexts = {
     (* Tools: ReadNotebook, WriteNotebook *)
     "Wolfram`MCPServer`Tools`Notebooks`",
 
+    (* Tools: CreateSymbolPacletDocumentation, EditSymbolPacletDocumentation *)
+    "Wolfram`MCPServer`Tools`PacletDocumentation`",
+
     (* Tools: TestReport *)
     "Wolfram`MCPServer`Tools`TestReport`",
 
