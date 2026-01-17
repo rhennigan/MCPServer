@@ -6,8 +6,6 @@ BeginPackage[ "Wolfram`MCPServer`Tools`" ];
 `$defaultMCPTools;
 `exportMarkdownString;
 `importMarkdownString;
-`relatedDocumentation;
-`relatedWolframAlphaPrompt;
 
 Begin[ "`Private`" ];
 
@@ -35,14 +33,20 @@ importResourceFunction[ importMarkdownString, "ImportMarkdownString" ];
 (* ::Section::Closed:: *)
 (*Load Subcontexts*)
 $subcontexts = {
-    "Wolfram`MCPServer`Tools`ReadNotebook`",
+    (* Tools: WolframContext, WolframAlphaContext, WolframLanguageContext *)
+    "Wolfram`MCPServer`Tools`Context`",
+
+    (* Tools: ReadNotebook, WriteNotebook *)
+    "Wolfram`MCPServer`Tools`Notebooks`",
+
+    (* Tools: TestReport *)
     "Wolfram`MCPServer`Tools`TestReport`",
+
+    (* Tools: WolframAlpha *)
     "Wolfram`MCPServer`Tools`WolframAlpha`",
-    "Wolfram`MCPServer`Tools`WolframAlphaContext`",
-    "Wolfram`MCPServer`Tools`WolframContext`",
-    "Wolfram`MCPServer`Tools`WolframLanguageContext`",
-    "Wolfram`MCPServer`Tools`WolframLanguageEvaluator`",
-    "Wolfram`MCPServer`Tools`WriteNotebook`"
+
+    (* Tools: WolframLanguageEvaluator *)
+    "Wolfram`MCPServer`Tools`WolframLanguageEvaluator`"
 };
 
 Scan[ Needs[ # -> None ] &, $subcontexts ];
