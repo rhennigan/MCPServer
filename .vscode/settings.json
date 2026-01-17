@@ -19,6 +19,7 @@
         "unformat",
         "USERBASE",
         "wolframengine",
+        "WOLFRAMINIT",
         "wolframresearch"
     ],
     "cSpell.ignoreRegExpList": [
