@@ -497,14 +497,17 @@ generateExampleCells // beginDefinition;
 generateExampleCells[ context_String, "" ] := { };
 
 generateExampleCells[ context_String, markdown_String ] := Enclose[
-    Module[ { groups, cells },
+    Module[ { groups, groupCells, cells },
         (* Split by horizontal rules to get example groups *)
         groups = StringSplit[ markdown, "\n---\n" | "\n---" | "---\n" ];
 
-        (* Generate cells for each group, adding delimiters between groups *)
-        cells = Flatten @ Riffle[
-            generateExampleGroup[ context, StringTrim @ # ] & /@ groups,
-            { { exampleDelimiterCell[ ] } }
+        (* Generate cells for each group *)
+        groupCells = generateExampleGroup[ context, StringTrim @ # ] & /@ groups;
+
+        (* Add delimiters between groups (not after the last one) *)
+        cells = If[ Length @ groupCells <= 1,
+            Flatten @ groupCells,
+            Flatten @ Most @ Riffle[ groupCells, { { exampleDelimiterCell[ ] } } ]
         ];
 
         ConfirmMatch[ cells, { ___Cell }, "Cells" ]
@@ -520,22 +523,21 @@ generateExampleCells // endDefinition;
 generateExampleGroup // beginDefinition;
 
 generateExampleGroup[ context_String, markdown_String ] := Enclose[
-    Module[ { parts, cells },
-        (* Split into text and code blocks *)
-        parts = StringSplit[ markdown, "```wl\n" ~~ code__ ~~ "\n```" :> { "CODE", code } ];
-
-        cells = Flatten @ Map[
-            Replace[
-                #,
-                {
-                    { "CODE", code_String } :> generateInputOutputCells[ context, code ],
-                    text_String :> generateExampleTextCells @ text
-                }
-            ] &,
-            parts
+    Module[ { notebook, importedCells, processedCells },
+        (* Use importMarkdownString to parse the markdown into cells *)
+        notebook = ConfirmMatch[
+            importMarkdownString[ markdown, "Notebook" ],
+            _Notebook,
+            "ImportedNotebook"
         ];
 
-        ConfirmMatch[ cells, { ___Cell }, "Cells" ]
+        (* Extract cells from the notebook *)
+        importedCells = First @ notebook;
+
+        (* Process cells to convert to example format and evaluate code *)
+        processedCells = Flatten @ processImportedCells[ context, importedCells ];
+
+        ConfirmMatch[ processedCells, { ___Cell }, "Cells" ]
     ],
     throwInternalFailure
 ];
@@ -544,35 +546,80 @@ generateExampleGroup // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*generateExampleTextCells*)
-generateExampleTextCells // beginDefinition;
+(*processImportedCells*)
+processImportedCells // beginDefinition;
 
-generateExampleTextCells[ "" ] := { };
+processImportedCells[ context_String, cells_List ] :=
+    processImportedCell[ context, # ] & /@ cells;
 
-generateExampleTextCells[ text_String ] := Enclose[
-    Module[ { trimmed },
-        trimmed = StringTrim @ text;
-        If[ trimmed === "",
-            { },
-            { Cell[ formatDescriptionText @ trimmed, "ExampleText", CellID -> generateCellID[ ] ] }
-        ]
-    ],
-    throwInternalFailure
-];
+processImportedCells // endDefinition;
 
-generateExampleTextCells // endDefinition;
+processImportedCell // beginDefinition;
+
+(* Handle Input/Code cells - evaluate and create input/output pair *)
+processImportedCell[ context_String, Cell[ content_, style: "Input" | "Code" | "Program", opts___ ] ] :=
+    generateInputOutputCells[ context, content, style ];
+
+(* Handle Text cells - convert to ExampleText *)
+processImportedCell[ context_String, Cell[ content_, "Text", ___ ] ] :=
+    { Cell[ content, "ExampleText", CellID -> generateCellID[ ] ] };
+
+(* Handle other cell types - convert to ExampleText if they have content *)
+processImportedCell[ context_String, Cell[ content_String, style_, ___ ] ] /; StringQ @ content && StringTrim @ content =!= "" :=
+    { Cell[ content, "ExampleText", CellID -> generateCellID[ ] ] };
+
+processImportedCell[ context_String, Cell[ TextData[ content_ ], style_, ___ ] ] :=
+    { Cell[ TextData @ content, "ExampleText", CellID -> generateCellID[ ] ] };
+
+(* Skip cells with no meaningful content *)
+processImportedCell[ context_String, _ ] := { };
+
+processImportedCell // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*generateInputOutputCells*)
 generateInputOutputCells // beginDefinition;
 
-generateInputOutputCells[ context_String, code0_String ] := Enclose[
+(* Handle BoxData content (from Input cells) *)
+generateInputOutputCells[ context_String, BoxData[ boxes_ ], style_ ] := Enclose[
+    Module[ { inputCell, code, result, outputCell },
+
+        inputCell = Cell[
+            BoxData @ boxes,
+            "Input",
+            CellLabel -> "In[1]:=",
+            CellID    -> generateCellID[ ]
+        ];
+
+        (* Convert boxes back to code string for evaluation *)
+        code = ToString[ ToExpression[ boxes, StandardForm, HoldComplete ], InputForm ];
+        code = StringTrim @ StringReplace[ code, StartOfString ~~ "HoldComplete[" ~~ body___ ~~ "]" ~~ EndOfString :> body ];
+
+        (* Evaluate and create output cell *)
+        result = Block[ { $Context = context, $ContextPath = { context, "System`" } },
+            Quiet @ TimeConstrained[ ToExpression @ code, 10, $TimedOut ]
+        ];
+
+        outputCell = Cell[
+            BoxData @ ToBoxes[ result, StandardForm ],
+            "Output",
+            CellLabel -> "Out[1]=",
+            CellID    -> generateCellID[ ]
+        ];
+
+        { Cell[ CellGroupData[ { inputCell, outputCell }, Open ] ] }
+    ],
+    throwInternalFailure
+];
+
+(* Handle string content (from Code/Program cells) *)
+generateInputOutputCells[ context_String, code0_String, style_ ] := Enclose[
     Module[ { code, inputBoxes, inputCell, result, outputCell },
         (* Code is already extracted - just trim whitespace *)
         code = StringTrim @ code0;
 
-        (* Create input cell - use UsingFrontEnd to get proper boxes from string *)
+        (* Create input cell - convert code string to proper boxes *)
         inputBoxes = Quiet @ ToBoxes[ ToExpression[ code, InputForm, Defer ], StandardForm ];
 
         inputCell = Cell[
@@ -599,7 +646,39 @@ generateInputOutputCells[ context_String, code0_String ] := Enclose[
     throwInternalFailure
 ];
 
+(* Handle TextData content (from Code cells with formatted content) *)
+generateInputOutputCells[ context_String, TextData[ content_ ], style_ ] := Enclose[
+    Module[ { code },
+        (* Extract plain text from TextData *)
+        code = textDataToString @ content;
+        generateInputOutputCells[ context, code, style ]
+    ],
+    throwInternalFailure
+];
+
 generateInputOutputCells // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*textDataToString*)
+textDataToString // beginDefinition;
+
+textDataToString[ content_List ] :=
+    StringJoin[ textDataToString /@ content ];
+
+textDataToString[ content_String ] :=
+    content;
+
+textDataToString[ Cell[ BoxData[ boxes_ ], ___ ] ] :=
+    ToString[ ToExpression[ boxes, StandardForm, HoldComplete ], InputForm ] //
+        StringReplace[ #, StartOfString ~~ "HoldComplete[" ~~ body___ ~~ "]" ~~ EndOfString :> body ] &;
+
+textDataToString[ StyleBox[ content_, ___ ] ] :=
+    textDataToString @ content;
+
+textDataToString[ _ ] := "";
+
+textDataToString // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
