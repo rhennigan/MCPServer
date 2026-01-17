@@ -8,10 +8,6 @@ Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
 
 SetOptions[ TestReport, ProgressReporting -> False ];
 
-(* FIXME: The sample tests in Resources are getting run as part of this test suite and causing false failures since
-   Wolfram`PacletCICD`TestPaclet seeks test files recursively. The Resources directory should be moved outside of
-   the Tests directory to prevent this. *)
-
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
 If[ StringQ @ Environment[ "GITHUB_ACTIONS" ]
