@@ -36,6 +36,7 @@ importResourceFunction[ importMarkdownString, "ImportMarkdownString" ];
 (*Load Subcontexts*)
 $subcontexts = {
     "Wolfram`MCPServer`Tools`ReadNotebook`",
+    "Wolfram`MCPServer`Tools`TestReport`",
     "Wolfram`MCPServer`Tools`WolframAlpha`",
     "Wolfram`MCPServer`Tools`WolframAlphaContext`",
     "Wolfram`MCPServer`Tools`WolframContext`",

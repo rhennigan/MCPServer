@@ -16,6 +16,7 @@ BeginPackage[ "Wolfram`MCPServer`" ];
 `MCPServerObjectQ;
 `MCPServerObjects;
 `StartMCPServer;
+`TestReportToolFunction;
 `UninstallMCPServer;
 
 (* ::**************************************************************************************************************:: *)
@@ -82,6 +83,7 @@ $MCPServerProtectedNames = "Wolfram`MCPServer`" <> # & /@ {
     "MCPServerObjectQ",
     "MCPServerObjects",
     "StartMCPServer",
+    "TestReportToolFunction",
     "UninstallMCPServer"
 };
 

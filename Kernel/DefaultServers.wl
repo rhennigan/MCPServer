@@ -74,7 +74,8 @@ $defaultMCPServers[ "WolframLanguage" ] := <|
             "WolframLanguageContext",
             "WolframLanguageEvaluator",
             "ReadNotebook",
-            "WriteNotebook"
+            "WriteNotebook",
+            "TestReport"
         }
     |>
 |>;
