@@ -14,7 +14,19 @@ System`TestObject;
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Config*)
+$externalTestEvaluation = True;
 $$size = _Number? Positive | Infinity;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*TestReportToolFunction*)
+TestReportToolFunction // beginDefinition;
+TestReportToolFunction // Options = { "External" -> $externalTestEvaluation };
+
+TestReportToolFunction[ parameters_Association, opts: OptionsPattern[ ] ] :=
+    testReport @ <| parameters, "newKernel" -> OptionValue[ "External" ] |>;
+
+TestReportToolFunction // endExportedDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -40,6 +52,11 @@ $defaultMCPTools[ "TestReport" ] := LLMTool @ <|
             "Interpreter" -> "Integer",
             "Help"        -> "An optional memory constraint (in bytes) for each test file",
             "Required"    -> False
+        |>,
+        "newKernel" -> <|
+            "Interpreter" -> "Boolean",
+            "Help"        -> "Whether to use a fresh kernel for running tests (default is true)",
+            "Required"    -> False
         |>
     }
 |>;
@@ -53,10 +70,41 @@ $defaultMCPTools[ "TestReport" ] := LLMTool @ <|
 (*testReport*)
 testReport // beginDefinition;
 
-testReport[ as_Association ] := catchTop @ testReport[
-    validatePath @ as[ "paths" ],
-    validateTimeConstraint @ as[ "timeConstraint" ],
-    validateMemoryConstraint @ as[ "memoryConstraint" ]
+testReport[ as_Association ] :=
+    Block[ { $externalTestEvaluation = as[ "newKernel" ] =!= False },
+        testReport[
+            validatePath @ as[ "paths" ],
+            validateTimeConstraint @ as[ "timeConstraint" ],
+            validateMemoryConstraint @ as[ "memoryConstraint" ]
+        ]
+    ];
+
+testReport[ files: { __String }, timeConstraint: $$size, memoryConstraint: $$size ] /; $externalTestEvaluation := Enclose[
+    Module[ { wolfram, script, timeConstraintString, memoryConstraintString, processArgs, result, output },
+
+        wolfram = ConfirmBy[ getWolframCommand[ ], StringQ, "WolframCommand" ];
+        script = ConfirmBy[ $thisPaclet[ "AssetLocation", "TestReportScript" ], FileExistsQ, "TestReportScript" ];
+        timeConstraintString = If[ timeConstraint === Infinity, "Infinity", ToString @ timeConstraint ];
+        memoryConstraintString = If[ memoryConstraint === Infinity, "Infinity", ToString @ memoryConstraint ];
+
+        processArgs = {
+            wolfram,
+            "-script", script,
+            "-noinit",
+            StringRiffle[ files, "," ],
+            timeConstraintString,
+            memoryConstraintString
+        };
+
+        result = ConfirmBy[ RunProcess @ processArgs, AssociationQ, "Result" ];
+
+        If[ result[ "ExitCode" ] =!= 0, throwFailure[ "TestKernelFailure" ] ];
+
+        output = ConfirmBy[ result[ "StandardOutput" ], StringQ, "Output" ];
+
+        StringReplace[ output, "\r\n" -> "\n" ]
+    ],
+    throwInternalFailure
 ];
 
 testReport[ files: { __String }, timeConstraint: $$size, memoryConstraint: $$size ] := Enclose[
@@ -75,9 +123,17 @@ testReport1 // beginDefinition;
 
 testReport1[ file_String, timeConstraint: $$size, memoryConstraint: $$size ] := Enclose[
     Module[ { result },
-        result = TestReport[ file, TimeConstraint -> timeConstraint, MemoryConstraint -> memoryConstraint ];
+
+        result = TestReport[
+            file,
+            TimeConstraint    -> timeConstraint,
+            MemoryConstraint  -> memoryConstraint,
+            ProgressReporting -> False
+        ];
+
         If[ ! MatchQ[ result, _TestReportObject ], throwFailure[ "InvalidTestFile", file ] ];
         If[ result[ "TestResults" ] === <| |>, throwFailure[ "NoTestsInFile", file ] ];
+
         result
     ],
     throwInternalFailure
@@ -89,11 +145,11 @@ testReport1 // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*validatePath*)
 validatePath // beginDefinition;
-validatePath[ paths_String ] := Flatten[ validatePath0 /@ StringSplit[ paths, "," ] ];
+validatePath[ paths_String ] := Flatten[ validatePath0 /@ StringTrim @ StringSplit[ paths, "," ] ];
 validatePath // endDefinition;
 
 validatePath0 // beginDefinition;
-validatePath0[ dir_String? DirectoryQ ] := FileNames[ "*.wlt", dir, Infinity ];
+validatePath0[ dir_String? DirectoryQ ] := FileNames[ "*.wlt", dir ];
 validatePath0[ file_String ] := If[ FileExistsQ @ file, file, throwFailure[ "TestFileNotFound", file ] ];
 validatePath0 // endDefinition;
 

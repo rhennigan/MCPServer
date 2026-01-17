@@ -22,6 +22,7 @@ MCPServer::MCPServerFileNotFound         = "MCPServerObject file not found for M
 MCPServer::MCPServerNotFound             = "No MCPServerObject found for name \"`1`\".";
 MCPServer::NoTestsInFile                 = "No tests found in file: \"`1`\".";
 MCPServer::TestFileNotFound              = "Test file not found: \"`1`\".";
+MCPServer::TestKernelFailure             = "Failed to start a new kernel for testing. Try again with 'newKernel' set to False.";
 MCPServer::ToolNameNotFound              = "No tool named \"`1`\" found.";
 MCPServer::UninstallMCPServer            = "Successfully uninstalled MCP server \"`1`\".";
 MCPServer::UninstallMCPServerNamed       = "Successfully uninstalled MCP server \"`1`\" for `2`.";
