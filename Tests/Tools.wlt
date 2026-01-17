@@ -397,6 +397,8 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*TestReport*)
 
+$allowExternal = ! StringQ @ Environment[ "GITHUB_ACTIONS" ];
+
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Basic Examples*)
@@ -404,23 +406,24 @@ VerificationTest[
     $testReportTool = $DefaultMCPTools[ "TestReport" ],
     _LLMTool,
     SameTest -> MatchQ,
-    TestID   -> "TestReport-GetTool@@Tests/Tools.wlt:403,1-408,2"
+    TestID   -> "TestReport-GetTool@@Tests/Tools.wlt:405,1-410,2"
 ]
 
 VerificationTest[
     $testResourceDirectory = FileNameJoin @ { DirectoryName[ $TestFileName, 2 ], "TestResources" },
     _String? DirectoryQ,
     SameTest -> MatchQ,
-    TestID   -> "TestReport-TestResourceDirectory@@Tests/Tools.wlt:410,1-415,2"
+    TestID   -> "TestReport-TestResourceDirectory@@Tests/Tools.wlt:412,1-417,2"
 ]
 
 VerificationTest[
     $testReportResult = $testReportTool @ <|
-        "paths" -> FileNameJoin @ { $testResourceDirectory, "TestFile1.wlt" }
+        "paths" -> FileNameJoin @ { $testResourceDirectory, "TestFile1.wlt" },
+        "newKernel" -> $allowExternal
     |>,
     _String? (StringContainsQ[ "# Test Results Summary"~~__~~"TestFile1.wlt" ]),
     SameTest -> MatchQ,
-    TestID   -> "TestReport-SingleFile@@Tests/Tools.wlt:417,1-424,2"
+    TestID   -> "TestReport-SingleFile@@Tests/Tools.wlt:419,1-427,2"
 ]
 
 VerificationTest[
@@ -429,18 +432,22 @@ VerificationTest[
             FileNameJoin @ { $testResourceDirectory, "TestFile1.wlt" },
             ", ",
             FileNameJoin @ { $testResourceDirectory, "TestFile2.wlt" }
-        ]
+        ],
+        "newKernel" -> $allowExternal
     |>,
     _String? (StringContainsQ[ "# Test Results Summary"~~__~~"TestFile1.wlt"~~__~~"TestFile2.wlt" ]),
     SameTest -> MatchQ,
-    TestID   -> "TestReport-MultipleFiles@@Tests/Tools.wlt:426,1-437,2"
+    TestID   -> "TestReport-MultipleFiles@@Tests/Tools.wlt:429,1-441,2"
 ]
 
 VerificationTest[
-    $testReportResult = $testReportTool @ <| "paths" -> $testResourceDirectory |>,
+    $testReportResult = $testReportTool @ <|
+        "paths" -> $testResourceDirectory,
+        "newKernel" -> $allowExternal
+    |>,
     _String? (StringContainsQ[ "# Test Results Summary"~~__~~"TestFile1.wlt"~~__~~"TestFile2.wlt" ]),
     SameTest -> MatchQ,
-    TestID   -> "TestReport-Directory@@Tests/Tools.wlt:439,1-444,2"
+    TestID   -> "TestReport-Directory@@Tests/Tools.wlt:443,1-451,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -457,7 +464,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveNames@@Tests/Tools.wlt:453,1-461,2"
+    TestID   -> "ToolProperties-AllHaveNames@@Tests/Tools.wlt:460,1-468,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -470,7 +477,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveDescriptions@@Tests/Tools.wlt:466,1-474,2"
+    TestID   -> "ToolProperties-AllHaveDescriptions@@Tests/Tools.wlt:473,1-481,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -483,5 +490,5 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveParameters@@Tests/Tools.wlt:479,1-487,2"
+    TestID   -> "ToolProperties-AllHaveParameters@@Tests/Tools.wlt:486,1-494,2"
 ]
