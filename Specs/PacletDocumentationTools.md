@@ -8,7 +8,7 @@ This specification defines MCP tools for creating and editing Wolfram Language p
 
 - Create MCP tools for creating and editing paclet documentation notebooks
 - Notebook content should be specified as markdown and converted to cells with `importMarkdownString` (declared in `Kernel/Tools/Tools.wl`)
-- Tool definitions should be placed in `Kernel/Tools/PacletDocumentation.wl`
+- Tool definitions are located in `Kernel/Tools/PacletDocumentation/` directory
 - Initial tools focus on symbol pages (most common documentation type):
     - `CreateSymbolPacletDocumentation`
     - `EditSymbolPacletDocumentation` (for metadata and non-example sections)
@@ -521,8 +521,14 @@ On failure, return a descriptive error message.
 ### File Structure
 
 ```
-Kernel/Tools/PacletDocumentation.wl    (* Tool definitions and implementation *)
-Assets/Templates/SymbolPage.wl         (* TemplateObject for symbol documentation pages *)
+Kernel/Tools/PacletDocumentation/
+├── PacletDocumentation.wl                      (* Main entry point, tool definitions, common utilities *)
+├── CreateSymbolPacletDocumentation.wl          (* CreateSymbolPacletDocumentation implementation *)
+├── EditSymbolPacletDocumentation.wl            (* EditSymbolPacletDocumentation implementation *)
+├── EditSymbolPacletDocumentationExamples.wl    (* EditSymbolPacletDocumentationExamples implementation *)
+└── CellGenerationFunctions.wl                  (* Shared cell generation and parsing utilities *)
+
+Assets/Templates/SymbolPage.wl                  (* TemplateObject for symbol documentation pages *)
 ```
 
 ### Template Storage
