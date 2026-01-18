@@ -12,13 +12,27 @@ Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
 SetOptions[
     TestReport,
     HandlerFunctions -> <|
-        "FileStarted"  -> Function @ Print[ "Starting test file: ", #[ "TestFileName" ] ],
-        "FileFinished" -> Function @ Print[ "Finished test file: ", #[ "TestFileName" ] ],
-        "TestCreated"  -> Function @ Print[ "\tCurrent test: " , #[ "TestObject" ][ "TestID" ] ]
+        "FileStarted"   -> Function @ Print[ "Starting test file: ", #[ "TestFileName" ] ],
+        "FileFinished"  -> Function @ Print[ "Finished test file: ", #[ "TestFileName" ] ],
+        "TestCreated"   -> Function @ Print[ "\tCurrent test: " , #[ "TestObject" ][ "TestID" ] ],
+        "TestEvaluated" -> checkTestResult
     |>,
     HandlerFunctionsKeys -> { "TestFileName", "TestObject" },
     ProgressReporting    -> False
 ];
+
+checkTestResult[ as_Association ] :=
+    Module[ { outcome, testObject, testID },
+        outcome = as[ "Outcome" ];
+        If[ outcome =!= "Success",
+            testObject = as[ "TestObject" ];
+            testID = testObject[ "TestID" ];
+            cicd`ConsoleError[ SequenceForm[ "\tTest failed: (", outcome, ") ", testID ], "Fatal" -> False ];
+            If[ StringQ @ Environment[ "GITHUB_ACTIONS" ],
+                cicd`ConsoleLog @ ToString[ testObject, InputForm, PageWidth -> Infinity ]
+            ]
+        ]
+    ];
 
 $testDirectory = FileNameJoin @ { $pacletDir, "Tests" };
 If[ StringQ @ Environment[ "GITHUB_ACTIONS" ]
