@@ -81,6 +81,29 @@ $defaultMCPServers[ "WolframLanguage" ] := <|
 |>;
 
 (* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*WolframPacletDevelopment*)
+$defaultMCPServers[ "WolframPacletDevelopment" ] := <|
+    "Name"          -> "WolframPacletDevelopment",
+    "Location"      -> "BuiltIn",
+    "Transport"     -> "StandardInputOutput",
+    "ServerVersion" -> $pacletVersion,
+    "ObjectVersion" -> $objectVersion,
+    "LLMEvaluator"  -> <|
+        "Tools" -> {
+            "WolframLanguageContext",
+            "WolframLanguageEvaluator",
+            "ReadNotebook",
+            "WriteNotebook",
+            "TestReport",
+            "CreateSymbolPacletDocumentation",
+            "EditSymbolPacletDocumentation",
+            "EditSymbolPacletDocumentationExamples"
+        }
+    |>
+|>;
+
+(* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Package Footer*)
 addToMXInitialization[
