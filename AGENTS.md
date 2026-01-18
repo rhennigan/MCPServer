@@ -20,6 +20,8 @@ Now you can make additional tool calls to run paclet code.
 
 If you've previously built an MX file for the paclet, you should delete it before testing your changes. You can find it in `Kernel/64Bit/MCPServer.mx`.
 
+If you are only testing changes to test files, you do not need to reload the paclet, since the TestReport tool handles this for you.
+
 When reloading the paclet, do not `Clear`, `ClearAll`, or `Remove` symbols. Reloading the paclet does this automatically in `Kernel/MCPServerLoader.wl` and doing so manually may lead to unexpected behavior.
 
 The kernel used by the WolframLanguageEvaluator tool cannot be restarted via code like `Quit[]` since it's also running the MCP server. If it gets into a bad state, and you can't fix it, you should stop and inform the user that the kernel needs to be restarted.
@@ -168,3 +170,7 @@ nameOfFunction // endDefinition;
 ```
 
 The `Enclose` wrapper is only necessary if you are using any `Confirm`, `ConfirmBy`, `ConfirmMatch`, etc. functions in the body, and it will trigger a throw of an internal failure error if any of them fail.
+
+## Special Considerations
+
+While working on this paclet, you are also working on the code that's running the MCP server providing your Wolfram tools. Sometimes you might run into issues related to this and you'll need to carefully consider how current changes might be affecting the MCP server.
