@@ -11,7 +11,8 @@ This specification defines MCP tools for creating and editing Wolfram Language p
 - Tool definitions should be placed in `Kernel/Tools/PacletDocumentation.wl`
 - Initial tools focus on symbol pages (most common documentation type):
     - `CreateSymbolPacletDocumentation`
-    - `EditSymbolPacletDocumentation`
+    - `EditSymbolPacletDocumentation` (for metadata and non-example sections)
+    - `EditSymbolPacletDocumentationExamples` (for example sections)
 - Future expansion to guide pages and tutorials
 
 ---
@@ -31,28 +32,70 @@ Creates a new symbol documentation page from scratch, generating a properly stru
 | `pacletName` | String | Yes | Name of the paclet (e.g., `"MCPServer"` or `"Wolfram/MCPServer"`) |
 | `publisherID` | String | No | Publisher ID for the paclet (e.g., `"Wolfram"`). Can be omitted for legacy paclets or included in `pacletName` |
 | `context` | String | No | Full context for the symbol. Defaults to ``"{publisherID}`{pacletName}`"`` if publisherID is provided, otherwise ``"{pacletName}`"`` |
-| `usage` | Array | Yes | Array of usage case objects (see below) |
-| `notes` | Array | No | Array of strings for the Details & Options section |
-| `seeAlso` | Array | No | Array of related symbol names |
-| `techNotes` | Array | No | Array of tutorial/tech note references |
-| `relatedGuides` | Array | No | Array of related guide page references |
-| `relatedLinks` | Array | No | Array of related link objects `{label, url}` |
-| `keywords` | Array | No | Array of keyword strings for search |
+| `usage` | String | Yes | Markdown string containing usage cases (see format below) |
+| `notes` | String | No | Markdown string for the Details & Options section |
+| `seeAlso` | String | No | Symbol names separated by newlines or commas |
+| `techNotes` | String | No | Tutorial/tech note references as markdown links, one per line |
+| `relatedGuides` | String | No | Guide page references as markdown links, one per line |
+| `relatedLinks` | String | No | External links in markdown format `[label](url)`, one per line |
+| `keywords` | String | No | Keywords separated by newlines or commas |
 | `newInVersion` | String | No | Version string for "New in:" field (e.g., `"1.0"`) |
 | `basicExamples` | String | No | Markdown content for Basic Examples section |
 
-#### Usage Case Object Structure
+#### Usage Format
 
-Each element in the `usage` array should be an object with:
+The `usage` parameter should be a markdown string where each usage case is a bullet point with the syntax in backticks followed by a description. Parameters in descriptions should be italicized.
 
-```json
-{
-  "syntax": "MyFunction[x]",
-  "description": "computes the result for x."
-}
+**Format:**
+```markdown
+- `MyFunction[x]` adds one to *x*.
+- `MyFunction[x, y]` adds *x* and *y* together.
 ```
 
-The `syntax` field should use Wolfram Language syntax. Parameters should be italicized in the description using markdown (e.g., `*x*`).
+The tool will parse this markdown and generate proper usage cells with formatted syntax and descriptions.
+
+#### Notes Format
+
+The `notes` parameter should be a markdown string. Each paragraph or bullet point becomes a separate note cell. Tables are supported for "Details & Options" style tables.
+
+**Format:**
+```markdown
+The value for *x* must be positive.
+
+MyFunction automatically threads over lists.
+
+The following options can be specified:
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| Method | Automatic | the method to use |
+| Tolerance | 0.001 | numerical tolerance |
+```
+
+#### See Also Format
+
+Symbol names separated by newlines or commas:
+```
+Plus
+Minus
+Increment, Decrement
+```
+
+#### Tech Notes / Related Guides Format
+
+Markdown links, one per line:
+```markdown
+[Working with Numbers](paclet:Wolfram/MathUtils/tutorial/WorkingWithNumbers)
+[Advanced Techniques](paclet:Wolfram/MathUtils/tutorial/AdvancedTechniques)
+```
+
+#### Related Links Format
+
+External links in markdown format, one per line:
+```markdown
+[Wolfram Documentation](https://reference.wolfram.com)
+[GitHub Repository](https://github.com/example/repo)
+```
 
 ### Output File Location
 
@@ -65,11 +108,17 @@ The tool should create any missing intermediate directories.
 
 ### Implementation Notes
 
-1. **Template System**: Use `TemplateApply` with `TemplateObject` and `TemplateSlot` to generate the notebook structure.
+1. **Markdown Conversion**: Use `importMarkdownString` to convert markdown content to cells. This function handles:
+   - Text formatting (italic, bold, inline code)
+   - Code blocks (become Input cells)
+   - Tables (become Grid cells)
+   - Lists (become bulleted cells or individual notes)
 
-2. **Cell ID Generation**: Generate unique `CellID` values using `RandomInteger[{1, 999999999}]` or similar.
+2. **Template System**: Use `TemplateApply` with `TemplateObject` and `TemplateSlot` to generate the notebook structure.
 
-3. **Required Sections** (in order):
+3. **Cell ID Generation**: Generate unique `CellID` values using `RandomInteger[{1, 999999999}]` or similar.
+
+4. **Required Sections** (in order):
    - ObjectName cell
    - Usage cell (with ModInfo styling)
    - Notes cells (Details & Options)
@@ -94,18 +143,18 @@ The tool should create any missing intermediate directories.
      - Keywords
      - Syntax Templates
 
-4. **Notebook Metadata**: Set `TaggingRules` and `StyleDefinitions` appropriately:
+5. **Notebook Metadata**: Set `TaggingRules` and `StyleDefinitions` appropriately:
    ```wl
    TaggingRules -> <|"Paclet" -> "{pacletBase}"|>,
    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "FunctionPageStylesExt.nb", CharacterEncoding -> "UTF-8"]
    ```
 
-5. **Paclet Base Construction**: The paclet base (used in URIs and metadata) should be constructed as:
+6. **Paclet Base Construction**: The paclet base (used in URIs and metadata) should be constructed as:
    - If `publisherID` is provided: `"{publisherID}/{pacletName}"`
    - If `publisherID` is omitted but `pacletName` contains `/`: use `pacletName` as-is (e.g., `"Wolfram/MCPServer"`)
    - If `publisherID` is omitted and `pacletName` has no `/`: use `pacletName` alone (e.g., `"MyPaclet"`)
 
-6. **URI Construction**: The documentation URI should be:
+7. **URI Construction**: The documentation URI should be:
    ```
    {pacletBase}/ref/{symbolName}
    ```
@@ -114,12 +163,12 @@ The tool should create any missing intermediate directories.
    - With publisher: `Wolfram/MCPServer/ref/CreateMCPServer`
    - Without publisher: `MyPaclet/ref/MyFunction`
 
-7. **Link Button Data**: Internal links should use:
+8. **Link Button Data**: Internal links should use:
    ```
    ButtonData -> "paclet:{pacletBase}/ref/{symbolName}"
    ```
 
-8. **Context Construction**: The default context should be:
+9. **Context Construction**: The default context should be:
    - If explicit `context` provided: use it as-is
    - If `publisherID` provided: `"{publisherID}\`{pacletName}\`"`
    - If `pacletName` contains `/`: split and use `"{part1}\`{part2}\`"`
@@ -139,7 +188,7 @@ On failure, return a descriptive error message.
 
 ### Purpose
 
-Edits an existing symbol documentation page, allowing targeted modifications to specific sections without regenerating the entire notebook.
+Edits an existing symbol documentation page, allowing targeted modifications to metadata and non-example sections. For example section modifications, use the `EditSymbolPacletDocumentationExamples` tool.
 
 ### Parameters
 
@@ -147,10 +196,8 @@ Edits an existing symbol documentation page, allowing targeted modifications to 
 |-----------|------|----------|-------------|
 | `notebook` | String | Yes | Path to the notebook file or documentation URI |
 | `operation` | String | Yes | The edit operation to perform (see operations below) |
-| `section` | String | Conditional | Target section for the operation |
-| `content` | String/Object | Conditional | New content (format depends on operation) |
+| `content` | String | Conditional | New content (format depends on operation) |
 | `position` | Integer/String | No | Position for insert operations (0-indexed, or "start"/"end") |
-| `subsection` | String | No | Target subsection (for Options, etc.) |
 
 ### Operations
 
@@ -159,17 +206,14 @@ Edits an existing symbol documentation page, allowing targeted modifications to 
 Completely replaces the usage cases in the Usage cell.
 
 **Required parameters:**
-- `content`: Array of usage case objects (same format as CreateSymbolPacletDocumentation)
+- `content`: Markdown string with usage cases (same format as CreateSymbolPacletDocumentation)
 
 **Example:**
 ```json
 {
   "notebook": "path/to/MyFunction.nb",
   "operation": "setUsage",
-  "content": [
-    {"syntax": "MyFunction[x]", "description": "computes the result for *x*."},
-    {"syntax": "MyFunction[x, y]", "description": "computes the result for *x* and *y*."}
-  ]
+  "content": "- `MyFunction[x]` computes the result for *x*.\n- `MyFunction[x, y]` computes the result for *x* and *y*."
 }
 ```
 
@@ -178,17 +222,14 @@ Completely replaces the usage cases in the Usage cell.
 Replaces all notes in the Details & Options section.
 
 **Required parameters:**
-- `content`: Array of note strings (markdown supported)
+- `content`: Markdown string with notes (same format as CreateSymbolPacletDocumentation)
 
 **Example:**
 ```json
 {
   "notebook": "path/to/MyFunction.nb",
   "operation": "setNotes",
-  "content": [
-    "The value for *x* must be positive.",
-    "MyFunction automatically threads over lists."
-  ]
+  "content": "The value for *x* must be positive.\n\nMyFunction automatically threads over lists."
 }
 ```
 
@@ -197,7 +238,7 @@ Replaces all notes in the Details & Options section.
 Adds a new note to the Details & Options section.
 
 **Required parameters:**
-- `content`: String (the note text, markdown supported)
+- `content`: Markdown string (the note text)
 
 **Optional parameters:**
 - `position`: Integer or "start"/"end" (default: "end")
@@ -207,77 +248,146 @@ Adds a new note to the Details & Options section.
 Creates or replaces a details table (like the "values can be" tables in standard docs).
 
 **Required parameters:**
-- `content`: Object with `header` (string) and `rows` (array of `{value, description}` pairs)
+- `content`: Markdown string containing the table
+
+**Format:**
+```markdown
+The value for *x* can be any of the following:
+
+| Value | Description |
+|-------|-------------|
+| *int* | an Integer |
+| *expr* | any expression |
+| {*x*_1, *x*_2, ...} | a list of expressions |
+```
+
+**Optional parameters:**
+- `position`: Integer position in notes section (default: "end")
+
+#### 5. `setSeeAlso` - Replace See Also Section
+
+**Required parameters:**
+- `content`: Symbol names separated by newlines or commas
 
 **Example:**
 ```json
 {
   "notebook": "path/to/MyFunction.nb",
-  "operation": "setDetailsTable",
-  "content": {
-    "header": "The value for *x* can be any of the following:",
-    "rows": [
-      {"value": "*int*", "description": "an Integer"},
-      {"value": "*expr*", "description": "any expression"},
-      {"value": "{*x*_1, *x*_2, ...}", "description": "a list of expressions"}
-    ]
-  },
-  "position": 2
+  "operation": "setSeeAlso",
+  "content": "Plus\nMinus\nIncrement, Decrement"
 }
 ```
-
-#### 5. `setSeeAlso` - Replace See Also Section
-
-**Required parameters:**
-- `content`: Array of symbol names (strings)
 
 #### 6. `setTechNotes` - Replace Tech Notes Section
 
 **Required parameters:**
-- `content`: Array of tutorial/tech note references
+- `content`: Markdown links, one per line
+
+**Example:**
+```json
+{
+  "notebook": "path/to/MyFunction.nb",
+  "operation": "setTechNotes",
+  "content": "[Working with Numbers](paclet:Wolfram/MathUtils/tutorial/WorkingWithNumbers)"
+}
+```
 
 #### 7. `setRelatedGuides` - Replace Related Guides Section
 
 **Required parameters:**
-- `content`: Array of guide page references
+- `content`: Markdown links, one per line
 
 #### 8. `setRelatedLinks` - Replace Related Links Section
 
 **Required parameters:**
-- `content`: Array of `{label, url}` objects
+- `content`: Markdown links in format `[label](url)`, one per line
+
+**Example:**
+```json
+{
+  "notebook": "path/to/MyFunction.nb",
+  "operation": "setRelatedLinks",
+  "content": "[Wolfram Documentation](https://reference.wolfram.com)\n[GitHub](https://github.com)"
+}
+```
 
 #### 9. `setKeywords` - Replace Keywords
 
 **Required parameters:**
-- `content`: Array of keyword strings
+- `content`: Keywords separated by newlines or commas
+
+**Example:**
+```json
+{
+  "notebook": "path/to/MyFunction.nb",
+  "operation": "setKeywords",
+  "content": "add, increment, plus one"
+}
+```
 
 #### 10. `setHistory` - Set Version History
 
 **Required parameters:**
-- `content`: Object with optional fields:
-  - `new`: Version when symbol was introduced
-  - `modified`: Version when symbol was modified
-  - `obsolete`: Version when symbol became obsolete
+- `content`: Comma-separated key:value pairs
 
-### Example Section Operations
+**Format:**
+```
+new:1.0, modified:1.2
+```
 
-These operations target the example sections of the documentation.
+Supported keys: `new`, `modified`, `obsolete`
 
-#### 11. `appendExample` - Append to Example Section
+### Return Value
+
+On success, return an object containing:
+- `file`: Path to the modified notebook file
+- `operation`: The operation that was performed
+
+On failure, return a descriptive error message.
+
+---
+
+## Tool 3: EditSymbolPacletDocumentationExamples
+
+### Purpose
+
+Edits example sections of an existing symbol documentation page. This tool is separate from `EditSymbolPacletDocumentation` because example editing involves more complex operations including code evaluation and output generation.
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `notebook` | String | Yes | Path to the notebook file or documentation URI |
+| `operation` | String | Yes | The edit operation to perform (see operations below) |
+| `section` | String | Conditional | Target example section (required for most operations) |
+| `content` | String | Conditional | Markdown content for example cells |
+| `position` | Integer/String | No | Position for insert operations (0-indexed, or "start"/"end") |
+| `subsection` | String | No | Target subsection (for Options section) |
+
+### Section Names
+
+The `section` parameter accepts the following values:
+
+| Section Name | Description |
+|--------------|-------------|
+| `BasicExamples` | Primary examples section |
+| `Scope` | Examples showing scope of functionality |
+| `GeneralizationsExtensions` | Generalizations & Extensions |
+| `Options` | Option examples (use with `subsection`) |
+| `Applications` | Application examples |
+| `PropertiesRelations` | Properties & Relations |
+| `PossibleIssues` | Known issues and edge cases |
+| `InteractiveExamples` | Interactive/dynamic examples |
+| `NeatExamples` | Neat/interesting examples |
+
+### Operations
+
+#### 1. `appendExample` - Append to Example Section
 
 Adds content to the end of an example section.
 
 **Required parameters:**
-- `section`: One of:
-  - `"BasicExamples"`
-  - `"Scope"`
-  - `"GeneralizationsExtensions"`
-  - `"Options"`
-  - `"Applications"`
-  - `"PropertiesRelations"`
-  - `"PossibleIssues"`
-  - `"InteractiveExamples"`
-  - `"NeatExamples"`
+- `section`: Target section name
 - `content`: Markdown string with example content
 
 **Optional parameters:**
@@ -290,7 +400,7 @@ The content should be markdown that can include:
 - Code blocks with `wl` language tag (become "Input" cells)
 
 **Important:** Do NOT include expected outputs in the markdown. The tool will:
-1. Parse the input code blocks
+1. Parse the input code blocks using `importMarkdownString`
 2. Evaluate each input expression in the Wolfram Language kernel
 3. Generate proper "Output" cells using `Cell[BoxData[ToBoxes[result]], "Output", ...]`
 4. Return the generated content (with real outputs) as markdown feedback
@@ -305,30 +415,49 @@ The content should be markdown that can include:
 }
 ```
 
-The tool evaluates `MyFunction[x + y]` and generates the appropriate output cell automatically.
-
-#### 12. `prependExample` - Prepend to Example Section
+#### 2. `prependExample` - Prepend to Example Section
 
 Same as `appendExample` but adds content at the beginning of the section.
 
-#### 13. `insertExample` - Insert at Position in Example Section
+**Required parameters:**
+- `section`: Target section name
+- `content`: Markdown string with example content
+
+**Optional parameters:**
+- `subsection`: For "Options" section
+
+#### 3. `insertExample` - Insert at Position in Example Section
 
 Same as `appendExample` but with required `position` parameter specifying where to insert (0-indexed, counting example groups).
 
-#### 14. `replaceExample` - Replace Example at Position
+**Required parameters:**
+- `section`: Target section name
+- `content`: Markdown string with example content
+- `position`: Index where to insert (0-indexed)
+
+**Optional parameters:**
+- `subsection`: For "Options" section
+
+#### 4. `replaceExample` - Replace Example at Position
 
 **Required parameters:**
 - `section`: Target section name
-- `position`: Index of the example group to replace (0-indexed)
 - `content`: New content for that example group
+- `position`: Index of the example group to replace (0-indexed)
 
-#### 15. `removeExample` - Remove Example at Position
+**Optional parameters:**
+- `subsection`: For "Options" section
+
+#### 5. `removeExample` - Remove Example at Position
 
 **Required parameters:**
 - `section`: Target section name
 - `position`: Index of the example group to remove (0-indexed)
 
-#### 16. `clearExamples` - Clear All Examples in Section
+**Optional parameters:**
+- `subsection`: For "Options" section
+
+#### 6. `clearExamples` - Clear All Examples in Section
 
 **Required parameters:**
 - `section`: Target section name
@@ -336,9 +465,22 @@ Same as `appendExample` but with required `position` parameter specifying where 
 **Optional parameters:**
 - `subsection`: For "Options" section, specific option to clear
 
+#### 7. `setExamples` - Replace All Examples in Section
+
+Completely replaces all examples in a section.
+
+**Required parameters:**
+- `section`: Target section name
+- `content`: Markdown string with all examples (use `---` to separate example groups)
+
+**Optional parameters:**
+- `subsection`: For "Options" section
+
 ### Example Delimiters
 
-When multiple independent examples exist within a section, they should be separated by "ExampleDelimiter" cells. The tool should automatically:
+When multiple independent examples exist within a section, they should be separated by "ExampleDelimiter" cells. In markdown input, use `---` (horizontal rule) to indicate example group boundaries.
+
+The tool should automatically:
 - Add delimiters when appending/inserting new examples after existing ones
 - Handle delimiters correctly when removing examples
 - Not add a delimiter before the first example in a section
@@ -355,8 +497,8 @@ The "Options" example section has a special structure with subsections for each 
 On success, return an object containing:
 - `file`: Path to the modified notebook file
 - `operation`: The operation that was performed
-- `section`: The section that was modified (if applicable)
-- `generatedContent`: (For example operations) Markdown representation of the cells that were added, including evaluated outputs. This provides feedback showing exactly what was inserted.
+- `section`: The section that was modified
+- `generatedContent`: Markdown representation of the cells that were added, including evaluated outputs
 
 **Example return for `appendExample`:**
 ```json
@@ -427,6 +569,55 @@ Note: Some slots contain pre-generated cell content rather than raw data. This i
 
 ### Internal Functions
 
+#### Parsing Functions
+
+```wl
+(* Parse usage markdown into structured data *)
+parseUsageMarkdown[markdown_String] := Module[{lines, cases},
+    (* Parse bullet points like "- `Syntax[x]` description" *)
+    lines = StringSplit[markdown, "\n"];
+    cases = Cases[lines, line_String /; StringMatchQ[line, "- `" ~~ __ ~~ "`" ~~ __] :>
+        parseUsageLine[line]
+    ];
+    cases
+]
+
+(* Parse a single usage line *)
+parseUsageLine[line_String] := Module[{syntax, description},
+    (* Extract syntax from backticks and description after *)
+    {syntax, description} = extractSyntaxAndDescription[line];
+    <|"syntax" -> syntax, "description" -> description|>
+]
+
+(* Parse symbol list from newline/comma-separated string *)
+parseSymbolList[str_String] := StringTrim /@ Flatten[
+    StringSplit[#, ","] & /@ StringSplit[str, "\n"]
+]
+
+(* Parse markdown links from string *)
+parseMarkdownLinks[str_String] := Cases[
+    StringSplit[str, "\n"],
+    line_String /; StringContainsQ[line, "]("] :>
+        parseMarkdownLink[line]
+]
+
+(* Parse a single markdown link [label](url) *)
+parseMarkdownLink[str_String] := Module[{label, url},
+    {label, url} = First @ StringCases[str,
+        "[" ~~ label__ ~~ "](" ~~ url__ ~~ ")" :> {label, url}
+    ];
+    <|"label" -> label, "url" -> url|>
+]
+
+(* Parse history string like "new:1.0, modified:1.2" *)
+parseHistoryString[str_String] := Association @ Map[
+    With[{parts = StringSplit[#, ":"]},
+        StringTrim[parts[[1]]] -> StringTrim[parts[[2]]]
+    ] &,
+    StringSplit[str, ","]
+]
+```
+
 #### Template Functions
 
 ```wl
@@ -461,21 +652,18 @@ insertInSection[nb_Notebook, section_, position_, cells_] := ...
 #### Cell Generation Functions
 
 ```wl
-(* Generate usage cell from usage cases *)
+(* Generate usage cell from parsed usage cases *)
 generateUsageCell[symbolName_String, usageCases_List, context_String] := ...
 
-(* Generate notes cells from markdown strings *)
-generateNotesCells[notes_List] := ...
+(* Generate notes cells from markdown string *)
+generateNotesCells[markdown_String] := importMarkdownString[markdown]
 
 (* Generate example cells from markdown, evaluating inputs to produce outputs *)
 generateExampleCells[markdown_String] := Module[{cells, inputCells},
-    cells = parseMarkdownToExampleCells[markdown];
+    cells = importMarkdownString[markdown];
     (* For each Input cell, evaluate and insert Output cell after *)
     evaluateAndInsertOutputs[cells]
 ]
-
-(* Parse markdown into preliminary cell structure *)
-parseMarkdownToExampleCells[markdown_String] := ...
 
 (* Evaluate input cells and generate corresponding output cells *)
 evaluateAndInsertOutputs[cells_List] := Module[{result},
@@ -499,8 +687,11 @@ generateOutputCell[result_] := Cell[
     CellID -> generateCellID[]
 ]
 
-(* Generate a details table cell *)
-generateDetailsTable[header_String, rows_List] := ...
+(* Generate see also cells from symbol list *)
+generateSeeAlsoCells[symbols_List] := ...
+
+(* Generate link cells from parsed links *)
+generateLinkCells[links_List] := ...
 
 (* Convert cells back to markdown for feedback *)
 cellsToMarkdown[cells_List] := ...
@@ -511,9 +702,6 @@ cellsToMarkdown[cells_List] := ...
 ```wl
 (* Generate unique CellID *)
 generateCellID[] := RandomInteger[{1, 999999999}]
-
-(* Convert markdown inline formatting to TextData *)
-markdownToTextData[text_String] := ...
 
 (* Build paclet base from components - handles both conventions *)
 buildPacletBase[pacletName_String] := pacletName (* already contains / or is standalone *)
@@ -640,6 +828,7 @@ For inline Wolfram Language expressions that should be formatted as code:
 | `InvalidPacletDirectory` | Specified directory is not a valid paclet |
 | `InvalidSymbolName` | Symbol name contains invalid characters |
 | `EmptyUsage` | No usage cases provided |
+| `InvalidUsageFormat` | Usage markdown doesn't contain valid usage cases |
 | `DirectoryCreationFailed` | Could not create Documentation directories |
 
 ### EditSymbolPacletDocumentation Errors
@@ -651,6 +840,19 @@ For inline Wolfram Language expressions that should be formatted as code:
 | `SectionNotFound` | Specified section does not exist in notebook |
 | `InvalidPosition` | Position is out of range for the section |
 | `InvalidOperation` | Unknown operation specified |
+| `InvalidContent` | Content format doesn't match operation requirements |
+
+### EditSymbolPacletDocumentationExamples Errors
+
+| Error Code | Description |
+|------------|-------------|
+| `NotebookNotFound` | Specified notebook does not exist |
+| `InvalidNotebook` | File is not a valid documentation notebook |
+| `SectionNotFound` | Specified example section does not exist |
+| `SubsectionNotFound` | Specified subsection does not exist (for Options) |
+| `InvalidPosition` | Position is out of range for the section |
+| `InvalidOperation` | Unknown operation specified |
+| `EvaluationError` | Error occurred while evaluating example code |
 | `InvalidContent` | Content format doesn't match operation requirements |
 
 ---
@@ -689,22 +891,10 @@ Future `CreateTutorialPacletDocumentation` and `EditTutorialPacletDocumentation`
     "symbolName": "AddOne",
     "pacletName": "MathUtils",
     "publisherID": "JohnDoe",
-    "usage": [
-      {
-        "syntax": "AddOne[x]",
-        "description": "adds one to *x*."
-      },
-      {
-        "syntax": "AddOne[x, y]",
-        "description": "adds *x* and *y*."
-      }
-    ],
-    "notes": [
-      "AddOne automatically threads over lists.",
-      "The value for *x* can be any numeric expression."
-    ],
-    "seeAlso": ["Plus", "Increment"],
-    "keywords": ["add", "increment", "plus one"],
+    "usage": "- `AddOne[x]` adds one to *x*.\n- `AddOne[x, y]` adds *x* and *y*.",
+    "notes": "AddOne automatically threads over lists.\n\nThe value for *x* can be any numeric expression.",
+    "seeAlso": "Plus\nIncrement",
+    "keywords": "add, increment, plus one",
     "newInVersion": "1.0",
     "basicExamples": "Add one to a number:\n\n```wl\nAddOne[5]\n```\n\n---\n\nAdd one to a symbolic expression:\n\n```wl\nAddOne[x]\n```"
   }
@@ -724,12 +914,7 @@ This creates documentation with:
     "pacletDirectory": "/path/to/MyLegacyPaclet",
     "symbolName": "MyFunction",
     "pacletName": "MyLegacyPaclet",
-    "usage": [
-      {
-        "syntax": "MyFunction[x]",
-        "description": "does something with *x*."
-      }
-    ]
+    "usage": "- `MyFunction[x]` does something with *x*."
   }
 }
 ```
@@ -749,53 +934,22 @@ You can also include the publisher ID directly in the `pacletName` parameter:
     "pacletDirectory": "/path/to/MyPaclet",
     "symbolName": "AddOne",
     "pacletName": "JohnDoe/MathUtils",
-    "usage": [
-      {
-        "syntax": "AddOne[x]",
-        "description": "adds one to *x*."
-      }
-    ]
+    "usage": "- `AddOne[x]` adds one to *x*."
   }
 }
 ```
 
 This is equivalent to specifying `publisherID` and `pacletName` separately.
 
-### Editing: Adding a Scope Example
+### Editing: Updating Usage
 
 ```json
 {
   "tool": "EditSymbolPacletDocumentation",
   "parameters": {
     "notebook": "/path/to/MyPaclet/Documentation/English/ReferencePages/Symbols/AddOne.nb",
-    "operation": "appendExample",
-    "section": "Scope",
-    "content": "AddOne works on lists:\n\n```wl\nAddOne[{1, 2, 3}]\n```"
-  }
-}
-```
-
-**Tool response:**
-```json
-{
-  "file": "/path/to/MyPaclet/Documentation/English/ReferencePages/Symbols/AddOne.nb",
-  "operation": "appendExample",
-  "section": "Scope",
-  "generatedContent": "AddOne works on lists:\n\n```wl\nAddOne[{1, 2, 3}]\n```\n```wl-output\n{2, 3, 4}\n```"
-}
-```
-
-### Editing: Adding Option Documentation
-
-```json
-{
-  "tool": "EditSymbolPacletDocumentation",
-  "parameters": {
-    "notebook": "/path/to/MyPaclet/Documentation/English/ReferencePages/Symbols/AddOne.nb",
-    "operation": "appendExample",
-    "section": "Options",
-    "subsection": "Method",
-    "content": "Use Method -> \"Fast\" for optimized computation:\n\n```wl\nAddOne[Range[1000], Method -> \"Fast\"]\n```"
+    "operation": "setUsage",
+    "content": "- `AddOne[x]` adds one to *x*.\n- `AddOne[x, y]` adds *x* and *y* together.\n- `AddOne[list]` adds one to each element of *list*."
   }
 }
 ```
@@ -808,7 +962,87 @@ This is equivalent to specifying `publisherID` and `pacletName` separately.
   "parameters": {
     "notebook": "/path/to/MyPaclet/Documentation/English/ReferencePages/Symbols/AddOne.nb",
     "operation": "setSeeAlso",
-    "content": ["Plus", "Minus", "Increment", "Decrement"]
+    "content": "Plus, Minus\nIncrement, Decrement"
+  }
+}
+```
+
+### Editing: Adding Related Links
+
+```json
+{
+  "tool": "EditSymbolPacletDocumentation",
+  "parameters": {
+    "notebook": "/path/to/MyPaclet/Documentation/English/ReferencePages/Symbols/AddOne.nb",
+    "operation": "setRelatedLinks",
+    "content": "[Wolfram Documentation](https://reference.wolfram.com)\n[Math Functions Guide](https://example.com/math)"
+  }
+}
+```
+
+### Editing Examples: Adding a Basic Example
+
+```json
+{
+  "tool": "EditSymbolPacletDocumentationExamples",
+  "parameters": {
+    "notebook": "/path/to/MyPaclet/Documentation/English/ReferencePages/Symbols/AddOne.nb",
+    "operation": "appendExample",
+    "section": "BasicExamples",
+    "content": "Add one to a symbolic expression:\n\n```wl\nAddOne[x + y]\n```"
+  }
+}
+```
+
+**Tool response:**
+```json
+{
+  "file": "/path/to/MyPaclet/Documentation/English/ReferencePages/Symbols/AddOne.nb",
+  "operation": "appendExample",
+  "section": "BasicExamples",
+  "generatedContent": "Add one to a symbolic expression:\n\n```wl\nAddOne[x + y]\n```\n```wl-output\n1 + x + y\n```"
+}
+```
+
+### Editing Examples: Adding a Scope Example
+
+```json
+{
+  "tool": "EditSymbolPacletDocumentationExamples",
+  "parameters": {
+    "notebook": "/path/to/MyPaclet/Documentation/English/ReferencePages/Symbols/AddOne.nb",
+    "operation": "appendExample",
+    "section": "Scope",
+    "content": "AddOne works on lists:\n\n```wl\nAddOne[{1, 2, 3}]\n```"
+  }
+}
+```
+
+### Editing Examples: Adding Option Documentation
+
+```json
+{
+  "tool": "EditSymbolPacletDocumentationExamples",
+  "parameters": {
+    "notebook": "/path/to/MyPaclet/Documentation/English/ReferencePages/Symbols/AddOne.nb",
+    "operation": "appendExample",
+    "section": "Options",
+    "subsection": "Method",
+    "content": "Use Method -> \"Fast\" for optimized computation:\n\n```wl\nAddOne[Range[1000], Method -> \"Fast\"]\n```"
+  }
+}
+```
+
+### Editing Examples: Replacing All Examples in a Section
+
+```json
+{
+  "tool": "EditSymbolPacletDocumentationExamples",
+  "parameters": {
+    "notebook": "/path/to/MyPaclet/Documentation/English/ReferencePages/Symbols/AddOne.nb",
+    "operation": "setExamples",
+    "section": "BasicExamples",
+    "content": "Add one to a number:\n\n```wl\nAddOne[5]\n```\n\n---\n\nAdd one to a symbol:\n\n```wl\nAddOne[x]\n```\n\n---\n\nAdd one to a list:\n\n```wl\nAddOne[{1, 2, 3}]\n```"
   }
 }
 ```
