@@ -62,14 +62,14 @@ The `notes` parameter should be a markdown string. Each paragraph or bullet poin
 ```markdown
 The value for *x* must be positive.
 
-MyFunction automatically threads over lists.
+`MyFunction` automatically threads over lists.
 
 The following options can be specified:
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| Method | Automatic | the method to use |
-| Tolerance | 0.001 | numerical tolerance |
+| `Method` | `Automatic` | the method to use |
+| `Tolerance` | `0.001` | numerical tolerance |
 ```
 
 #### See Also Format
@@ -229,7 +229,7 @@ Replaces all notes in the Details & Options section.
 {
   "notebook": "path/to/MyFunction.nb",
   "operation": "setNotes",
-  "content": "The value for *x* must be positive.\n\nMyFunction automatically threads over lists."
+  "content": "The value for *x* must be positive.\n\n`MyFunction` automatically threads over lists."
 }
 ```
 
@@ -256,7 +256,7 @@ The value for *x* can be any of the following:
 
 | Value | Description |
 |-------|-------------|
-| *int* | an Integer |
+| *int* | an `Integer` |
 | *expr* | any expression |
 | {*x*_1, *x*_2, ...} | a list of expressions |
 ```
@@ -892,7 +892,7 @@ Future `CreateTutorialPacletDocumentation` and `EditTutorialPacletDocumentation`
     "pacletName": "MathUtils",
     "publisherID": "JohnDoe",
     "usage": "- `AddOne[x]` adds one to *x*.\n- `AddOne[x, y]` adds *x* and *y*.",
-    "notes": "AddOne automatically threads over lists.\n\nThe value for *x* can be any numeric expression.",
+    "notes": "`AddOne` automatically threads over lists.\n\nThe value for *x* can be any numeric expression.",
     "seeAlso": "Plus\nIncrement",
     "keywords": "add, increment, plus one",
     "newInVersion": "1.0",
