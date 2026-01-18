@@ -28,11 +28,20 @@ $logTimeStamp := DateString[
 (* ::Section::Closed:: *)
 (*StartMCPServer*)
 StartMCPServer // beginDefinition;
-StartMCPServer[ ] := catchMine @ StartMCPServer @ Environment[ "MCP_SERVER_NAME" ];
-StartMCPServer[ $Failed ] := catchMine @ StartMCPServer @ $defaultMCPServer;
-StartMCPServer[ name_String ] := catchMine @ StartMCPServer @ MCPServerObject @ name;
-StartMCPServer[ obj_MCPServerObject ] := catchMine @ startMCPServer @ ensureMCPServerExists @ obj;
+StartMCPServer[ ] := stealthCatchTop @ StartMCPServer @ Environment[ "MCP_SERVER_NAME" ];
+StartMCPServer[ $Failed ] := stealthCatchTop @ StartMCPServer @ $defaultMCPServer;
+StartMCPServer[ name_String ] := stealthCatchTop @ StartMCPServer @ MCPServerObject @ name;
+StartMCPServer[ obj_MCPServerObject ] := stealthCatchTop @ startMCPServer @ ensureMCPServerExists @ obj;
 StartMCPServer // endExportedDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*stealthCatchTop*)
+(* A version of `catchTop` that doesn't set the message symbol or interfere with inner calls to `catchTop`. *)
+stealthCatchTop // beginDefinition;
+stealthCatchTop // Attributes = { HoldFirst };
+stealthCatchTop[ eval_ ] := Block[ { $catching = True }, Catch[ eval, $catchTopTag ] ];
+stealthCatchTop // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
