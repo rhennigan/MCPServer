@@ -91,24 +91,25 @@ evaluateWolframLanguage // endDefinition;
 
 evaluateWolframLanguage0 // beginDefinition;
 
-(* :!CodeAnalysis::BeginBlock:: *)
-(* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
-(* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
 evaluateWolframLanguage0[ code_String, timeConstraint_Integer ] :=
-    Block[
-        {
-            Wolfram`Chatbook`Sandbox`Private`$evaluatorMethod          = "Session",
-            Wolfram`Chatbook`Sandbox`Private`appendURIInstructions     = # &,
-            Wolfram`Chatbook`Sandbox`Private`appendRetryNotice         = # &,
-            Wolfram`Chatbook`Common`$toolResultStringLength            = 10000,
-            Wolfram`Chatbook`Sandbox`Private`$sandboxEvaluationTimeout = timeConstraint,
-            $Line = $line++
-        },
-        Wolfram`Chatbook`Common`catchTop @ Wolfram`Chatbook`Common`sandboxEvaluate[ StackBegin @ code ][ "String" ]
+    cb`WolframLanguageToolEvaluate[
+        code,
+        "String",
+        "Line"                  -> $line++,
+        "MaxCharacterCount"     -> 10000,
+        "AppendRetryNotice"     -> False,
+        "AppendURIInstructions" -> False,
+        "Method"                -> $evaluatorMethod,
+        "TimeConstraint"        -> timeConstraint
     ];
-(* :!CodeAnalysis::EndBlock:: *)
 
 evaluateWolframLanguage0 // endDefinition;
+
+
+$evaluatorMethod :=
+    With[ { method = Environment[ "WOLFRAM_LANGUAGE_EVALUATOR_METHOD" ] },
+        If[ StringQ @ method && method =!= "", method, "Session" ]
+    ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
