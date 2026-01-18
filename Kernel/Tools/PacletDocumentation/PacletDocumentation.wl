@@ -144,8 +144,8 @@ $defaultMCPTools[ "EditSymbolPacletDocumentation" ] := LLMTool @ <|
             "Required"    -> False
         |>,
         "position" -> <|
-            "Interpreter" -> "Expression",
-            "Help"        -> "Position for addNote operation (0-indexed integer, or \"start\"/\"end\").",
+            "Interpreter" -> "Integer",
+            "Help"        -> "Position for addNote operation (1-indexed). Negative values count from the end (-1 = last).",
             "Required"    -> False
         |>
     }
@@ -182,8 +182,8 @@ $defaultMCPTools[ "EditSymbolPacletDocumentationExamples" ] := LLMTool @ <|
             "Required"    -> False
         |>,
         "position" -> <|
-            "Interpreter" -> "Expression",
-            "Help"        -> "Position for insert/replace/remove operations (0-indexed integer).",
+            "Interpreter" -> "Integer",
+            "Help"        -> "Position for insert/replace/remove operations (1-indexed). Negative values count from the end (-1 = last).",
             "Required"    -> False
         |>,
         "subsection" -> <|

@@ -14,6 +14,54 @@ Needs[ "Wolfram`MCPServer`Tools`"  ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*Position Normalization Helpers*)
+
+(* Converts 1-indexed position (with negative support) to internal insert position.
+   For a list of length n:
+   - position 1 to n: insert before that element
+   - position n+1 or -1: insert at the end (append)
+   - position -2: insert before the last element
+   - etc. (like WL's Insert function) *)
+normalizeInsertPosition // beginDefinition;
+
+normalizeInsertPosition[ position_Integer, length_Integer ] :=
+    Module[ { pos },
+        pos = If[ position < 0,
+            length + position + 2,  (* -1 -> length+1 (end), -2 -> length (before last), etc. *)
+            position
+        ];
+        (* Clamp to valid range: 1 to length+1 *)
+        Clip[ pos, { 1, length + 1 } ]
+    ];
+
+normalizeInsertPosition[ _Missing | None, _Integer ] := 1;  (* Default to beginning *)
+
+normalizeInsertPosition // endDefinition;
+
+(* Converts 1-indexed position (with negative support) to internal element position.
+   For a list of length n:
+   - position 1: first element
+   - position n or -1: last element
+   - position -2: second to last element
+   - etc. (like WL's Part function) *)
+normalizeElementPosition // beginDefinition;
+
+normalizeElementPosition[ position_Integer, length_Integer ] :=
+    Module[ { pos },
+        pos = If[ position < 0,
+            length + position + 1,  (* -1 -> length (last), -2 -> length-1 (second to last), etc. *)
+            position
+        ];
+        (* Clamp to valid range: 1 to length *)
+        Clip[ pos, { 1, Max[ 1, length ] } ]
+    ];
+
+normalizeElementPosition[ _Missing | None, _Integer ] := 1;  (* Default to first *)
+
+normalizeElementPosition // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*editSymbolPacletDocumentationExamples*)
 editSymbolPacletDocumentationExamples // beginDefinition;
 
@@ -325,11 +373,11 @@ insertExampleGroupAtList // beginDefinition;
 
 insertExampleGroupAtList[ groups_List, newCells_List, position_Integer ] :=
     Module[ { pos, before, after, result },
-        (* Clamp position to valid range *)
-        pos = Clip[ position, { 0, Length @ groups } ];
+        (* Normalize position using 1-indexed with negative support *)
+        pos = normalizeInsertPosition[ position, Length @ groups ];
 
-        before = Take[ groups, pos ];
-        after = Drop[ groups, pos ];
+        before = Take[ groups, pos - 1 ];
+        after = Drop[ groups, pos - 1 ];
 
         (* Combine with delimiters *)
         result = If[ Length @ before > 0 && Length @ newCells > 0,
@@ -492,7 +540,8 @@ replaceExampleGroupAtList // beginDefinition;
 
 replaceExampleGroupAtList[ groups_List, newCells_List, position_Integer ] :=
     Module[ { pos, before, after, result },
-        pos = Clip[ position + 1, { 1, Length @ groups } ];
+        (* Normalize position using 1-indexed with negative support *)
+        pos = normalizeElementPosition[ position, Length @ groups ];
 
         If[ Length @ groups === 0,
             (* No existing groups, just add the new cells *)
@@ -656,7 +705,8 @@ removeExampleGroupAtList // beginDefinition;
 
 removeExampleGroupAtList[ groups_List, position_Integer ] :=
     Module[ { pos, remaining },
-        pos = Clip[ position + 1, { 1, Length @ groups } ];
+        (* Normalize position using 1-indexed with negative support *)
+        pos = normalizeElementPosition[ position, Length @ groups ];
 
         If[ Length @ groups === 0,
             Return @ { }

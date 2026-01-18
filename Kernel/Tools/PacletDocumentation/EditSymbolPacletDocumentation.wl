@@ -222,6 +222,31 @@ replaceNotesInGroup // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*normalizeInsertPosition*)
+(* Converts 1-indexed position (with negative support) to internal insert position.
+   For a list of length n:
+   - position 1 to n: insert before that element
+   - position n+1 or -1: insert at the end (append)
+   - position -2: insert before the last element
+   - etc. (like WL's Insert function) *)
+normalizeInsertPosition // beginDefinition;
+
+normalizeInsertPosition[ position_Integer, length_Integer ] :=
+    Module[ { pos },
+        pos = If[ position < 0,
+            length + position + 2,  (* -1 -> length+1 (end), -2 -> length (before last), etc. *)
+            position
+        ];
+        (* Clamp to valid range: 1 to length+1 *)
+        Clip[ pos, { 1, length + 1 } ]
+    ];
+
+normalizeInsertPosition[ _Missing, _Integer ] := 1;  (* Default to beginning *)
+
+normalizeInsertPosition // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*addNoteToNotebook*)
 addNoteToNotebook // beginDefinition;
 
@@ -275,13 +300,8 @@ insertNoteInGroup[ groupCells_List, noteCell_Cell, position_ ] :=
         (* Get existing notes (all cells after Usage) *)
         existingNotes = Drop[ groupCells, First @ usagePos ];
 
-        (* Determine insertion position *)
-        insertPos = Switch[ position,
-            "start" | _Missing, 1,
-            "end", Length @ existingNotes + 1,
-            _Integer, position + 1,
-            _, Length @ existingNotes + 1
-        ];
+        (* Determine insertion position using 1-indexed with negative support *)
+        insertPos = normalizeInsertPosition[ position, Length @ existingNotes ];
 
         (* Insert the note cell *)
         beforeInsert = Take[ groupCells, First @ usagePos + insertPos - 1 ];
@@ -341,26 +361,21 @@ insertNotesCells // endDefinition;
 insertNotesInGroup // beginDefinition;
 
 insertNotesInGroup[ groupCells_List, noteCells_List, position_ ] :=
-    Module[ { usagePos, insertPos, beforeInsert, afterInsert },
+    Module[ { usagePos, existingNotes, insertPos, beforeInsert, afterInsert },
         usagePos = FirstPosition[ groupCells, Cell[ _, "Usage", ___ ], None, { 1 } ];
 
         If[ usagePos === None,
             Return @ groupCells
         ];
 
-        (* Determine insertion position based on "position" parameter *)
-        insertPos = Switch[ position,
-            "start" | _Missing, First @ usagePos + 1,
-            "end", Length @ groupCells + 1,
-            _Integer, First @ usagePos + position + 1,
-            _, Length @ groupCells + 1
-        ];
+        (* Get existing notes (all cells after Usage) *)
+        existingNotes = Drop[ groupCells, First @ usagePos ];
 
-        (* Clamp to valid range *)
-        insertPos = Clip[ insertPos, { First @ usagePos + 1, Length @ groupCells + 1 } ];
+        (* Determine insertion position using 1-indexed with negative support *)
+        insertPos = normalizeInsertPosition[ position, Length @ existingNotes ];
 
-        beforeInsert = Take[ groupCells, insertPos - 1 ];
-        afterInsert = Drop[ groupCells, insertPos - 1 ];
+        beforeInsert = Take[ groupCells, First @ usagePos + insertPos - 1 ];
+        afterInsert = Drop[ groupCells, First @ usagePos + insertPos - 1 ];
 
         Join[ beforeInsert, noteCells, afterInsert ]
     ];
