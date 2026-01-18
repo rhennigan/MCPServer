@@ -23,6 +23,7 @@ Needs[ "Wolfram`MCPServer`Common`" ];
     - Log tool calls (and generate a notebook)
     - Add optional "description" parameter to evaluator tool (maybe all tools?)
     - Support setting sandbox directory for evaluator tool via environment variable
+    - Support image outputs from tools according to MCP spec
 *)
 
 (* ::**************************************************************************************************************:: *)
