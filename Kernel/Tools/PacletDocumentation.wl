@@ -1185,33 +1185,186 @@ setNotesInNotebook // endDefinition;
 replaceNotesCells // beginDefinition;
 
 replaceNotesCells[ cells_List, notesCells_List ] :=
-    (* This is a simplified implementation - a full implementation would need to
-       properly locate and replace the notes section within the cell group structure *)
-    cells;
+    (* The notes cells are in the first CellGroupData, after ObjectName and Usage cells *)
+    (* Use With to inject notesCells into the RuleDelayed *)
+    With[ { nc = notesCells },
+        Replace[
+            cells,
+            Cell[ CellGroupData[ groupCells_List, state_ ] ] /;
+                MemberQ[ groupCells, Cell[ _, "ObjectName", ___ ], { 1 } ] :>
+                    Cell[ CellGroupData[ replaceNotesInGroup[ groupCells, nc ], state ] ],
+            { 1 }
+        ]
+    ];
 
 replaceNotesCells // endDefinition;
+
+replaceNotesInGroup // beginDefinition;
+
+replaceNotesInGroup[ groupCells_List, notesCells_List ] :=
+    Module[ { usagePos, beforeNotes },
+        (* Find Usage position *)
+        usagePos = FirstPosition[ groupCells, Cell[ _, "Usage", ___ ], None, { 1 } ];
+
+        If[ usagePos === None,
+            Return @ groupCells
+        ];
+
+        (* Take cells up to and including Usage *)
+        beforeNotes = Take[ groupCells, First @ usagePos ];
+
+        (* The new group is: ObjectName, Usage, then new notes cells *)
+        Join[ beforeNotes, notesCells ]
+    ];
+
+replaceNotesInGroup // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*addNoteToNotebook*)
 addNoteToNotebook // beginDefinition;
 
-addNoteToNotebook[ notebook_Notebook, noteMarkdown_String, position_ ] :=
-    (* Simplified stub - full implementation would insert at correct position *)
-    notebook;
+addNoteToNotebook[ Notebook[ cells_List, opts___ ], noteMarkdown_String, position_ ] := Enclose[
+    Module[ { noteCell, newCells },
+        (* Generate a single note cell from the markdown *)
+        noteCell = First @ ConfirmMatch[
+            generateNotesCells @ noteMarkdown,
+            { _Cell, ___Cell },
+            "NoteCell"
+        ];
+
+        newCells = ConfirmMatch[
+            insertNoteCell[ cells, noteCell, position ],
+            { __Cell },
+            "NewCells"
+        ];
+
+        Notebook[ newCells, opts ]
+    ],
+    throwInternalFailure
+];
 
 addNoteToNotebook // endDefinition;
+
+insertNoteCell // beginDefinition;
+
+insertNoteCell[ cells_List, noteCell_Cell, position_ ] :=
+    With[ { nc = noteCell, pos = position },
+        Replace[
+            cells,
+            Cell[ CellGroupData[ groupCells_List, state_ ] ] /;
+                MemberQ[ groupCells, Cell[ _, "ObjectName", ___ ], { 1 } ] :>
+                    Cell[ CellGroupData[ insertNoteInGroup[ groupCells, nc, pos ], state ] ],
+            { 1 }
+        ]
+    ];
+
+insertNoteCell // endDefinition;
+
+insertNoteInGroup // beginDefinition;
+
+insertNoteInGroup[ groupCells_List, noteCell_Cell, position_ ] :=
+    Module[ { usagePos, existingNotes, insertPos, beforeInsert, afterInsert },
+        usagePos = FirstPosition[ groupCells, Cell[ _, "Usage", ___ ], None, { 1 } ];
+
+        If[ usagePos === None,
+            Return @ groupCells
+        ];
+
+        (* Get existing notes (all cells after Usage) *)
+        existingNotes = Drop[ groupCells, First @ usagePos ];
+
+        (* Determine insertion position *)
+        insertPos = Switch[ position,
+            "start" | _Missing, 1,
+            "end", Length @ existingNotes + 1,
+            _Integer, position + 1,
+            _, Length @ existingNotes + 1
+        ];
+
+        (* Insert the note cell *)
+        beforeInsert = Take[ groupCells, First @ usagePos + insertPos - 1 ];
+        afterInsert = Drop[ groupCells, First @ usagePos + insertPos - 1 ];
+
+        Join[ beforeInsert, { noteCell }, afterInsert ]
+    ];
+
+insertNoteInGroup // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*setDetailsTableInNotebook*)
 setDetailsTableInNotebook // beginDefinition;
 
-setDetailsTableInNotebook[ notebook_Notebook, tableMarkdown_String, position_ ] :=
-    (* Simplified stub - full implementation would create/replace details table *)
-    notebook;
+setDetailsTableInNotebook[ Notebook[ cells_List, opts___ ], tableMarkdown_String, position_ ] := Enclose[
+    Module[ { tableCells, newCells },
+        (* Generate cells from the markdown, which may include text before the table *)
+        tableCells = ConfirmMatch[
+            generateNotesCells @ tableMarkdown,
+            { ___Cell },
+            "TableCells"
+        ];
+
+        If[ Length @ tableCells === 0,
+            Return @ Notebook[ cells, opts ]
+        ];
+
+        newCells = ConfirmMatch[
+            insertNotesCells[ cells, tableCells, position ],
+            { __Cell },
+            "NewCells"
+        ];
+
+        Notebook[ newCells, opts ]
+    ],
+    throwInternalFailure
+];
 
 setDetailsTableInNotebook // endDefinition;
+
+insertNotesCells // beginDefinition;
+
+insertNotesCells[ cells_List, noteCells_List, position_ ] :=
+    With[ { nc = noteCells, pos = position },
+        Replace[
+            cells,
+            Cell[ CellGroupData[ groupCells_List, state_ ] ] /;
+                MemberQ[ groupCells, Cell[ _, "ObjectName", ___ ], { 1 } ] :>
+                    Cell[ CellGroupData[ insertNotesInGroup[ groupCells, nc, pos ], state ] ],
+            { 1 }
+        ]
+    ];
+
+insertNotesCells // endDefinition;
+
+insertNotesInGroup // beginDefinition;
+
+insertNotesInGroup[ groupCells_List, noteCells_List, position_ ] :=
+    Module[ { usagePos, insertPos, beforeInsert, afterInsert },
+        usagePos = FirstPosition[ groupCells, Cell[ _, "Usage", ___ ], None, { 1 } ];
+
+        If[ usagePos === None,
+            Return @ groupCells
+        ];
+
+        (* Determine insertion position based on "position" parameter *)
+        insertPos = Switch[ position,
+            "start" | _Missing, First @ usagePos + 1,
+            "end", Length @ groupCells + 1,
+            _Integer, First @ usagePos + position + 1,
+            _, Length @ groupCells + 1
+        ];
+
+        (* Clamp to valid range *)
+        insertPos = Clip[ insertPos, { First @ usagePos + 1, Length @ groupCells + 1 } ];
+
+        beforeInsert = Take[ groupCells, insertPos - 1 ];
+        afterInsert = Drop[ groupCells, insertPos - 1 ];
+
+        Join[ beforeInsert, noteCells, afterInsert ]
+    ];
+
+insertNotesInGroup // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -1265,11 +1418,49 @@ setTechNotesInNotebook // endDefinition;
 replaceTutorialsCells // beginDefinition;
 
 replaceTutorialsCells[ cells_List, tutorialsCells_List ] :=
-    (* This is a simplified implementation - a full implementation would need to
-       properly locate and replace the tutorials section within the cell group structure *)
-    cells;
+    replaceCellsInSection[ cells, "TechNotesSection", "Tutorials", tutorialsCells ];
 
 replaceTutorialsCells // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*replaceCellsInSection*)
+replaceCellsInSection // beginDefinition;
+
+(* Helper function to replace content cells within a section's CellGroupData *)
+replaceCellsInSection[ cells_List, headerStyle_String, contentStyle_String, newContentCells_List ] :=
+    With[ { hs = headerStyle, cs = contentStyle, ncc = newContentCells },
+        Replace[
+            cells,
+            Cell[ CellGroupData[ groupCells_List, state_ ] ] /;
+                MemberQ[ groupCells, Cell[ _, hs, ___ ], { 1 } ] :>
+                    Cell[ CellGroupData[
+                        replaceSectionContent[ groupCells, hs, cs, ncc ],
+                        state
+                    ] ],
+            { 1 }
+        ]
+    ];
+
+replaceCellsInSection // endDefinition;
+
+replaceSectionContent // beginDefinition;
+
+replaceSectionContent[ groupCells_List, headerStyle_String, contentStyle_String, newContentCells_List ] :=
+    Module[ { headerPos, header },
+        headerPos = FirstPosition[ groupCells, Cell[ _, headerStyle, ___ ], None, { 1 } ];
+
+        If[ headerPos === None,
+            Return @ groupCells
+        ];
+
+        header = groupCells[[ First @ headerPos ]];
+
+        (* Replace: header + old content cells -> header + new content cells *)
+        Join[ { header }, newContentCells ]
+    ];
+
+replaceSectionContent // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -1291,9 +1482,7 @@ setRelatedGuidesInNotebook // endDefinition;
 replaceMoreAboutCells // beginDefinition;
 
 replaceMoreAboutCells[ cells_List, moreAboutCells_List ] :=
-    (* This is a simplified implementation - a full implementation would need to
-       properly locate and replace the more about section within the cell group structure *)
-    cells;
+    replaceCellsInSection[ cells, "MoreAboutSection", "MoreAbout", moreAboutCells ];
 
 replaceMoreAboutCells // endDefinition;
 
@@ -1317,9 +1506,7 @@ setRelatedLinksInNotebook // endDefinition;
 replaceRelatedLinksCells // beginDefinition;
 
 replaceRelatedLinksCells[ cells_List, linksCells_List ] :=
-    (* This is a simplified implementation - a full implementation would need to
-       properly locate and replace the related links section within the cell group structure *)
-    cells;
+    replaceCellsInSection[ cells, "RelatedLinksSection", "RelatedLinks", linksCells ];
 
 replaceRelatedLinksCells // endDefinition;
 
@@ -1332,9 +1519,7 @@ setKeywordsInNotebook[ Notebook[ cells_List, opts___ ], keywordsString_String ] 
     Module[ { keywords, keywordsCells, newCells },
         keywords      = parseCommaSeparatedList @ keywordsString;
         keywordsCells = ConfirmMatch[ generateKeywordsCells @ keywords, { ___Cell }, "KeywordsCells" ];
-        (* This is a simplified implementation - a full implementation would need to
-           properly locate and replace the keywords section within the cell group structure *)
-        newCells = cells;
+        newCells = ConfirmMatch[ replaceKeywordsCells[ cells, keywordsCells ], { __Cell }, "NewCells" ];
         Notebook[ newCells, opts ]
     ],
     throwInternalFailure
@@ -1342,17 +1527,133 @@ setKeywordsInNotebook[ Notebook[ cells_List, opts___ ], keywordsString_String ] 
 
 setKeywordsInNotebook // endDefinition;
 
+replaceKeywordsCells // beginDefinition;
+
+replaceKeywordsCells[ cells_List, keywordsCells_List ] :=
+    (* Keywords are inside the Metadata section, in a nested CellGroupData *)
+    With[ { kc = keywordsCells },
+        Replace[
+            cells,
+            Cell[ CellGroupData[ metadataCells_List, state1_ ] ] /;
+                MemberQ[ metadataCells, Cell[ "Metadata", "MetadataSection", ___ ], { 1 } ] :>
+                    Cell[ CellGroupData[ replaceKeywordsInMetadata[ metadataCells, kc ], state1 ] ],
+            { 1 }
+        ]
+    ];
+
+replaceKeywordsCells // endDefinition;
+
+replaceKeywordsInMetadata // beginDefinition;
+
+replaceKeywordsInMetadata[ metadataCells_List, keywordsCells_List ] :=
+    With[ { kc = keywordsCells },
+        Replace[
+            metadataCells,
+            Cell[ CellGroupData[ keywordsGroupCells_List, state_ ] ] /;
+                MemberQ[ keywordsGroupCells, Cell[ "Keywords", "KeywordsSection", ___ ], { 1 } ] :>
+                    Cell[ CellGroupData[
+                        Join[
+                            { Cell[ "Keywords", "KeywordsSection", CellID -> generateCellID[ ] ] },
+                            kc
+                        ],
+                        state
+                    ] ],
+            { 1 }
+        ]
+    ];
+
+replaceKeywordsInMetadata // endDefinition;
+
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*setHistoryInNotebook*)
 setHistoryInNotebook // beginDefinition;
 
-setHistoryInNotebook[ notebook_Notebook, historyString_String ] :=
-    (* Simplified stub - full implementation would parse historyString (format: "new:1.0, modified:1.2")
-       and update history cell *)
-    notebook;
+setHistoryInNotebook[ Notebook[ cells_List, opts___ ], historyString_String ] := Enclose[
+    Module[ { historyData, newCells },
+        (* Parse the history string: "new:1.0, modified:1.2, obsolete:2.0" *)
+        historyData = ConfirmMatch[
+            parseHistoryString @ historyString,
+            _Association,
+            "HistoryData"
+        ];
+
+        newCells = ConfirmMatch[
+            replaceHistoryCell[ cells, historyData ],
+            { __Cell },
+            "NewCells"
+        ];
+
+        Notebook[ newCells, opts ]
+    ],
+    throwInternalFailure
+];
 
 setHistoryInNotebook // endDefinition;
+
+parseHistoryString // beginDefinition;
+
+parseHistoryString[ historyString_String ] :=
+    Module[ { pairs },
+        pairs = StringSplit[ historyString, "," ];
+        Association @ Map[
+            Function[ pair,
+                Module[ { parts },
+                    parts = StringTrim /@ StringSplit[ pair, ":" ];
+                    If[ Length @ parts === 2,
+                        parts[[1]] -> parts[[2]],
+                        Nothing
+                    ]
+                ]
+            ],
+            pairs
+        ]
+    ];
+
+parseHistoryString // endDefinition;
+
+replaceHistoryCell // beginDefinition;
+
+replaceHistoryCell[ cells_List, historyData_Association ] :=
+    With[ { hd = historyData },
+        Replace[
+            cells,
+            Cell[ CellGroupData[ metadataCells_List, state_ ] ] /;
+                MemberQ[ metadataCells, Cell[ "Metadata", "MetadataSection", ___ ], { 1 } ] :>
+                    Cell[ CellGroupData[ updateHistoryInMetadata[ metadataCells, hd ], state ] ],
+            { 1 }
+        ]
+    ];
+
+replaceHistoryCell // endDefinition;
+
+updateHistoryInMetadata // beginDefinition;
+
+updateHistoryInMetadata[ metadataCells_List, historyData_Association ] :=
+    With[ { hd = historyData },
+        Replace[
+            metadataCells,
+            Cell[ content_TextData, "History", opts___ ] :>
+                Cell[ generateHistoryTextData @ hd, "History", opts ],
+            { 1 }
+        ]
+    ];
+
+updateHistoryInMetadata // endDefinition;
+
+generateHistoryTextData // beginDefinition;
+
+generateHistoryTextData[ historyData_Association ] :=
+    TextData @ {
+        "New in: ",
+        Cell[ Lookup[ historyData, "new", " " ], "HistoryData", CellTags -> "New" ],
+        " | Modified in: ",
+        Cell[ Lookup[ historyData, "modified", " " ], "HistoryData", CellTags -> "Modified" ],
+        " | Obsolete in: ",
+        Cell[ Lookup[ historyData, "obsolete", " " ], "HistoryData", CellTags -> "Obsolete" ]
+    };
+
+generateHistoryTextData // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
