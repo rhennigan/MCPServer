@@ -90,7 +90,7 @@ This script builds the paclet and performs necessary checks. Options:
     - `ReferencePages/Symbols/`: Reference pages for exported symbols
     - Use the ReadNotebook tool to read documentation notebooks as markdown text
 
-- `Tests/`: Contains test files
+- `Tests/`: Contains test files (.wlt)
   - Every test should have a `TestID` specification
   - Do not manually write the trailing `@@path/to/file.wlt:l,c` part of the `TestID` specification; it will be added automatically on commit
 
