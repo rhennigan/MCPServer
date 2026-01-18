@@ -23,10 +23,10 @@ SetOptions[
 
 checkTestResult[ as_Association ] :=
     Catch @ Module[ { outcome, testObject, testID, string },
-        If[ MemberQ[ FileNameSplit @ as[ "TestFileName" ], "TestResources" ], Throw @ Null ];
         outcome = as[ "Outcome" ];
         If[ outcome =!= "Success",
             testObject = as[ "TestObject" ];
+            If[ MemberQ[ FileNameSplit @ testObject[ "TestFileName" ], "TestResources" ], Throw @ Null ];
             testID = testObject[ "TestID" ];
             cicd`ConsoleError[ SequenceForm[ "\tTest failed: (", outcome, ") ", testID ], "Fatal" -> False ];
             If[ StringQ @ Environment[ "GITHUB_ACTIONS" ],
