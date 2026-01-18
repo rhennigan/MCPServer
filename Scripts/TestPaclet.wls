@@ -22,7 +22,8 @@ SetOptions[
 ];
 
 checkTestResult[ as_Association ] :=
-    Module[ { outcome, testObject, testID, string },
+    Catch @ Module[ { outcome, testObject, testID, string },
+        If[ MemberQ[ FileNameSplit @ as[ "TestFileName" ], "TestResources" ], Throw @ Null ];
         outcome = as[ "Outcome" ];
         If[ outcome =!= "Success",
             testObject = as[ "TestObject" ];
