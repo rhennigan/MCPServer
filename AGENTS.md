@@ -20,6 +20,10 @@ Now you can make additional tool calls to run paclet code.
 
 If you've previously built an MX file for the paclet, you should delete it before testing your changes. You can find it in `Kernel/64Bit/MCPServer.mx`.
 
+When reloading the paclet, do not `Clear`, `ClearAll`, or `Remove` symbols. Reloading the paclet does this automatically in `Kernel/MCPServerLoader.wl` and doing so manually may lead to unexpected behavior.
+
+The kernel used by the WolframLanguageEvaluator tool cannot be restarted via code like `Quit[]` since it's also running the MCP server. If it gets into a bad state, and you can't fix it, you should stop and inform the user that the kernel needs to be restarted.
+
 ## Writing Tests
 
 Write tests in the following format:
