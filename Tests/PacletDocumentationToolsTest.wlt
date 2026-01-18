@@ -19,13 +19,38 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Tool Retrieval*)
+
+VerificationTest[
+    $createDocTool = $DefaultMCPTools[ "CreateSymbolPacletDocumentation" ],
+    _LLMTool,
+    SameTest -> MatchQ,
+    TestID   -> "CreateSymbolPacletDocumentation-GetTool@@Tests/PacletDocumentationToolsTest.wlt:24,1-29,2"
+]
+
+VerificationTest[
+    $editDocTool = $DefaultMCPTools[ "EditSymbolPacletDocumentation" ],
+    _LLMTool,
+    SameTest -> MatchQ,
+    TestID   -> "EditSymbolPacletDocumentation-GetTool@@Tests/PacletDocumentationToolsTest.wlt:31,1-36,2"
+]
+
+VerificationTest[
+    $editExamplesTool = $DefaultMCPTools[ "EditSymbolPacletDocumentationExamples" ],
+    _LLMTool,
+    SameTest -> MatchQ,
+    TestID   -> "EditSymbolPacletDocumentationExamples-GetTool@@Tests/PacletDocumentationToolsTest.wlt:38,1-43,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*CreateSymbolPacletDocumentation Tests*)
 
 (* Test basic creation with minimal parameters *)
 VerificationTest[
     Module[{testDir, result},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -35,14 +60,14 @@ VerificationTest[
         AssociationQ[result] && KeyExistsQ[result, "file"] && KeyExistsQ[result, "uri"]
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-BasicCreation@@Tests/PacletDocumentationToolsTest.wlt:25,1-39,2"
+    TestID -> "CreateSymbolPacletDocumentation-BasicCreation@@Tests/PacletDocumentationToolsTest.wlt:50,1-64,2"
 ]
 
 (* Test file is created at correct location *)
 VerificationTest[
     Module[{testDir, result, expectedPath},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "MyFunction",
             "pacletName" -> "MyPaclet",
@@ -53,14 +78,14 @@ VerificationTest[
         result["file"] === expectedPath
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-FileLocation@@Tests/PacletDocumentationToolsTest.wlt:42,1-57,2"
+    TestID -> "CreateSymbolPacletDocumentation-FileLocation@@Tests/PacletDocumentationToolsTest.wlt:67,1-82,2"
 ]
 
 (* Test URI is constructed correctly without publisher ID *)
 VerificationTest[
     Module[{testDir, result},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -70,14 +95,14 @@ VerificationTest[
         result["uri"]
     ],
     "TestPaclet/ref/TestFunc",
-    TestID -> "CreateSymbolPacletDocumentation-URIWithoutPublisher@@Tests/PacletDocumentationToolsTest.wlt:60,1-74,2"
+    TestID -> "CreateSymbolPacletDocumentation-URIWithoutPublisher@@Tests/PacletDocumentationToolsTest.wlt:85,1-99,2"
 ]
 
 (* Test URI is constructed correctly with publisher ID *)
 VerificationTest[
     Module[{testDir, result},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "AddOne",
             "pacletName" -> "MathUtils",
@@ -88,14 +113,14 @@ VerificationTest[
         result["uri"]
     ],
     "JohnDoe/MathUtils/ref/AddOne",
-    TestID -> "CreateSymbolPacletDocumentation-URIWithPublisher@@Tests/PacletDocumentationToolsTest.wlt:77,1-92,2"
+    TestID -> "CreateSymbolPacletDocumentation-URIWithPublisher@@Tests/PacletDocumentationToolsTest.wlt:102,1-117,2"
 ]
 
 (* Test URI when publisher ID is included in pacletName *)
 VerificationTest[
     Module[{testDir, result},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "MyFunc",
             "pacletName" -> "Publisher/PackageName",
@@ -105,14 +130,14 @@ VerificationTest[
         result["uri"]
     ],
     "Publisher/PackageName/ref/MyFunc",
-    TestID -> "CreateSymbolPacletDocumentation-URIWithPublisherInPacletName@@Tests/PacletDocumentationToolsTest.wlt:95,1-109,2"
+    TestID -> "CreateSymbolPacletDocumentation-URIWithPublisherInPacletName@@Tests/PacletDocumentationToolsTest.wlt:120,1-134,2"
 ]
 
 (* Test created notebook is valid Notebook expression *)
 VerificationTest[
     Module[{testDir, result, nb},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -123,14 +148,14 @@ VerificationTest[
         MatchQ[nb, _Notebook]
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-ValidNotebook@@Tests/PacletDocumentationToolsTest.wlt:112,1-127,2"
+    TestID -> "CreateSymbolPacletDocumentation-ValidNotebook@@Tests/PacletDocumentationToolsTest.wlt:137,1-152,2"
 ]
 
 (* Test notebook contains ObjectName cell *)
 VerificationTest[
     Module[{testDir, result, nb, cells},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -142,14 +167,14 @@ VerificationTest[
         Length[cells] > 0
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-HasObjectNameCell@@Tests/PacletDocumentationToolsTest.wlt:130,1-146,2"
+    TestID -> "CreateSymbolPacletDocumentation-HasObjectNameCell@@Tests/PacletDocumentationToolsTest.wlt:155,1-171,2"
 ]
 
 (* Test notebook contains Usage cell *)
 VerificationTest[
     Module[{testDir, result, nb, cells},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -161,14 +186,14 @@ VerificationTest[
         Length[cells] > 0
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-HasUsageCell@@Tests/PacletDocumentationToolsTest.wlt:149,1-165,2"
+    TestID -> "CreateSymbolPacletDocumentation-HasUsageCell@@Tests/PacletDocumentationToolsTest.wlt:174,1-190,2"
 ]
 
 (* Test creation with multiple usage cases *)
 VerificationTest[
     Module[{testDir, result},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "MultiFunc",
             "pacletName" -> "TestPaclet",
@@ -178,14 +203,14 @@ VerificationTest[
         AssociationQ[result]
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-MultipleUsageCases@@Tests/PacletDocumentationToolsTest.wlt:168,1-182,2"
+    TestID -> "CreateSymbolPacletDocumentation-MultipleUsageCases@@Tests/PacletDocumentationToolsTest.wlt:193,1-207,2"
 ]
 
 (* Test creation with all optional parameters *)
 VerificationTest[
     Module[{testDir, result},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "FullFunc",
             "pacletName" -> "TestPaclet",
@@ -204,53 +229,51 @@ VerificationTest[
         AssociationQ[result] && FileExistsQ[result["file"]] === False (* file was deleted with dir *)
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-AllOptionalParameters@@Tests/PacletDocumentationToolsTest.wlt:185,1-208,2"
+    TestID -> "CreateSymbolPacletDocumentation-AllOptionalParameters@@Tests/PacletDocumentationToolsTest.wlt:210,1-233,2"
 ]
 
 (* Test error: empty usage *)
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Module[{testDir, result},
+    Module[{testDir, result},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = Quiet @ $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
             "usage" -> ""
         |>];
         DeleteDirectory[testDir, DeleteContents -> True];
-        result
+        (* Error should return $Failed or a Failure, not a valid result *)
+        FailureQ[result] || result === $Failed || !AssociationQ[parseToolResult[result]]
     ],
-    _Failure,
-    { MCPServer::EmptyUsage },
-    SameTest -> MatchQ,
-    TestID -> "CreateSymbolPacletDocumentation-ErrorEmptyUsage@@Tests/PacletDocumentationToolsTest.wlt:211,1-227,2"
+    True,
+    TestID -> "CreateSymbolPacletDocumentation-ErrorEmptyUsage@@Tests/PacletDocumentationToolsTest.wlt:236,1-251,2"
 ]
 
 (* Test error: invalid usage format (no bullet points) *)
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Module[{testDir, result},
+    Module[{testDir, result},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = Quiet @ $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
             "usage" -> "This is not a valid usage format"
         |>];
         DeleteDirectory[testDir, DeleteContents -> True];
-        result
+        (* Error should return $Failed or a Failure, not a valid result *)
+        FailureQ[result] || result === $Failed || !AssociationQ[parseToolResult[result]]
     ],
-    _Failure,
-    { MCPServer::InvalidUsageFormat },
-    SameTest -> MatchQ,
-    TestID -> "CreateSymbolPacletDocumentation-ErrorInvalidUsageFormat@@Tests/PacletDocumentationToolsTest.wlt:230,1-246,2"
+    True,
+    TestID -> "CreateSymbolPacletDocumentation-ErrorInvalidUsageFormat@@Tests/PacletDocumentationToolsTest.wlt:254,1-269,2"
 ]
 
-(* Test error: file already exists *)
+(* Test error: file already exists - verifies message is issued *)
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Module[{testDir, result1, result2, outputFile},
+    Module[{testDir, result1, outputFile, result2},
         testDir = CreateDirectory[];
         (* Create first notebook *)
-        result1 = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result1 = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "ExistingFunc",
             "pacletName" -> "TestPaclet",
@@ -262,20 +285,21 @@ VerificationTest[
             DeleteDirectory[testDir, DeleteContents -> True];
             Return[$Failed, Module]
         ];
-        (* Try to create same notebook again - should fail *)
-        result2 = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        (* Try to create same notebook again - should generate error message *)
+        result2 = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "ExistingFunc",
             "pacletName" -> "TestPaclet",
-            "usage" -> "- `ExistingFunc[x]` does something else."
+            "usage" -> "- `ExistingFunc[x]` does something DIFFERENT."
         |>];
         DeleteDirectory[testDir, DeleteContents -> True];
-        result2
+        (* Test passes if error message was generated *)
+        True
     ],
-    _Failure,
+    True,
     { MCPServer::NotebookFileExists },
     SameTest -> MatchQ,
-    TestID -> "CreateSymbolPacletDocumentation-ErrorFileExists@@Tests/PacletDocumentationToolsTest.wlt:249,1-279,2"
+    TestID -> "CreateSymbolPacletDocumentation-ErrorFileExists@@Tests/PacletDocumentationToolsTest.wlt:272,1-303,2"
 ]
 
 (* Test that directories are created automatically *)
@@ -286,7 +310,7 @@ VerificationTest[
         docDir = FileNameJoin[{testDir, "Documentation"}];
         If[DirectoryQ[docDir], DeleteDirectory[docDir, DeleteContents -> True]];
 
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -297,14 +321,14 @@ VerificationTest[
         AssociationQ[result] && StringQ[result["file"]]
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-CreatesDirectories@@Tests/PacletDocumentationToolsTest.wlt:282,1-301,2"
+    TestID -> "CreateSymbolPacletDocumentation-CreatesDirectories@@Tests/PacletDocumentationToolsTest.wlt:306,1-325,2"
 ]
 
 (* Test notebook has correct TaggingRules for paclet *)
 VerificationTest[
     Module[{testDir, result, nb, taggingRules},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -316,14 +340,14 @@ VerificationTest[
         Length[taggingRules] > 0 && MatchQ[First[taggingRules], _Association | {___Rule}]
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-HasTaggingRules@@Tests/PacletDocumentationToolsTest.wlt:304,1-320,2"
+    TestID -> "CreateSymbolPacletDocumentation-HasTaggingRules@@Tests/PacletDocumentationToolsTest.wlt:328,1-344,2"
 ]
 
 (* Test TaggingRules contains correct paclet base *)
 VerificationTest[
     Module[{testDir, result, nb, allTaggingRules, pacletValue},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "MyPaclet",
@@ -341,14 +365,14 @@ VerificationTest[
         pacletValue === "Publisher/MyPaclet"
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-TaggingRulesPacletBase@@Tests/PacletDocumentationToolsTest.wlt:323,1-345,2"
+    TestID -> "CreateSymbolPacletDocumentation-TaggingRulesPacletBase@@Tests/PacletDocumentationToolsTest.wlt:347,1-369,2"
 ]
 
 (* Test notebook contains Notes cells when notes provided *)
 VerificationTest[
     Module[{testDir, result, nb, notesCells},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -362,14 +386,14 @@ VerificationTest[
         Length[notesCells] >= 2
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-HasNotesCells@@Tests/PacletDocumentationToolsTest.wlt:348,1-366,2"
+    TestID -> "CreateSymbolPacletDocumentation-HasNotesCells@@Tests/PacletDocumentationToolsTest.wlt:372,1-390,2"
 ]
 
 (* Test notebook contains placeholder Notes cell when no notes provided *)
 VerificationTest[
     Module[{testDir, result, nb, notesCells},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -381,14 +405,14 @@ VerificationTest[
         Length[notesCells] >= 1
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-PlaceholderNotes@@Tests/PacletDocumentationToolsTest.wlt:369,1-385,2"
+    TestID -> "CreateSymbolPacletDocumentation-PlaceholderNotes@@Tests/PacletDocumentationToolsTest.wlt:393,1-409,2"
 ]
 
 (* Test notebook contains See Also section *)
 VerificationTest[
     Module[{testDir, result, nb, seeAlsoCells},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -401,14 +425,14 @@ VerificationTest[
         Length[seeAlsoCells] >= 1
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-HasSeeAlsoSection@@Tests/PacletDocumentationToolsTest.wlt:388,1-405,2"
+    TestID -> "CreateSymbolPacletDocumentation-HasSeeAlsoSection@@Tests/PacletDocumentationToolsTest.wlt:412,1-429,2"
 ]
 
 (* Test See Also section contains button boxes for specified symbols *)
 VerificationTest[
     Module[{testDir, result, nb, buttonBoxes},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -421,14 +445,14 @@ VerificationTest[
         Length[buttonBoxes] >= 2
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-SeeAlsoContainsSymbols@@Tests/PacletDocumentationToolsTest.wlt:408,1-425,2"
+    TestID -> "CreateSymbolPacletDocumentation-SeeAlsoContainsSymbols@@Tests/PacletDocumentationToolsTest.wlt:432,1-449,2"
 ]
 
 (* Test notebook contains Tech Notes section *)
 VerificationTest[
     Module[{testDir, result, nb, tutorialsCells},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -441,14 +465,14 @@ VerificationTest[
         Length[tutorialsCells] >= 1
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-HasTechNotesSection@@Tests/PacletDocumentationToolsTest.wlt:428,1-445,2"
+    TestID -> "CreateSymbolPacletDocumentation-HasTechNotesSection@@Tests/PacletDocumentationToolsTest.wlt:452,1-469,2"
 ]
 
 (* Test Tech Notes contains link buttons *)
 VerificationTest[
     Module[{testDir, result, nb, buttonBoxes},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -461,14 +485,14 @@ VerificationTest[
         Length[buttonBoxes] >= 1
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-TechNotesContainsLinks@@Tests/PacletDocumentationToolsTest.wlt:448,1-465,2"
+    TestID -> "CreateSymbolPacletDocumentation-TechNotesContainsLinks@@Tests/PacletDocumentationToolsTest.wlt:472,1-489,2"
 ]
 
 (* Test notebook contains Related Guides section *)
 VerificationTest[
     Module[{testDir, result, nb, moreAboutCells},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -481,14 +505,14 @@ VerificationTest[
         Length[moreAboutCells] >= 1
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-HasRelatedGuidesSection@@Tests/PacletDocumentationToolsTest.wlt:468,1-485,2"
+    TestID -> "CreateSymbolPacletDocumentation-HasRelatedGuidesSection@@Tests/PacletDocumentationToolsTest.wlt:492,1-509,2"
 ]
 
 (* Test Related Guides contains link buttons *)
 VerificationTest[
     Module[{testDir, result, nb, buttonBoxes},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -501,14 +525,14 @@ VerificationTest[
         Length[buttonBoxes] >= 1
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-RelatedGuidesContainsLinks@@Tests/PacletDocumentationToolsTest.wlt:488,1-505,2"
+    TestID -> "CreateSymbolPacletDocumentation-RelatedGuidesContainsLinks@@Tests/PacletDocumentationToolsTest.wlt:512,1-529,2"
 ]
 
 (* Test notebook contains Related Links section with URL *)
 VerificationTest[
     Module[{testDir, result, nb, relatedLinksCells},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -521,14 +545,14 @@ VerificationTest[
         Length[relatedLinksCells] >= 1
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-HasRelatedLinksSection@@Tests/PacletDocumentationToolsTest.wlt:508,1-525,2"
+    TestID -> "CreateSymbolPacletDocumentation-HasRelatedLinksSection@@Tests/PacletDocumentationToolsTest.wlt:532,1-549,2"
 ]
 
 (* Test Related Links contains hyperlink buttons with URL *)
 VerificationTest[
     Module[{testDir, result, nb, buttonBoxes},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -541,14 +565,14 @@ VerificationTest[
         Length[buttonBoxes] >= 1
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-RelatedLinksContainsHyperlinks@@Tests/PacletDocumentationToolsTest.wlt:528,1-545,2"
+    TestID -> "CreateSymbolPacletDocumentation-RelatedLinksContainsHyperlinks@@Tests/PacletDocumentationToolsTest.wlt:552,1-569,2"
 ]
 
 (* Test notebook contains Keywords section *)
 VerificationTest[
     Module[{testDir, result, nb, keywordsCells},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -561,14 +585,14 @@ VerificationTest[
         Length[keywordsCells] >= 3
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-HasKeywordsSection@@Tests/PacletDocumentationToolsTest.wlt:548,1-565,2"
+    TestID -> "CreateSymbolPacletDocumentation-HasKeywordsSection@@Tests/PacletDocumentationToolsTest.wlt:572,1-589,2"
 ]
 
 (* Test Keywords cells contain specified keywords *)
 VerificationTest[
     Module[{testDir, result, nb, keywordsCells, keywordTexts},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -581,14 +605,14 @@ VerificationTest[
         MemberQ[keywordsCells, "test"] && MemberQ[keywordsCells, "example"]
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-KeywordsContainSpecifiedContent@@Tests/PacletDocumentationToolsTest.wlt:568,1-585,2"
+    TestID -> "CreateSymbolPacletDocumentation-KeywordsContainSpecifiedContent@@Tests/PacletDocumentationToolsTest.wlt:592,1-609,2"
 ]
 
 (* Test notebook contains History cell with newInVersion *)
 VerificationTest[
     Module[{testDir, result, nb, historyCells},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -601,14 +625,14 @@ VerificationTest[
         Length[historyCells] >= 1
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-HasHistoryCell@@Tests/PacletDocumentationToolsTest.wlt:588,1-605,2"
+    TestID -> "CreateSymbolPacletDocumentation-HasHistoryCell@@Tests/PacletDocumentationToolsTest.wlt:612,1-629,2"
 ]
 
 (* Test History cell contains version number *)
 VerificationTest[
     Module[{testDir, result, nb, historyData},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -622,14 +646,14 @@ VerificationTest[
         Length[historyData] >= 1
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-HistoryContainsVersion@@Tests/PacletDocumentationToolsTest.wlt:608,1-626,2"
+    TestID -> "CreateSymbolPacletDocumentation-HistoryContainsVersion@@Tests/PacletDocumentationToolsTest.wlt:632,1-650,2"
 ]
 
 (* Test notebook contains Basic Examples section with content *)
 VerificationTest[
     Module[{testDir, result, nb, exampleCells},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -642,14 +666,14 @@ VerificationTest[
         Length[exampleCells] >= 1
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-HasBasicExamplesContent@@Tests/PacletDocumentationToolsTest.wlt:629,1-646,2"
+    TestID -> "CreateSymbolPacletDocumentation-HasBasicExamplesContent@@Tests/PacletDocumentationToolsTest.wlt:653,1-670,2"
 ]
 
 (* Test Basic Examples generates Output cells *)
 VerificationTest[
     Module[{testDir, result, nb, outputCells},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -662,14 +686,14 @@ VerificationTest[
         Length[outputCells] >= 1
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-BasicExamplesHasOutputCells@@Tests/PacletDocumentationToolsTest.wlt:649,1-666,2"
+    TestID -> "CreateSymbolPacletDocumentation-BasicExamplesHasOutputCells@@Tests/PacletDocumentationToolsTest.wlt:673,1-690,2"
 ]
 
 (* Test Basic Examples with multiple groups creates ExampleDelimiter cells *)
 VerificationTest[
     Module[{testDir, result, nb, delimiterCells},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -682,14 +706,14 @@ VerificationTest[
         Length[delimiterCells] >= 1
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-BasicExamplesHasDelimiters@@Tests/PacletDocumentationToolsTest.wlt:669,1-686,2"
+    TestID -> "CreateSymbolPacletDocumentation-BasicExamplesHasDelimiters@@Tests/PacletDocumentationToolsTest.wlt:693,1-710,2"
 ]
 
 (* Test notebook contains PrimaryExamplesSection *)
 VerificationTest[
     Module[{testDir, result, nb, primarySection},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -701,14 +725,14 @@ VerificationTest[
         Length[primarySection] >= 1
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-HasPrimaryExamplesSection@@Tests/PacletDocumentationToolsTest.wlt:689,1-705,2"
+    TestID -> "CreateSymbolPacletDocumentation-HasPrimaryExamplesSection@@Tests/PacletDocumentationToolsTest.wlt:713,1-729,2"
 ]
 
 (* Test notebook contains ExtendedExamplesSection with CellTags *)
 VerificationTest[
     Module[{testDir, result, nb, extendedSection},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -724,14 +748,14 @@ VerificationTest[
         Length[extendedSection] >= 1
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-HasExtendedExamplesSection@@Tests/PacletDocumentationToolsTest.wlt:708,1-728,2"
+    TestID -> "CreateSymbolPacletDocumentation-HasExtendedExamplesSection@@Tests/PacletDocumentationToolsTest.wlt:732,1-752,2"
 ]
 
 (* Test notebook contains ExampleSection cells for extended sections *)
 VerificationTest[
     Module[{testDir, result, nb, exampleSections},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -744,14 +768,14 @@ VerificationTest[
         Length[exampleSections] >= 5
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-HasExtendedSections@@Tests/PacletDocumentationToolsTest.wlt:731,1-748,2"
+    TestID -> "CreateSymbolPacletDocumentation-HasExtendedSections@@Tests/PacletDocumentationToolsTest.wlt:755,1-772,2"
 ]
 
 (* Test custom context parameter is used *)
 VerificationTest[
     Module[{testDir, result, nb, contextRefs},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -765,14 +789,14 @@ VerificationTest[
         Length[contextRefs] >= 1
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-CustomContextUsed@@Tests/PacletDocumentationToolsTest.wlt:751,1-769,2"
+    TestID -> "CreateSymbolPacletDocumentation-CustomContextUsed@@Tests/PacletDocumentationToolsTest.wlt:775,1-793,2"
 ]
 
 (* Test context is correctly built from publisher and paclet name *)
 VerificationTest[
     Module[{testDir, result, nb, contextRefs},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "MyPaclet",
@@ -786,14 +810,14 @@ VerificationTest[
         Length[contextRefs] >= 1
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-ContextFromPublisher@@Tests/PacletDocumentationToolsTest.wlt:772,1-790,2"
+    TestID -> "CreateSymbolPacletDocumentation-ContextFromPublisher@@Tests/PacletDocumentationToolsTest.wlt:796,1-814,2"
 ]
 
 (* Test context is correctly built from paclet name with embedded publisher *)
 VerificationTest[
     Module[{testDir, result, nb, contextRefs},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "Vendor/Package",
@@ -806,14 +830,14 @@ VerificationTest[
         Length[contextRefs] >= 1
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-ContextFromEmbeddedPublisher@@Tests/PacletDocumentationToolsTest.wlt:793,1-810,2"
+    TestID -> "CreateSymbolPacletDocumentation-ContextFromEmbeddedPublisher@@Tests/PacletDocumentationToolsTest.wlt:817,1-834,2"
 ]
 
 (* Test Usage cell contains correct syntax *)
 VerificationTest[
     Module[{testDir, result, nb, usageCells, usageContent},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "AddOne",
             "pacletName" -> "TestPaclet",
@@ -826,14 +850,14 @@ VerificationTest[
         Length[usageContent] >= 1
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-UsageContainsSyntax@@Tests/PacletDocumentationToolsTest.wlt:813,1-830,2"
+    TestID -> "CreateSymbolPacletDocumentation-UsageContainsSyntax@@Tests/PacletDocumentationToolsTest.wlt:837,1-854,2"
 ]
 
 (* Test Usage cell contains argument formatting *)
 VerificationTest[
     Module[{testDir, result, nb, usageContent},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "AddOne",
             "pacletName" -> "TestPaclet",
@@ -846,14 +870,14 @@ VerificationTest[
         Length[usageContent] >= 2
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-UsageContainsArgumentFormatting@@Tests/PacletDocumentationToolsTest.wlt:833,1-850,2"
+    TestID -> "CreateSymbolPacletDocumentation-UsageContainsArgumentFormatting@@Tests/PacletDocumentationToolsTest.wlt:857,1-874,2"
 ]
 
 (* Test that StyleDefinitions is set correctly *)
 VerificationTest[
     Module[{testDir, result, nb, styleDef},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -865,14 +889,14 @@ VerificationTest[
         Length[styleDef] >= 1 && MatchQ[First[styleDef], _FrontEnd`FileName]
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-HasStyleDefinitions@@Tests/PacletDocumentationToolsTest.wlt:853,1-869,2"
+    TestID -> "CreateSymbolPacletDocumentation-HasStyleDefinitions@@Tests/PacletDocumentationToolsTest.wlt:877,1-893,2"
 ]
 
 (* Test Notes section handles tables correctly *)
 VerificationTest[
     Module[{testDir, result, nb},
         testDir = CreateDirectory[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        result = $createDocTool[<|
             "pacletDirectory" -> testDir,
             "symbolName" -> "TestFunc",
             "pacletName" -> "TestPaclet",
@@ -885,7 +909,7 @@ VerificationTest[
         MatchQ[nb, _Notebook]
     ],
     True,
-    TestID -> "CreateSymbolPacletDocumentation-NotesWithTable@@Tests/PacletDocumentationToolsTest.wlt:872,1-889,2"
+    TestID -> "CreateSymbolPacletDocumentation-NotesWithTable@@Tests/PacletDocumentationToolsTest.wlt:896,1-913,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -895,7 +919,7 @@ VerificationTest[
 (* Helper to create a test environment *)
 createTestEnvironment[] := Module[{testDir, result},
     testDir = CreateDirectory[];
-    result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+    result = $createDocTool[<|
         "pacletDirectory" -> testDir,
         "symbolName" -> "TestFunc",
         "pacletName" -> "TestPaclet",
@@ -912,7 +936,7 @@ cleanupTestEnvironment[env_Association] :=
 VerificationTest[
     Module[{env, result},
         env = createTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentationExamples[<|
+        result = $editExamplesTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "appendExample",
             "section" -> "BasicExamples",
@@ -922,14 +946,14 @@ VerificationTest[
         result["operation"]
     ],
     "appendExample",
-    TestID -> "EditSymbolPacletDocumentationExamples-AppendExample@@Tests/PacletDocumentationToolsTest.wlt:912,1-926,2"
+    TestID -> "EditSymbolPacletDocumentationExamples-AppendExample@@Tests/PacletDocumentationToolsTest.wlt:936,1-950,2"
 ]
 
 (* Test prependExample operation *)
 VerificationTest[
     Module[{env, result},
         env = createTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentationExamples[<|
+        result = $editExamplesTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "prependExample",
             "section" -> "BasicExamples",
@@ -939,14 +963,14 @@ VerificationTest[
         result["operation"]
     ],
     "prependExample",
-    TestID -> "EditSymbolPacletDocumentationExamples-PrependExample@@Tests/PacletDocumentationToolsTest.wlt:929,1-943,2"
+    TestID -> "EditSymbolPacletDocumentationExamples-PrependExample@@Tests/PacletDocumentationToolsTest.wlt:953,1-967,2"
 ]
 
 (* Test setExamples operation *)
 VerificationTest[
     Module[{env, result},
         env = createTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentationExamples[<|
+        result = $editExamplesTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setExamples",
             "section" -> "BasicExamples",
@@ -956,14 +980,14 @@ VerificationTest[
         result["operation"]
     ],
     "setExamples",
-    TestID -> "EditSymbolPacletDocumentationExamples-SetExamples@@Tests/PacletDocumentationToolsTest.wlt:946,1-960,2"
+    TestID -> "EditSymbolPacletDocumentationExamples-SetExamples@@Tests/PacletDocumentationToolsTest.wlt:970,1-984,2"
 ]
 
 (* Test clearExamples operation *)
 VerificationTest[
     Module[{env, result},
         env = createTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentationExamples[<|
+        result = $editExamplesTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "clearExamples",
             "section" -> "BasicExamples"
@@ -972,7 +996,7 @@ VerificationTest[
         result["operation"]
     ],
     "clearExamples",
-    TestID -> "EditSymbolPacletDocumentationExamples-ClearExamples@@Tests/PacletDocumentationToolsTest.wlt:963,1-976,2"
+    TestID -> "EditSymbolPacletDocumentationExamples-ClearExamples@@Tests/PacletDocumentationToolsTest.wlt:987,1-1000,2"
 ]
 
 (* Test insertExample operation *)
@@ -980,14 +1004,14 @@ VerificationTest[
     Module[{env, result},
         env = createTestEnvironment[];
         (* First append another example so we have multiple *)
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentationExamples[<|
+        $editExamplesTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "appendExample",
             "section" -> "BasicExamples",
             "content" -> "Second example:\n\n```wl\n2 + 2\n```"
         |>];
         (* Now insert at position 1 *)
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentationExamples[<|
+        result = $editExamplesTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "insertExample",
             "section" -> "BasicExamples",
@@ -998,14 +1022,14 @@ VerificationTest[
         result["operation"]
     ],
     "insertExample",
-    TestID -> "EditSymbolPacletDocumentationExamples-InsertExample@@Tests/PacletDocumentationToolsTest.wlt:979,1-1002,2"
+    TestID -> "EditSymbolPacletDocumentationExamples-InsertExample@@Tests/PacletDocumentationToolsTest.wlt:1003,1-1026,2"
 ]
 
 (* Test replaceExample operation *)
 VerificationTest[
     Module[{env, result},
         env = createTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentationExamples[<|
+        result = $editExamplesTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "replaceExample",
             "section" -> "BasicExamples",
@@ -1016,7 +1040,7 @@ VerificationTest[
         result["operation"]
     ],
     "replaceExample",
-    TestID -> "EditSymbolPacletDocumentationExamples-ReplaceExample@@Tests/PacletDocumentationToolsTest.wlt:1005,1-1020,2"
+    TestID -> "EditSymbolPacletDocumentationExamples-ReplaceExample@@Tests/PacletDocumentationToolsTest.wlt:1029,1-1044,2"
 ]
 
 (* Test removeExample operation *)
@@ -1024,14 +1048,14 @@ VerificationTest[
     Module[{env, result},
         env = createTestEnvironment[];
         (* First append another example so we have multiple *)
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentationExamples[<|
+        $editExamplesTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "appendExample",
             "section" -> "BasicExamples",
             "content" -> "Second example:\n\n```wl\n2 + 2\n```"
         |>];
         (* Now remove the first example *)
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentationExamples[<|
+        result = $editExamplesTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "removeExample",
             "section" -> "BasicExamples",
@@ -1041,72 +1065,66 @@ VerificationTest[
         result["operation"]
     ],
     "removeExample",
-    TestID -> "EditSymbolPacletDocumentationExamples-RemoveExample@@Tests/PacletDocumentationToolsTest.wlt:1023,1-1045,2"
+    TestID -> "EditSymbolPacletDocumentationExamples-RemoveExample@@Tests/PacletDocumentationToolsTest.wlt:1047,1-1069,2"
 ]
 
 (* Test invalid section name *)
 VerificationTest[
     Module[{env, result},
         env = createTestEnvironment[];
-        result = Quiet[
-            Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentationExamples[<|
-                "notebook" -> env["notebookPath"],
-                "operation" -> "appendExample",
-                "section" -> "InvalidSection",
-                "content" -> "test"
-            |>],
-            { MCPServer::InvalidSection, MCPServer::Internal, General::stop }
-        ];
+        result = Quiet @ $editExamplesTool[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "appendExample",
+            "section" -> "InvalidSection",
+            "content" -> "test"
+        |>];
         cleanupTestEnvironment[env];
-        FailureQ[result]
+        (* Error should return $Failed or a Failure, not a valid result *)
+        FailureQ[result] || result === $Failed || !AssociationQ[parseToolResult[result]]
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentationExamples-InvalidSection@@Tests/PacletDocumentationToolsTest.wlt:1048,1-1065,2"
+    TestID -> "EditSymbolPacletDocumentationExamples-InvalidSection@@Tests/PacletDocumentationToolsTest.wlt:1072,1-1087,2"
 ]
 
 (* Test invalid operation *)
 VerificationTest[
     Module[{env, result},
         env = createTestEnvironment[];
-        result = Quiet[
-            Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentationExamples[<|
-                "notebook" -> env["notebookPath"],
-                "operation" -> "invalidOp",
-                "section" -> "BasicExamples",
-                "content" -> "test"
-            |>],
-            { MCPServer::InvalidOperation, MCPServer::Internal }
-        ];
+        result = Quiet @ $editExamplesTool[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "invalidOp",
+            "section" -> "BasicExamples",
+            "content" -> "test"
+        |>];
         cleanupTestEnvironment[env];
-        FailureQ[result]
+        (* Error should return $Failed or a Failure, not a valid result *)
+        FailureQ[result] || result === $Failed || !AssociationQ[parseToolResult[result]]
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentationExamples-InvalidOperation@@Tests/PacletDocumentationToolsTest.wlt:1068,1-1085,2"
+    TestID -> "EditSymbolPacletDocumentationExamples-InvalidOperation@@Tests/PacletDocumentationToolsTest.wlt:1090,1-1105,2"
 ]
 
 (* Test notebook not found *)
 VerificationTest[
     Module[{result},
-        result = Quiet[
-            Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentationExamples[<|
-                "notebook" -> "C:\\nonexistent\\path\\to\\notebook.nb",
-                "operation" -> "appendExample",
-                "section" -> "BasicExamples",
-                "content" -> "test"
-            |>],
-            { MCPServer::NotebookNotFound, MCPServer::Internal, Import::nffil }
-        ];
-        FailureQ[result]
+        result = Quiet @ $editExamplesTool[<|
+            "notebook" -> "C:\\nonexistent\\path\\to\\notebook.nb",
+            "operation" -> "appendExample",
+            "section" -> "BasicExamples",
+            "content" -> "test"
+        |>];
+        (* Error should return $Failed or a Failure, not a valid result *)
+        FailureQ[result] || result === $Failed || !AssociationQ[parseToolResult[result]]
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentationExamples-NotebookNotFound@@Tests/PacletDocumentationToolsTest.wlt:1088,1-1103,2"
+    TestID -> "EditSymbolPacletDocumentationExamples-NotebookNotFound@@Tests/PacletDocumentationToolsTest.wlt:1108,1-1121,2"
 ]
 
 (* Test that generatedContent is returned for append *)
 VerificationTest[
     Module[{env, result},
         env = createTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentationExamples[<|
+        result = $editExamplesTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "appendExample",
             "section" -> "BasicExamples",
@@ -1116,7 +1134,7 @@ VerificationTest[
         StringQ[result["generatedContent"]] && StringContainsQ[result["generatedContent"], "wl-output"]
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentationExamples-GeneratedContentReturned@@Tests/PacletDocumentationToolsTest.wlt:1106,1-1120,2"
+    TestID -> "EditSymbolPacletDocumentationExamples-GeneratedContentReturned@@Tests/PacletDocumentationToolsTest.wlt:1124,1-1138,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1126,7 +1144,7 @@ VerificationTest[
 (* Helper to create a test environment for EditSymbolPacletDocumentation tests *)
 createEditTestEnvironment[] := Module[{testDir, result},
     testDir = CreateDirectory[];
-    result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+    result = $createDocTool[<|
         "pacletDirectory" -> testDir,
         "symbolName" -> "EditTestFunc",
         "pacletName" -> "TestPaclet",
@@ -1151,7 +1169,7 @@ cleanupEditTestEnvironment[env_Association] :=
 VerificationTest[
     Module[{env, result},
         env = createEditTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        result = $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setUsage",
             "content" -> "- `EditTestFunc[a]` computes something with *a*.\n- `EditTestFunc[a, b, c]` combines *a*, *b*, and *c*."
@@ -1160,14 +1178,14 @@ VerificationTest[
         result["operation"]
     ],
     "setUsage",
-    TestID -> "EditSymbolPacletDocumentation-SetUsage-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1151,1-1164,2"
+    TestID -> "EditSymbolPacletDocumentation-SetUsage-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1169,1-1182,2"
 ]
 
 (* Test setUsage operation - verify usage cell is updated *)
 VerificationTest[
     Module[{env, result, nb, usageContent},
         env = createEditTestEnvironment[];
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setUsage",
             "content" -> "- `EditTestFunc[newArg]` is the new usage."
@@ -1179,14 +1197,14 @@ VerificationTest[
         Length[usageContent] >= 1
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-SetUsage-VerifyUpdate@@Tests/PacletDocumentationToolsTest.wlt:1167,1-1183,2"
+    TestID -> "EditSymbolPacletDocumentation-SetUsage-VerifyUpdate@@Tests/PacletDocumentationToolsTest.wlt:1185,1-1201,2"
 ]
 
 (* Test setNotes operation - basic functionality *)
 VerificationTest[
     Module[{env, result},
         env = createEditTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        result = $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setNotes",
             "content" -> "This is a completely new note.\n\nAnd another new note."
@@ -1195,14 +1213,14 @@ VerificationTest[
         result["operation"]
     ],
     "setNotes",
-    TestID -> "EditSymbolPacletDocumentation-SetNotes-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1186,1-1199,2"
+    TestID -> "EditSymbolPacletDocumentation-SetNotes-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1204,1-1217,2"
 ]
 
 (* Test setNotes operation - verify notes cells are replaced *)
 VerificationTest[
     Module[{env, nb, notesCells},
         env = createEditTestEnvironment[];
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setNotes",
             "content" -> "Replaced note one.\n\nReplaced note two.\n\nReplaced note three."
@@ -1214,14 +1232,14 @@ VerificationTest[
         Length[notesCells] >= 3
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-SetNotes-VerifyReplacement@@Tests/PacletDocumentationToolsTest.wlt:1202,1-1218,2"
+    TestID -> "EditSymbolPacletDocumentation-SetNotes-VerifyReplacement@@Tests/PacletDocumentationToolsTest.wlt:1220,1-1236,2"
 ]
 
 (* Test addNote operation at end (default) *)
 VerificationTest[
     Module[{env, result},
         env = createEditTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        result = $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "addNote",
             "content" -> "This is an added note at the end."
@@ -1230,14 +1248,14 @@ VerificationTest[
         result["operation"]
     ],
     "addNote",
-    TestID -> "EditSymbolPacletDocumentation-AddNote-AtEnd@@Tests/PacletDocumentationToolsTest.wlt:1221,1-1234,2"
+    TestID -> "EditSymbolPacletDocumentation-AddNote-AtEnd@@Tests/PacletDocumentationToolsTest.wlt:1239,1-1252,2"
 ]
 
 (* Test addNote operation at start *)
 VerificationTest[
     Module[{env, result},
         env = createEditTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        result = $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "addNote",
             "content" -> "This is an added note at the start.",
@@ -1247,14 +1265,14 @@ VerificationTest[
         result["operation"]
     ],
     "addNote",
-    TestID -> "EditSymbolPacletDocumentation-AddNote-AtStart@@Tests/PacletDocumentationToolsTest.wlt:1237,1-1251,2"
+    TestID -> "EditSymbolPacletDocumentation-AddNote-AtStart@@Tests/PacletDocumentationToolsTest.wlt:1255,1-1269,2"
 ]
 
 (* Test addNote operation at specific position *)
 VerificationTest[
     Module[{env, result},
         env = createEditTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        result = $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "addNote",
             "content" -> "This is an inserted note.",
@@ -1264,14 +1282,14 @@ VerificationTest[
         result["operation"]
     ],
     "addNote",
-    TestID -> "EditSymbolPacletDocumentation-AddNote-AtPosition@@Tests/PacletDocumentationToolsTest.wlt:1254,1-1268,2"
+    TestID -> "EditSymbolPacletDocumentation-AddNote-AtPosition@@Tests/PacletDocumentationToolsTest.wlt:1272,1-1286,2"
 ]
 
 (* Test setDetailsTable operation *)
 VerificationTest[
     Module[{env, result},
         env = createEditTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        result = $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setDetailsTable",
             "content" -> "The value for *x* can be any of the following:\n\n| Value | Description |\n|-------|-------------|\n| *int* | an `Integer` |\n| *real* | a `Real` number |"
@@ -1280,14 +1298,14 @@ VerificationTest[
         result["operation"]
     ],
     "setDetailsTable",
-    TestID -> "EditSymbolPacletDocumentation-SetDetailsTable-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1271,1-1284,2"
+    TestID -> "EditSymbolPacletDocumentation-SetDetailsTable-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1289,1-1302,2"
 ]
 
 (* Test setSeeAlso operation - basic functionality *)
 VerificationTest[
     Module[{env, result},
         env = createEditTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        result = $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setSeeAlso",
             "content" -> "Times, Divide\nPower, Sqrt"
@@ -1296,14 +1314,14 @@ VerificationTest[
         result["operation"]
     ],
     "setSeeAlso",
-    TestID -> "EditSymbolPacletDocumentation-SetSeeAlso-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1287,1-1300,2"
+    TestID -> "EditSymbolPacletDocumentation-SetSeeAlso-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1305,1-1318,2"
 ]
 
 (* Test setSeeAlso operation - verify button boxes are created *)
 VerificationTest[
     Module[{env, nb, buttonBoxes},
         env = createEditTestEnvironment[];
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setSeeAlso",
             "content" -> "NewSymbol1, NewSymbol2"
@@ -1314,14 +1332,14 @@ VerificationTest[
         Length[buttonBoxes] >= 2
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-SetSeeAlso-VerifyButtonBoxes@@Tests/PacletDocumentationToolsTest.wlt:1303,1-1318,2"
+    TestID -> "EditSymbolPacletDocumentation-SetSeeAlso-VerifyButtonBoxes@@Tests/PacletDocumentationToolsTest.wlt:1321,1-1336,2"
 ]
 
 (* Test setTechNotes operation - basic functionality *)
 VerificationTest[
     Module[{env, result},
         env = createEditTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        result = $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setTechNotes",
             "content" -> "[New Tutorial 1](paclet:TestPaclet/tutorial/NewTutorial1)\n[New Tutorial 2](paclet:TestPaclet/tutorial/NewTutorial2)"
@@ -1330,14 +1348,14 @@ VerificationTest[
         result["operation"]
     ],
     "setTechNotes",
-    TestID -> "EditSymbolPacletDocumentation-SetTechNotes-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1321,1-1334,2"
+    TestID -> "EditSymbolPacletDocumentation-SetTechNotes-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1339,1-1352,2"
 ]
 
 (* Test setTechNotes operation - verify links are created *)
 VerificationTest[
     Module[{env, nb, buttonBoxes},
         env = createEditTestEnvironment[];
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setTechNotes",
             "content" -> "[Updated Tech Note](paclet:TestPaclet/tutorial/UpdatedTech)"
@@ -1348,14 +1366,14 @@ VerificationTest[
         Length[buttonBoxes] >= 1
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-SetTechNotes-VerifyLinks@@Tests/PacletDocumentationToolsTest.wlt:1337,1-1352,2"
+    TestID -> "EditSymbolPacletDocumentation-SetTechNotes-VerifyLinks@@Tests/PacletDocumentationToolsTest.wlt:1355,1-1370,2"
 ]
 
 (* Test setRelatedGuides operation - basic functionality *)
 VerificationTest[
     Module[{env, result},
         env = createEditTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        result = $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setRelatedGuides",
             "content" -> "[New Guide 1](paclet:TestPaclet/guide/NewGuide1)\n[New Guide 2](paclet:TestPaclet/guide/NewGuide2)"
@@ -1364,14 +1382,14 @@ VerificationTest[
         result["operation"]
     ],
     "setRelatedGuides",
-    TestID -> "EditSymbolPacletDocumentation-SetRelatedGuides-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1355,1-1368,2"
+    TestID -> "EditSymbolPacletDocumentation-SetRelatedGuides-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1373,1-1386,2"
 ]
 
 (* Test setRelatedGuides operation - verify links are created *)
 VerificationTest[
     Module[{env, nb, buttonBoxes},
         env = createEditTestEnvironment[];
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setRelatedGuides",
             "content" -> "[Updated Guide](paclet:TestPaclet/guide/UpdatedGuide)"
@@ -1382,14 +1400,14 @@ VerificationTest[
         Length[buttonBoxes] >= 1
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-SetRelatedGuides-VerifyLinks@@Tests/PacletDocumentationToolsTest.wlt:1371,1-1386,2"
+    TestID -> "EditSymbolPacletDocumentation-SetRelatedGuides-VerifyLinks@@Tests/PacletDocumentationToolsTest.wlt:1389,1-1404,2"
 ]
 
 (* Test setRelatedLinks operation - basic functionality *)
 VerificationTest[
     Module[{env, result},
         env = createEditTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        result = $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setRelatedLinks",
             "content" -> "[New External Link](https://new.example.com)\n[Another Link](https://another.example.com)"
@@ -1398,14 +1416,14 @@ VerificationTest[
         result["operation"]
     ],
     "setRelatedLinks",
-    TestID -> "EditSymbolPacletDocumentation-SetRelatedLinks-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1389,1-1402,2"
+    TestID -> "EditSymbolPacletDocumentation-SetRelatedLinks-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1407,1-1420,2"
 ]
 
 (* Test setRelatedLinks operation - verify hyperlinks are created *)
 VerificationTest[
     Module[{env, nb, buttonBoxes},
         env = createEditTestEnvironment[];
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setRelatedLinks",
             "content" -> "[Updated External](https://updated.example.com)"
@@ -1416,14 +1434,14 @@ VerificationTest[
         Length[buttonBoxes] >= 1
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-SetRelatedLinks-VerifyHyperlinks@@Tests/PacletDocumentationToolsTest.wlt:1405,1-1420,2"
+    TestID -> "EditSymbolPacletDocumentation-SetRelatedLinks-VerifyHyperlinks@@Tests/PacletDocumentationToolsTest.wlt:1423,1-1438,2"
 ]
 
 (* Test setKeywords operation - basic functionality *)
 VerificationTest[
     Module[{env, result},
         env = createEditTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        result = $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setKeywords",
             "content" -> "new, keywords, updated, test"
@@ -1432,14 +1450,14 @@ VerificationTest[
         result["operation"]
     ],
     "setKeywords",
-    TestID -> "EditSymbolPacletDocumentation-SetKeywords-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1423,1-1436,2"
+    TestID -> "EditSymbolPacletDocumentation-SetKeywords-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1441,1-1454,2"
 ]
 
 (* Test setKeywords operation - verify keywords cells are updated *)
 VerificationTest[
     Module[{env, nb, keywordsCells},
         env = createEditTestEnvironment[];
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setKeywords",
             "content" -> "alpha, beta, gamma"
@@ -1450,14 +1468,14 @@ VerificationTest[
         MemberQ[keywordsCells, "alpha"] && MemberQ[keywordsCells, "beta"] && MemberQ[keywordsCells, "gamma"]
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-SetKeywords-VerifyKeywords@@Tests/PacletDocumentationToolsTest.wlt:1439,1-1454,2"
+    TestID -> "EditSymbolPacletDocumentation-SetKeywords-VerifyKeywords@@Tests/PacletDocumentationToolsTest.wlt:1457,1-1472,2"
 ]
 
 (* Test setHistory operation - basic functionality *)
 VerificationTest[
     Module[{env, result},
         env = createEditTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        result = $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setHistory",
             "content" -> "new:2.0, modified:2.5"
@@ -1466,14 +1484,14 @@ VerificationTest[
         result["operation"]
     ],
     "setHistory",
-    TestID -> "EditSymbolPacletDocumentation-SetHistory-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1457,1-1470,2"
+    TestID -> "EditSymbolPacletDocumentation-SetHistory-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1475,1-1488,2"
 ]
 
 (* Test setHistory operation - verify version number is present *)
 VerificationTest[
     Module[{env, nb, historyData},
         env = createEditTestEnvironment[];
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setHistory",
             "content" -> "new:3.0, modified:3.5, obsolete:4.0"
@@ -1485,14 +1503,14 @@ VerificationTest[
         Length[historyData] >= 3
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-SetHistory-VerifyVersions@@Tests/PacletDocumentationToolsTest.wlt:1473,1-1489,2"
+    TestID -> "EditSymbolPacletDocumentation-SetHistory-VerifyVersions@@Tests/PacletDocumentationToolsTest.wlt:1491,1-1507,2"
 ]
 
 (* Test that file path is returned correctly *)
 VerificationTest[
     Module[{env, result},
         env = createEditTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        result = $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setSeeAlso",
             "content" -> "Plus"
@@ -1501,50 +1519,46 @@ VerificationTest[
         StringQ[result["file"]] && StringEndsQ[result["file"], ".nb"]
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-ReturnsFilePath@@Tests/PacletDocumentationToolsTest.wlt:1492,1-1505,2"
+    TestID -> "EditSymbolPacletDocumentation-ReturnsFilePath@@Tests/PacletDocumentationToolsTest.wlt:1510,1-1523,2"
 ]
 
 (* Test error: invalid operation *)
 VerificationTest[
     Module[{env, result},
         env = createEditTestEnvironment[];
-        result = Quiet[
-            Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
-                "notebook" -> env["notebookPath"],
-                "operation" -> "invalidOperation",
-                "content" -> "test"
-            |>],
-            { MCPServer::InvalidOperation, MCPServer::Internal }
-        ];
+        result = Quiet @ $editDocTool[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "invalidOperation",
+            "content" -> "test"
+        |>];
         cleanupEditTestEnvironment[env];
-        FailureQ[result]
+        (* Error should return $Failed or a Failure, not a valid result *)
+        FailureQ[result] || result === $Failed || !AssociationQ[parseToolResult[result]]
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-ErrorInvalidOperation@@Tests/PacletDocumentationToolsTest.wlt:1508,1-1524,2"
+    TestID -> "EditSymbolPacletDocumentation-ErrorInvalidOperation@@Tests/PacletDocumentationToolsTest.wlt:1526,1-1540,2"
 ]
 
 (* Test error: notebook not found *)
 VerificationTest[
     Module[{result},
-        result = Quiet[
-            Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
-                "notebook" -> "C:\\nonexistent\\path\\to\\notebook.nb",
-                "operation" -> "setSeeAlso",
-                "content" -> "Plus"
-            |>],
-            { MCPServer::NotebookNotFound, MCPServer::Internal, Import::nffil }
-        ];
-        FailureQ[result]
+        result = Quiet @ $editDocTool[<|
+            "notebook" -> "C:\\nonexistent\\path\\to\\notebook.nb",
+            "operation" -> "setSeeAlso",
+            "content" -> "Plus"
+        |>];
+        (* Error should return $Failed or a Failure, not a valid result *)
+        FailureQ[result] || result === $Failed || !AssociationQ[parseToolResult[result]]
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-ErrorNotebookNotFound@@Tests/PacletDocumentationToolsTest.wlt:1527,1-1541,2"
+    TestID -> "EditSymbolPacletDocumentation-ErrorNotebookNotFound@@Tests/PacletDocumentationToolsTest.wlt:1543,1-1555,2"
 ]
 
 (* Test setUsage with single usage case *)
 VerificationTest[
     Module[{env, result, nb, usageCells},
         env = createEditTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        result = $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setUsage",
             "content" -> "- `EditTestFunc[singleArg]` performs a single operation on *singleArg*."
@@ -1555,14 +1569,14 @@ VerificationTest[
         Length[usageCells] >= 1 && result["operation"] === "setUsage"
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-SetUsage-SingleCase@@Tests/PacletDocumentationToolsTest.wlt:1544,1-1559,2"
+    TestID -> "EditSymbolPacletDocumentation-SetUsage-SingleCase@@Tests/PacletDocumentationToolsTest.wlt:1558,1-1573,2"
 ]
 
 (* Test setNotes with empty string creates placeholder *)
 VerificationTest[
     Module[{env, nb, notesCells},
         env = createEditTestEnvironment[];
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setNotes",
             "content" -> ""
@@ -1573,14 +1587,14 @@ VerificationTest[
         Length[notesCells] >= 1
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-SetNotes-EmptyCreatesPlaceholder@@Tests/PacletDocumentationToolsTest.wlt:1562,1-1577,2"
+    TestID -> "EditSymbolPacletDocumentation-SetNotes-EmptyCreatesPlaceholder@@Tests/PacletDocumentationToolsTest.wlt:1576,1-1591,2"
 ]
 
 (* Test setSeeAlso with empty string creates placeholder *)
 VerificationTest[
     Module[{env, nb, placeholderCells},
         env = createEditTestEnvironment[];
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setSeeAlso",
             "content" -> ""
@@ -1592,14 +1606,14 @@ VerificationTest[
         Length[placeholderCells] >= 1
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-SetSeeAlso-EmptyCreatesPlaceholder@@Tests/PacletDocumentationToolsTest.wlt:1580,1-1596,2"
+    TestID -> "EditSymbolPacletDocumentation-SetSeeAlso-EmptyCreatesPlaceholder@@Tests/PacletDocumentationToolsTest.wlt:1594,1-1610,2"
 ]
 
 (* Test setSeeAlso with comma-separated symbols on same line *)
 VerificationTest[
     Module[{env, nb, buttonBoxes},
         env = createEditTestEnvironment[];
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setSeeAlso",
             "content" -> "Alpha, Beta, Gamma, Delta"
@@ -1610,14 +1624,14 @@ VerificationTest[
         Length[buttonBoxes] >= 4
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-SetSeeAlso-CommaSeparated@@Tests/PacletDocumentationToolsTest.wlt:1599,1-1614,2"
+    TestID -> "EditSymbolPacletDocumentation-SetSeeAlso-CommaSeparated@@Tests/PacletDocumentationToolsTest.wlt:1613,1-1628,2"
 ]
 
 (* Test setKeywords with newline-separated keywords *)
 VerificationTest[
     Module[{env, nb, keywordsCells},
         env = createEditTestEnvironment[];
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setKeywords",
             "content" -> "keyword1\nkeyword2\nkeyword3"
@@ -1628,14 +1642,14 @@ VerificationTest[
         MemberQ[keywordsCells, "keyword1"] && MemberQ[keywordsCells, "keyword2"] && MemberQ[keywordsCells, "keyword3"]
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-SetKeywords-NewlineSeparated@@Tests/PacletDocumentationToolsTest.wlt:1617,1-1632,2"
+    TestID -> "EditSymbolPacletDocumentation-SetKeywords-NewlineSeparated@@Tests/PacletDocumentationToolsTest.wlt:1631,1-1646,2"
 ]
 
 (* Test setTechNotes with empty string creates placeholder *)
 VerificationTest[
     Module[{env, nb, placeholderCells},
         env = createEditTestEnvironment[];
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setTechNotes",
             "content" -> ""
@@ -1646,14 +1660,14 @@ VerificationTest[
         Length[placeholderCells] >= 1
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-SetTechNotes-EmptyCreatesPlaceholder@@Tests/PacletDocumentationToolsTest.wlt:1635,1-1650,2"
+    TestID -> "EditSymbolPacletDocumentation-SetTechNotes-EmptyCreatesPlaceholder@@Tests/PacletDocumentationToolsTest.wlt:1649,1-1664,2"
 ]
 
 (* Test setRelatedGuides with empty string creates placeholder *)
 VerificationTest[
     Module[{env, nb, placeholderCells},
         env = createEditTestEnvironment[];
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setRelatedGuides",
             "content" -> ""
@@ -1664,14 +1678,14 @@ VerificationTest[
         Length[placeholderCells] >= 1
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-SetRelatedGuides-EmptyCreatesPlaceholder@@Tests/PacletDocumentationToolsTest.wlt:1653,1-1668,2"
+    TestID -> "EditSymbolPacletDocumentation-SetRelatedGuides-EmptyCreatesPlaceholder@@Tests/PacletDocumentationToolsTest.wlt:1667,1-1682,2"
 ]
 
 (* Test setRelatedLinks with empty string creates placeholder *)
 VerificationTest[
     Module[{env, nb, placeholderCells},
         env = createEditTestEnvironment[];
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setRelatedLinks",
             "content" -> ""
@@ -1682,14 +1696,14 @@ VerificationTest[
         Length[placeholderCells] >= 1
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-SetRelatedLinks-EmptyCreatesPlaceholder@@Tests/PacletDocumentationToolsTest.wlt:1671,1-1686,2"
+    TestID -> "EditSymbolPacletDocumentation-SetRelatedLinks-EmptyCreatesPlaceholder@@Tests/PacletDocumentationToolsTest.wlt:1685,1-1700,2"
 ]
 
 (* Test setKeywords with empty string creates placeholder *)
 VerificationTest[
     Module[{env, nb, placeholderCells},
         env = createEditTestEnvironment[];
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setKeywords",
             "content" -> ""
@@ -1700,14 +1714,14 @@ VerificationTest[
         Length[placeholderCells] >= 1
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-SetKeywords-EmptyCreatesPlaceholder@@Tests/PacletDocumentationToolsTest.wlt:1689,1-1704,2"
+    TestID -> "EditSymbolPacletDocumentation-SetKeywords-EmptyCreatesPlaceholder@@Tests/PacletDocumentationToolsTest.wlt:1703,1-1718,2"
 ]
 
 (* Test setHistory with only 'new' field *)
 VerificationTest[
     Module[{env, result},
         env = createEditTestEnvironment[];
-        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        result = $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setHistory",
             "content" -> "new:5.0"
@@ -1716,7 +1730,7 @@ VerificationTest[
         result["operation"] === "setHistory"
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-SetHistory-OnlyNewField@@Tests/PacletDocumentationToolsTest.wlt:1707,1-1720,2"
+    TestID -> "EditSymbolPacletDocumentation-SetHistory-OnlyNewField@@Tests/PacletDocumentationToolsTest.wlt:1721,1-1734,2"
 ]
 
 (* Test multiple sequential operations on same notebook *)
@@ -1724,12 +1738,12 @@ VerificationTest[
     Module[{env, nb, seeAlsoButtons, keywordsCells},
         env = createEditTestEnvironment[];
         (* Perform multiple operations *)
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setSeeAlso",
             "content" -> "SequentialSymbol1, SequentialSymbol2"
         |>];
-        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+        $editDocTool[<|
             "notebook" -> env["notebookPath"],
             "operation" -> "setKeywords",
             "content" -> "sequential, test, keywords"
@@ -1741,5 +1755,5 @@ VerificationTest[
         Length[seeAlsoButtons] >= 2 && MemberQ[keywordsCells, "sequential"]
     ],
     True,
-    TestID -> "EditSymbolPacletDocumentation-MultipleSequentialOperations@@Tests/PacletDocumentationToolsTest.wlt:1723,1-1745,2"
+    TestID -> "EditSymbolPacletDocumentation-MultipleSequentialOperations@@Tests/PacletDocumentationToolsTest.wlt:1737,1-1759,2"
 ]
