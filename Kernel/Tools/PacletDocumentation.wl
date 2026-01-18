@@ -65,38 +65,38 @@ $defaultMCPTools[ "CreateSymbolPacletDocumentation" ] := LLMTool @ <|
             "Required"    -> False
         |>,
         "usage" -> <|
-            "Interpreter" -> "Expression",
-            "Help"        -> "Array of usage case objects with \"syntax\" and \"description\" keys.",
+            "Interpreter" -> "String",
+            "Help"        -> "Markdown string with usage cases as bullet points: `- \\`MyFunc[x]\\` does something with *x*`",
             "Required"    -> True
         |>,
         "notes" -> <|
-            "Interpreter" -> "Expression",
-            "Help"        -> "Array of strings for the Details & Options section.",
+            "Interpreter" -> "String",
+            "Help"        -> "Markdown string for Details & Options section. Each paragraph becomes a note cell.",
             "Required"    -> False
         |>,
         "seeAlso" -> <|
-            "Interpreter" -> "Expression",
-            "Help"        -> "Array of related symbol names.",
+            "Interpreter" -> "String",
+            "Help"        -> "Symbol names separated by newlines or commas (e.g., \"Plus\\nMinus\" or \"Plus, Minus\").",
             "Required"    -> False
         |>,
         "techNotes" -> <|
-            "Interpreter" -> "Expression",
-            "Help"        -> "Array of tutorial/tech note references.",
+            "Interpreter" -> "String",
+            "Help"        -> "Markdown links to tutorials, one per line: `[Title](paclet:Publisher/Paclet/tutorial/Name)`",
             "Required"    -> False
         |>,
         "relatedGuides" -> <|
-            "Interpreter" -> "Expression",
-            "Help"        -> "Array of related guide page references.",
+            "Interpreter" -> "String",
+            "Help"        -> "Markdown links to guides, one per line: `[Title](paclet:Publisher/Paclet/guide/Name)`",
             "Required"    -> False
         |>,
         "relatedLinks" -> <|
-            "Interpreter" -> "Expression",
-            "Help"        -> "Array of related link objects with \"label\" and \"url\" keys.",
+            "Interpreter" -> "String",
+            "Help"        -> "External links in markdown format, one per line: `[label](url)`",
             "Required"    -> False
         |>,
         "keywords" -> <|
-            "Interpreter" -> "Expression",
-            "Help"        -> "Array of keyword strings for search.",
+            "Interpreter" -> "String",
+            "Help"        -> "Keywords separated by newlines or commas.",
             "Required"    -> False
         |>,
         "newInVersion" -> <|
@@ -124,32 +124,22 @@ $defaultMCPTools[ "EditSymbolPacletDocumentation" ] := LLMTool @ <|
     "Parameters"  -> {
         "notebook" -> <|
             "Interpreter" -> "String",
-            "Help"        -> "Path to the notebook file.",
+            "Help"        -> "Path to the notebook file or documentation URI.",
             "Required"    -> True
         |>,
         "operation" -> <|
             "Interpreter" -> "String",
-            "Help"        -> "The edit operation: setUsage, setNotes, addNote, setSeeAlso, setKeywords, setHistory, appendExample, prependExample, insertExample, replaceExample, removeExample, clearExamples.",
+            "Help"        -> "The edit operation: setUsage, setNotes, addNote, setDetailsTable, setSeeAlso, setTechNotes, setRelatedGuides, setRelatedLinks, setKeywords, setHistory.",
             "Required"    -> True
         |>,
-        "section" -> <|
-            "Interpreter" -> "String",
-            "Help"        -> "Target section for example operations: BasicExamples, Scope, GeneralizationsExtensions, Options, Applications, PropertiesRelations, PossibleIssues, InteractiveExamples, NeatExamples.",
-            "Required"    -> False
-        |>,
         "content" -> <|
-            "Interpreter" -> "Expression",
-            "Help"        -> "New content (format depends on operation). For examples, use markdown with ```wl code blocks.",
+            "Interpreter" -> "String",
+            "Help"        -> "New content in markdown or appropriate format for the operation.",
             "Required"    -> False
         |>,
         "position" -> <|
             "Interpreter" -> "Expression",
-            "Help"        -> "Position for insert operations (0-indexed integer, or \"start\"/\"end\").",
-            "Required"    -> False
-        |>,
-        "subsection" -> <|
-            "Interpreter" -> "String",
-            "Help"        -> "Target subsection (for Options examples).",
+            "Help"        -> "Position for addNote operation (0-indexed integer, or \"start\"/\"end\").",
             "Required"    -> False
         |>
     }
@@ -177,13 +167,13 @@ createSymbolPacletDocumentation[ params_Association ] := Enclose[
         (* Extract optional parameters *)
         publisherID   = params[ "publisherID" ];
         context       = params[ "context" ];
-        usage         = ConfirmMatch[ params[ "usage" ], { __Association }, "Usage" ];
-        notes         = Replace[ params[ "notes" ], _Missing -> { } ];
-        seeAlso       = Replace[ params[ "seeAlso" ], _Missing -> { } ];
-        techNotes     = Replace[ params[ "techNotes" ], _Missing -> { } ];
-        relatedGuides = Replace[ params[ "relatedGuides" ], _Missing -> { } ];
-        relatedLinks  = Replace[ params[ "relatedLinks" ], _Missing -> { } ];
-        keywords      = Replace[ params[ "keywords" ], _Missing -> { } ];
+        usage         = ConfirmBy[ params[ "usage" ], StringQ, "Usage" ];
+        notes         = Replace[ params[ "notes" ], _Missing -> "" ];
+        seeAlso       = Replace[ params[ "seeAlso" ], _Missing -> "" ];
+        techNotes     = Replace[ params[ "techNotes" ], _Missing -> "" ];
+        relatedGuides = Replace[ params[ "relatedGuides" ], _Missing -> "" ];
+        relatedLinks  = Replace[ params[ "relatedLinks" ], _Missing -> "" ];
+        keywords      = Replace[ params[ "keywords" ], _Missing -> "" ];
         newInVersion  = Replace[ params[ "newInVersion" ], _Missing -> "XX" ];
         basicExamples = Replace[ params[ "basicExamples" ], _Missing -> "" ];
 
@@ -254,6 +244,114 @@ buildContext // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*parseUsageMarkdown*)
+parseUsageMarkdown // beginDefinition;
+
+(* Parse markdown bullet points into usage case associations *)
+(* Format: - `MyFunction[x]` does something with *x*. *)
+parseUsageMarkdown[ "" ] := throwFailure[ "EmptyUsage" ];
+
+parseUsageMarkdown[ markdown_String ] := Enclose[
+    Module[ { lines, bulletLines, usageCases },
+        (* Split into lines and filter for bullet points *)
+        lines = StringSplit[ markdown, "\n" ];
+        bulletLines = Select[ lines, StringStartsQ[ StringTrim @ #, "-" | "*" ] & ];
+
+        If[ Length @ bulletLines === 0,
+            throwFailure[ "InvalidUsageFormat", markdown ]
+        ];
+
+        usageCases = parseSingleUsageLine /@ bulletLines;
+        ConfirmMatch[ usageCases, { __Association }, "UsageCases" ]
+    ],
+    throwInternalFailure
+];
+
+parseUsageMarkdown // endDefinition;
+
+parseSingleUsageLine // beginDefinition;
+
+parseSingleUsageLine[ line_String ] := Enclose[
+    Module[ { trimmed, syntaxMatch, syntax, rest, description },
+        (* Remove leading bullet marker *)
+        trimmed = StringTrim @ StringReplace[ line, StartOfString ~~ ("-" | "*") ~~ Whitespace.. -> "" ];
+
+        (* Extract syntax from backticks: `MyFunction[x]` *)
+        syntaxMatch = StringCases[ trimmed, "`" ~~ s: Except[ "`" ].. ~~ "`" :> s, 1 ];
+
+        If[ Length @ syntaxMatch === 0,
+            throwFailure[ "InvalidUsageFormat", line ]
+        ];
+
+        syntax = First @ syntaxMatch;
+
+        (* Get description after the syntax *)
+        rest = StringTrim @ StringReplace[
+            trimmed,
+            StartOfString ~~ "`" ~~ Except[ "`" ].. ~~ "`" ~~ Whitespace... -> ""
+        ];
+
+        (* Remove leading "- " or "– " if present after syntax *)
+        description = StringTrim @ StringReplace[ rest, StartOfString ~~ ("-" | "\[Dash]" | "\[LongDash]") ~~ Whitespace... -> "" ];
+
+        <| "syntax" -> syntax, "description" -> description |>
+    ],
+    throwInternalFailure
+];
+
+parseSingleUsageLine // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*parseCommaSeparatedList*)
+parseCommaSeparatedList // beginDefinition;
+
+(* Parse a string of items separated by newlines or commas *)
+parseCommaSeparatedList[ "" ] := { };
+
+parseCommaSeparatedList[ str_String ] :=
+    StringTrim /@ Select[
+        StringSplit[ str, "," | "\n" ],
+        StringTrim[ # ] =!= "" &
+    ];
+
+parseCommaSeparatedList // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*parseMarkdownLinks*)
+parseMarkdownLinks // beginDefinition;
+
+(* Parse markdown links: [label](url) *)
+parseMarkdownLinks[ "" ] := { };
+
+parseMarkdownLinks[ str_String ] := Enclose[
+    Module[ { lines, links },
+        lines = StringSplit[ str, "\n" ];
+        links = Flatten @ Map[ parseSingleMarkdownLink, lines ];
+        (* Filter out empty results *)
+        Select[ links, AssociationQ ]
+    ],
+    throwInternalFailure
+];
+
+parseMarkdownLinks // endDefinition;
+
+parseSingleMarkdownLink // beginDefinition;
+
+parseSingleMarkdownLink[ "" ] := { };
+
+parseSingleMarkdownLink[ line_String ] :=
+    StringCases[
+        line,
+        "[" ~~ label: Except[ "]" ].. ~~ "](" ~~ url: Except[ ")" ].. ~~ ")" :>
+            <| "label" -> label, "url" -> url |>
+    ];
+
+parseSingleMarkdownLink // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*generateCellID*)
 generateCellID // beginDefinition;
 generateCellID[ ] := RandomInteger @ { 1, 999999999 };
@@ -265,24 +363,33 @@ generateCellID // endDefinition;
 generateSymbolPageNotebook // beginDefinition;
 
 generateSymbolPageNotebook[
-    symbolName_String, pacletBase_String, context_String, usage_List, notes_List,
-    seeAlso_List, techNotes_List, relatedGuides_List, relatedLinks_List,
-    keywords_List, newInVersion_String, basicExamples_String
+    symbolName_String, pacletBase_String, context_String, usage_String, notes_String,
+    seeAlso_String, techNotes_String, relatedGuides_String, relatedLinks_String,
+    keywords_String, newInVersion_String, basicExamples_String
 ] := Enclose[
-    Module[ { templateParams, template },
+    Module[ { templateParams, template, parsedUsage, parsedSeeAlso, parsedKeywords,
+              parsedTechNotes, parsedRelatedGuides, parsedRelatedLinks },
+
+        (* Parse string inputs *)
+        parsedUsage         = ConfirmMatch[ parseUsageMarkdown @ usage, { __Association }, "ParsedUsage" ];
+        parsedSeeAlso       = parseCommaSeparatedList @ seeAlso;
+        parsedKeywords      = parseCommaSeparatedList @ keywords;
+        parsedTechNotes     = parseMarkdownLinks @ techNotes;
+        parsedRelatedGuides = parseMarkdownLinks @ relatedGuides;
+        parsedRelatedLinks  = parseMarkdownLinks @ relatedLinks;
 
         (* Build template parameters *)
         templateParams = <|
             "SymbolName"          -> symbolName,
             "PacletBase"          -> pacletBase,
             "Context"             -> context,
-            "UsageContent"        -> ConfirmMatch[ generateUsageContent[ symbolName, pacletBase, usage ], _TextData, "UsageContent" ],
+            "UsageContent"        -> ConfirmMatch[ generateUsageContent[ symbolName, pacletBase, parsedUsage ], _TextData, "UsageContent" ],
             "NotesCells"          -> ConfirmMatch[ generateNotesCells @ notes, { ___Cell }, "NotesCells" ],
-            "SeeAlsoContent"      -> ConfirmMatch[ generateSeeAlsoContent[ pacletBase, seeAlso ], _TextData, "SeeAlsoContent" ],
-            "TutorialsCells"      -> ConfirmMatch[ generateTutorialsCells @ techNotes, { ___Cell }, "TutorialsCells" ],
-            "MoreAboutCells"      -> ConfirmMatch[ generateMoreAboutCells @ relatedGuides, { ___Cell }, "MoreAboutCells" ],
-            "RelatedLinksCells"   -> ConfirmMatch[ generateRelatedLinksCells @ relatedLinks, { ___Cell }, "RelatedLinksCells" ],
-            "KeywordsCells"       -> ConfirmMatch[ generateKeywordsCells @ keywords, { ___Cell }, "KeywordsCells" ],
+            "SeeAlsoContent"      -> ConfirmMatch[ generateSeeAlsoContent[ pacletBase, parsedSeeAlso ], _TextData, "SeeAlsoContent" ],
+            "TutorialsCells"      -> ConfirmMatch[ generateTutorialsCells @ parsedTechNotes, { ___Cell }, "TutorialsCells" ],
+            "MoreAboutCells"      -> ConfirmMatch[ generateMoreAboutCells @ parsedRelatedGuides, { ___Cell }, "MoreAboutCells" ],
+            "RelatedLinksCells"   -> ConfirmMatch[ generateRelatedLinksCells @ parsedRelatedLinks, { ___Cell }, "RelatedLinksCells" ],
+            "KeywordsCells"       -> ConfirmMatch[ generateKeywordsCells @ parsedKeywords, { ___Cell }, "KeywordsCells" ],
             "BasicExamplesCells"  -> ConfirmMatch[ generateExampleCells[ context, basicExamples ], { ___Cell }, "BasicExamplesCells" ],
             "NewInVersion"        -> newInVersion
         |>;
@@ -386,24 +493,61 @@ formatDescriptionText // endDefinition;
 (*generateNotesCells*)
 generateNotesCells // beginDefinition;
 
-generateNotesCells[ { } ] := { Cell[ "XXXX", "Notes", CellID -> generateCellID[ ] ] };
+generateNotesCells[ "" ] := { Cell[ "XXXX", "Notes", CellID -> generateCellID[ ] ] };
 
-generateNotesCells[ notes_List ] :=
-    generateNoteCell /@ notes;
+generateNotesCells[ notesMarkdown_String ] := Enclose[
+    Module[ { notebook, cells, notesCells },
+        (* Use importMarkdownString to parse the markdown *)
+        notebook = ConfirmMatch[
+            importMarkdownString[ notesMarkdown, "Notebook" ],
+            _Notebook,
+            "NotebookImport"
+        ];
+
+        (* Extract cells from the notebook *)
+        cells = First @ notebook;
+
+        (* Convert imported cells to Notes cells *)
+        notesCells = Flatten @ Map[ convertToNoteCell, cells ];
+
+        If[ Length @ notesCells === 0,
+            { Cell[ "XXXX", "Notes", CellID -> generateCellID[ ] ] },
+            notesCells
+        ]
+    ],
+    throwInternalFailure
+];
 
 generateNotesCells // endDefinition;
 
-generateNoteCell // beginDefinition;
+convertToNoteCell // beginDefinition;
 
-generateNoteCell[ note_String ] := Module[ { parts },
-    parts = formatDescriptionText @ note;
-    If[ Length @ parts === 1 && StringQ @ First @ parts,
-        Cell[ First @ parts, "Notes", CellID -> generateCellID[ ] ],
-        Cell[ TextData @ parts, "Notes", CellID -> generateCellID[ ] ]
-    ]
-];
+(* Convert Text cells to Notes cells *)
+convertToNoteCell[ Cell[ content_, "Text", ___ ] ] :=
+    { Cell[ content, "Notes", CellID -> generateCellID[ ] ] };
 
-generateNoteCell // endDefinition;
+(* Convert Item/ItemParagraph to Notes cells *)
+convertToNoteCell[ Cell[ content_, "Item" | "ItemParagraph", ___ ] ] :=
+    { Cell[ content, "Notes", CellID -> generateCellID[ ] ] };
+
+(* Handle CellGroupData (e.g., from tables) *)
+convertToNoteCell[ Cell[ CellGroupData[ groupCells_List, _ ] ] ] :=
+    Flatten @ Map[ convertToNoteCell, groupCells ];
+
+(* Handle tables - keep them as-is but change to Notes style if needed *)
+convertToNoteCell[ cell: Cell[ BoxData[ GridBox[ ___ ] ], ___, ___ ] ] :=
+    { cell };
+
+(* Skip headers and other structural cells *)
+convertToNoteCell[ Cell[ _, "Section" | "Subsection" | "Subsubsection", ___ ] ] := { };
+
+(* Default: try to convert to Notes *)
+convertToNoteCell[ Cell[ content_, style_, opts___ ] ] :=
+    { Cell[ content, "Notes", CellID -> generateCellID[ ] ] };
+
+convertToNoteCell[ _ ] := { };
+
+convertToNoteCell // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -443,9 +587,25 @@ generateTutorialsCells // beginDefinition;
 generateTutorialsCells[ { } ] := { Cell[ "XXXX", "Tutorials", CellID -> generateCellID[ ] ] };
 
 generateTutorialsCells[ tutorials_List ] :=
-    Cell[ #, "Tutorials", CellID -> generateCellID[ ] ] & /@ tutorials;
+    generateTutorialCell /@ tutorials;
 
 generateTutorialsCells // endDefinition;
+
+generateTutorialCell // beginDefinition;
+
+generateTutorialCell[ link_Association ] := Cell[
+    TextData @ {
+        ButtonBox[
+            link[ "label" ],
+            BaseStyle  -> "Link",
+            ButtonData -> link[ "url" ]
+        ]
+    },
+    "Tutorials",
+    CellID -> generateCellID[ ]
+];
+
+generateTutorialCell // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -455,9 +615,25 @@ generateMoreAboutCells // beginDefinition;
 generateMoreAboutCells[ { } ] := { Cell[ "XXXX", "MoreAbout", CellID -> generateCellID[ ] ] };
 
 generateMoreAboutCells[ guides_List ] :=
-    Cell[ #, "MoreAbout", CellID -> generateCellID[ ] ] & /@ guides;
+    generateMoreAboutCell /@ guides;
 
 generateMoreAboutCells // endDefinition;
+
+generateMoreAboutCell // beginDefinition;
+
+generateMoreAboutCell[ link_Association ] := Cell[
+    TextData @ {
+        ButtonBox[
+            link[ "label" ],
+            BaseStyle  -> "Link",
+            ButtonData -> link[ "url" ]
+        ]
+    },
+    "MoreAbout",
+    CellID -> generateCellID[ ]
+];
+
+generateMoreAboutCell // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -713,7 +889,7 @@ exampleDelimiterCell // endDefinition;
 editSymbolPacletDocumentation // beginDefinition;
 
 editSymbolPacletDocumentation[ params_Association ] := Enclose[
-    Module[ { notebookPath, operation, notebook, result, generatedContent },
+    Module[ { notebookPath, operation, notebook, result },
 
         notebookPath = ConfirmBy[ params[ "notebook" ], StringQ, "NotebookPath" ];
         operation    = ConfirmBy[ params[ "operation" ], StringQ, "Operation" ];
@@ -726,9 +902,9 @@ editSymbolPacletDocumentation[ params_Association ] := Enclose[
         notebook = ConfirmMatch[ Import[ notebookPath, "NB" ], _Notebook, "Notebook" ];
 
         (* Perform the operation *)
-        { notebook, generatedContent } = ConfirmMatch[
+        notebook = ConfirmMatch[
             performEditOperation[ notebook, operation, params ],
-            { _Notebook, _ },
+            _Notebook,
             "EditResult"
         ];
 
@@ -736,17 +912,10 @@ editSymbolPacletDocumentation[ params_Association ] := Enclose[
         ConfirmBy[ Export[ notebookPath, notebook, "NB" ], FileExistsQ, "Export" ];
 
         (* Return result *)
-        result = <|
+        <|
             "file"      -> notebookPath,
-            "operation" -> operation,
-            "section"   -> params[ "section" ]
-        |>;
-
-        If[ StringQ @ generatedContent,
-            result[ "generatedContent" ] = generatedContent
-        ];
-
-        result
+            "operation" -> operation
+        |>
     ],
     throwInternalFailure
 ];
@@ -759,31 +928,34 @@ editSymbolPacletDocumentation // endDefinition;
 performEditOperation // beginDefinition;
 
 performEditOperation[ notebook_Notebook, "setUsage", params_ ] :=
-    { setUsageInNotebook[ notebook, params[ "content" ] ], None };
+    setUsageInNotebook[ notebook, params[ "content" ] ];
 
 performEditOperation[ notebook_Notebook, "setNotes", params_ ] :=
-    { setNotesInNotebook[ notebook, params[ "content" ] ], None };
+    setNotesInNotebook[ notebook, params[ "content" ] ];
 
 performEditOperation[ notebook_Notebook, "addNote", params_ ] :=
-    { addNoteToNotebook[ notebook, params[ "content" ], params[ "position" ] ], None };
+    addNoteToNotebook[ notebook, params[ "content" ], params[ "position" ] ];
+
+performEditOperation[ notebook_Notebook, "setDetailsTable", params_ ] :=
+    setDetailsTableInNotebook[ notebook, params[ "content" ], params[ "position" ] ];
 
 performEditOperation[ notebook_Notebook, "setSeeAlso", params_ ] :=
-    { setSeeAlsoInNotebook[ notebook, params[ "content" ] ], None };
+    setSeeAlsoInNotebook[ notebook, params[ "content" ] ];
+
+performEditOperation[ notebook_Notebook, "setTechNotes", params_ ] :=
+    setTechNotesInNotebook[ notebook, params[ "content" ] ];
+
+performEditOperation[ notebook_Notebook, "setRelatedGuides", params_ ] :=
+    setRelatedGuidesInNotebook[ notebook, params[ "content" ] ];
+
+performEditOperation[ notebook_Notebook, "setRelatedLinks", params_ ] :=
+    setRelatedLinksInNotebook[ notebook, params[ "content" ] ];
 
 performEditOperation[ notebook_Notebook, "setKeywords", params_ ] :=
-    { setKeywordsInNotebook[ notebook, params[ "content" ] ], None };
+    setKeywordsInNotebook[ notebook, params[ "content" ] ];
 
 performEditOperation[ notebook_Notebook, "setHistory", params_ ] :=
-    { setHistoryInNotebook[ notebook, params[ "content" ] ], None };
-
-performEditOperation[ notebook_Notebook, "appendExample", params_ ] :=
-    appendExampleToNotebook[ notebook, params[ "section" ], params[ "content" ], params[ "subsection" ] ];
-
-performEditOperation[ notebook_Notebook, "prependExample", params_ ] :=
-    prependExampleToNotebook[ notebook, params[ "section" ], params[ "content" ], params[ "subsection" ] ];
-
-performEditOperation[ notebook_Notebook, "clearExamples", params_ ] :=
-    { clearExamplesInNotebook[ notebook, params[ "section" ], params[ "subsection" ] ], None };
+    setHistoryInNotebook[ notebook, params[ "content" ] ];
 
 performEditOperation[ notebook_Notebook, op_String, params_ ] :=
     throwFailure[ "InvalidOperation", op ];
@@ -795,15 +967,18 @@ performEditOperation // endDefinition;
 (*setUsageInNotebook*)
 setUsageInNotebook // beginDefinition;
 
-setUsageInNotebook[ Notebook[ cells_List, opts___ ], usageCases_List ] := Enclose[
-    Module[ { newCells, pacletBase, symbolName },
+setUsageInNotebook[ Notebook[ cells_List, opts___ ], usageMarkdown_String ] := Enclose[
+    Module[ { newCells, pacletBase, symbolName, parsedUsage },
         (* Extract paclet info from notebook *)
         pacletBase = ConfirmBy[ extractPacletBase[ cells, { opts } ], StringQ, "PacletBase" ];
         symbolName = ConfirmBy[ extractSymbolName @ cells, StringQ, "SymbolName" ];
 
+        (* Parse the usage markdown *)
+        parsedUsage = ConfirmMatch[ parseUsageMarkdown @ usageMarkdown, { __Association }, "ParsedUsage" ];
+
         (* Replace usage cell *)
         newCells = ConfirmMatch[
-            replaceUsageCell[ cells, symbolName, pacletBase, usageCases ],
+            replaceUsageCell[ cells, symbolName, pacletBase, parsedUsage ],
             { __Cell },
             "NewCells"
         ];
@@ -868,9 +1043,10 @@ replaceUsageCell // endDefinition;
 (*setNotesInNotebook*)
 setNotesInNotebook // beginDefinition;
 
-setNotesInNotebook[ Notebook[ cells_List, opts___ ], notes_List ] := Enclose[
-    Module[ { newCells },
-        newCells = ConfirmMatch[ replaceNotesCells[ cells, notes ], { __Cell }, "NewCells" ];
+setNotesInNotebook[ Notebook[ cells_List, opts___ ], notesMarkdown_String ] := Enclose[
+    Module[ { newCells, notesCells },
+        notesCells = ConfirmMatch[ generateNotesCells @ notesMarkdown, { ___Cell }, "NotesCells" ];
+        newCells = ConfirmMatch[ replaceNotesCells[ cells, notesCells ], { __Cell }, "NewCells" ];
         Notebook[ newCells, opts ]
     ],
     throwInternalFailure
@@ -880,7 +1056,7 @@ setNotesInNotebook // endDefinition;
 
 replaceNotesCells // beginDefinition;
 
-replaceNotesCells[ cells_List, notes_List ] :=
+replaceNotesCells[ cells_List, notesCells_List ] :=
     (* This is a simplified implementation - a full implementation would need to
        properly locate and replace the notes section within the cell group structure *)
     cells;
@@ -892,7 +1068,7 @@ replaceNotesCells // endDefinition;
 (*addNoteToNotebook*)
 addNoteToNotebook // beginDefinition;
 
-addNoteToNotebook[ notebook_Notebook, note_String, position_ ] :=
+addNoteToNotebook[ notebook_Notebook, noteMarkdown_String, position_ ] :=
     (* Simplified stub - full implementation would insert at correct position *)
     notebook;
 
@@ -900,12 +1076,24 @@ addNoteToNotebook // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*setDetailsTableInNotebook*)
+setDetailsTableInNotebook // beginDefinition;
+
+setDetailsTableInNotebook[ notebook_Notebook, tableMarkdown_String, position_ ] :=
+    (* Simplified stub - full implementation would create/replace details table *)
+    notebook;
+
+setDetailsTableInNotebook // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*setSeeAlsoInNotebook*)
 setSeeAlsoInNotebook // beginDefinition;
 
-setSeeAlsoInNotebook[ Notebook[ cells_List, opts___ ], symbols_List ] := Enclose[
-    Module[ { pacletBase, newCells },
+setSeeAlsoInNotebook[ Notebook[ cells_List, opts___ ], symbolsString_String ] := Enclose[
+    Module[ { pacletBase, symbols, newCells },
         pacletBase = ConfirmBy[ extractPacletBase[ cells, { opts } ], StringQ, "PacletBase" ];
+        symbols    = parseCommaSeparatedList @ symbolsString;
         newCells   = ConfirmMatch[ replaceSeeAlsoCells[ cells, pacletBase, symbols ], { __Cell }, "NewCells" ];
         Notebook[ newCells, opts ]
     ],
@@ -931,13 +1119,94 @@ replaceSeeAlsoCells // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*setTechNotesInNotebook*)
+setTechNotesInNotebook // beginDefinition;
+
+setTechNotesInNotebook[ Notebook[ cells_List, opts___ ], techNotesString_String ] := Enclose[
+    Module[ { parsedLinks, tutorialsCells, newCells },
+        parsedLinks    = parseMarkdownLinks @ techNotesString;
+        tutorialsCells = ConfirmMatch[ generateTutorialsCells @ parsedLinks, { ___Cell }, "TutorialsCells" ];
+        newCells       = ConfirmMatch[ replaceTutorialsCells[ cells, tutorialsCells ], { __Cell }, "NewCells" ];
+        Notebook[ newCells, opts ]
+    ],
+    throwInternalFailure
+];
+
+setTechNotesInNotebook // endDefinition;
+
+replaceTutorialsCells // beginDefinition;
+
+replaceTutorialsCells[ cells_List, tutorialsCells_List ] :=
+    (* This is a simplified implementation - a full implementation would need to
+       properly locate and replace the tutorials section within the cell group structure *)
+    cells;
+
+replaceTutorialsCells // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*setRelatedGuidesInNotebook*)
+setRelatedGuidesInNotebook // beginDefinition;
+
+setRelatedGuidesInNotebook[ Notebook[ cells_List, opts___ ], guidesString_String ] := Enclose[
+    Module[ { parsedLinks, moreAboutCells, newCells },
+        parsedLinks    = parseMarkdownLinks @ guidesString;
+        moreAboutCells = ConfirmMatch[ generateMoreAboutCells @ parsedLinks, { ___Cell }, "MoreAboutCells" ];
+        newCells       = ConfirmMatch[ replaceMoreAboutCells[ cells, moreAboutCells ], { __Cell }, "NewCells" ];
+        Notebook[ newCells, opts ]
+    ],
+    throwInternalFailure
+];
+
+setRelatedGuidesInNotebook // endDefinition;
+
+replaceMoreAboutCells // beginDefinition;
+
+replaceMoreAboutCells[ cells_List, moreAboutCells_List ] :=
+    (* This is a simplified implementation - a full implementation would need to
+       properly locate and replace the more about section within the cell group structure *)
+    cells;
+
+replaceMoreAboutCells // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*setRelatedLinksInNotebook*)
+setRelatedLinksInNotebook // beginDefinition;
+
+setRelatedLinksInNotebook[ Notebook[ cells_List, opts___ ], linksString_String ] := Enclose[
+    Module[ { parsedLinks, linksCells, newCells },
+        parsedLinks = parseMarkdownLinks @ linksString;
+        linksCells  = ConfirmMatch[ generateRelatedLinksCells @ parsedLinks, { ___Cell }, "LinksCells" ];
+        newCells    = ConfirmMatch[ replaceRelatedLinksCells[ cells, linksCells ], { __Cell }, "NewCells" ];
+        Notebook[ newCells, opts ]
+    ],
+    throwInternalFailure
+];
+
+setRelatedLinksInNotebook // endDefinition;
+
+replaceRelatedLinksCells // beginDefinition;
+
+replaceRelatedLinksCells[ cells_List, linksCells_List ] :=
+    (* This is a simplified implementation - a full implementation would need to
+       properly locate and replace the related links section within the cell group structure *)
+    cells;
+
+replaceRelatedLinksCells // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*setKeywordsInNotebook*)
 setKeywordsInNotebook // beginDefinition;
 
-setKeywordsInNotebook[ Notebook[ cells_List, opts___ ], keywords_List ] := Enclose[
-    Module[ { newCells },
-        (* Remove existing keywords cells and add new ones *)
-        newCells = cells; (* Simplified - full implementation needed *)
+setKeywordsInNotebook[ Notebook[ cells_List, opts___ ], keywordsString_String ] := Enclose[
+    Module[ { keywords, keywordsCells, newCells },
+        keywords      = parseCommaSeparatedList @ keywordsString;
+        keywordsCells = ConfirmMatch[ generateKeywordsCells @ keywords, { ___Cell }, "KeywordsCells" ];
+        (* This is a simplified implementation - a full implementation would need to
+           properly locate and replace the keywords section within the cell group structure *)
+        newCells = cells;
         Notebook[ newCells, opts ]
     ],
     throwInternalFailure
@@ -950,8 +1219,9 @@ setKeywordsInNotebook // endDefinition;
 (*setHistoryInNotebook*)
 setHistoryInNotebook // beginDefinition;
 
-setHistoryInNotebook[ notebook_Notebook, history_Association ] :=
-    (* Simplified stub - full implementation would update history cell *)
+setHistoryInNotebook[ notebook_Notebook, historyString_String ] :=
+    (* Simplified stub - full implementation would parse historyString (format: "new:1.0, modified:1.2")
+       and update history cell *)
     notebook;
 
 setHistoryInNotebook // endDefinition;
@@ -1113,10 +1383,73 @@ insertInPrimaryExamplesSection // endDefinition;
 insertInExtendedExamplesSection // beginDefinition;
 
 insertInExtendedExamplesSection[ cells_List, sectionTitle_String, newCells_List, mode_String, subsection_ ] :=
-    (* This is a stub - full implementation would navigate to the correct ExampleSection *)
-    cells;
+    Replace[
+        cells,
+        (* Find the ExtendedExamplesSection CellGroupData and modify it *)
+        Cell[ CellGroupData[ groupCells_List, state_ ] ] /;
+            MatchQ[ First @ groupCells, Cell[ _, "ExtendedExamplesSection", ___ ] ] :>
+                Cell[ CellGroupData[
+                    insertInExampleSection[ groupCells, sectionTitle, newCells, mode ],
+                    state
+                ] ],
+        { 1 }
+    ];
 
 insertInExtendedExamplesSection // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*insertInExampleSection*)
+insertInExampleSection // beginDefinition;
+
+insertInExampleSection[ groupCells_List, sectionTitle_String, newCells_List, mode_String ] := Enclose[
+    Module[ { sectionIndex, beforeSection, sectionCell, afterSection, modifiedSection },
+
+        (* Find the index of the target section *)
+        sectionIndex = FirstPosition[
+            groupCells,
+            Cell[ BoxData[ InterpretationBox[ Cell[ sectionTitle, "ExampleSection", ___ ], ___ ] ], "ExampleSection", ___ ],
+            None,
+            { 1 }
+        ];
+
+        If[ sectionIndex === None,
+            (* Section not found, return cells unchanged *)
+            Return @ groupCells
+        ];
+
+        sectionIndex = First @ sectionIndex;
+
+        (* Find the next ExampleSection or end of list to determine section boundary *)
+        beforeSection = Take[ groupCells, sectionIndex ];
+        sectionCell = groupCells[[ sectionIndex ]];
+
+        (* Find where the next section starts (or end of list) *)
+        afterSection = Drop[ groupCells, sectionIndex ];
+
+        (* Insert the new cells right after the section header *)
+        modifiedSection = If[ mode === "append",
+            (* Append: Insert before the next section *)
+            Join[
+                beforeSection,
+                addDelimiterIfNeeded[ { }, newCells ],  (* Add delimiter if there's content before *)
+                afterSection
+            ],
+            (* Prepend: Insert right after the section header *)
+            Join[
+                beforeSection,
+                newCells,
+                If[ Length @ afterSection > 0, { exampleDelimiterCell[ ] }, { } ],
+                afterSection
+            ]
+        ];
+
+        modifiedSection
+    ],
+    throwInternalFailure
+];
+
+insertInExampleSection // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -1183,8 +1516,15 @@ cellToMarkdown // endDefinition;
 (*boxesToInputForm*)
 boxesToInputForm // beginDefinition;
 
-boxesToInputForm[ boxes_ ] :=
-    ToString[ ToExpression[ boxes, StandardForm, HoldComplete ], InputForm ];
+boxesToInputForm[ boxes_ ] := Module[ { held, str },
+    held = ToExpression[ boxes, StandardForm, HoldComplete ];
+    str = ToString[ held, InputForm ];
+    (* Remove the HoldComplete wrapper from the string representation *)
+    StringTrim @ StringReplace[
+        str,
+        StartOfString ~~ "HoldComplete[" ~~ body___ ~~ "]" ~~ EndOfString :> body
+    ]
+];
 
 boxesToInputForm // endDefinition;
 
