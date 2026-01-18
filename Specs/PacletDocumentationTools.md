@@ -197,7 +197,7 @@ Edits an existing symbol documentation page, allowing targeted modifications to 
 | `notebook` | String | Yes | Path to the notebook file or documentation URI |
 | `operation` | String | Yes | The edit operation to perform (see operations below) |
 | `content` | String | Conditional | New content (format depends on operation) |
-| `position` | Integer/String | No | Position for insert operations (0-indexed, or "start"/"end") |
+| `position` | Integer | No | Position for insert operations (1-indexed). Negative values count from the end (-1 = last). |
 
 ### Operations
 
@@ -241,7 +241,7 @@ Adds a new note to the Details & Options section.
 - `content`: Markdown string (the note text)
 
 **Optional parameters:**
-- `position`: Integer or "start"/"end" (default: "end")
+- `position`: Integer position (1-indexed, default: 1). Use negative values to count from the end (-1 = after last note).
 
 #### 4. `setDetailsTable` - Set a Details Table
 
@@ -262,7 +262,7 @@ The value for *x* can be any of the following:
 ```
 
 **Optional parameters:**
-- `position`: Integer position in notes section (default: "end")
+- `position`: Integer position in notes section (1-indexed, default: 1). Use negative values to count from the end (-1 = after last note).
 
 #### 5. `setSeeAlso` - Replace See Also Section
 
@@ -361,7 +361,7 @@ Edits example sections of an existing symbol documentation page. This tool is se
 | `operation` | String | Yes | The edit operation to perform (see operations below) |
 | `section` | String | Conditional | Target example section (required for most operations) |
 | `content` | String | Conditional | Markdown content for example cells |
-| `position` | Integer/String | No | Position for insert operations (0-indexed, or "start"/"end") |
+| `position` | Integer | No | Position for insert/replace/remove operations (1-indexed). Negative values count from the end (-1 = last). |
 | `subsection` | String | No | Target subsection (for Options section) |
 
 ### Section Names
@@ -428,12 +428,12 @@ Same as `appendExample` but adds content at the beginning of the section.
 
 #### 3. `insertExample` - Insert at Position in Example Section
 
-Same as `appendExample` but with required `position` parameter specifying where to insert (0-indexed, counting example groups).
+Same as `appendExample` but with required `position` parameter specifying where to insert (1-indexed, counting example groups). Use negative values to count from the end (-1 = insert at the end).
 
 **Required parameters:**
 - `section`: Target section name
 - `content`: Markdown string with example content
-- `position`: Index where to insert (0-indexed)
+- `position`: Index where to insert (1-indexed, or negative to count from end)
 
 **Optional parameters:**
 - `subsection`: For "Options" section
@@ -443,7 +443,7 @@ Same as `appendExample` but with required `position` parameter specifying where 
 **Required parameters:**
 - `section`: Target section name
 - `content`: New content for that example group
-- `position`: Index of the example group to replace (0-indexed)
+- `position`: Index of the example group to replace (1-indexed, or negative to count from end)
 
 **Optional parameters:**
 - `subsection`: For "Options" section
@@ -452,7 +452,7 @@ Same as `appendExample` but with required `position` parameter specifying where 
 
 **Required parameters:**
 - `section`: Target section name
-- `position`: Index of the example group to remove (0-indexed)
+- `position`: Index of the example group to remove (1-indexed, or negative to count from end)
 
 **Optional parameters:**
 - `subsection`: For "Options" section
