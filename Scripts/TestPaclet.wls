@@ -17,7 +17,7 @@ SetOptions[
         "TestCreated"   -> Function @ Print[ "\tCurrent test: " , #[ "TestObject" ][ "TestID" ] ],
         "TestEvaluated" -> checkTestResult
     |>,
-    HandlerFunctionsKeys -> { "TestFileName", "TestObject" },
+    HandlerFunctionsKeys -> { "Outcome", "TestFileName", "TestObject" },
     ProgressReporting    -> False
 ];
 
