@@ -2,7 +2,7 @@ PacletObject[ <|
     "Name"             -> "Wolfram/MCPServer",
     "Description"      -> "Implements a model context protocol server using Wolfram Language",
     "Creator"          -> "Richard Hennigan (Wolfram Research)",
-    "Version"          -> "1.6.0",
+    "Version"          -> "1.6.1",
     "WolframVersion"   -> "14.2+",
     "PublisherID"      -> "Wolfram",
     "License"          -> "MIT",
@@ -42,7 +42,8 @@ PacletObject[ <|
         { "Asset",
             "Root"   -> "Assets",
             "Assets" -> {
-                { "TestReportScript", "TestReport.wls" }
+                { "SymbolPageTemplate", "Templates/SymbolPage.wl" },
+                { "TestReportScript"  , "TestReport.wls"          }
             }
         }
     }

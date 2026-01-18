@@ -30,4 +30,12 @@ MCPServer::UnknownInstallLocation        = "Unable to determine install location
 MCPServer::UnknownProjectInstallLocation = "Unable to determine project install location for `1`. Use File[\[Ellipsis]] to specify a custom location.";
 MCPServer::UnsupportedOperatingSystem    = "Unsupported operating system: `1`.";
 
+(* PacletDocumentation messages *)
+MCPServer::NotebookFileExists            = "Notebook already exists: `1`.";
+MCPServer::InvalidOperation              = "Unknown operation: `1`.";
+MCPServer::NotebookNotFound              = "Notebook not found: `1`.";
+MCPServer::EmptyUsage                    = "Usage parameter cannot be empty. Provide at least one usage case.";
+MCPServer::InvalidUsageFormat            = "Invalid usage format: `1`. Expected bullet points with syntax in backticks.";
+MCPServer::InvalidSection                = "Invalid section name: `1`. Expected one of: BasicExamples, Scope, GeneralizationsExtensions, Options, Applications, PropertiesRelations, PossibleIssues, InteractiveExamples, NeatExamples.";
+
 EndPackage[ ];

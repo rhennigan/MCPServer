@@ -14,6 +14,22 @@ Needs[ "Wolfram`MCPServer`Common`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*TODO*)
+(*
+    - CodeInspector tool
+    - BuildPaclet tool
+    - ReloadPaclet tool
+    - DefinitionViewer tool
+    - Log tool calls (and generate a notebook)
+    - Add optional "description" parameter to evaluator tool (maybe all tools?)
+    - Support setting sandbox directory for evaluator tool via environment variable
+    - Support image outputs from tools according to MCP spec
+    - A RestartMCPServer tool? Is this possible?
+    - A tool to open notebooks for the user, e.g. UsingFrontEnd[SystemOpen[notebookPath]]?
+*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Default Tools*)
 $DefaultMCPTools := WithCleanup[
     Unprotect @ $DefaultMCPTools,
@@ -38,6 +54,9 @@ $subcontexts = {
 
     (* Tools: ReadNotebook, WriteNotebook *)
     "Wolfram`MCPServer`Tools`Notebooks`",
+
+    (* Tools: CreateSymbolPacletDocumentation, EditSymbolPacletDocumentation *)
+    "Wolfram`MCPServer`Tools`PacletDocumentation`",
 
     (* Tools: TestReport *)
     "Wolfram`MCPServer`Tools`TestReport`",

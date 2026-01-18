@@ -20,6 +20,12 @@ Now you can make additional tool calls to run paclet code.
 
 If you've previously built an MX file for the paclet, you should delete it before testing your changes. You can find it in `Kernel/64Bit/MCPServer.mx`.
 
+If you are only testing changes to test files, you do not need to reload the paclet, since the TestReport tool handles this for you.
+
+When reloading the paclet, do not `Clear`, `ClearAll`, or `Remove` symbols. Reloading the paclet does this automatically in `Kernel/MCPServerLoader.wl` and doing so manually may lead to unexpected behavior.
+
+The kernel used by the WolframLanguageEvaluator tool cannot be restarted via code like `Quit[]` since it's also running the MCP server. If it gets into a bad state, and you can't fix it, you should stop and inform the user that the kernel needs to be restarted.
+
 ## Writing Tests
 
 Write tests in the following format:
@@ -40,12 +46,7 @@ You can optionally include a third argument to specify any expected messages tha
 
 Existing test IDs will also have a suffix appended to them (everything after the last `@@`) to indicate where the test is located in the codebase. You do not need to include this suffix in your new test IDs, since they are automatically generated on commit.
 
-You can run test files individually using:
-
-```wl
-report = TestReport["path/to/test/file.wlt"];
-report["TestsFailed"]
-```
+You can run test files using the TestReport MCP tool on the "Tests" directory.
 
 Use the WolframLanguageContext tool if tests fail to help find a solution.
 
@@ -59,16 +60,6 @@ This script builds the paclet and performs necessary checks. Options:
 - `-c` or `--check`: Run code checks (default: True)
 - `-i` or `--install`: Install the paclet after building (default: False)
 - `-m` or `--mx`: Build MX files (default: True)
-
-### Testing the Paclet
-
-```bash
-wolframscript -f Scripts/TestPaclet.wls
-```
-
-This runs the paclet tests and generates a test report. An exit code of 0 means all tests passed.
-
-If you've made any changes to source code, be sure to rebuild the paclet before testing.
 
 ## Code Architecture
 
@@ -87,19 +78,19 @@ If you've made any changes to source code, be sure to rebuild the paclet before 
   - `MCPServerObject.wl`: Defines the MCP server object format
   - `Messages.wl`: Definitions for error messages
   - `StartMCPServer.wl`: Implementation for starting MCP servers
+  - `Tools/`: Contains several files defining predefined MCP tools used by default servers
 
 - `Scripts/`: Contains utility scripts for building, testing, and running the paclet
   - `Common.wl`: Common utilities for scripts
+  - `BuildMX.wls`: Script to build the MX file
   - `BuildPaclet.wls`: Script to build the paclet
-  - `TestPaclet.wls`: Script to test the paclet
-  - `StartMCPServer.wls`: Script to start an MCP server (should only be called by an MCP client)
 
 - `Documentation/`: Contains documentation notebooks
   - `English/`: English documentation
     - `ReferencePages/Symbols/`: Reference pages for exported symbols
     - Use the ReadNotebook tool to read documentation notebooks as markdown text
 
-- `Tests/`: Contains test files
+- `Tests/`: Contains test files (.wlt)
   - Every test should have a `TestID` specification
   - Do not manually write the trailing `@@path/to/file.wlt:l,c` part of the `TestID` specification; it will be added automatically on commit
 
@@ -131,33 +122,55 @@ The server implements the Model Context Protocol, which provides:
 
 ## Key Development Patterns
 
-1. **Symbol Definition Pattern**:
-    ```wolfram
-    functionName // beginDefinition;
-    functionName[ args___ ] := ...
-    functionName // endDefinition;
-    ```
+### Error Handling
 
-    ```wolfram
-    ExportedFunctionName // beginDefinition;
-    ExportedFunctionName[ args___ ] := ...
-    ExportedFunctionName // endExportedDefinition;
-    ```
+Error handling is managed using the following helpers:
+- `catchTop` - Catches anything thrown by `throwFailure` or `throwInternalFailure`. Only the outermost `catchTop` is used.
+- `throwFailure` - Throws a handled handled error with a message ID and arguments.
+- `throwInternalFailure` - Throws an unhandled internal failure error.
 
-2. **Error Handling Pattern**:
-    ```wolfram
-    Enclose[
-        Module[ { ... },
-            result = ConfirmBy[ operation, check, "Tag" ];
-            ...
-        ],
-        throwInternalFailure
-    ];
-    ```
+The functions `catchMine` and `catchTopAs` are variations of `catchTop` that specify the symbol that should be used for error messages. These should only be used for public functions.
 
-3. **MX Initialization**:
-    ```wolfram
-    addToMXInitialization[
-        code to initialize during MX load
-    ];
-    ```
+Define any error messages using the `MCPServer` symbol in `Kernel/Messages.wl`. For example:
+```wl
+MCPServer::InvalidProperty = "Invalid property specification: `1`.";
+```
+
+Then, you can use something like the following to throw an error to the top level:
+```wl
+throwFailure[ "InvalidProperty", badValue ]
+```
+
+The message will automatically be issued from the symbol that's using the outermost `catchMine` or `catchTopAs` block.
+
+### Exported Functions
+
+Exported functions in the main context must be declared in both the PacletInfo.wl and Kernel/Main.wl files. Define them using the following format:
+```wl
+NameOfFunction // beginDefinition;
+NameOfFunction[ ... ] := catchMine @ internalFunction[ ... ];
+NameOfFunction // endExportedDefinition;
+```
+
+The name of the internal function is often the same as the exported function, but beginning with a lowercase letter.
+
+### Internal Functions
+
+Define internal helper functions using the following format:
+
+```wl
+nameOfFunction // beginDefinition;
+
+nameOfFunction[ ... ] := Enclose[
+    body,
+    throwInternalFailure
+];
+
+nameOfFunction // endDefinition;
+```
+
+The `Enclose` wrapper is only necessary if you are using any `Confirm`, `ConfirmBy`, `ConfirmMatch`, etc. functions in the body, and it will trigger a throw of an internal failure error if any of them fail.
+
+## Special Considerations
+
+While working on this paclet, you are also working on the code that's running the MCP server providing your Wolfram tools. Sometimes you might run into issues related to this and you'll need to carefully consider how current changes might be affecting the MCP server.

@@ -15,7 +15,7 @@ System`TestObject;
 (* ::Section::Closed:: *)
 (*Config*)
 $externalTestEvaluation = True;
-$$size = _Number? Positive | Infinity;
+$$size = (_Integer|_Real)? Positive | Infinity;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
