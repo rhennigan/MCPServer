@@ -22,14 +22,26 @@ SetOptions[
 ];
 
 checkTestResult[ as_Association ] :=
-    Module[ { outcome, testObject, testID },
+    Module[ { outcome, testObject, testID, string },
         outcome = as[ "Outcome" ];
         If[ outcome =!= "Success",
             testObject = as[ "TestObject" ];
             testID = testObject[ "TestID" ];
             cicd`ConsoleError[ SequenceForm[ "\tTest failed: (", outcome, ") ", testID ], "Fatal" -> False ];
             If[ StringQ @ Environment[ "GITHUB_ACTIONS" ],
-                cicd`ConsoleLog @ ToString[ testObject, InputForm, PageWidth -> Infinity ]
+                string = ToString[
+                    ReplaceAll[
+                        testObject,
+                        Hyperlink[ label_String, url_String ] /; And[
+                            StringStartsQ[ label, "Report this issue" ],
+                            StringStartsQ[ url, "https://github.com/" ~~ __ ~~ "/issues/new?" ]
+                        ] :> RuleCondition @ Hyperlink[ label, First @ StringSplit[ url, "?" ] ]
+                    ],
+                    InputForm,
+                    PageWidth -> Infinity
+                ];
+                If[ StringLength @ string > 5000, string = StringTake[ string, 5000 ] <> " ..." ];
+                cicd`ConsoleLog @ string
             ]
         ]
     ];
