@@ -92,7 +92,7 @@ evaluateWolframLanguage // endDefinition;
 evaluateWolframLanguage0 // beginDefinition;
 
 evaluateWolframLanguage0[ code_String, timeConstraint_Integer ] :=
-    cb`WolframLanguageToolEvaluate[
+    catchAlways @ cb`WolframLanguageToolEvaluate[
         code,
         "String",
         "Line"                  -> $line++,

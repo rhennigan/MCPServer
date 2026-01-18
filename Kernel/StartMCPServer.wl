@@ -270,7 +270,7 @@ evaluateTool[ msg_, req_ ] := Enclose[
         params = ConfirmBy[ Lookup[ msg, "params", <| |> ], AssociationQ ];
         toolName = ConfirmBy[ Lookup[ params, "name" ], StringQ ];
         args = Lookup[ params, "arguments", <| |> ];
-        result = catchAlways @ $llmTools[ toolName ][ args ];
+        result = stealthCatchTop @ $llmTools[ toolName ][ args ];
         If[ StringQ @ result[ "String" ], result = result[ "String" ] ];
         (* TODO: return multimodal content here when appropriate *)
         string = ConfirmBy[ safeString @ result, StringQ, "String" ];
