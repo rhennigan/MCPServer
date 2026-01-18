@@ -25,6 +25,7 @@ Needs[ "Wolfram`MCPServer`Common`" ];
     - Support setting sandbox directory for evaluator tool via environment variable
     - Support image outputs from tools according to MCP spec
     - A RestartMCPServer tool? Is this possible?
+    - A tool to open notebooks for the user, e.g. UsingFrontEnd[SystemOpen[notebookPath]]?
 *)
 
 (* ::**************************************************************************************************************:: *)
