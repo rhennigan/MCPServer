@@ -42,7 +42,8 @@ PacletObject[ <|
         { "Asset",
             "Root"   -> "Assets",
             "Assets" -> {
-                { "TestReportScript", "TestReport.wls" }
+                { "SymbolPageTemplate", "Templates/SymbolPage.wl" },
+                { "TestReportScript"  , "TestReport.wls"          }
             }
         }
     }

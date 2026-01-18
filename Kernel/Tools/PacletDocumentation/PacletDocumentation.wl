@@ -10,11 +10,6 @@ Needs[ "Wolfram`MCPServer`Tools`"  ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*Config*)
-$symbolPageTemplatePath := FileNameJoin @ { $thisPaclet[ "Location" ], "Assets", "Templates", "SymbolPage.wl" };
-
-(* ::**************************************************************************************************************:: *)
-(* ::Section::Closed:: *)
 (*Prompts*)
 $createSymbolDocDescription = "\
 Creates a new symbol documentation page for a Wolfram Language paclet. \

@@ -275,7 +275,7 @@ loadSymbolPageTemplate // beginDefinition;
 
 loadSymbolPageTemplate[ ] := Enclose[
     Module[ { path },
-        path = ConfirmBy[ $symbolPageTemplatePath, FileExistsQ, "TemplatePath" ];
+        path = ConfirmBy[ $thisPaclet[ "AssetLocation", "SymbolPageTemplate" ], FileExistsQ, "TemplatePath" ];
         ConfirmMatch[ Get @ path, _TemplateObject, "Template" ]
     ],
     throwInternalFailure
