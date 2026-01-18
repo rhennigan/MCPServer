@@ -3,6 +3,8 @@
 (* Symbol Page Documentation Template *)
 (* Used by CreateSymbolPacletDocumentation *)
 
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
 TemplateObject[
     Notebook[
         {
@@ -371,3 +373,4 @@ TemplateObject[
     CombinerFunction  -> Identity,
     InsertionFunction -> Identity
 ]
+(* :!CodeAnalysis::EndBlock:: *)
