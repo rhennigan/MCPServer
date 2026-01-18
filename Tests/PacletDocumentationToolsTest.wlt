@@ -1099,3 +1099,627 @@ VerificationTest[
     True,
     TestID -> "EditSymbolPacletDocumentationExamples-GeneratedContentReturned@@Tests/PacletDocumentationToolsTest.wlt:1087,1-1101,2"
 ]
+
+(* ::Section:: *)
+(* EditSymbolPacletDocumentation Tests *)
+
+(* Helper to create a test environment for EditSymbolPacletDocumentation tests *)
+createEditTestEnvironment[] := Module[{testDir, result},
+    testDir = CreateDirectory[];
+    result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation[<|
+        "pacletDirectory" -> testDir,
+        "symbolName" -> "EditTestFunc",
+        "pacletName" -> "TestPaclet",
+        "publisherID" -> "TestPublisher",
+        "usage" -> "- `EditTestFunc[x]` does something with *x*.\n- `EditTestFunc[x, y]` does something with *x* and *y*.",
+        "notes" -> "This is an initial note.\n\nAnother initial note.",
+        "seeAlso" -> "Plus, Minus",
+        "techNotes" -> "[Initial Tutorial](paclet:TestPaclet/tutorial/Initial)",
+        "relatedGuides" -> "[Initial Guide](paclet:TestPaclet/guide/Initial)",
+        "relatedLinks" -> "[Initial Link](https://initial.example.com)",
+        "keywords" -> "initial, test",
+        "newInVersion" -> "1.0",
+        "basicExamples" -> "A basic example:\n\n```wl\n1 + 1\n```"
+    |>];
+    <|"testDir" -> testDir, "notebookPath" -> result["file"]|>
+];
+
+cleanupEditTestEnvironment[env_Association] :=
+    DeleteDirectory[env["testDir"], DeleteContents -> True];
+
+(* Test setUsage operation - basic functionality *)
+VerificationTest[
+    Module[{env, result},
+        env = createEditTestEnvironment[];
+        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setUsage",
+            "content" -> "- `EditTestFunc[a]` computes something with *a*.\n- `EditTestFunc[a, b, c]` combines *a*, *b*, and *c*."
+        |>];
+        cleanupEditTestEnvironment[env];
+        result["operation"]
+    ],
+    "setUsage",
+    TestID -> "EditSymbolPacletDocumentation-SetUsage-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1131,1-1144,2"
+]
+
+(* Test setUsage operation - verify usage cell is updated *)
+VerificationTest[
+    Module[{env, result, nb, usageContent},
+        env = createEditTestEnvironment[];
+        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setUsage",
+            "content" -> "- `EditTestFunc[newArg]` is the new usage."
+        |>];
+        nb = Import[env["notebookPath"], "NB"];
+        (* Check for the new usage syntax in ButtonBox *)
+        usageContent = Cases[nb, ButtonBox["EditTestFunc", ___], Infinity];
+        cleanupEditTestEnvironment[env];
+        Length[usageContent] >= 1
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-SetUsage-VerifyUpdate@@Tests/PacletDocumentationToolsTest.wlt:1147,1-1163,2"
+]
+
+(* Test setNotes operation - basic functionality *)
+VerificationTest[
+    Module[{env, result},
+        env = createEditTestEnvironment[];
+        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setNotes",
+            "content" -> "This is a completely new note.\n\nAnd another new note."
+        |>];
+        cleanupEditTestEnvironment[env];
+        result["operation"]
+    ],
+    "setNotes",
+    TestID -> "EditSymbolPacletDocumentation-SetNotes-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1166,1-1179,2"
+]
+
+(* Test setNotes operation - verify notes cells are replaced *)
+VerificationTest[
+    Module[{env, nb, notesCells},
+        env = createEditTestEnvironment[];
+        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setNotes",
+            "content" -> "Replaced note one.\n\nReplaced note two.\n\nReplaced note three."
+        |>];
+        nb = Import[env["notebookPath"], "NB"];
+        notesCells = Cases[nb, Cell[_, "Notes", ___], Infinity];
+        cleanupEditTestEnvironment[env];
+        (* Should have at least 3 notes cells now *)
+        Length[notesCells] >= 3
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-SetNotes-VerifyReplacement@@Tests/PacletDocumentationToolsTest.wlt:1182,1-1198,2"
+]
+
+(* Test addNote operation at end (default) *)
+VerificationTest[
+    Module[{env, result},
+        env = createEditTestEnvironment[];
+        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "addNote",
+            "content" -> "This is an added note at the end."
+        |>];
+        cleanupEditTestEnvironment[env];
+        result["operation"]
+    ],
+    "addNote",
+    TestID -> "EditSymbolPacletDocumentation-AddNote-AtEnd@@Tests/PacletDocumentationToolsTest.wlt:1201,1-1214,2"
+]
+
+(* Test addNote operation at start *)
+VerificationTest[
+    Module[{env, result},
+        env = createEditTestEnvironment[];
+        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "addNote",
+            "content" -> "This is an added note at the start.",
+            "position" -> "start"
+        |>];
+        cleanupEditTestEnvironment[env];
+        result["operation"]
+    ],
+    "addNote",
+    TestID -> "EditSymbolPacletDocumentation-AddNote-AtStart@@Tests/PacletDocumentationToolsTest.wlt:1217,1-1231,2"
+]
+
+(* Test addNote operation at specific position *)
+VerificationTest[
+    Module[{env, result},
+        env = createEditTestEnvironment[];
+        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "addNote",
+            "content" -> "This is an inserted note.",
+            "position" -> 1
+        |>];
+        cleanupEditTestEnvironment[env];
+        result["operation"]
+    ],
+    "addNote",
+    TestID -> "EditSymbolPacletDocumentation-AddNote-AtPosition@@Tests/PacletDocumentationToolsTest.wlt:1234,1-1248,2"
+]
+
+(* Test setDetailsTable operation *)
+VerificationTest[
+    Module[{env, result},
+        env = createEditTestEnvironment[];
+        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setDetailsTable",
+            "content" -> "The value for *x* can be any of the following:\n\n| Value | Description |\n|-------|-------------|\n| *int* | an `Integer` |\n| *real* | a `Real` number |"
+        |>];
+        cleanupEditTestEnvironment[env];
+        result["operation"]
+    ],
+    "setDetailsTable",
+    TestID -> "EditSymbolPacletDocumentation-SetDetailsTable-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1251,1-1264,2"
+]
+
+(* Test setSeeAlso operation - basic functionality *)
+VerificationTest[
+    Module[{env, result},
+        env = createEditTestEnvironment[];
+        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setSeeAlso",
+            "content" -> "Times, Divide\nPower, Sqrt"
+        |>];
+        cleanupEditTestEnvironment[env];
+        result["operation"]
+    ],
+    "setSeeAlso",
+    TestID -> "EditSymbolPacletDocumentation-SetSeeAlso-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1267,1-1280,2"
+]
+
+(* Test setSeeAlso operation - verify button boxes are created *)
+VerificationTest[
+    Module[{env, nb, buttonBoxes},
+        env = createEditTestEnvironment[];
+        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setSeeAlso",
+            "content" -> "NewSymbol1, NewSymbol2"
+        |>];
+        nb = Import[env["notebookPath"], "NB"];
+        buttonBoxes = Cases[nb, ButtonBox["NewSymbol1" | "NewSymbol2", ___], Infinity];
+        cleanupEditTestEnvironment[env];
+        Length[buttonBoxes] >= 2
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-SetSeeAlso-VerifyButtonBoxes@@Tests/PacletDocumentationToolsTest.wlt:1283,1-1298,2"
+]
+
+(* Test setTechNotes operation - basic functionality *)
+VerificationTest[
+    Module[{env, result},
+        env = createEditTestEnvironment[];
+        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setTechNotes",
+            "content" -> "[New Tutorial 1](paclet:TestPaclet/tutorial/NewTutorial1)\n[New Tutorial 2](paclet:TestPaclet/tutorial/NewTutorial2)"
+        |>];
+        cleanupEditTestEnvironment[env];
+        result["operation"]
+    ],
+    "setTechNotes",
+    TestID -> "EditSymbolPacletDocumentation-SetTechNotes-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1301,1-1314,2"
+]
+
+(* Test setTechNotes operation - verify links are created *)
+VerificationTest[
+    Module[{env, nb, buttonBoxes},
+        env = createEditTestEnvironment[];
+        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setTechNotes",
+            "content" -> "[Updated Tech Note](paclet:TestPaclet/tutorial/UpdatedTech)"
+        |>];
+        nb = Import[env["notebookPath"], "NB"];
+        buttonBoxes = Cases[nb, ButtonBox["Updated Tech Note", ___], Infinity];
+        cleanupEditTestEnvironment[env];
+        Length[buttonBoxes] >= 1
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-SetTechNotes-VerifyLinks@@Tests/PacletDocumentationToolsTest.wlt:1317,1-1332,2"
+]
+
+(* Test setRelatedGuides operation - basic functionality *)
+VerificationTest[
+    Module[{env, result},
+        env = createEditTestEnvironment[];
+        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setRelatedGuides",
+            "content" -> "[New Guide 1](paclet:TestPaclet/guide/NewGuide1)\n[New Guide 2](paclet:TestPaclet/guide/NewGuide2)"
+        |>];
+        cleanupEditTestEnvironment[env];
+        result["operation"]
+    ],
+    "setRelatedGuides",
+    TestID -> "EditSymbolPacletDocumentation-SetRelatedGuides-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1335,1-1348,2"
+]
+
+(* Test setRelatedGuides operation - verify links are created *)
+VerificationTest[
+    Module[{env, nb, buttonBoxes},
+        env = createEditTestEnvironment[];
+        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setRelatedGuides",
+            "content" -> "[Updated Guide](paclet:TestPaclet/guide/UpdatedGuide)"
+        |>];
+        nb = Import[env["notebookPath"], "NB"];
+        buttonBoxes = Cases[nb, ButtonBox["Updated Guide", ___], Infinity];
+        cleanupEditTestEnvironment[env];
+        Length[buttonBoxes] >= 1
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-SetRelatedGuides-VerifyLinks@@Tests/PacletDocumentationToolsTest.wlt:1351,1-1366,2"
+]
+
+(* Test setRelatedLinks operation - basic functionality *)
+VerificationTest[
+    Module[{env, result},
+        env = createEditTestEnvironment[];
+        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setRelatedLinks",
+            "content" -> "[New External Link](https://new.example.com)\n[Another Link](https://another.example.com)"
+        |>];
+        cleanupEditTestEnvironment[env];
+        result["operation"]
+    ],
+    "setRelatedLinks",
+    TestID -> "EditSymbolPacletDocumentation-SetRelatedLinks-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1369,1-1382,2"
+]
+
+(* Test setRelatedLinks operation - verify hyperlinks are created *)
+VerificationTest[
+    Module[{env, nb, buttonBoxes},
+        env = createEditTestEnvironment[];
+        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setRelatedLinks",
+            "content" -> "[Updated External](https://updated.example.com)"
+        |>];
+        nb = Import[env["notebookPath"], "NB"];
+        buttonBoxes = Cases[nb, ButtonBox["Updated External", BaseStyle -> "Hyperlink", ___], Infinity];
+        cleanupEditTestEnvironment[env];
+        Length[buttonBoxes] >= 1
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-SetRelatedLinks-VerifyHyperlinks@@Tests/PacletDocumentationToolsTest.wlt:1385,1-1400,2"
+]
+
+(* Test setKeywords operation - basic functionality *)
+VerificationTest[
+    Module[{env, result},
+        env = createEditTestEnvironment[];
+        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setKeywords",
+            "content" -> "new, keywords, updated, test"
+        |>];
+        cleanupEditTestEnvironment[env];
+        result["operation"]
+    ],
+    "setKeywords",
+    TestID -> "EditSymbolPacletDocumentation-SetKeywords-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1403,1-1416,2"
+]
+
+(* Test setKeywords operation - verify keywords cells are updated *)
+VerificationTest[
+    Module[{env, nb, keywordsCells},
+        env = createEditTestEnvironment[];
+        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setKeywords",
+            "content" -> "alpha, beta, gamma"
+        |>];
+        nb = Import[env["notebookPath"], "NB"];
+        keywordsCells = Cases[nb, Cell[content_String, "Keywords", ___] :> content, Infinity];
+        cleanupEditTestEnvironment[env];
+        MemberQ[keywordsCells, "alpha"] && MemberQ[keywordsCells, "beta"] && MemberQ[keywordsCells, "gamma"]
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-SetKeywords-VerifyKeywords@@Tests/PacletDocumentationToolsTest.wlt:1419,1-1434,2"
+]
+
+(* Test setHistory operation - basic functionality *)
+VerificationTest[
+    Module[{env, result},
+        env = createEditTestEnvironment[];
+        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setHistory",
+            "content" -> "new:2.0, modified:2.5"
+        |>];
+        cleanupEditTestEnvironment[env];
+        result["operation"]
+    ],
+    "setHistory",
+    TestID -> "EditSymbolPacletDocumentation-SetHistory-BasicFunctionality@@Tests/PacletDocumentationToolsTest.wlt:1437,1-1450,2"
+]
+
+(* Test setHistory operation - verify version number is present *)
+VerificationTest[
+    Module[{env, nb, historyData},
+        env = createEditTestEnvironment[];
+        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setHistory",
+            "content" -> "new:3.0, modified:3.5, obsolete:4.0"
+        |>];
+        nb = Import[env["notebookPath"], "NB"];
+        (* Check for version numbers in the notebook *)
+        historyData = Cases[nb, "3.0" | "3.5" | "4.0", Infinity];
+        cleanupEditTestEnvironment[env];
+        Length[historyData] >= 3
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-SetHistory-VerifyVersions@@Tests/PacletDocumentationToolsTest.wlt:1453,1-1469,2"
+]
+
+(* Test that file path is returned correctly *)
+VerificationTest[
+    Module[{env, result},
+        env = createEditTestEnvironment[];
+        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setSeeAlso",
+            "content" -> "Plus"
+        |>];
+        cleanupEditTestEnvironment[env];
+        StringQ[result["file"]] && StringEndsQ[result["file"], ".nb"]
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-ReturnsFilePath@@Tests/PacletDocumentationToolsTest.wlt:1472,1-1485,2"
+]
+
+(* Test error: invalid operation *)
+VerificationTest[
+    Module[{env, result},
+        env = createEditTestEnvironment[];
+        result = Quiet[
+            Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+                "notebook" -> env["notebookPath"],
+                "operation" -> "invalidOperation",
+                "content" -> "test"
+            |>],
+            { MCPServer::InvalidOperation, MCPServer::Internal }
+        ];
+        cleanupEditTestEnvironment[env];
+        FailureQ[result]
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-ErrorInvalidOperation@@Tests/PacletDocumentationToolsTest.wlt:1488,1-1504,2"
+]
+
+(* Test error: notebook not found *)
+VerificationTest[
+    Module[{result},
+        result = Quiet[
+            Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+                "notebook" -> "C:\\nonexistent\\path\\to\\notebook.nb",
+                "operation" -> "setSeeAlso",
+                "content" -> "Plus"
+            |>],
+            { MCPServer::NotebookNotFound, MCPServer::Internal, Import::nffil }
+        ];
+        FailureQ[result]
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-ErrorNotebookNotFound@@Tests/PacletDocumentationToolsTest.wlt:1507,1-1521,2"
+]
+
+(* Test setUsage with single usage case *)
+VerificationTest[
+    Module[{env, result, nb, usageCells},
+        env = createEditTestEnvironment[];
+        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setUsage",
+            "content" -> "- `EditTestFunc[singleArg]` performs a single operation on *singleArg*."
+        |>];
+        nb = Import[env["notebookPath"], "NB"];
+        usageCells = Cases[nb, Cell[_, "Usage", ___], Infinity];
+        cleanupEditTestEnvironment[env];
+        Length[usageCells] >= 1 && result["operation"] === "setUsage"
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-SetUsage-SingleCase@@Tests/PacletDocumentationToolsTest.wlt:1524,1-1539,2"
+]
+
+(* Test setNotes with empty string creates placeholder *)
+VerificationTest[
+    Module[{env, nb, notesCells},
+        env = createEditTestEnvironment[];
+        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setNotes",
+            "content" -> ""
+        |>];
+        nb = Import[env["notebookPath"], "NB"];
+        notesCells = Cases[nb, Cell["XXXX", "Notes", ___], Infinity];
+        cleanupEditTestEnvironment[env];
+        Length[notesCells] >= 1
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-SetNotes-EmptyCreatesPlaceholder@@Tests/PacletDocumentationToolsTest.wlt:1542,1-1557,2"
+]
+
+(* Test setSeeAlso with empty string creates placeholder *)
+VerificationTest[
+    Module[{env, nb, placeholderCells},
+        env = createEditTestEnvironment[];
+        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setSeeAlso",
+            "content" -> ""
+        |>];
+        nb = Import[env["notebookPath"], "NB"];
+        (* Look for placeholder in SeeAlso section *)
+        placeholderCells = Cases[nb, FrameBox["\"XXXX\"", ___], Infinity];
+        cleanupEditTestEnvironment[env];
+        Length[placeholderCells] >= 1
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-SetSeeAlso-EmptyCreatesPlaceholder@@Tests/PacletDocumentationToolsTest.wlt:1560,1-1576,2"
+]
+
+(* Test setSeeAlso with comma-separated symbols on same line *)
+VerificationTest[
+    Module[{env, nb, buttonBoxes},
+        env = createEditTestEnvironment[];
+        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setSeeAlso",
+            "content" -> "Alpha, Beta, Gamma, Delta"
+        |>];
+        nb = Import[env["notebookPath"], "NB"];
+        buttonBoxes = Cases[nb, ButtonBox["Alpha" | "Beta" | "Gamma" | "Delta", ___], Infinity];
+        cleanupEditTestEnvironment[env];
+        Length[buttonBoxes] >= 4
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-SetSeeAlso-CommaSeparated@@Tests/PacletDocumentationToolsTest.wlt:1579,1-1594,2"
+]
+
+(* Test setKeywords with newline-separated keywords *)
+VerificationTest[
+    Module[{env, nb, keywordsCells},
+        env = createEditTestEnvironment[];
+        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setKeywords",
+            "content" -> "keyword1\nkeyword2\nkeyword3"
+        |>];
+        nb = Import[env["notebookPath"], "NB"];
+        keywordsCells = Cases[nb, Cell[content_String, "Keywords", ___] :> content, Infinity];
+        cleanupEditTestEnvironment[env];
+        MemberQ[keywordsCells, "keyword1"] && MemberQ[keywordsCells, "keyword2"] && MemberQ[keywordsCells, "keyword3"]
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-SetKeywords-NewlineSeparated@@Tests/PacletDocumentationToolsTest.wlt:1597,1-1612,2"
+]
+
+(* Test setTechNotes with empty string creates placeholder *)
+VerificationTest[
+    Module[{env, nb, placeholderCells},
+        env = createEditTestEnvironment[];
+        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setTechNotes",
+            "content" -> ""
+        |>];
+        nb = Import[env["notebookPath"], "NB"];
+        placeholderCells = Cases[nb, Cell["XXXX", "Tutorials", ___], Infinity];
+        cleanupEditTestEnvironment[env];
+        Length[placeholderCells] >= 1
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-SetTechNotes-EmptyCreatesPlaceholder@@Tests/PacletDocumentationToolsTest.wlt:1615,1-1630,2"
+]
+
+(* Test setRelatedGuides with empty string creates placeholder *)
+VerificationTest[
+    Module[{env, nb, placeholderCells},
+        env = createEditTestEnvironment[];
+        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setRelatedGuides",
+            "content" -> ""
+        |>];
+        nb = Import[env["notebookPath"], "NB"];
+        placeholderCells = Cases[nb, Cell["XXXX", "MoreAbout", ___], Infinity];
+        cleanupEditTestEnvironment[env];
+        Length[placeholderCells] >= 1
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-SetRelatedGuides-EmptyCreatesPlaceholder@@Tests/PacletDocumentationToolsTest.wlt:1633,1-1648,2"
+]
+
+(* Test setRelatedLinks with empty string creates placeholder *)
+VerificationTest[
+    Module[{env, nb, placeholderCells},
+        env = createEditTestEnvironment[];
+        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setRelatedLinks",
+            "content" -> ""
+        |>];
+        nb = Import[env["notebookPath"], "NB"];
+        placeholderCells = Cases[nb, Cell["XXXX", "RelatedLinks", ___], Infinity];
+        cleanupEditTestEnvironment[env];
+        Length[placeholderCells] >= 1
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-SetRelatedLinks-EmptyCreatesPlaceholder@@Tests/PacletDocumentationToolsTest.wlt:1651,1-1666,2"
+]
+
+(* Test setKeywords with empty string creates placeholder *)
+VerificationTest[
+    Module[{env, nb, placeholderCells},
+        env = createEditTestEnvironment[];
+        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setKeywords",
+            "content" -> ""
+        |>];
+        nb = Import[env["notebookPath"], "NB"];
+        placeholderCells = Cases[nb, Cell["XXXX", "Keywords", ___], Infinity];
+        cleanupEditTestEnvironment[env];
+        Length[placeholderCells] >= 1
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-SetKeywords-EmptyCreatesPlaceholder@@Tests/PacletDocumentationToolsTest.wlt:1669,1-1684,2"
+]
+
+(* Test setHistory with only 'new' field *)
+VerificationTest[
+    Module[{env, result},
+        env = createEditTestEnvironment[];
+        result = Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setHistory",
+            "content" -> "new:5.0"
+        |>];
+        cleanupEditTestEnvironment[env];
+        result["operation"] === "setHistory"
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-SetHistory-OnlyNewField@@Tests/PacletDocumentationToolsTest.wlt:1687,1-1700,2"
+]
+
+(* Test multiple sequential operations on same notebook *)
+VerificationTest[
+    Module[{env, nb, seeAlsoButtons, keywordsCells},
+        env = createEditTestEnvironment[];
+        (* Perform multiple operations *)
+        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setSeeAlso",
+            "content" -> "SequentialSymbol1, SequentialSymbol2"
+        |>];
+        Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation[<|
+            "notebook" -> env["notebookPath"],
+            "operation" -> "setKeywords",
+            "content" -> "sequential, test, keywords"
+        |>];
+        nb = Import[env["notebookPath"], "NB"];
+        seeAlsoButtons = Cases[nb, ButtonBox["SequentialSymbol1" | "SequentialSymbol2", ___], Infinity];
+        keywordsCells = Cases[nb, Cell[content_String, "Keywords", ___] :> content, Infinity];
+        cleanupEditTestEnvironment[env];
+        Length[seeAlsoButtons] >= 2 && MemberQ[keywordsCells, "sequential"]
+    ],
+    True,
+    TestID -> "EditSymbolPacletDocumentation-MultipleSequentialOperations@@Tests/PacletDocumentationToolsTest.wlt:1703,1-1725,2"
+]
