@@ -24,6 +24,7 @@ Needs[ "Wolfram`MCPServer`Common`" ];
     - Add optional "description" parameter to evaluator tool (maybe all tools?)
     - Support setting sandbox directory for evaluator tool via environment variable
     - Support image outputs from tools according to MCP spec
+    - A RestartMCPServer tool? Is this possible?
 *)
 
 (* ::**************************************************************************************************************:: *)
