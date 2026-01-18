@@ -291,7 +291,7 @@ parseSingleUsageLine[ line_String ] := Enclose[
             StartOfString ~~ "`" ~~ Except[ "`" ].. ~~ "`" ~~ Whitespace... -> ""
         ];
 
-        (* Remove leading "- " or "– " if present after syntax *)
+        (* Remove leading "- " if present after syntax *)
         description = StringTrim @ StringReplace[ rest, StartOfString ~~ ("-" | "\[Dash]" | "\[LongDash]") ~~ Whitespace... -> "" ];
 
         <| "syntax" -> syntax, "description" -> description |>
@@ -680,10 +680,10 @@ generateExampleCells[ context_String, markdown_String ] := Enclose[
         (* Generate cells for each group *)
         groupCells = generateExampleGroup[ context, StringTrim @ # ] & /@ groups;
 
-        (* Add delimiters between groups (not after the last one) *)
+        (* Add delimiters between groups *)
         cells = If[ Length @ groupCells <= 1,
             Flatten @ groupCells,
-            Flatten @ Most @ Riffle[ groupCells, { { exampleDelimiterCell[ ] } } ]
+            Flatten @ Riffle[ groupCells, { { exampleDelimiterCell[ ] } } ]
         ];
 
         ConfirmMatch[ cells, { ___Cell }, "Cells" ]
@@ -699,19 +699,12 @@ generateExampleCells // endDefinition;
 generateExampleGroup // beginDefinition;
 
 generateExampleGroup[ context_String, markdown_String ] := Enclose[
-    Module[ { notebook, importedCells, processedCells },
-        (* Use importMarkdownString to parse the markdown into cells *)
-        notebook = ConfirmMatch[
-            importMarkdownString[ markdown, "Notebook" ],
-            _Notebook,
-            "ImportedNotebook"
-        ];
+    Module[ { segments, processedCells },
+        (* Split markdown into text and code segments *)
+        segments = ConfirmMatch[ parseMarkdownSegments @ markdown, { ___Association }, "Segments" ];
 
-        (* Extract cells from the notebook *)
-        importedCells = First @ notebook;
-
-        (* Process cells to convert to example format and evaluate code *)
-        processedCells = Flatten @ processImportedCells[ context, importedCells ];
+        (* Process each segment *)
+        processedCells = Flatten[ processMarkdownSegment[ context, # ] & /@ segments ];
 
         ConfirmMatch[ processedCells, { ___Cell }, "Cells" ]
     ],
@@ -719,6 +712,141 @@ generateExampleGroup[ context_String, markdown_String ] := Enclose[
 ];
 
 generateExampleGroup // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*parseMarkdownSegments*)
+
+(* Triple backtick string for code fence matching - using StringRepeat to avoid escaping issues *)
+$tripleTick = StringRepeat[ FromCharacterCode @ 96, 3 ];
+
+parseMarkdownSegments // beginDefinition;
+
+(* Parse markdown into segments of text and code blocks *)
+parseMarkdownSegments[ markdown_String ] := Enclose[
+    Module[ { codeBlockPattern, parts, segments },
+        (* Pattern to match fenced code blocks with optional language identifier *)
+        codeBlockPattern = $tripleTick ~~ (LetterCharacter | "-")... ~~ "\n" ~~ Shortest[ ___ ] ~~ $tripleTick;
+
+        (* Split the markdown, keeping code blocks as separate elements *)
+        parts = StringSplit[ markdown, cb:codeBlockPattern :> cb ];
+
+        (* Convert each part to a segment association *)
+        segments = Flatten @ Map[
+            Function[ part,
+                If[ StringMatchQ[ part, $tripleTick ~~ ___ ~~ $tripleTick ],
+                    parseCodeBlock @ part,
+                    parseTextSegment @ part
+                ]
+            ],
+            parts
+        ];
+
+        (* Filter out empty segments *)
+        Select[ segments, #[ "content" ] =!= "" & ]
+    ],
+    throwInternalFailure
+];
+
+parseMarkdownSegments // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*parseCodeBlock*)
+parseCodeBlock // beginDefinition;
+
+parseCodeBlock[ block_String ] := Enclose[
+    Module[ { match },
+        (* Extract language and code from fenced code block *)
+        match = StringCases[
+            block,
+            $tripleTick ~~ lang:(LetterCharacter | "-")... ~~ "\n" ~~ code:Shortest[ ___ ] ~~ $tripleTick :>
+                <| "lang" -> lang, "code" -> code |>,
+            1
+        ];
+
+        If[ Length @ match === 0,
+            <| "type" -> "text", "content" -> block |>,
+            <| "type" -> "code", "content" -> StringTrim @ match[[1, "code"]], "lang" -> match[[1, "lang"]] |>
+        ]
+    ],
+    throwInternalFailure
+];
+
+parseCodeBlock // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*parseTextSegment*)
+parseTextSegment // beginDefinition;
+
+parseTextSegment[ text_String ] :=
+    If[ StringTrim @ text === "",
+        { },
+        { <| "type" -> "text", "content" -> StringTrim @ text |> }
+    ];
+
+parseTextSegment // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*processMarkdownSegment*)
+processMarkdownSegment // beginDefinition;
+
+processMarkdownSegment[ context_String, segment_Association ] :=
+    Switch[ segment[ "type" ],
+        "code",
+            generateInputOutputCells[ context, segment[ "content" ], "Code" ],
+        "text",
+            processTextSegmentContent[ context, segment[ "content" ] ],
+        _,
+            { }
+    ];
+
+processMarkdownSegment // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*processTextSegmentContent*)
+processTextSegmentContent // beginDefinition;
+
+processTextSegmentContent[ context_String, content_String ] := Enclose[
+    Module[ { notebook, cells },
+        (* Use importMarkdownString for text content *)
+        notebook = ConfirmMatch[
+            importMarkdownString[ content, "Notebook" ],
+            _Notebook,
+            "NotebookImport"
+        ];
+
+        cells = First @ notebook;
+        Flatten @ Map[ convertToExampleTextCell, cells ]
+    ],
+    throwInternalFailure
+];
+
+processTextSegmentContent // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*convertToExampleTextCell*)
+convertToExampleTextCell // beginDefinition;
+
+convertToExampleTextCell[ Cell[ content_, "Text", ___ ] ] :=
+    { Cell[ content, "ExampleText", CellID -> generateCellID[ ] ] };
+
+convertToExampleTextCell[ Cell[ content_String, style_, ___ ] ] :=
+    If[ StringTrim @ content =!= "",
+        { Cell[ content, "ExampleText", CellID -> generateCellID[ ] ] },
+        { }
+    ];
+
+convertToExampleTextCell[ Cell[ TextData[ content_ ], style_, ___ ] ] :=
+    { Cell[ TextData @ content, "ExampleText", CellID -> generateCellID[ ] ] };
+
+convertToExampleTextCell[ _ ] := { };
+
+convertToExampleTextCell // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)

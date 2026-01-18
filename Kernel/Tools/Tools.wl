@@ -14,6 +14,16 @@ Needs[ "Wolfram`MCPServer`Common`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*TODO*)
+(*
+    - CodeInspector tool
+    - BuildPaclet tool
+    - ReloadPaclet tool
+    - Log tool calls (and generate a notebook)
+*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Default Tools*)
 $DefaultMCPTools := WithCleanup[
     Unprotect @ $DefaultMCPTools,

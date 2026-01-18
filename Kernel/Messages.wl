@@ -34,5 +34,7 @@ MCPServer::UnsupportedOperatingSystem    = "Unsupported operating system: `1`.";
 MCPServer::NotebookFileExists            = "Notebook already exists: `1`.";
 MCPServer::InvalidOperation              = "Unknown operation: `1`.";
 MCPServer::NotebookNotFound              = "Notebook not found: `1`.";
+MCPServer::EmptyUsage                    = "Usage parameter cannot be empty. Provide at least one usage case.";
+MCPServer::InvalidUsageFormat            = "Invalid usage format: `1`. Expected bullet points with syntax in backticks.";
 
 EndPackage[ ];
