@@ -754,15 +754,15 @@ insertExampleCellsInSection // beginDefinition;
 
 (* Map section names to their identifiers in the notebook *)
 $sectionNameMap = <|
-    "BasicExamples"            -> "Basic Examples",
-    "Scope"                    -> "Scope",
+    "BasicExamples"             -> "Basic Examples",
+    "Scope"                     -> "Scope",
     "GeneralizationsExtensions" -> "Generalizations & Extensions",
-    "Options"                  -> "Options",
-    "Applications"             -> "Applications",
-    "PropertiesRelations"      -> "Properties & Relations",
-    "PossibleIssues"           -> "Possible Issues",
-    "InteractiveExamples"      -> "Interactive Examples",
-    "NeatExamples"             -> "Neat Examples"
+    "Options"                   -> "Options",
+    "Applications"              -> "Applications",
+    "PropertiesRelations"       -> "Properties & Relations",
+    "PossibleIssues"            -> "Possible Issues",
+    "InteractiveExamples"       -> "Interactive Examples",
+    "NeatExamples"              -> "Neat Examples"
 |>;
 
 insertExampleCellsInSection[ cells_List, sectionName_String, newCells_List, mode_String, subsection_ ] := Enclose[
