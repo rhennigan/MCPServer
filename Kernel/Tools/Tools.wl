@@ -38,6 +38,8 @@ $DefaultMCPTools := WithCleanup[
     Protect @ $DefaultMCPTools
 ];
 
+(* $defaultMCPTools is an Association mapping tool names to LLMTool definitions. *)
+(* Tool definitions are added in subcontext files loaded below.                  *)
 $defaultMCPTools = <| |>;
 
 (* ::**************************************************************************************************************:: *)

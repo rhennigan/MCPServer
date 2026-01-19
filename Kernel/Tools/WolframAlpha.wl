@@ -34,6 +34,7 @@ $wolframAlphaToolQueryHelp = "The query to send to Wolfram|Alpha.";
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Tool Definition*)
+(* Add to $defaultMCPTools Association (initialized in Kernel/Tools/Tools.wl) *)
 $defaultMCPTools[ "WolframAlpha" ] := LLMTool @ <|
     "Name"        -> "WolframAlpha",
     "DisplayName" -> "Wolfram|Alpha",

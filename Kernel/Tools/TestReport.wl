@@ -31,6 +31,7 @@ TestReportToolFunction // endExportedDefinition;
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Tool Definition*)
+(* Add to $defaultMCPTools Association (initialized in Kernel/Tools/Tools.wl) *)
 $defaultMCPTools[ "TestReport" ] := LLMTool @ <|
     "Name"        -> "TestReport",
     "DisplayName" -> "Test Report",

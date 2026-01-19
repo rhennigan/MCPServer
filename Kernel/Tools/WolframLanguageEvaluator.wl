@@ -41,6 +41,7 @@ Use the markdown image in your response to show them.</system-reminder>";
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Tool Definition*)
+(* Add to $defaultMCPTools Association (initialized in Kernel/Tools/Tools.wl) *)
 $defaultMCPTools[ "WolframLanguageEvaluator" ] := LLMTool @ <|
     "Name"        -> "WolframLanguageEvaluator",
     "DisplayName" -> "Wolfram Language Evaluator",

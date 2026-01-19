@@ -30,6 +30,8 @@ Returns the generated content as markdown for verification.";
 (* ::Section::Closed:: *)
 (*Tool Definitions*)
 
+(* Add to $defaultMCPTools Association (initialized in Kernel/Tools/Tools.wl) *)
+
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*CreateSymbolPacletDocumentation*)

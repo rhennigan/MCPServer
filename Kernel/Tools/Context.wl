@@ -57,6 +57,8 @@ $snippetTemplate = StringTemplate[ "<result url='`URI`'>\n\n`Text`\n\n</result>"
 (* ::Section::Closed:: *)
 (*Tool Definitions*)
 
+(* Add to $defaultMCPTools Association (initialized in Kernel/Tools/Tools.wl) *)
+
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*WolframContext*)
