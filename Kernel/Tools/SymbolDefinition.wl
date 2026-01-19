@@ -194,10 +194,9 @@ validateSymbolName // endDefinition;
 (*symbolExistsQ*)
 symbolExistsQ // beginDefinition;
 
-symbolExistsQ[ name_String ] := Module[ { context, short },
-    { context, short } = splitSymbolName @ name;
-    MemberQ[ Names[ context <> "*" ], short ]
-];
+(* Names works for both qualified and unqualified symbol names,
+   using $ContextPath for unqualified names *)
+symbolExistsQ[ name_String ] := Names[ name ] =!= {};
 
 symbolExistsQ // endDefinition;
 
