@@ -10,6 +10,8 @@ Needs[ "Wolfram`MCPServer`Tools`"  ];
 
 Needs[ "Wolfram`Chatbook`" -> "cb`" ];
 
+System`HoldCompleteForm;
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Config*)
@@ -184,6 +186,114 @@ exportImage[ expr_ ] := Enclose[
 ];
 
 exportImage // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Utilities*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*useEvaluatorKernel*)
+useEvaluatorKernel // beginDefinition;
+useEvaluatorKernel // Attributes = { HoldAllComplete };
+
+(* Used for evaluations that need to be run in the same kernel as the evaluator tool (e.g. symbol definitions) *)
+useEvaluatorKernel[ eval_ ] :=
+    If[ $evaluatorMethod === "Local",
+        evaluateInLocalKernel @ eval,
+        eval
+    ];
+
+useEvaluatorKernel // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*evaluateInLocalKernel*)
+
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
+(* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
+
+evaluateInLocalKernel // beginDefinition;
+
+evaluateInLocalKernel[ eval_ ] :=
+    Block[ (* FIXME: Expose this as an option in WolframLanguageToolEvaluate *)
+        { Wolfram`Chatbook`Sandbox`Private`$includeDefinitions = False },
+        evaluateInLocalKernel0 @ eval
+    ];
+
+evaluateInLocalKernel // endDefinition;
+
+
+evaluateInLocalKernel0 // beginDefinition;
+evaluateInLocalKernel0 // Attributes = { HoldAllComplete };
+
+evaluateInLocalKernel0[ eval_ ] := Enclose[
+    Module[ { heldResult, result },
+        ConfirmMatch[ initializePacletInLocalKernel[ ], Null, "InitializePacletInLocalKernel" ];
+
+        heldResult = cb`WolframLanguageToolEvaluate[
+            HoldComplete @ WithCleanup[
+
+                Block[ { $catching = True },
+                    (* Since this is in another kernel, thrown errors won't propagate back to the top-level,
+                        so we need to catch and identify them here to send them to the top if needed. *)
+                    Catch[ eval, _, caughtWrapper ]
+                ],
+
+                (* Roll back the line number, since this isn't part of a tool evaluation *)
+                $Line--
+            ],
+            "Result",
+            "Method" -> "Local"
+        ];
+
+        result = Replace[
+            heldResult,
+            {
+                (* Throw failures to the top-level *)
+                (HoldForm|HoldCompleteForm)[ caughtWrapper[ failure_Failure, $catchTopTag ] ] :> throwFailure @ failure,
+                (* Otherwise, release the hold *)
+                (HoldForm|HoldCompleteForm)[ r_ ] :> r
+            }
+        ];
+
+        result
+    ],
+    throwInternalFailure
+];
+
+evaluateInLocalKernel0 // endDefinition;
+
+caughtWrapper // Attributes = { HoldAllComplete };
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*initializePacletInLocalKernel*)
+initializePacletInLocalKernel // beginDefinition;
+
+initializePacletInLocalKernel[ ] := Enclose[
+    Module[ { pacletDir, result },
+        pacletDir = ConfirmMatch[ $thisPaclet[ "Location" ], _? DirectoryQ, "PacletDir" ];
+
+        result = cb`WolframLanguageToolEvaluate[
+            HoldComplete @ WithCleanup[
+                PacletDirectoryLoad @ pacletDir;
+                Block[ { $ContextPath }, Get[ "Wolfram`MCPServer`" ] ],
+                $Line--
+            ],
+            "Result",
+            "Method" -> "Local"
+        ];
+
+        initializePacletInLocalKernel[ ] = ConfirmMatch[ ReleaseHold @ result, Null, "Result" ]
+    ],
+    throwInternalFailure
+];
+
+initializePacletInLocalKernel // endDefinition;
+
+(* :!CodeAnalysis::EndBlock:: *)
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

@@ -67,8 +67,13 @@ $defaultMCPTools[ "SymbolDefinition" ] := LLMTool @ <|
 (* ::Subsection::Closed:: *)
 (*getSymbolDefinition*)
 getSymbolDefinition // beginDefinition;
+getSymbolDefinition[ args_ ] := useEvaluatorKernel @ getSymbolDefinition0 @ args;
+getSymbolDefinition // endDefinition;
 
-getSymbolDefinition[ KeyValuePattern @ {
+
+getSymbolDefinition0 // beginDefinition;
+
+getSymbolDefinition0[ KeyValuePattern @ {
     "symbols"               -> symbols_String,
     "includeContextDetails" -> includeContextDetails0_,
     "maxLength"             -> maxLength0_
@@ -97,7 +102,7 @@ getSymbolDefinition[ KeyValuePattern @ {
     throwInternalFailure
 ];
 
-getSymbolDefinition // endDefinition;
+getSymbolDefinition0 // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

@@ -6,6 +6,7 @@ BeginPackage[ "Wolfram`MCPServer`Tools`" ];
 `$defaultMCPTools;
 `exportMarkdownString;
 `importMarkdownString;
+`useEvaluatorKernel;
 
 Begin[ "`Private`" ];
 
