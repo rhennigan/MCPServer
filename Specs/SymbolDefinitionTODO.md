@@ -267,6 +267,51 @@ If you have to work through any surprising issues, add notes to the end of this 
 - [ ] Code review for style consistency with codebase patterns
 - [ ] Check error messages are defined in `Kernel/Messages.wl` if needed
 
+## 17. Attributes Issue
+
+The output doesn't display attributes correctly:
+
+````wl
+In[14]:= $DefaultMCPTools["SymbolDefinition"][<|"symbols" -> "System`Table"|>]
+
+Out[14]= "# Table
+
+## Definition
+
+```wl
+{HoldAll, Protected}
+
+Table[___] := \"<kernel function>\"
+```"
+````
+
+The attributes should be written like:
+```wl
+Attributes[Table] = {HoldAll, Protected}
+```
+
+This might actually be a symptom of the evaluation leak issue below.
+
+- [ ] Fix the issue with attributes being displayed incorrectly
+- [ ] Add a test to verify the attributes are displayed correctly
+
+## 18. Critical Issue: Evaluation Leak
+
+```wl
+In[17]:= $testing := Echo["evaluated!"]
+
+In[18]:= $DefaultMCPTools["SymbolDefinition"][<|"symbols" -> "Global`$testing"|>]
+
+>> "evaluated!"
+
+Out[18]= "# $testing
+
+No definitions found"
+```
+
+- [ ] Fix the issue with the evaluation leak
+- [ ] Add a test to verify the evaluation leak is fixed
+
 ---
 
 ## Notes
