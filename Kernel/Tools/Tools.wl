@@ -26,6 +26,7 @@ Needs[ "Wolfram`MCPServer`Common`" ];
     - Support image outputs from tools according to MCP spec
     - A RestartMCPServer tool? Is this possible?
     - A tool to open notebooks for the user, e.g. UsingFrontEnd[SystemOpen[notebookPath]]?
+    - Group similar tools into groups and have another tool to activate them when needed to save on token usage
 *)
 
 (* ::**************************************************************************************************************:: *)
@@ -57,6 +58,9 @@ $subcontexts = {
 
     (* Tools: CreateSymbolPacletDocumentation, EditSymbolPacletDocumentation *)
     "Wolfram`MCPServer`Tools`PacletDocumentation`",
+
+    (* Tools: SymbolDefinition *)
+    "Wolfram`MCPServer`Tools`SymbolDefinition`",
 
     (* Tools: TestReport *)
     "Wolfram`MCPServer`Tools`TestReport`",

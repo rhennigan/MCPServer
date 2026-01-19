@@ -1,19 +1,21 @@
 # SymbolDefinition Tool - Implementation TODO
 
-This checklist tracks all tasks needed to fully implement and test the `SymbolDefinition` tool as specified in `SymbolDefinition.md`.
+This checklist tracks all tasks needed to fully implement and test the `SymbolDefinition` tool as specified in `Specs/SymbolDefinition.md`. Edit this file as needed to track your progress.
+
+If you have to work through any surprising issues, add notes to the end of this file to document what you've learned. This will help resume work from where you left off.
 
 ---
 
 ## 1. Project Setup
 
-- [ ] Create `Kernel/Tools/SymbolDefinition.wl` file with package header
-- [ ] Add context to `$subcontexts` in `Kernel/Tools/Tools.wl`:
+- [x] Create `Kernel/Tools/SymbolDefinition.wl` file with package header
+- [x] Add context to `$subcontexts` in `Kernel/Tools/Tools.wl`:
   ```wl
   (* Tools: SymbolDefinition *)
   "Wolfram`MCPServer`Tools`SymbolDefinition`"
   ```
-- [ ] Add `"ReadableForm"` version to `$resourceVersions` in `Kernel/Common.wl`
-- [ ] Import required resource function:
+- [x] Add `"ReadableForm"` version to `$resourceVersions` in `Kernel/Common.wl`
+- [x] Import required resource function:
   ```wl
   importResourceFunction[ readableForm, "ReadableForm" ];
   ```
@@ -22,164 +24,164 @@ This checklist tracks all tasks needed to fully implement and test the `SymbolDe
 
 ## 2. Tool Definition
 
-- [ ] Define `$symbolDefinitionToolDescription` string
-- [ ] Define `$defaultMCPTools["SymbolDefinition"]` with `LLMTool`:
-  - [ ] `"Name"` -> `"SymbolDefinition"`
-  - [ ] `"DisplayName"` -> `"Symbol Definition"`
-  - [ ] `"Description"` -> `$symbolDefinitionToolDescription`
-  - [ ] `"Function"` -> `getSymbolDefinition`
-  - [ ] `"Parameters"`:
-    - [ ] `"symbols"` (String, Required)
-    - [ ] `"includeContextDetails"` (Boolean, Optional, default: `false`)
-    - [ ] `"maxLength"` (Integer, Optional, default: `10000`)
+- [x] Define `$symbolDefinitionToolDescription` string
+- [x] Define `$defaultMCPTools["SymbolDefinition"]` with `LLMTool`:
+  - [x] `"Name"` -> `"SymbolDefinition"`
+  - [x] `"DisplayName"` -> `"Symbol Definition"`
+  - [x] `"Description"` -> `$symbolDefinitionToolDescription`
+  - [x] `"Function"` -> `getSymbolDefinition`
+  - [x] `"Parameters"`:
+    - [x] `"symbols"` (String, Required)
+    - [x] `"includeContextDetails"` (Boolean, Optional, default: `false`)
+    - [x] `"maxLength"` (Integer, Optional, default: `10000`)
 
 ---
 
 ## 3. Input Parsing
 
-- [ ] Implement `parseSymbolNames` function:
-  - [ ] Split input string on commas
-  - [ ] Trim whitespace from each symbol name
-  - [ ] Return list of symbol name strings
+- [x] Implement `parseSymbolNames` function:
+  - [x] Split input string on commas
+  - [x] Trim whitespace from each symbol name
+  - [x] Return list of symbol name strings
 
 ---
 
 ## 4. Symbol Validation
 
-- [ ] Implement `validateSymbolName` function:
-  - [ ] Use ``Internal`SymbolNameQ[name, True]`` to validate fully qualified names
-  - [ ] Return validation result (valid/invalid)
-- [ ] Implement `symbolExistsQ` function:
-  - [ ] Check if symbol name corresponds to an existing symbol
-  - [ ] Handle case where symbol doesn't exist in any context
+- [x] Implement `validateSymbolName` function:
+  - [x] Use ``Internal`SymbolNameQ[name, True]`` to validate fully qualified names
+  - [x] Return validation result (valid/invalid)
+- [x] Implement `symbolExistsQ` function:
+  - [x] Check if symbol name corresponds to an existing symbol
+  - [x] Handle case where symbol doesn't exist in any context
 
 ---
 
 ## 5. Attribute Checking
 
-- [ ] Implement `isLockedAndReadProtectedQ` function:
-  - [ ] Check if symbol has both `Locked` and `ReadProtected` attributes
-  - [ ] Return `True` if inaccessible, `False` otherwise
-- [ ] Implement `isReadProtectedQ` function:
-  - [ ] Check if symbol has `ReadProtected` attribute (but not `Locked`)
+- [x] Implement `isLockedAndReadProtectedQ` function:
+  - [x] Check if symbol has both `Locked` and `ReadProtected` attributes
+  - [x] Return `True` if inaccessible, `False` otherwise
+- [x] Implement `isReadProtectedQ` function:
+  - [x] Check if symbol has `ReadProtected` attribute (but not `Locked`)
 
 ---
 
 ## 6. Definition Extraction
 
-- [ ] Implement `extractDefinition` function:
-  - [ ] Use `Internal`InheritedBlock` to temporarily clear `ReadProtected`
-  - [ ] Convert `Definition[symbol]` to held expression:
+- [x] Implement `extractDefinition` function:
+  - [x] Use `Internal`InheritedBlock` to temporarily clear `ReadProtected`
+  - [x] Convert `Definition[symbol]` to held expression:
     ```wl
     ToExpression[ToString[Definition[symbol], InputForm], InputForm, HoldComplete]
     ```
-  - [ ] Remove `Null` entries from result
-  - [ ] Return held definition expression
+  - [x] Remove `Null` entries from result
+  - [x] Return held definition expression
 
 ---
 
 ## 7. Kernel Code Detection
 
-- [ ] Implement `getKernelCodeDefinitions` function:
-  - [ ] Check ``System`Private`HasDownCodeQ[symbol]``:
-    - [ ] If true, add `symbol[___] := <kernel function>`
-  - [ ] Check ``System`Private`HasOwnCodeQ[symbol]``:
-    - [ ] If true, add `symbol := <kernel function>`
-  - [ ] Check ``System`Private`HasSubCodeQ[symbol]``:
-    - [ ] If true, add `symbol[___][___] := <kernel function>`
-  - [ ] Check ``System`Private`HasUpCodeQ[symbol]``:
-    - [ ] If true, add `_[___, symbol, ___] := <kernel function>`
-  - [ ] Check ``System`Private`HasPrintCodeQ[symbol]``:
-    - [ ] If true, add `Format[symbol, _] := <kernel function>`
-  - [ ] Return list of kernel code placeholder definitions
+- [x] Implement `getKernelCodeDefinitions` function:
+  - [x] Check ``System`Private`HasDownCodeQ[symbol]``:
+    - [x] If true, add `symbol[___] := <kernel function>`
+  - [x] Check ``System`Private`HasOwnCodeQ[symbol]``:
+    - [x] If true, add `symbol := <kernel function>`
+  - [x] Check ``System`Private`HasSubCodeQ[symbol]``:
+    - [x] If true, add `symbol[___][___] := <kernel function>`
+  - [x] Check ``System`Private`HasUpCodeQ[symbol]``:
+    - [x] If true, add `_[___, symbol, ___] := <kernel function>`
+  - [x] Check ``System`Private`HasPrintCodeQ[symbol]``:
+    - [x] If true, add `Format[symbol, _] := <kernel function>`
+  - [x] Return list of kernel code placeholder definitions
 
 ---
 
 ## 8. Context Analysis
 
-- [ ] Implement `extractSymbolsFromDefinition` function:
-  - [ ] Use `Cases` to extract all atomic symbols from held definition
-  - [ ] Return list of `HoldForm[symbol]` entries
-- [ ] Implement `getContextsFromSymbols` function:
-  - [ ] Extract context from each symbol using `Context`
-  - [ ] Return list of unique contexts
-- [ ] Implement `buildOptimalContextPath` function:
-  - [ ] Combine contexts with `{"Global`", "System`"}`
-  - [ ] Remove duplicates and reverse order
-- [ ] Implement `generateContextMap` function:
-  - [ ] Group symbols by context
-  - [ ] Convert to JSON string format
+- [x] Implement `extractSymbolsFromDefinition` function:
+  - [x] Use `Cases` to extract all atomic symbols from held definition
+  - [x] Return list of `HoldForm[symbol]` entries
+- [x] Implement `getContextsFromSymbols` function:
+  - [x] Extract context from each symbol using `Context`
+  - [x] Return list of unique contexts
+- [x] Implement `buildOptimalContextPath` function:
+  - [x] Combine contexts with `{"Global`", "System`"}`
+  - [x] Remove duplicates and reverse order
+- [x] Implement `generateContextMap` function:
+  - [x] Group symbols by context
+  - [x] Convert to JSON string format
 
 ---
 
 ## 9. Readable Formatting
 
-- [ ] Implement `formatDefinitionReadable` function:
-  - [ ] Build optimal context path
-  - [ ] Use `Block` to set `$ContextPath` and `$Context`
-  - [ ] Apply `readableForm` (imported resource function) with `PageWidth -> 120`
-  - [ ] Wrap in `TimeConstrained` with 5-second timeout
-  - [ ] Return formatted string or `$TimedOut`
-- [ ] Implement `formatDefinitionFallback` function:
-  - [ ] Use standard `InputForm` conversion as fallback
-  - [ ] Apply same context path optimization
+- [x] Implement `formatDefinitionReadable` function:
+  - [x] Build optimal context path
+  - [x] Use `Block` to set `$ContextPath` and `$Context`
+  - [x] Apply `readableForm` (imported resource function) with `PageWidth -> 120`
+  - [x] Wrap in `TimeConstrained` with 5-second timeout
+  - [x] Return formatted string or `$TimedOut`
+- [x] Implement `formatDefinitionFallback` function:
+  - [x] Use standard `InputForm` conversion as fallback
+  - [x] Apply same context path optimization
 
 ---
 
 ## 10. Truncation
 
-- [ ] Implement `truncateIfNeeded` function:
-  - [ ] Check if string length exceeds `maxLength`
-  - [ ] If so, truncate and append: `... [truncated, showing {n}/{total} characters]`
-  - [ ] Return truncated or original string
+- [x] Implement `truncateIfNeeded` function:
+  - [x] Check if string length exceeds `maxLength`
+  - [x] If so, truncate and append: `... [truncated, showing {n}/{total} characters]`
+  - [x] Return truncated or original string
 
 ---
 
 ## 11. Output Formatting
 
-- [ ] Implement `formatSymbolOutput` function:
-  - [ ] Generate `# SymbolName` header
-  - [ ] Add `## Definition` section with code block
-  - [ ] Optionally add `## Contexts` section with JSON
-  - [ ] Handle error cases with appropriate messages
-- [ ] Implement `combineSymbolOutputs` function:
-  - [ ] Join individual symbol outputs with double newlines
-  - [ ] Return combined markdown string
+- [x] Implement `formatSymbolOutput` function:
+  - [x] Generate `# SymbolName` header
+  - [x] Add `## Definition` section with code block
+  - [x] Optionally add `## Contexts` section with JSON
+  - [x] Handle error cases with appropriate messages
+- [x] Implement `combineSymbolOutputs` function:
+  - [x] Join individual symbol outputs with double newlines
+  - [x] Return combined markdown string
 
 ---
 
 ## 12. Error Handling
 
-- [ ] Handle invalid symbol names:
-  - [ ] Return: `Error: Invalid symbol name "..."`
-- [ ] Handle non-existent symbols:
-  - [ ] Return: `Error: Symbol "..." does not exist`
-- [ ] Handle `Locked` + `ReadProtected` symbols:
-  - [ ] Return: `Error: SymbolName is \`Locked\` and \`ReadProtected\``
-- [ ] Handle symbols with no definitions:
-  - [ ] Return: `No definitions found`
-  - [ ] But still check for kernel code definitions
-- [ ] Handle `ReadableForm` timeout:
-  - [ ] Fall back to `InputForm` formatting
+- [x] Handle invalid symbol names:
+  - [x] Return: `Error: Invalid symbol name "..."`
+- [x] Handle non-existent symbols:
+  - [x] Return: `Error: Symbol "..." does not exist`
+- [x] Handle `Locked` + `ReadProtected` symbols:
+  - [x] Return: `Error: SymbolName is \`Locked\` and \`ReadProtected\``
+- [x] Handle symbols with no definitions:
+  - [x] Return: `No definitions found`
+  - [x] But still check for kernel code definitions
+- [x] Handle `ReadableForm` timeout:
+  - [x] Fall back to `InputForm` formatting
 
 ---
 
 ## 13. Main Entry Point
 
-- [ ] Implement `getSymbolDefinition` function:
-  - [ ] Parse `KeyValuePattern` for parameters
-  - [ ] Extract `symbols`, `includeContextDetails`, `maxLength` with defaults
-  - [ ] Parse symbol names from input string
-  - [ ] Process each symbol:
-    - [ ] Validate symbol name
-    - [ ] Check if symbol exists
-    - [ ] Check for Locked/ReadProtected
-    - [ ] Extract definition
-    - [ ] Detect kernel code
-    - [ ] Format output
-    - [ ] Apply truncation
-  - [ ] Combine all outputs
-  - [ ] Return final markdown string
+- [x] Implement `getSymbolDefinition` function:
+  - [x] Parse `KeyValuePattern` for parameters
+  - [x] Extract `symbols`, `includeContextDetails`, `maxLength` with defaults
+  - [x] Parse symbol names from input string
+  - [x] Process each symbol:
+    - [x] Validate symbol name
+    - [x] Check if symbol exists
+    - [x] Check for Locked/ReadProtected
+    - [x] Extract definition
+    - [x] Detect kernel code
+    - [x] Format output
+    - [x] Apply truncation
+  - [x] Combine all outputs
+  - [x] Return final markdown string
 
 ---
 
@@ -187,7 +189,7 @@ This checklist tracks all tasks needed to fully implement and test the `SymbolDe
 
 ### Unit Tests
 
-- [ ] Create `Tests/Tools/SymbolDefinition.wlt` test file
+- [x] Added tests to `Tests/Tools.wlt` (in the SymbolDefinition section)
 
 #### Input Parsing Tests
 - [ ] Test single symbol name parsing
@@ -280,7 +282,11 @@ This checklist tracks all tasks needed to fully implement and test the `SymbolDe
 
 ## Notes
 
-- Remember to use `beginDefinition`/`endDefinition` wrappers for all functions
-- Use `Enclose`/`Confirm` pattern for error handling in internal functions
-- Use `catchMine` for the main entry point function
-- Follow existing code style in `Kernel/Tools/` directory
+### Session 1 Progress (2026-01-19)
+
+**Files Created/Modified:**
+1. `Kernel/Tools/SymbolDefinition.wl` - Created with full implementation
+2. `Kernel/Tools/Tools.wl` - Added `"Wolfram`MCPServer`Tools`SymbolDefinition`"` to `$subcontexts`
+3. `Kernel/Common.wl` - Added `"ReadableForm" -> "1.0.0"` to `$resourceVersions`
+4. `Tests/Tools.wlt` - Added "SymbolDefinition" to expected keys and added test section
+
