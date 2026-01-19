@@ -135,7 +135,7 @@ processSymbol[ name_String, maxLength_Integer ] := Enclose[
         exists = symbolExistsQ @ name;
         If[ ! exists,
             Throw @ <|
-                "output" -> formatError[ name, "Symbol \"" <> name <> "\" does not exist" ],
+                "output" -> formatError[ name, formatNotFoundMessage[ name ] ],
                 "contextSymbols" -> {}
             |>
         ];
@@ -199,6 +199,26 @@ symbolExistsQ // beginDefinition;
 symbolExistsQ[ name_String ] := Names[ name ] =!= {};
 
 symbolExistsQ // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*findSuggestions*)
+findSuggestions // beginDefinition;
+
+findSuggestions[ name_String ] := Module[ { baseName, matches, qualified },
+    baseName  = Last @ StringSplit[ name, "`" ];
+    matches   = Names[ "*`" <> baseName ];
+    (* Names may return short names for symbols on $ContextPath, so qualify them *)
+    qualified = qualifyName /@ matches;
+    (* Limit to 5 suggestions *)
+    Take[ DeleteDuplicates @ qualified, UpTo[ 5 ] ]
+];
+
+(* Helper to ensure names are fully qualified *)
+qualifyName[ name_String ] /; StringContainsQ[ name, "`" ] := name;
+qualifyName[ name_String ] := Context[ name ] <> name;
+
+findSuggestions // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -498,6 +518,23 @@ formatError[ name_String, message_String ] := Module[ { shortName },
 ];
 
 formatError // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*formatNotFoundMessage*)
+formatNotFoundMessage // beginDefinition;
+
+formatNotFoundMessage[ name_String ] := Module[ { baseMessage, suggestions, suggestionBlock },
+    baseMessage = "Symbol \"" <> name <> "\" does not exist";
+    suggestions = findSuggestions @ name;
+    If[ suggestions === {},
+        baseMessage,
+        suggestionBlock = "```wl\n" <> StringRiffle[ suggestions, "\n" ] <> "\n```";
+        baseMessage <> "\n\nDid you mean one of the following symbols?\n" <> suggestionBlock
+    ]
+];
+
+formatNotFoundMessage // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
