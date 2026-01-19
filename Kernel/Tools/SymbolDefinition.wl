@@ -34,6 +34,7 @@ Multiple symbols can be requested by separating them with commas.";
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Tool Definition*)
+(* Add to $defaultMCPTools Association (initialized in Kernel/Tools/Tools.wl) *)
 $defaultMCPTools[ "SymbolDefinition" ] := LLMTool @ <|
     "Name"        -> "SymbolDefinition",
     "DisplayName" -> "Symbol Definition",
@@ -238,6 +239,8 @@ isReadProtectedQ // endDefinition;
 (*extractDefinition*)
 extractDefinition // beginDefinition;
 
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::VariableError::Block:: *)
 extractDefinition[ name_String ] := Catch @ Module[ { sym, defString, held },
     sym = ToExpression[ name, InputForm, HoldComplete ];
     If[ ! MatchQ[ sym, HoldComplete[ _Symbol ] ],
@@ -262,6 +265,7 @@ extractDefinition[ name_String ] := Catch @ Module[ { sym, defString, held },
         ]
     ]
 ];
+(* :!CodeAnalysis::EndBlock:: *)
 
 extractDefinition // endDefinition;
 
