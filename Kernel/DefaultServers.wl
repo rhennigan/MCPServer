@@ -75,6 +75,7 @@ $defaultMCPServers[ "WolframLanguage" ] := <|
             "WolframLanguageEvaluator",
             "ReadNotebook",
             "WriteNotebook",
+            "SymbolDefinition",
             "TestReport"
         }
     |>
@@ -95,6 +96,7 @@ $defaultMCPServers[ "WolframPacletDevelopment" ] := <|
             "WolframLanguageEvaluator",
             "ReadNotebook",
             "WriteNotebook",
+            "SymbolDefinition",
             "TestReport",
             "CreateSymbolPacletDocumentation",
             "EditSymbolPacletDocumentation",
