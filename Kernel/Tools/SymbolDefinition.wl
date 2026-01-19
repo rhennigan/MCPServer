@@ -115,12 +115,12 @@ parseSymbolNames // endDefinition;
 processSymbol // beginDefinition;
 
 processSymbol[ name_String, maxLength_Integer ] := Enclose[
-    Module[ { valid, exists, shortName, locked, readProtected, definition, kernelDefs, allDefs, formatted, contextSymbols },
+    Catch @ Module[ { valid, exists, shortName, locked, readProtected, definition, kernelDefs, allDefs, formatted, contextSymbols },
 
         (* Validate symbol name *)
         valid = validateSymbolName @ name;
         If[ ! valid,
-            Return @ <|
+            Throw @ <|
                 "output" -> formatError[ name, "Invalid symbol name \"" <> name <> "\"" ],
                 "contextSymbols" -> {}
             |>
@@ -129,7 +129,7 @@ processSymbol[ name_String, maxLength_Integer ] := Enclose[
         (* Check if symbol exists *)
         exists = symbolExistsQ @ name;
         If[ ! exists,
-            Return @ <|
+            Throw @ <|
                 "output" -> formatError[ name, "Symbol \"" <> name <> "\" does not exist" ],
                 "contextSymbols" -> {}
             |>
@@ -142,7 +142,7 @@ processSymbol[ name_String, maxLength_Integer ] := Enclose[
         readProtected = isReadProtectedQ @ name;
 
         If[ locked && readProtected,
-            Return @ <|
+            Throw @ <|
                 "output" -> formatError[ name, shortName <> " is `Locked` and `ReadProtected`" ],
                 "contextSymbols" -> {}
             |>
@@ -154,7 +154,7 @@ processSymbol[ name_String, maxLength_Integer ] := Enclose[
         allDefs    = Join[ definition, kernelDefs ];
 
         If[ allDefs === {} || allDefs === { Null },
-            Return @ <|
+            Throw @ <|
                 "output" -> "# " <> shortName <> "\n\nNo definitions found",
                 "contextSymbols" -> {}
             |>
@@ -238,10 +238,10 @@ isReadProtectedQ // endDefinition;
 (*extractDefinition*)
 extractDefinition // beginDefinition;
 
-extractDefinition[ name_String ] := Module[ { sym, defString, held },
+extractDefinition[ name_String ] := Catch @ Module[ { sym, defString, held },
     sym = ToExpression[ name, InputForm, HoldComplete ];
     If[ ! MatchQ[ sym, HoldComplete[ _Symbol ] ],
-        Return @ {}
+        Throw @ {}
     ];
 
     defString = Replace[
@@ -274,10 +274,10 @@ extractDefinition // endDefinition;
 (*getKernelCodeDefinitions*)
 getKernelCodeDefinitions // beginDefinition;
 
-getKernelCodeDefinitions[ name_String ] := Module[ { sym, defs },
+getKernelCodeDefinitions[ name_String ] := Catch @ Module[ { sym, defs },
     sym = ToExpression[ name, InputForm, HoldComplete ];
     If[ ! MatchQ[ sym, HoldComplete[ _Symbol ] ],
-        Return @ {}
+        Throw @ {}
     ];
 
     defs = {};
@@ -357,8 +357,8 @@ buildOptimalContextPath // endDefinition;
 (*generateContextMap*)
 generateContextMap // beginDefinition;
 
-generateContextMap[ symbols: { ___HoldForm } ] := Module[ { grouped, jsonParts },
-    If[ symbols === {}, Return @ "" ];
+generateContextMap[ symbols: { ___HoldForm } ] := Catch @ Module[ { grouped, jsonParts },
+    If[ symbols === {}, Throw @ "" ];
 
     grouped = GroupBy[
         symbols,
