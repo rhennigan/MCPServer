@@ -49,7 +49,7 @@ If you have to work through any surprising issues, add notes to the end of this 
 ## 4. Symbol Validation
 
 - [x] Implement `validateSymbolName` function:
-  - [x] Use ``Internal`SymbolNameQ[name, True]`` to validate fully qualified names
+  - [x] Use ``Internal`SymbolNameQ[name, True]`` to validate symbol names (qualified or unqualified)
   - [x] Return validation result (valid/invalid)
 - [x] Implement `symbolExistsQ` function:
   - [x] Check if symbol name corresponds to an existing symbol
@@ -199,7 +199,8 @@ If you have to work through any surprising issues, add notes to the end of this 
 
 #### Validation Tests
 - [x] Test valid simple symbol name
-- [x] Test valid fully qualified symbol name
+- [x] Test valid qualified symbol name
+- [ ] Test valid unqualified symbol name
 - [x] Test invalid symbol name (special characters)
 - [x] Test non-existent symbol detection
 
@@ -353,4 +354,13 @@ No definitions found"
 - Error cases (2 tests)
 - Truncation integration (2 tests)
 - Integration tests (6 tests)
+
+### Spec Update (2026-01-19)
+
+**Change:** Updated spec to allow unqualified symbol names (not just fully qualified).
+
+- Unqualified names like `"Plus"` are now valid input
+- Names are resolved using `$ContextPath`, just like `Definition` does
+- Private context symbols still require fully qualified names
+- Updated `Specs/SymbolDefinition.md` with new examples and documentation
 

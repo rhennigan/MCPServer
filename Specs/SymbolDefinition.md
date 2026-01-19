@@ -25,18 +25,23 @@ Retrieves the definitions of one or more Wolfram Language symbols and returns th
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `symbols` | String | Yes | - | Fully qualified symbol name(s), comma-separated for multiple symbols |
+| `symbols` | String | Yes | - | Symbol name(s), comma-separated for multiple symbols. Can be fully qualified or unqualified. |
 | `includeContextDetails` | Boolean | No | `false` | Whether to include a JSON map showing which symbols belong to which contexts |
 | `maxLength` | Integer | No | `10000` | Maximum character length for output before truncation |
 
 #### Symbols Parameter
 
-The `symbols` parameter accepts one or more fully qualified symbol names. Multiple symbols should be separated by commas.
+The `symbols` parameter accepts one or more symbol names. Multiple symbols should be separated by commas. Symbol names can be either fully qualified (with context) or unqualified. Unqualified names are resolved using the current `$ContextPath`, just like `Definition` does.
 
 **Examples:**
-- Single symbol: ``"System`Plus"``
-- Multiple symbols: ``"Wolfram`MCPServer`CreateMCPServer, Wolfram`MCPServer`StartMCPServer"``
-- Private symbol: ``"Wolfram`MCPServer`Common`Private`catchMine"``
+- Unqualified symbol: `"Plus"`
+- Fully qualified symbol: ``"System`Plus"``
+- Multiple unqualified symbols: `"Plus, Subtract, Times"`
+- Multiple fully qualified symbols: ``"Wolfram`MCPServer`CreateMCPServer, Wolfram`MCPServer`StartMCPServer"``
+- Private symbol (must be qualified): ``"Wolfram`MCPServer`Common`Private`catchMine"``
+- Mixed: ``"Plus, Wolfram`MCPServer`CreateMCPServer"``
+
+**Note:** For symbols in private contexts or contexts not on `$ContextPath`, fully qualified names are required.
 
 The parameter goes through the Wolfram `Interpreter`, so symbol names should be valid Wolfram Language symbol specifications.
 
@@ -256,12 +261,12 @@ If the symbol name is syntactically invalid:
 Error: Invalid symbol name "InvalidName"
 ```
 
-**Validation:** Use ``Internal`SymbolNameQ`` with the second argument set to `True` to validate fully qualified symbol names:
+**Validation:** Use ``Internal`SymbolNameQ`` with the second argument set to `True` to validate symbol names (both qualified and unqualified):
 
 ```wl
-Internal`SymbolNameQ["MyContext`MySymbolName", True]   (* True - valid *)
+Internal`SymbolNameQ["MyContext`MySymbolName", True]   (* True - valid qualified name *)
 Internal`SymbolNameQ["MyContext`MySymbolName!", True]  (* False - invalid *)
-Internal`SymbolNameQ["MySymbolName", True]             (* True - valid, unqualified *)
+Internal`SymbolNameQ["MySymbolName", True]             (* True - valid unqualified name *)
 ```
 
 Note: Without the second argument, ``Internal`SymbolNameQ`` only validates simple (non-context-qualified) symbol names:
@@ -313,7 +318,7 @@ largeSymbol[args_] :=
        "Parameters"  -> {
            "symbols" -> <|
                "Interpreter" -> "String",
-               "Help"        -> "The fully qualified symbol name (or multiple names, comma separated).",
+               "Help"        -> "The symbol name (or multiple names, comma separated). Can be qualified or unqualified.",
                "Required"    -> True
            |>,
            "includeContextDetails" -> <|
@@ -362,7 +367,32 @@ On complete failure (e.g., all symbols invalid), return a descriptive error mess
 
 ## Examples
 
-### Basic Usage - Single Symbol
+### Basic Usage - Unqualified Symbol
+
+**Request:**
+```json
+{
+  "tool": "SymbolDefinition",
+  "parameters": {
+    "symbols": "Map"
+  }
+}
+```
+
+**Response:**
+````markdown
+# Map
+
+## Definition
+
+```wl
+Attributes[Map] = {Protected}
+
+Map[___] := <kernel function>
+```
+````
+
+### Basic Usage - Qualified Symbol
 
 **Request:**
 ```json
@@ -375,7 +405,7 @@ On complete failure (e.g., all symbols invalid), return a descriptive error mess
 ```
 
 **Response:**
-```markdown
+````markdown
 # CreateMCPServer
 
 ## Definition
@@ -387,7 +417,7 @@ CreateMCPServer[name_String] :=
 e$: HoldPattern[CreateMCPServer[___]] :=
     throwInternalFailure[e$, "UnhandledDownValues", HoldForm @ CreateMCPServer]
 ```
-```
+````
 
 ### With Context Details
 
@@ -403,7 +433,7 @@ e$: HoldPattern[CreateMCPServer[___]] :=
 ```
 
 **Response:**
-```markdown
+````markdown
 # catchMine
 
 ## Definition
@@ -423,22 +453,22 @@ catchMine /: SetDelayed[lhs_, catchMine @ rhs_] :=
   "Wolfram`MCPServer`Common`Private`": ["catchMine", "catchTop", "topLevelFailure"]
 }
 ```
-```
+````
 
-### Multiple Symbols
+### Multiple Symbols (Mixed Qualified/Unqualified)
 
 **Request:**
 ```json
 {
   "tool": "SymbolDefinition",
   "parameters": {
-    "symbols": "System`Plus, System`Subtract, NonExistent`Symbol"
+    "symbols": "Plus, Subtract, NonExistent`Symbol"
   }
 }
 ```
 
 **Response:**
-```markdown
+````markdown
 # Plus
 
 ## Definition
@@ -462,7 +492,7 @@ Subtract[x_, y_] := x + (-1) * y
 # Symbol
 
 Error: Symbol "NonExistent`Symbol" does not exist
-```
+````
 
 ### Locked Symbol Error
 
@@ -477,11 +507,11 @@ Error: Symbol "NonExistent`Symbol" does not exist
 ```
 
 **Response:**
-```markdown
+````markdown
 # SomeLockedSymbol
 
 Error: SomeLockedSymbol is `Locked` and `ReadProtected`
-```
+````
 
 ### Truncated Output
 
@@ -497,7 +527,7 @@ Error: SomeLockedSymbol is `Locked` and `ReadProtected`
 ```
 
 **Response:**
-```markdown
+````markdown
 # veryLargeFunction
 
 ## Definition
@@ -510,6 +540,7 @@ veryLargeFunction[x_] :=
         (* ... more code ... *)
 ... [truncated, showing 1000/15000 characters]
 ```
+````
 
 ---
 
