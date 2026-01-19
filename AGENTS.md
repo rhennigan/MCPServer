@@ -46,11 +46,23 @@ You can optionally include a third argument to specify any expected messages tha
 
 Existing test IDs will also have a suffix appended to them (everything after the last `@@`) to indicate where the test is located in the codebase. You do not need to include this suffix in your new test IDs, since they are automatically generated on commit.
 
+### Unit Tests
+
+You can write unit tests for private symbols, but you should suppress linting errors for private symbols by wrapping the file in:
+```
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
+...
+(* :!CodeAnalysis::EndBlock:: *)
+```
+
+### Running Tests
+
 You can run test files using the TestReport MCP tool on the "Tests" directory.
 
 Use the WolframLanguageContext tool if tests fail to help find a solution.
 
-### Building the Paclet
+## Building the Paclet
 
 ```bash
 wolframscript -f Scripts/BuildPaclet.wls

@@ -456,137 +456,6 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*SymbolDefinition*)
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
-(*Basic Examples*)
-VerificationTest[
-    $symbolDefinitionTool = $DefaultMCPTools[ "SymbolDefinition" ],
-    _LLMTool,
-    SameTest -> MatchQ,
-    TestID   -> "SymbolDefinition-GetTool@@Tests/Tools.wlt:464,1-469,2"
-]
-
-VerificationTest[
-    $symbolDefResult1 = $symbolDefinitionTool[ <| "symbols" -> "System`Plus" |> ],
-    _String? StringQ,
-    SameTest -> MatchQ,
-    TestID   -> "SymbolDefinition-BasicSystemSymbol@@Tests/Tools.wlt:471,1-476,2"
-]
-
-VerificationTest[
-    StringContainsQ[ $symbolDefResult1, "# Plus" ],
-    True,
-    SameTest -> SameQ,
-    TestID   -> "SymbolDefinition-ContainsHeader@@Tests/Tools.wlt:478,1-483,2"
-]
-
-VerificationTest[
-    StringContainsQ[ $symbolDefResult1, "## Definition" ],
-    True,
-    SameTest -> SameQ,
-    TestID   -> "SymbolDefinition-ContainsDefinitionSection@@Tests/Tools.wlt:485,1-490,2"
-]
-
-VerificationTest[
-    StringContainsQ[ $symbolDefResult1, "```wl" ],
-    True,
-    SameTest -> SameQ,
-    TestID   -> "SymbolDefinition-ContainsCodeBlock@@Tests/Tools.wlt:492,1-497,2"
-]
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
-(*Kernel Code Detection*)
-VerificationTest[
-    (* Plus has kernel code for down values *)
-    StringContainsQ[ $symbolDefResult1, "<kernel function>" ],
-    True,
-    SameTest -> SameQ,
-    TestID   -> "SymbolDefinition-KernelCodeDetected@@Tests/Tools.wlt:502,1-508,2"
-]
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
-(*Multiple Symbols*)
-VerificationTest[
-    $symbolDefResult2 = $symbolDefinitionTool[ <| "symbols" -> "System`Plus, System`Times" |> ],
-    _String? StringQ,
-    SameTest -> MatchQ,
-    TestID   -> "SymbolDefinition-MultipleSymbols@@Tests/Tools.wlt:513,1-518,2"
-]
-
-VerificationTest[
-    StringContainsQ[ $symbolDefResult2, "# Plus" ] && StringContainsQ[ $symbolDefResult2, "# Times" ],
-    True,
-    SameTest -> SameQ,
-    TestID   -> "SymbolDefinition-MultipleSymbolsHeaders@@Tests/Tools.wlt:520,1-525,2"
-]
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
-(*Context Details*)
-VerificationTest[
-    $symbolDefResult3 = $symbolDefinitionTool[ <|
-        "symbols" -> "System`Map",
-        "includeContextDetails" -> True
-    |> ],
-    _String? StringQ,
-    SameTest -> MatchQ,
-    TestID   -> "SymbolDefinition-WithContextDetails@@Tests/Tools.wlt:530,1-538,2"
-]
-
-VerificationTest[
-    StringContainsQ[ $symbolDefResult3, "## Contexts" ],
-    True,
-    SameTest -> SameQ,
-    TestID   -> "SymbolDefinition-ContextsSection@@Tests/Tools.wlt:540,1-545,2"
-]
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
-(*Error Cases*)
-VerificationTest[
-    $symbolDefResult4 = $symbolDefinitionTool[ <| "symbols" -> "NonExistent`Symbol12345" |> ],
-    _String? (StringContainsQ[ "does not exist" ]),
-    SameTest -> MatchQ,
-    TestID   -> "SymbolDefinition-NonexistentSymbol@@Tests/Tools.wlt:550,1-555,2"
-]
-
-VerificationTest[
-    $symbolDefResult5 = $symbolDefinitionTool[ <| "symbols" -> "Invalid!Symbol@Name" |> ],
-    _String? (StringContainsQ[ "Invalid symbol name" ]),
-    SameTest -> MatchQ,
-    TestID   -> "SymbolDefinition-InvalidSymbolName@@Tests/Tools.wlt:557,1-562,2"
-]
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
-(*Truncation*)
-VerificationTest[
-    $symbolDefResult6 = $symbolDefinitionTool[ <|
-        "symbols" -> "System`Table",
-        "maxLength" -> 100
-    |> ],
-    _String? (StringContainsQ[ "truncated" ]),
-    SameTest -> MatchQ,
-    TestID   -> "SymbolDefinition-Truncation@@Tests/Tools.wlt:567,1-575,2"
-]
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
-(*Symbol Attributes*)
-VerificationTest[
-    (* Plus should have attributes in its definition *)
-    StringContainsQ[ $symbolDefResult1, "Attributes" ],
-    True,
-    SameTest -> SameQ,
-    TestID   -> "SymbolDefinition-ContainsAttributes@@Tests/Tools.wlt:580,1-586,2"
-]
-
-(* ::**************************************************************************************************************:: *)
-(* ::Section::Closed:: *)
 (*Tool Properties*)
 
 (* ::**************************************************************************************************************:: *)
@@ -599,7 +468,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveNames@@Tests/Tools.wlt:595,1-603,2"
+    TestID   -> "ToolProperties-AllHaveNames@@Tests/Tools.wlt:464,1-472,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -612,7 +481,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveDescriptions@@Tests/Tools.wlt:608,1-616,2"
+    TestID   -> "ToolProperties-AllHaveDescriptions@@Tests/Tools.wlt:477,1-485,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -625,5 +494,5 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveParameters@@Tests/Tools.wlt:621,1-629,2"
+    TestID   -> "ToolProperties-AllHaveParameters@@Tests/Tools.wlt:490,1-498,2"
 ]

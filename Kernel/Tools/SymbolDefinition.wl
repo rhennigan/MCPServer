@@ -70,10 +70,14 @@ getSymbolDefinition // beginDefinition;
 
 getSymbolDefinition[ KeyValuePattern @ {
     "symbols"               -> symbols_String,
-    "includeContextDetails" -> includeContextDetails: True | False : False,
-    "maxLength"             -> maxLength_Integer : $defaultMaxLength
+    "includeContextDetails" -> includeContextDetails0_,
+    "maxLength"             -> maxLength0_
 } ] := Enclose[
-    Module[ { symbolNames, results, contextMap, contextSection, output },
+    Module[ { includeContextDetails, maxLength, symbolNames, results, contextMap, contextSection, output },
+        (* Handle Missing["NoInput"] for optional parameters *)
+        includeContextDetails = Replace[ includeContextDetails0, Except[ True | False ] -> False ];
+        maxLength             = Replace[ maxLength0, Except[ _Integer ] -> $defaultMaxLength ];
+
         symbolNames = ConfirmMatch[ parseSymbolNames @ symbols, { __String }, "ParseSymbolNames" ];
         results     = processSymbol[ #, maxLength ] & /@ symbolNames;
 
@@ -192,7 +196,7 @@ symbolExistsQ // beginDefinition;
 
 symbolExistsQ[ name_String ] := Module[ { context, short },
     { context, short } = splitSymbolName @ name;
-    MemberQ[ Names[ context <> "*" ], name ]
+    MemberQ[ Names[ context <> "*" ], short ]
 ];
 
 symbolExistsQ // endDefinition;
@@ -288,23 +292,23 @@ getKernelCodeDefinitions[ name_String ] := Catch @ Module[ { sym, defs },
 
     Replace[
         sym,
-        HoldComplete[ s_Symbol ] :> (
+        HoldComplete[ s_Symbol ] :> With[ { kf = $kernelFunctionString },
             If[ TrueQ @ System`Private`HasDownCodeQ @ s,
-                AppendTo[ defs, HoldForm[ s[___] := $kernelFunctionString ] ]
+                AppendTo[ defs, HoldForm[ s[___] := kf ] ]
             ];
             If[ TrueQ @ System`Private`HasOwnCodeQ @ s,
-                AppendTo[ defs, HoldForm[ s := $kernelFunctionString ] ]
+                AppendTo[ defs, HoldForm[ s := kf ] ]
             ];
             If[ TrueQ @ System`Private`HasSubCodeQ @ s,
-                AppendTo[ defs, HoldForm[ s[___][___] := $kernelFunctionString ] ]
+                AppendTo[ defs, HoldForm[ s[___][___] := kf ] ]
             ];
             If[ TrueQ @ System`Private`HasUpCodeQ @ s,
-                AppendTo[ defs, HoldForm[ _[___, s, ___] := $kernelFunctionString ] ]
+                AppendTo[ defs, HoldForm[ _[___, s, ___] := kf ] ]
             ];
             If[ TrueQ @ System`Private`HasPrintCodeQ @ s,
-                AppendTo[ defs, HoldForm[ Format[s, _] := $kernelFunctionString ] ]
+                AppendTo[ defs, HoldForm[ Format[s, _] := kf ] ]
             ];
-        )
+        ]
     ];
 
     defs
