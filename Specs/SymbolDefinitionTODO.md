@@ -293,8 +293,8 @@ Attributes[Table] = {HoldAll, Protected}
 
 This might actually be a symptom of the evaluation leak issue below.
 
-- [ ] Fix the issue with attributes being displayed incorrectly
-- [ ] Add a test to verify the attributes are displayed correctly
+- [x] Fix the issue with attributes being displayed incorrectly
+- [x] Add a test to verify the attributes are displayed correctly
 
 ## 18. Critical Issue: Evaluation Leak
 
@@ -310,8 +310,8 @@ Out[18]= "# $testing
 No definitions found"
 ```
 
-- [ ] Fix the issue with the evaluation leak
-- [ ] Add a test to verify the evaluation leak is fixed
+- [x] Fix the issue with the evaluation leak
+- [x] Add a test to verify the evaluation leak is fixed
 
 ---
 
@@ -363,4 +363,19 @@ No definitions found"
 - Names are resolved using `$ContextPath`, just like `Definition` does
 - Private context symbols still require fully qualified names
 - Updated `Specs/SymbolDefinition.md` with new examples and documentation
+
+### Session 3 Progress (2026-01-19)
+
+**Bug Fixes:**
+
+1. **Evaluation Leak in `extractDefinition`** - Fixed issue where `List @@ held` caused evaluation of held expressions like `SetDelayed` and `Set`. Changed to use `Replace[held, HoldComplete[args___] :> (HoldForm /@ Unevaluated @ {args})]` to extract elements without evaluation.
+
+2. **Evaluation Leak in `getKernelCodeDefinitions`** - Fixed issue where `System`Private`HasOwnCodeQ` (which lacks `HoldAllComplete` unlike other `Has*CodeQ` functions) caused evaluation of symbols with OwnValues. Added `Unevaluated` wrapper when calling `HasOwnCodeQ`.
+
+3. **Attributes Display** - Both issues above caused attributes to display incorrectly as just `{HoldAll, Protected}` instead of `Attributes[Table] = {HoldAll, Protected}`. The `Set` expression was being evaluated, returning only its RHS.
+
+**Tests Added:**
+- 3 evaluation leak prevention tests
+- 3 attributes display tests
+- Total tests now: 69 (all passing)
 

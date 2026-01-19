@@ -535,12 +535,87 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Evaluation Leak Prevention*)
+
+(* Test that extractDefinition does not evaluate the RHS of definitions *)
+VerificationTest[
+    Module[ { counter },
+        counter = 0;
+        Wolfram`MCPServerTests`$evalLeakTestSymbol1 := (counter++; "result");
+        Wolfram`MCPServer`Tools`SymbolDefinition`Private`extractDefinition[
+            "Wolfram`MCPServerTests`$evalLeakTestSymbol1"
+        ];
+        (* counter should still be 0 if no evaluation leak occurred *)
+        counter
+    ],
+    0,
+    SameTest -> SameQ,
+    TestID   -> "EvaluationLeak-ExtractDefinition@@Tests/SymbolDefinition.wlt:541,1-554,2"
+]
+
+(* Test that the full tool does not cause evaluation leaks *)
+VerificationTest[
+    Module[ { counter },
+        counter = 0;
+        Wolfram`MCPServerTests`$evalLeakTestSymbol2 := (counter++; "result");
+        Quiet @ $symbolDefinitionTool[ <| "symbols" -> "Wolfram`MCPServerTests`$evalLeakTestSymbol2" |> ];
+        (* counter should still be 0 if no evaluation leak occurred *)
+        counter
+    ],
+    0,
+    SameTest -> SameQ,
+    TestID   -> "EvaluationLeak-FullTool@@Tests/SymbolDefinition.wlt:557,1-568,2"
+]
+
+(* Test that definitions with side effects are captured correctly without executing them *)
+VerificationTest[
+    Module[ { result },
+        Wolfram`MCPServerTests`$evalLeakTestSymbol3 := Echo["This should NOT print!"];
+        result = Quiet @ $symbolDefinitionTool[ <| "symbols" -> "Wolfram`MCPServerTests`$evalLeakTestSymbol3" |> ];
+        StringContainsQ[ result, "Echo" ]
+    ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "EvaluationLeak-CapturesDefinition@@Tests/SymbolDefinition.wlt:571,1-580,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Attributes Display*)
+
+(* Test that attributes are displayed properly with Attributes[symbol] = ... format *)
+VerificationTest[
+    $tableResult = Quiet @ $symbolDefinitionTool[ <| "symbols" -> "System`Table" |> ],
+    _String? (StringContainsQ[ #, "Attributes" ] &),
+    SameTest -> MatchQ,
+    TestID   -> "AttributesDisplay-ContainsAttributes@@Tests/SymbolDefinition.wlt:587,1-592,2"
+]
+
+VerificationTest[
+    (* The output should show attributes in a proper assignment form, not just a bare list *)
+    (* ReadableForm uses // notation: Table // Attributes = {...} *)
+    StringContainsQ[ $tableResult, "Attributes" ] && StringContainsQ[ $tableResult, "HoldAll" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "AttributesDisplay-ProperFormat@@Tests/SymbolDefinition.wlt:594,1-601,2"
+]
+
+VerificationTest[
+    (* Verify that Protected attribute is shown *)
+    StringContainsQ[ $tableResult, "Protected" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "AttributesDisplay-ShowsProtected@@Tests/SymbolDefinition.wlt:603,1-609,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Integration Tests*)
 VerificationTest[
     $subtractResult = Quiet @ $symbolDefinitionTool[ <| "symbols" -> "System`Subtract" |> ],
     _String? (StringContainsQ[ #, "# Subtract" ] && StringContainsQ[ #, "## Definition" ] &),
     SameTest -> MatchQ,
-    TestID   -> "Integration-Subtract@@Tests/SymbolDefinition.wlt:539,1-544,2"
+    TestID   -> "Integration-Subtract@@Tests/SymbolDefinition.wlt:614,1-619,2"
 ]
 
 VerificationTest[
@@ -550,21 +625,21 @@ VerificationTest[
     StringContainsQ[ $subtractResult, "<kernel function>" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-SubtractHasDefinition@@Tests/SymbolDefinition.wlt:546,1-554,2"
+    TestID   -> "Integration-SubtractHasDefinition@@Tests/SymbolDefinition.wlt:621,1-629,2"
 ]
 
 VerificationTest[
     $pacletResult = Quiet @ $symbolDefinitionTool[ <| "symbols" -> "Wolfram`MCPServer`CreateMCPServer" |> ],
     _String? (StringContainsQ[ #, "# CreateMCPServer" ] &),
     SameTest -> MatchQ,
-    TestID   -> "Integration-PacletSymbol@@Tests/SymbolDefinition.wlt:556,1-561,2"
+    TestID   -> "Integration-PacletSymbol@@Tests/SymbolDefinition.wlt:631,1-636,2"
 ]
 
 VerificationTest[
     $privateResult = Quiet @ $symbolDefinitionTool[ <| "symbols" -> "Wolfram`MCPServer`Common`Private`catchMine" |> ],
     _String? StringQ,
     SameTest -> MatchQ,
-    TestID   -> "Integration-PrivateSymbol@@Tests/SymbolDefinition.wlt:563,1-568,2"
+    TestID   -> "Integration-PrivateSymbol@@Tests/SymbolDefinition.wlt:638,1-643,2"
 ]
 
 VerificationTest[
@@ -577,7 +652,7 @@ VerificationTest[
         StringContainsQ[ #, "Invalid symbol name" ] &
     ),
     SameTest -> MatchQ,
-    TestID   -> "Integration-MixedSymbols@@Tests/SymbolDefinition.wlt:570,1-581,2"
+    TestID   -> "Integration-MixedSymbols@@Tests/SymbolDefinition.wlt:645,1-656,2"
 ]
 
 VerificationTest[
@@ -587,7 +662,7 @@ VerificationTest[
     |> ],
     _String? (StringContainsQ[ #, "## Contexts" ] && StringContainsQ[ #, "System`" ] &),
     SameTest -> MatchQ,
-    TestID   -> "Integration-ContextDetails@@Tests/SymbolDefinition.wlt:583,1-591,2"
+    TestID   -> "Integration-ContextDetails@@Tests/SymbolDefinition.wlt:658,1-666,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

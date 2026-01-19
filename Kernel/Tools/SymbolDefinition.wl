@@ -264,7 +264,11 @@ extractDefinition[ name_String ] := Catch @ Module[ { sym, defString, held },
         {},
         held = Quiet @ ToExpression[ defString, InputForm, HoldComplete ];
         If[ MatchQ[ held, HoldComplete[ ___ ] ],
-            DeleteCases[ List @@ held, Null ],
+            (* Extract elements without evaluation by wrapping each in HoldForm *)
+            DeleteCases[
+                Replace[ held, HoldComplete[ args___ ] :> (HoldForm /@ Unevaluated @ { args }) ],
+                HoldForm[ Null ]
+            ],
             {}
         ]
     ]
@@ -296,7 +300,8 @@ getKernelCodeDefinitions[ name_String ] := Catch @ Module[ { sym, defs },
             If[ TrueQ @ System`Private`HasDownCodeQ @ s,
                 AppendTo[ defs, HoldForm[ s[___] := kf ] ]
             ];
-            If[ TrueQ @ System`Private`HasOwnCodeQ @ s,
+            (* HasOwnCodeQ lacks HoldAllComplete, so use Unevaluated to prevent evaluation *)
+            If[ TrueQ @ System`Private`HasOwnCodeQ @ Unevaluated @ s,
                 AppendTo[ defs, HoldForm[ s := kf ] ]
             ];
             If[ TrueQ @ System`Private`HasSubCodeQ @ s,
