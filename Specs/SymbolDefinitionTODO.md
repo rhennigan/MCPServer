@@ -4,6 +4,8 @@ This checklist tracks all tasks needed to fully implement and test the `SymbolDe
 
 If you have to work through any surprising issues, add notes to the end of this file to document what you've learned. This will help resume work from where you left off.
 
+If you have any questions, ask me for clarification before you start working on the task.
+
 ---
 
 ## 1. Project Setup
@@ -264,9 +266,8 @@ If you have to work through any surprising issues, add notes to the end of this 
 
 - [x] Run all tests and verify they pass (74/74 passing)
 - [ ] Test tool manually via MCP client
-- [ ] Verify MX build works with new resource function
 - [x] Code review for style consistency with codebase patterns
-- [ ] Check error messages are defined in `Kernel/Messages.wl` if needed
+- [x] Check error messages are defined in `Kernel/Messages.wl` if needed
 
 ## 17. Attributes Issue
 
