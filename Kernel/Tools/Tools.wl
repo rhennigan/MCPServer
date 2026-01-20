@@ -20,14 +20,13 @@ Needs[ "Wolfram`MCPServer`Common`" ];
     - CodeInspector tool
     - BuildPaclet tool
     - ReloadPaclet tool
-    - DefinitionViewer tool
     - Log tool calls (and generate a notebook)
     - Add optional "description" parameter to evaluator tool (maybe all tools?)
-    - Support setting sandbox directory for evaluator tool via environment variable
     - Support image outputs from tools according to MCP spec
     - A RestartMCPServer tool? Is this possible?
     - A tool to open notebooks for the user, e.g. UsingFrontEnd[SystemOpen[notebookPath]]?
     - Group similar tools into groups and have another tool to activate them when needed to save on token usage
+    - Documentation editing tools should have examples evaluation be optional
 *)
 
 (* ::**************************************************************************************************************:: *)
