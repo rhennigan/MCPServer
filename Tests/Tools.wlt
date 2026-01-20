@@ -31,9 +31,9 @@ VerificationTest[
     Keys @ $DefaultMCPTools,
     {
         OrderlessPatternSequence[
-            "CreateSymbolPacletDocumentation",
-            "EditSymbolPacletDocumentation",
-            "EditSymbolPacletDocumentationExamples",
+            "CreateSymbolDoc",
+            "EditSymbolDoc",
+            "EditSymbolDocExamples",
             "ReadNotebook",
             "SymbolDefinition",
             "TestReport",
