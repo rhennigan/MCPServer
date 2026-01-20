@@ -35,8 +35,8 @@ Returns the generated content as markdown for verification.";
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*CreateSymbolPacletDocumentation*)
-$defaultMCPTools[ "CreateSymbolPacletDocumentation" ] := LLMTool @ <|
-    "Name"        -> "CreateSymbolPacletDocumentation",
+$defaultMCPTools[ "CreateSymbolDoc" ] := LLMTool @ <|
+    "Name"        -> "CreateSymbolDoc",
     "DisplayName" -> "Create Symbol Documentation",
     "Description" -> $createSymbolDocDescription,
     "Function"    -> createSymbolPacletDocumentation,
@@ -118,8 +118,8 @@ $defaultMCPTools[ "CreateSymbolPacletDocumentation" ] := LLMTool @ <|
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*EditSymbolPacletDocumentation*)
-$defaultMCPTools[ "EditSymbolPacletDocumentation" ] := LLMTool @ <|
-    "Name"        -> "EditSymbolPacletDocumentation",
+$defaultMCPTools[ "EditSymbolDoc" ] := LLMTool @ <|
+    "Name"        -> "EditSymbolDoc",
     "DisplayName" -> "Edit Symbol Documentation",
     "Description" -> $editSymbolDocDescription,
     "Function"    -> editSymbolPacletDocumentation,
@@ -151,8 +151,8 @@ $defaultMCPTools[ "EditSymbolPacletDocumentation" ] := LLMTool @ <|
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*EditSymbolPacletDocumentationExamples*)
-$defaultMCPTools[ "EditSymbolPacletDocumentationExamples" ] := LLMTool @ <|
-    "Name"        -> "EditSymbolPacletDocumentationExamples",
+$defaultMCPTools[ "EditSymbolDocExamples" ] := LLMTool @ <|
+    "Name"        -> "EditSymbolDocExamples",
     "DisplayName" -> "Edit Symbol Documentation Examples",
     "Description" -> $editSymbolDocExamplesDescription,
     "Function"    -> editSymbolPacletDocumentationExamples,

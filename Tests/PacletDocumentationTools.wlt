@@ -22,24 +22,24 @@ VerificationTest[
 (*Tool Retrieval*)
 
 VerificationTest[
-    $createDocTool = $DefaultMCPTools[ "CreateSymbolPacletDocumentation" ],
+    $createDocTool = $DefaultMCPTools[ "CreateSymbolDoc" ],
     _LLMTool,
     SameTest -> MatchQ,
-    TestID   -> "CreateSymbolPacletDocumentation-GetTool@@Tests/PacletDocumentationTools.wlt:24,1-29,2"
+    TestID   -> "CreateSymbolDoc-GetTool@@Tests/PacletDocumentationTools.wlt:24,1-29,2"
 ]
 
 VerificationTest[
-    $editDocTool = $DefaultMCPTools[ "EditSymbolPacletDocumentation" ],
+    $editDocTool = $DefaultMCPTools[ "EditSymbolDoc" ],
     _LLMTool,
     SameTest -> MatchQ,
-    TestID   -> "EditSymbolPacletDocumentation-GetTool@@Tests/PacletDocumentationTools.wlt:31,1-36,2"
+    TestID   -> "EditSymbolDoc-GetTool@@Tests/PacletDocumentationTools.wlt:31,1-36,2"
 ]
 
 VerificationTest[
-    $editExamplesTool = $DefaultMCPTools[ "EditSymbolPacletDocumentationExamples" ],
+    $editExamplesTool = $DefaultMCPTools[ "EditSymbolDocExamples" ],
     _LLMTool,
     SameTest -> MatchQ,
-    TestID   -> "EditSymbolPacletDocumentationExamples-GetTool@@Tests/PacletDocumentationTools.wlt:38,1-43,2"
+    TestID   -> "EditSymbolDocExamples-GetTool@@Tests/PacletDocumentationTools.wlt:38,1-43,2"
 ]
 
 (* ::**************************************************************************************************************:: *)

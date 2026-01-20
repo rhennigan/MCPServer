@@ -98,9 +98,9 @@ $defaultMCPServers[ "WolframPacletDevelopment" ] := <|
             "WriteNotebook",
             "SymbolDefinition",
             "TestReport",
-            "CreateSymbolPacletDocumentation",
-            "EditSymbolPacletDocumentation",
-            "EditSymbolPacletDocumentationExamples"
+            "CreateSymbolDoc",
+            "EditSymbolDoc",
+            "EditSymbolDocExamples"
         }
     |>
 |>;
