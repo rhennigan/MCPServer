@@ -302,3 +302,47 @@ VerificationTest[
     SameTest -> MatchQ,
     TestID   -> "InstallMCPServer-CleanupErrorTests@@Tests/InstallMCPServer.wlt:299,1-304,2"
 ]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Install Location Resolution*)
+
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Antigravity", "Windows" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-Antigravity-Windows@@Tests/InstallMCPServer.wlt:313,1-318,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Antigravity", "MacOSX" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-Antigravity-MacOSX@@Tests/InstallMCPServer.wlt:320,1-325,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Antigravity", "Unix" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-Antigravity-Unix@@Tests/InstallMCPServer.wlt:327,1-332,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installDisplayName[ "Antigravity" ],
+    "Antigravity",
+    SameTest -> Equal,
+    TestID   -> "InstallDisplayName-Antigravity@@Tests/InstallMCPServer.wlt:334,1-339,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "GoogleAntigravity" ],
+    "Antigravity",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-GoogleAntigravity@@Tests/InstallMCPServer.wlt:341,1-346,2"
+]
+
+(* :!CodeAnalysis::EndBlock:: *)

@@ -13,6 +13,7 @@ Needs[ "Wolfram`Chatbook`" -> "cb`" ];
 (*Configuration*)
 $protocolVersion = "2024-11-05";
 $toolWarmupDelay = 5; (* seconds *)
+$clientName      = None;
 
 $logTimeStamp := DateString[
     {
@@ -200,7 +201,12 @@ processRequest // endDefinition;
 (*handleMethod*)
 handleMethod // beginDefinition;
 
-handleMethod[ "initialize"    , msg_, req_ ] := <| req, "result" -> $initResult |>;
+handleMethod[ "initialize", msg_, req_ ] := (
+    $clientName = Replace[ msg[[ "params", "clientInfo", "name" ]], Except[ _String ] :> None ];
+    If[ ! stderrEnabledQ[ ], $Messages = { } ];
+    <| req, "result" -> $initResult |>
+);
+
 handleMethod[ "ping"          , msg_, req_ ] := <| req, "result" -> <| |> |>;
 handleMethod[ "resources/list", msg_, req_ ] := <| req, "result" -> <| "resources" -> { } |> |>;
 handleMethod[ "prompts/list"  , msg_, req_ ] := <| req, "result" -> <| "prompts" -> $promptList |> |>;
@@ -399,13 +405,22 @@ writeLog // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*stderrEnabledQ*)
+stderrEnabledQ // beginDefinition;
+stderrEnabledQ[ ] := $clientName =!= "antigravity-client";
+stderrEnabledQ // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*writeError*)
 writeError // beginDefinition;
 
-writeError[ args___ ] :=
+writeError[ args___ ] /; stderrEnabledQ[ ] :=
     With[ { time = $logTimeStamp },
         WriteLine[ "stderr", sequenceString[ time, " [Wolfram/MCPServer] [error] ", args ] ]
     ];
+
+writeError[ ___ ] := Null;
 
 writeError // endDefinition;
 
@@ -421,10 +436,12 @@ debugEcho // endDefinition;
 (*debugPrint*)
 debugPrint // beginDefinition;
 
-debugPrint[ args___ ] :=
+debugPrint[ args___ ] /; stderrEnabledQ[ ] :=
     With[ { time = $logTimeStamp },
         WriteLine[ "stderr", sequenceString[ time, " [Wolfram/MCPServer] [info] ", args ] ]
     ];
+
+debugPrint[ ___ ] := Null;
 
 debugPrint // endDefinition;
 
