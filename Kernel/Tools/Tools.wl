@@ -6,6 +6,7 @@ BeginPackage[ "Wolfram`MCPServer`Tools`" ];
 `$defaultMCPTools;
 `exportMarkdownString;
 `importMarkdownString;
+`useEvaluatorKernel;
 
 Begin[ "`Private`" ];
 
@@ -26,6 +27,7 @@ Needs[ "Wolfram`MCPServer`Common`" ];
     - Support image outputs from tools according to MCP spec
     - A RestartMCPServer tool? Is this possible?
     - A tool to open notebooks for the user, e.g. UsingFrontEnd[SystemOpen[notebookPath]]?
+    - Group similar tools into groups and have another tool to activate them when needed to save on token usage
 *)
 
 (* ::**************************************************************************************************************:: *)
@@ -37,6 +39,8 @@ $DefaultMCPTools := WithCleanup[
     Protect @ $DefaultMCPTools
 ];
 
+(* $defaultMCPTools is an Association mapping tool names to LLMTool definitions. *)
+(* Tool definitions are added in subcontext files loaded below.                  *)
 $defaultMCPTools = <| |>;
 
 (* ::**************************************************************************************************************:: *)
@@ -57,6 +61,9 @@ $subcontexts = {
 
     (* Tools: CreateSymbolPacletDocumentation, EditSymbolPacletDocumentation *)
     "Wolfram`MCPServer`Tools`PacletDocumentation`",
+
+    (* Tools: SymbolDefinition *)
+    "Wolfram`MCPServer`Tools`SymbolDefinition`",
 
     (* Tools: TestReport *)
     "Wolfram`MCPServer`Tools`TestReport`",

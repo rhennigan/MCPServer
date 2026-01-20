@@ -12,6 +12,8 @@ Needs[ "Wolfram`MCPServer`Tools`"  ];
 (* ::Section::Closed:: *)
 (*Tool Definitions*)
 
+(* Add to $defaultMCPTools Association (initialized in Kernel/Tools/Tools.wl) *)
+
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*ReadNotebook*)
