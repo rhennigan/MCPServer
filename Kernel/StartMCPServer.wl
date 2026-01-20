@@ -406,8 +406,12 @@ writeLog // endDefinition;
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*stderrEnabledQ*)
+(* stderr output causes issues with several clients, so we disable it unless we know it's safe to use *)
 stderrEnabledQ // beginDefinition;
-stderrEnabledQ[ ] := $clientName =!= "antigravity-client";
+stderrEnabledQ[ ] := stderrEnabledQ @ $clientName;
+stderrEnabledQ[ "claude-code" ] := True;
+stderrEnabledQ[ "claude-ai" ] := True;
+stderrEnabledQ[ _ ] := False;
 stderrEnabledQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
