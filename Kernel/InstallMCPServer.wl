@@ -546,6 +546,12 @@ installLocation[ "GeminiCLI", _ ] :=
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*Antigravity*)
+installLocation[ "Antigravity", _ ] :=
+    fileNameJoin[ $HomeDirectory, ".gemini", "antigravity", "mcp_config.json" ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*OpenCode*)
 installLocation[ "OpenCode", _ ] :=
     fileNameJoin[ $HomeDirectory, ".config", "opencode", "opencode.json" ];
@@ -591,12 +597,13 @@ projectInstallLocation // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*toInstallName*)
 toInstallName // beginDefinition;
-toInstallName[ "Claude"      ] := "ClaudeDesktop";
-toInstallName[ "claude-code" ] := "ClaudeCode";
-toInstallName[ "VSCode"      ] := "VisualStudioCode";
-toInstallName[ "Code"        ] := "VisualStudioCode";
-toInstallName[ "Gemini"      ] := "GeminiCLI";
-toInstallName[ name_String   ] := name;
+toInstallName[ "Claude"            ] := "ClaudeDesktop";
+toInstallName[ "claude-code"       ] := "ClaudeCode";
+toInstallName[ "VSCode"            ] := "VisualStudioCode";
+toInstallName[ "Code"              ] := "VisualStudioCode";
+toInstallName[ "Gemini"            ] := "GeminiCLI";
+toInstallName[ "GoogleAntigravity" ] := "Antigravity";
+toInstallName[ name_String         ] := name;
 toInstallName // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
@@ -607,6 +614,7 @@ installDisplayName[ "ClaudeDesktop"    ] := "Claude Desktop";
 installDisplayName[ "ClaudeCode"       ] := "Claude Code";
 installDisplayName[ "VisualStudioCode" ] := "Visual Studio Code";
 installDisplayName[ "GeminiCLI"        ] := "Gemini CLI";
+installDisplayName[ "Antigravity"      ] := "Antigravity";
 installDisplayName[ "OpenCode"         ] := "OpenCode";
 installDisplayName[ name_String        ] := name;
 installDisplayName[ None               ] := None;
