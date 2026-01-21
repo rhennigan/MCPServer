@@ -3,7 +3,7 @@
 BeginPackage[ "Wolfram`MCPServerTests`" ];
 
 (* :!CodeAnalysis::BeginBlock:: *)
-
+`$BuiltPaclet;
 `$TestDefinitionsLoaded = True;
 
 Begin[ "`Private`" ];
@@ -53,7 +53,9 @@ $sourceDirectory = DirectoryName[ $InputFileName, 2 ];
 $buildDirectory  = FileNameJoin @ { $sourceDirectory, "build", "Wolfram__MCPServer" };
 $pacletDirectory = Quiet @ SelectFirst[ { $buildDirectory, $sourceDirectory }, PacletObjectQ @* PacletObject @* File ];
 
-If[ $pacletDirectory === $sourceDirectory,
+$BuiltPaclet = $pacletDirectory === $buildDirectory;
+
+If[ ! $BuiltPaclet,
     cicd`ConsoleWarning[ "Running tests on source directory instead of built paclet" ]
 ];
 

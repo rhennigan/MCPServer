@@ -3,6 +3,8 @@ BeginPackage[ "Wolfram`MCPServer`" ];
 MCPServer::usage                         = "MCPServer is a symbol for miscellaneous messages.";
 MCPServer::DeleteBuiltInMCPServer        = "The MCP server named \"`1`\" is built-in and cannot be deleted.";
 MCPServer::DeletedMCPServerObject        = "The MCP server \"`1`\" no longer exists.";
+MCPServer::DevelopmentModeUnavailable    = "Development mode is not available from `1`. This option requires an unbuilt paclet with a Scripts directory.";
+MCPServer::InvalidDevelopmentMode        = "Invalid value for DevelopmentMode option: `1`. Expected False, True, or a directory path string.";
 MCPServer::InstallMCPServer              = "Successfully installed MCP server \"`1`\".";
 MCPServer::InstallMCPServerNamed         = "Successfully installed MCP server \"`1`\" for `2`.";
 MCPServer::Internal                      = "An unexpected error occurred. `1`";

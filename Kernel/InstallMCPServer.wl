@@ -15,7 +15,14 @@ $installName = None;
 (* ::Section::Closed:: *)
 (*InstallMCPServer*)
 InstallMCPServer // beginDefinition;
+
+(* "DevelopmentMode" option:
+   - False (default): Uses the installed paclet via PacletSymbol for server startup
+   - True: Uses the Scripts/StartMCPServer.wls from $thisPaclet's location (requires unbuilt paclet)
+   - path_String: Uses Scripts/StartMCPServer.wls from the specified directory
+   This allows testing local changes without reinstalling the paclet. *)
 InstallMCPServer // Options = {
+    "DevelopmentMode"  -> False,
     ProcessEnvironment -> Automatic,
     "VerifyLLMKit"     -> True
 };
@@ -31,7 +38,8 @@ InstallMCPServer[ target_File, server_, opts: OptionsPattern[ ] ] :=
         target,
         ensureMCPServerExists @ MCPServerObject @ server,
         OptionValue @ ProcessEnvironment,
-        OptionValue @ VerifyLLMKit
+        OptionValue @ VerifyLLMKit,
+        OptionValue[ "DevelopmentMode" ]
     ];
 
 InstallMCPServer[ name_String, server_, opts: OptionsPattern[ ] ] :=
@@ -51,10 +59,10 @@ InstallMCPServer // endExportedDefinition;
 (*installMCPServer*)
 installMCPServer // beginDefinition;
 
-installMCPServer[ target_, obj_, Automatic|Inherited, verifyLLMKit_ ] :=
-    installMCPServer[ target, obj, defaultEnvironment[ ], verifyLLMKit ];
+installMCPServer[ target_, obj_, Automatic|Inherited, verifyLLMKit_, devMode_ ] :=
+    installMCPServer[ target, obj, defaultEnvironment[ ], verifyLLMKit, devMode ];
 
-installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_ ] := Enclose[
+installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_, devMode_ ] := Enclose[
     Module[ { target, name, json, data, server, existing },
 
         If[ verifyLLMKit, ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ] ];
@@ -65,6 +73,9 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
         json     = ConfirmBy[ obj[ "JSONConfiguration" ], StringQ, "JSONConfiguration" ];
         data     = ConfirmBy[ Developer`ReadRawJSONString @ json, AssociationQ, "JSONConfiguration" ];
         server   = ConfirmBy[ addEnvironmentVariables[ data[ "mcpServers", name ], env ], AssociationQ, "Server" ];
+        If[ devMode =!= False,
+            server[ "args" ] = ConfirmMatch[ makeDevelopmentArgs @ devMode, { __String }, "DevelopmentArgs" ]
+        ];
         existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
 
         Switch[ $installName,
@@ -250,6 +261,28 @@ addEnvironmentVariables[ server0_Association, extraEnv_Association ] := Enclose[
 ];
 
 addEnvironmentVariables // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*makeDevelopmentArgs*)
+makeDevelopmentArgs // beginDefinition;
+
+makeDevelopmentArgs[ True ] :=
+    makeDevelopmentArgs @ $thisPaclet[ "Location" ];
+
+makeDevelopmentArgs[ dir_String ] :=
+    Module[ { script },
+        script = FileNameJoin @ { dir, "Scripts", "StartMCPServer.wls" };
+        If[ FileExistsQ @ script,
+            { "-script", script, "-noinit", "-noprompt" },
+            throwFailure[ "DevelopmentModeUnavailable", dir ]
+        ]
+    ];
+
+makeDevelopmentArgs[ invalid_ ] :=
+    throwFailure[ "InvalidDevelopmentMode", invalid ];
+
+makeDevelopmentArgs // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)

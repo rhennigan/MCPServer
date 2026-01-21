@@ -345,4 +345,65 @@ VerificationTest[
     TestID   -> "ToInstallName-GoogleAntigravity@@Tests/InstallMCPServer.wlt:341,1-346,2"
 ]
 
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*makeDevelopmentArgs*)
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`makeDevelopmentArgs[ DirectoryName[ $TestFileName, 2 ] ],
+    { "-script", _String? FileExistsQ, "-noinit", "-noprompt" },
+    SameTest -> MatchQ,
+    TestID   -> "MakeDevelopmentArgs-ValidPath@@Tests/InstallMCPServer.wlt:351,1-356,2"
+]
+
+VerificationTest[
+    configFile = testConfigFile[];
+    invalidPath = FileNameJoin @ { $TemporaryDirectory, CreateUUID[ "InvalidPath-" ] };
+    InstallMCPServer[ configFile, "DevelopmentMode" -> invalidPath, "VerifyLLMKit" -> False ],
+    Failure[ "InstallMCPServer::DevelopmentModeUnavailable", _ ],
+    { InstallMCPServer::DevelopmentModeUnavailable },
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-DevelopmentMode-InvalidPath@@Tests/InstallMCPServer.wlt:358,1-366,2"
+]
+
+VerificationTest[
+    configFile = testConfigFile[];
+    InstallMCPServer[ configFile, "DevelopmentMode" -> InvalidValue, "VerifyLLMKit" -> False ],
+    Failure[ "InstallMCPServer::InvalidDevelopmentMode", _ ],
+    { InstallMCPServer::InvalidDevelopmentMode },
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-DevelopmentMode-InvalidValue@@Tests/InstallMCPServer.wlt:368,1-375,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*DevelopmentMode Option*)
+VerificationTest[
+    MemberQ[ Keys @ Options @ InstallMCPServer, "DevelopmentMode" ],
+    True,
+    TestID -> "DevelopmentMode-OptionExists@@Tests/InstallMCPServer.wlt:382,1-386,2"
+]
+
+VerificationTest[
+    configFile = testConfigFile[];
+    InstallMCPServer[ configFile, "DevelopmentMode" -> DirectoryName[ $TestFileName, 2 ], "VerifyLLMKit" -> False ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-DevelopmentMode-Success@@Tests/InstallMCPServer.wlt:388,1-394,2"
+]
+
+VerificationTest[
+    json = Developer`ReadRawJSONFile @ First @ configFile;
+    json[ "mcpServers", "Wolfram", "args" ],
+    { "-script", _String, "-noinit", "-noprompt" },
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-DevelopmentMode-Args@@Tests/InstallMCPServer.wlt:396,1-402,2"
+]
+
+VerificationTest[
+    cleanupTestFiles[ configFile ],
+    { Null },
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-DevelopmentMode-Cleanup@@Tests/InstallMCPServer.wlt:404,1-409,2"
+]

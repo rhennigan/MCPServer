@@ -205,7 +205,6 @@ getMCPServerObjectByLocation // endDefinition;
 (*readMetadataFile*)
 readMetadataFile // beginDefinition;
 
-(* TODO: This should check the object version and update if necessary *)
 readMetadataFile[ file_File ] := Enclose[
     Module[ { data },
         If[ ! FileExistsQ @ file, throwFailure[ "InvalidMCPServerFile", file ] ];
