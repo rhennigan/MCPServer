@@ -186,6 +186,7 @@ The `Enclose` wrapper is only necessary if you are using any `Confirm`, `Confirm
 ### Other Development Guidelines
 
 - Avoid using `Return` since the return point can sometimes be ambiguous. Instead, use `Catch` and `Throw` to control the flow of execution.
+- Whenever you modify source code, you should also write and run tests for the changes you made.
 
 ## Special Considerations
 

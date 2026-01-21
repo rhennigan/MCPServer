@@ -613,7 +613,7 @@ installLocation // endDefinition;
 projectInstallLocation // beginDefinition;
 
 projectInstallLocation[ "ClaudeCode", dir_ ] :=
-    fileNameJoin[ dir, ".claude.json" ];
+    fileNameJoin[ dir, ".mcp.json" ];
 
 projectInstallLocation[ "OpenCode", dir_ ] :=
     fileNameJoin[ dir, "opencode.json" ];
