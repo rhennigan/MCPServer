@@ -1108,7 +1108,7 @@ VerificationTest[
 VerificationTest[
     Module[{result},
         result = Quiet @ $editExamplesTool[<|
-            "notebook" -> "C:\\nonexistent\\path\\to\\notebook.nb",
+            "notebook" -> FileNameJoin @ { $TemporaryDirectory, CreateUUID[ "InvalidNotebookPath-" ] <> ".nb" },
             "operation" -> "appendExample",
             "section" -> "BasicExamples",
             "content" -> "test"
@@ -1543,7 +1543,7 @@ VerificationTest[
 VerificationTest[
     Module[{result},
         result = Quiet @ $editDocTool[<|
-            "notebook" -> "C:\\nonexistent\\path\\to\\notebook.nb",
+            "notebook" -> FileNameJoin @ { $TemporaryDirectory, CreateUUID[ "InvalidNotebookPath-" ] <> ".nb" },
             "operation" -> "setSeeAlso",
             "content" -> "Plus"
         |>];
