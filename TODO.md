@@ -35,6 +35,8 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/Tools/Tools.wl`
 - [ ] Tool to open notebooks for the user (e.g., `UsingFrontEnd[SystemOpen[notebookPath]]`)
   - Source: `Kernel/Tools/Tools.wl`
+  - Might be redundant, since the same can be trivially done with a Bash tool or even the WL tool itself
+  - Maybe just add something to the WL tool description that mentions this can be done?
 
 ### Tool Improvements
 
