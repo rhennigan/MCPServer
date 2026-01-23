@@ -130,3 +130,34 @@ All 398 tests pass.
 
 **Next steps**: Phase 5 - Developer documentation
 
+## Session 5
+
+**Completed Phase 5: Investigate MCP Error**
+
+Investigated and fixed the "MCP error -32603: Internal error" that occurred when using prompt commands via MCP.
+
+1. **Root cause identified**:
+   - The functions `relatedDocumentation`, `relatedWolframContext`, and `relatedWolframAlphaResults` were defined in the private context of `Wolfram`MCPServer`Tools`Context`` and were not accessible from `Prompts/Search.wl`
+
+2. **Fix: Symbol sharing via CommonSymbols.wl**:
+   - Added `relatedDocumentation`, `relatedWolframContext`, and `relatedWolframAlphaResults` to `Kernel/CommonSymbols.wl`
+   - This makes these symbols available in the `Wolfram`MCPServer`Common`` context and accessible to all packages that load it
+
+3. **Additional improvement: Error handling in makePromptContent**:
+   - Added `catchPromptFunction` helper that wraps function calls with error handling
+   - Added `formatPromptError` to format failure messages into user-friendly strings
+   - Function-type prompts now gracefully handle failures by returning an error message as content instead of throwing an MCP error
+
+4. **Cleanup**:
+   - Removed debug `Export` statement from `processRequest` in `StartMCPServer.wl`
+   - Deleted `error.wxf` debug file
+
+5. **Tests** (8 new tests added to `Tests/Prompts.wlt`):
+   - `catchPromptFunction` success case, returns failure, throws failure
+   - `formatPromptError` with message, no message, non-failure input
+   - `makePromptContent` with function returning failure, function throwing failure
+
+All 406 tests pass.
+
+**Next steps**: User needs to restart MCP server to verify fix, then Phase 6 - Developer documentation
+

@@ -39,6 +39,15 @@ See [Specs/MCPPromptCommands.md](../Specs/MCPPromptCommands.md) for the detailed
 - [x] Write and run full integration tests
 - [x] Run full test suite and fix code until all tests pass (Checkpoint D)
 
-**Phase 5: Developer documentation**
+**Phase 5: Investigate MCP Error**
+- [x] Investigate and fix "MCP error -32603: Internal error" that occurs when trying to use the prompt via MCP
+    - Root cause: `relatedDocumentation`, `relatedWolframContext`, and `relatedWolframAlphaResults` were defined in private context and not accessible from `Prompts/Search.wl`
+    - Fix: Added these symbols to `CommonSymbols.wl` so they're shared between packages
+    - Also added error handling in `makePromptContent` to gracefully handle function failures
+- [x] Write tests for the MCP error handling
+- [x] Run full test suite and fix code until all tests pass (Checkpoint E)
+- [ ] Ask user to restart the MCP server and try the prompt command to verify the fix
+
+**Phase 6: Developer documentation**
 - [ ] Create `docs/mcp-prompts.md` (how prompts work, how to add new ones)
 - [ ] Update `AGENTS.md` with links to new documentation

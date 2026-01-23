@@ -307,7 +307,7 @@ makePromptContent // beginDefinition;
 
 (* Handle Function type - call the function with arguments *)
 makePromptContent[ KeyValuePattern[ { "Type" -> "Function", "Content" -> func_ } ], arguments_ ] :=
-    makePromptContent[ func @ arguments, arguments ];
+    makePromptContent[ catchPromptFunction[ func, arguments ], arguments ];
 
 (* Handle Text type with Content *)
 makePromptContent[ KeyValuePattern[ "Content" -> content_ ], arguments_ ] :=
@@ -326,6 +326,38 @@ makePromptContent[ content_, arguments_ ] :=
     <| "type" -> "text", "text" -> ToString @ content |>;
 
 makePromptContent // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*catchPromptFunction*)
+catchPromptFunction // beginDefinition;
+
+catchPromptFunction[ func_, arguments_ ] :=
+    With[ { result = Quiet @ catchAlways @ func @ arguments },
+        If[ FailureQ @ result,
+            formatPromptError @ result,
+            result
+        ]
+    ];
+
+catchPromptFunction // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*formatPromptError*)
+formatPromptError // beginDefinition;
+
+formatPromptError[ failure_Failure ] :=
+    With[ { msg = failure[ "Message" ] },
+        If[ StringQ @ msg,
+            "[Error] " <> msg,
+            "[Error] Failed to generate prompt content."
+        ]
+    ];
+
+formatPromptError[ _ ] := "[Error] Failed to generate prompt content.";
+
+formatPromptError // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)

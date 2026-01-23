@@ -632,4 +632,94 @@ VerificationTest[
     TestID   -> "ServerPromptData-AllUseSearchName@@Tests/Prompts.wlt:625,1-633,2"
 ]
 
+(* ::Section:: *)
+(* Error Handling (Phase 5) *)
+
+(* ::Subsection:: *)
+(* catchPromptFunction *)
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`catchPromptFunction[
+        Function[ args, "Success: " <> args[ "query" ] ],
+        <| "query" -> "test" |>
+    ],
+    "Success: test",
+    SameTest -> SameQ,
+    TestID   -> "CatchPromptFunction-Success@@Tests/Prompts.wlt:641,1-649,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`catchPromptFunction[
+        Function[ args, Failure[ "TestError", <| "MessageTemplate" -> "Something went wrong" |> ] ],
+        <| "query" -> "test" |>
+    ],
+    "[Error] Something went wrong",
+    SameTest -> SameQ,
+    TestID   -> "CatchPromptFunction-ReturnsFailure@@Tests/Prompts.wlt:651,1-659,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`catchPromptFunction[
+        Function[ args, Wolfram`MCPServer`Common`throwFailure[ "InvalidArguments", MCPServer, "test" ] ],
+        <| "query" -> "test" |>
+    ],
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "CatchPromptFunction-ThrowsFailure@@Tests/Prompts.wlt:661,1-669,2"
+]
+
+(* ::Subsection:: *)
+(* formatPromptError *)
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`formatPromptError[
+        Failure[ "TestError", <| "MessageTemplate" -> "Test message" |> ]
+    ],
+    "[Error] Test message",
+    SameTest -> SameQ,
+    TestID   -> "FormatPromptError-WithMessage@@Tests/Prompts.wlt:674,1-681,2"
+]
+
+VerificationTest[
+    StringMatchQ[
+        Wolfram`MCPServer`StartMCPServer`Private`formatPromptError[
+            Failure[ "TestError", <| |> ]
+        ],
+        "[Error] " ~~ __
+    ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatPromptError-NoMessage@@Tests/Prompts.wlt:683,1-693,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`formatPromptError[ "not a failure" ],
+    "[Error] Failed to generate prompt content.",
+    SameTest -> SameQ,
+    TestID   -> "FormatPromptError-NonFailure@@Tests/Prompts.wlt:695,1-700,2"
+]
+
+(* ::Subsection:: *)
+(* makePromptContent with Error Handling *)
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+        <| "Type" -> "Function", "Content" -> Function[ args, Failure[ "TestError", <| "MessageTemplate" -> "Function failed" |> ] ] |>,
+        <| "query" -> "test" |>
+    ],
+    <| "type" -> "text", "text" -> "[Error] Function failed" |>,
+    SameTest -> SameQ,
+    TestID   -> "MakePromptContent-FunctionReturnsFailure@@Tests/Prompts.wlt:705,1-713,2"
+]
+
+VerificationTest[
+    StringQ @ Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+        <| "Type" -> "Function", "Content" -> Function[ args, Wolfram`MCPServer`Common`throwFailure[ "InvalidArguments", MCPServer, "test" ] ] |>,
+        <| "query" -> "test" |>
+    ][ "text" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "MakePromptContent-FunctionThrowsFailure@@Tests/Prompts.wlt:715,1-723,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)
