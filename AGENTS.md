@@ -6,6 +6,8 @@ This file provides guidance to AI agents (Claude Code, GitHub Copilot, etc.) whe
 
 MCPServer is a Wolfram Language package that implements a Model Context Protocol (MCP) server. This enables Wolfram Language to function as a backend for large language models (LLMs) by providing a standardized interface for models to access Wolfram Language computation capabilities.
 
+> **Human developers:** For a quick-start guide, see [docs/getting-started.md](docs/getting-started.md).
+
 ## Development
 
 Always use the WolframLanguageContext tool when working with Wolfram Language code to ensure that you are aware of the latest documentation and other Wolfram resources.
