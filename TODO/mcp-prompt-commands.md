@@ -35,9 +35,9 @@ See [Specs/MCPPromptCommands.md](../Specs/MCPPromptCommands.md) for the detailed
 - [x] Run full test suite and fix code until all tests pass (Checkpoint C)
 
 **Phase 4: Server configuration**
-- [ ] Update `Kernel/DefaultServers.wl` with MCPPrompts configurations
-- [ ] Write and run full integration tests
-- [ ] Run full test suite and fix code until all tests pass (Checkpoint D)
+- [x] Update `Kernel/DefaultServers.wl` with MCPPrompts configurations
+- [x] Write and run full integration tests
+- [x] Run full test suite and fix code until all tests pass (Checkpoint D)
 
 **Phase 5: Developer documentation**
 - [ ] Create `docs/mcp-prompts.md` (how prompts work, how to add new ones)

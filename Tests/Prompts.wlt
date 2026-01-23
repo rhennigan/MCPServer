@@ -539,4 +539,97 @@ VerificationTest[
     TestID   -> "NormalizeArgument-LowercaseKeys@@Tests/Prompts.wlt:533,1-540,2"
 ]
 
+(* ::Section:: *)
+(* Server Configuration (Phase 4) *)
+
+VerificationTest[
+    $DefaultMCPServers[ "Wolfram" ][ "MCPPrompts" ],
+    { "WolframSearch" },
+    SameTest -> SameQ,
+    TestID   -> "ServerConfig-WolframHasMCPPrompts@@Tests/Prompts.wlt:545,1-550,2"
+]
+
+VerificationTest[
+    $DefaultMCPServers[ "WolframAlpha" ][ "MCPPrompts" ],
+    { "WolframAlphaSearch" },
+    SameTest -> SameQ,
+    TestID   -> "ServerConfig-WolframAlphaHasMCPPrompts@@Tests/Prompts.wlt:552,1-557,2"
+]
+
+VerificationTest[
+    $DefaultMCPServers[ "WolframLanguage" ][ "MCPPrompts" ],
+    { "WolframLanguageSearch" },
+    SameTest -> SameQ,
+    TestID   -> "ServerConfig-WolframLanguageHasMCPPrompts@@Tests/Prompts.wlt:559,1-564,2"
+]
+
+VerificationTest[
+    $DefaultMCPServers[ "WolframPacletDevelopment" ][ "MCPPrompts" ],
+    { "WolframLanguageSearch" },
+    SameTest -> SameQ,
+    TestID   -> "ServerConfig-WolframPacletDevelopmentHasMCPPrompts@@Tests/Prompts.wlt:566,1-571,2"
+]
+
+(* ::Subsection:: *)
+(* Server PromptData Property *)
+
+VerificationTest[
+    MCPServerObject[ "Wolfram" ][ "PromptData" ],
+    { KeyValuePattern[ "Name" -> "Search" ] },
+    SameTest -> MatchQ,
+    TestID   -> "ServerPromptData-Wolfram@@Tests/Prompts.wlt:576,1-581,2"
+]
+
+VerificationTest[
+    MCPServerObject[ "WolframAlpha" ][ "PromptData" ],
+    { KeyValuePattern[ "Name" -> "Search" ] },
+    SameTest -> MatchQ,
+    TestID   -> "ServerPromptData-WolframAlpha@@Tests/Prompts.wlt:583,1-588,2"
+]
+
+VerificationTest[
+    MCPServerObject[ "WolframLanguage" ][ "PromptData" ],
+    { KeyValuePattern[ "Name" -> "Search" ] },
+    SameTest -> MatchQ,
+    TestID   -> "ServerPromptData-WolframLanguage@@Tests/Prompts.wlt:590,1-595,2"
+]
+
+VerificationTest[
+    MCPServerObject[ "WolframPacletDevelopment" ][ "PromptData" ],
+    { KeyValuePattern[ "Name" -> "Search" ] },
+    SameTest -> MatchQ,
+    TestID   -> "ServerPromptData-WolframPacletDevelopment@@Tests/Prompts.wlt:597,1-602,2"
+]
+
+(* ::Subsection:: *)
+(* All Servers Have Correct Prompt Type *)
+
+VerificationTest[
+    AllTrue[
+        { "Wolfram", "WolframAlpha", "WolframLanguage", "WolframPacletDevelopment" },
+        Function[ name,
+            MatchQ[
+                MCPServerObject[ name ][ "PromptData" ],
+                { KeyValuePattern[ "Type" -> "Function" ]... }
+            ]
+        ]
+    ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "ServerPromptData-AllHaveFunctionType@@Tests/Prompts.wlt:607,1-620,2"
+]
+
+(* ::Subsection:: *)
+(* Prompt Names Match Across Servers *)
+
+VerificationTest[
+    Union @ Flatten @ Map[
+        Function[ name, #[ "Name" ] & /@ MCPServerObject[ name ][ "PromptData" ] ],
+        { "Wolfram", "WolframAlpha", "WolframLanguage", "WolframPacletDevelopment" }
+    ],
+    { "Search" },
+    SameTest -> SameQ,
+    TestID   -> "ServerPromptData-AllUseSearchName@@Tests/Prompts.wlt:625,1-633,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)

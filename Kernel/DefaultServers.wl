@@ -39,7 +39,8 @@ $defaultMCPServers[ "Wolfram" ] := <|
             "WolframContext",
             "WolframLanguageEvaluator",
             "WolframAlpha"
-        }
+        },
+        "MCPPrompts" -> { "WolframSearch" }
     |>
 |>;
 
@@ -56,7 +57,8 @@ $defaultMCPServers[ "WolframAlpha" ] := <|
         "Tools" -> {
             "WolframAlphaContext",
             "WolframAlpha"
-        }
+        },
+        "MCPPrompts" -> { "WolframAlphaSearch" }
     |>
 |>;
 
@@ -77,7 +79,8 @@ $defaultMCPServers[ "WolframLanguage" ] := <|
             "WriteNotebook",
             "SymbolDefinition",
             "TestReport"
-        }
+        },
+        "MCPPrompts" -> { "WolframLanguageSearch" }
     |>
 |>;
 
@@ -101,7 +104,8 @@ $defaultMCPServers[ "WolframPacletDevelopment" ] := <|
             "CreateSymbolDoc",
             "EditSymbolDoc",
             "EditSymbolDocExamples"
-        }
+        },
+        "MCPPrompts" -> { "WolframLanguageSearch" }
     |>
 |>;
 

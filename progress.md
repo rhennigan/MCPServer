@@ -106,3 +106,27 @@ All 388 tests pass.
 
 **Next steps**: Phase 4 - Server configuration in `DefaultServers.wl`
 
+## Session 4
+
+**Completed Phase 4: Server configuration**
+
+Updated `Kernel/DefaultServers.wl` to add `"MCPPrompts"` configurations to all default servers:
+
+1. **Server configurations updated**:
+   - `"Wolfram"` -> `"MCPPrompts" -> { "WolframSearch" }`
+   - `"WolframAlpha"` -> `"MCPPrompts" -> { "WolframAlphaSearch" }`
+   - `"WolframLanguage"` -> `"MCPPrompts" -> { "WolframLanguageSearch" }`
+   - `"WolframPacletDevelopment"` -> `"MCPPrompts" -> { "WolframLanguageSearch" }`
+
+2. **Integration tests** (10 new tests added to `Tests/Prompts.wlt`):
+   - Server configuration tests verifying each server has correct `MCPPrompts` property
+   - Server `PromptData` property tests verifying prompts are accessible via `MCPServerObject`
+   - Tests for prompt type consistency (all Function type)
+   - Tests for MCP name consistency (all use "Search" name)
+
+Note: `MCPServerObject` accesses nested `LLMEvaluator` properties directly via `["MCPPrompts"]` rather than `["LLMEvaluator", "MCPPrompts"]`.
+
+All 398 tests pass.
+
+**Next steps**: Phase 5 - Developer documentation
+
