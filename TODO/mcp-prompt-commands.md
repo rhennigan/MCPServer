@@ -100,16 +100,33 @@ This approach works, but "PromptData" is not a very good name. We need to come u
 
 ## Specification
 
-(TODO: Link to specification file here)
+See [Specs/MCPPromptCommands.md](../Specs/MCPPromptCommands.md) for the detailed specification.
 
 ## Plan
 
-(TODO: Add detailed plan here)
+Implementation order (see specification for details):
+
+1. Add error messages to `Kernel/Messages.wl`
+2. Create `Kernel/Prompts/Prompts.wl`
+3. Create `Kernel/Prompts/Search.wl`
+4. Update `Kernel/Main.wl` (exports and contexts)
+5. Update `PacletInfo.wl` (symbols list)
+6. Update `Kernel/MCPServerObject.wl` (validation and getPromptData)
+7. Update `Kernel/StartMCPServer.wl` (makePromptContent and makePromptData)
+8. Update `Kernel/DefaultServers.wl` (add MCPPrompts to each server)
+9. Create `Tests/Prompts.wlt`
+10. Run full test suite
 
 ## Tasks
 
-- [ ] Create detailed specifications for this feature in the `Specs/` directory.
-- [ ] Create detailed implementation plan (update above section)
-- [ ] Add more items here that represent specific tasks to be completed
-
-(TODO: Add more tasks here once we have a detailed plan)
+- [x] Create detailed specifications for this feature in the `Specs/` directory
+- [ ] Add error messages to `Kernel/Messages.wl`
+- [ ] Create `Kernel/Prompts/Prompts.wl` with `$DefaultMCPPrompts`
+- [ ] Create `Kernel/Prompts/Search.wl` with search prompt definitions
+- [ ] Update `Kernel/Main.wl` to export `$DefaultMCPPrompts`
+- [ ] Update `PacletInfo.wl` to include new symbol
+- [ ] Update `Kernel/MCPServerObject.wl` for validation and property access
+- [ ] Update `Kernel/StartMCPServer.wl` for Function-type prompt handling
+- [ ] Update `Kernel/DefaultServers.wl` with MCPPrompts configurations
+- [ ] Create `Tests/Prompts.wlt` with unit tests
+- [ ] Run full test suite and verify no regressions
