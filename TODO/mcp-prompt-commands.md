@@ -46,7 +46,7 @@ See [Specs/MCPPromptCommands.md](../Specs/MCPPromptCommands.md) for the detailed
     - Also added error handling in `makePromptContent` to gracefully handle function failures
 - [x] Write tests for the MCP error handling
 - [x] Run full test suite and fix code until all tests pass (Checkpoint E)
-- [ ] Ask user to restart the MCP server and try the prompt command to verify the fix
+- [x] Verify fix works (tested in Claude Desktop - works correctly; Claude Code has a client-side bug with argument parsing: https://github.com/anthropics/claude-code/issues/14210)
 
 **Phase 6: Developer documentation**
 - [ ] Create `docs/mcp-prompts.md` (how prompts work, how to add new ones)

@@ -159,5 +159,11 @@ Investigated and fixed the "MCP error -32603: Internal error" that occurred when
 
 All 406 tests pass.
 
-**Next steps**: User needs to restart MCP server to verify fix, then Phase 6 - Developer documentation
+6. **Verification**:
+   - Tested `/mcp__WolframPacletDevelopment__Search` in Claude Desktop - works correctly and returns relevant documentation
+   - Claude Code has a client-side bug where prompt arguments are truncated at spaces (only first word is passed)
+   - This is a known Claude Code issue: https://github.com/anthropics/claude-code/issues/14210
+   - Our MCP server implementation is correct; the bug is in the client
+
+**Next steps**: Phase 6 - Developer documentation
 
