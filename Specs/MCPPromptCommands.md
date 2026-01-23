@@ -186,6 +186,51 @@ $defaultMCPPrompts[ "WolframAlphaSearch" ] := <|
 
 ---
 
+## Prompt Output Format
+
+All search prompts use a consistent XML-style format to structure their output:
+
+```
+<search-query>{query}</search-query>
+<search-results>
+{results}
+</search-results>
+Use the above search results to answer the user's query below.
+<user-query>{query}</user-query>
+```
+
+### Format Elements
+
+| Element | Description |
+|---------|-------------|
+| `<search-query>` | Contains the original query passed to the search function |
+| `<search-results>` | Contains the search results from the underlying context function |
+| `<user-query>` | Repeats the original query at the end |
+
+### Rationale
+
+The query is intentionally repeated in both `<search-query>` and `<user-query>` tags. This allows LLMs to:
+
+1. **Detect argument parsing issues**: If a client incorrectly truncates arguments (e.g., Claude Code issue #14210), the LLM can see the original query in context and potentially infer the intended request.
+2. **Maintain context**: The repeated query provides clear boundaries for what the search was about.
+3. **Support debugging**: The structured format makes it easier to identify issues in the search pipeline.
+
+### Implementation
+
+```wl
+formatSearchPrompt[query_String, results_String] :=
+    StringJoin[
+        "<search-query>", query, "</search-query>\n",
+        "<search-results>\n",
+        results, "\n",
+        "</search-results>\n",
+        "Use the above search results to answer the user's query below.\n",
+        "<user-query>", query, "</user-query>"
+    ];
+```
+
+---
+
 ## LLMEvaluator Configuration
 
 ### Property Name
@@ -434,6 +479,23 @@ $defaultMCPPrompts[ "WolframAlphaSearch" ] := <|
 (* Definitions *)
 
 (* ::Subsection:: *)
+(* formatSearchPrompt *)
+
+formatSearchPrompt // beginDefinition;
+
+formatSearchPrompt[query_String, results_String] :=
+    StringJoin[
+        "<search-query>", query, "</search-query>\n",
+        "<search-results>\n",
+        results, "\n",
+        "</search-results>\n",
+        "Use the above search results to answer the user's query below.\n",
+        "<user-query>", query, "</user-query>"
+    ];
+
+formatSearchPrompt // endDefinition;
+
+(* ::Subsection:: *)
 (* generateWolframSearchPrompt *)
 
 generateWolframSearchPrompt // beginDefinition;
@@ -449,7 +511,7 @@ generateWolframSearchPrompt[query_String] := Enclose[
             StringQ,
             "Result"
         ];
-        StringJoin[result, "\n\n", query]
+        formatSearchPrompt[query, result]
     ],
     throwInternalFailure
 ];
@@ -472,7 +534,7 @@ generateWLSearchPrompt[query_String] := Enclose[
             StringQ,
             "Result"
         ];
-        StringJoin[result, "\n\n", query]
+        formatSearchPrompt[query, result]
     ],
     throwInternalFailure
 ];
@@ -495,7 +557,7 @@ generateWASearchPrompt[query_String] := Enclose[
             StringQ,
             "Result"
         ];
-        StringJoin[result, "\n\n", query]
+        formatSearchPrompt[query, result]
     ],
     throwInternalFailure
 ];

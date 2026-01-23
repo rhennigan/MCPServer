@@ -722,4 +722,107 @@ VerificationTest[
     TestID   -> "MakePromptContent-FunctionThrowsFailure@@Tests/Prompts.wlt:715,1-723,2"
 ]
 
+(* ::Section:: *)
+(* Prompt Format (Phase 6) *)
+
+(* ::Subsection:: *)
+(* formatSearchPrompt *)
+
+VerificationTest[
+    Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[ "test query", "some results" ],
+    "<search-query>test query</search-query>\n<search-results>\nsome results\n</search-results>\nUse the above search results to answer the user's query below.\n<user-query>test query</user-query>",
+    SameTest -> SameQ,
+    TestID   -> "FormatSearchPrompt-BasicOutput@@Tests/Prompts.wlt:731,1-736,2"
+]
+
+VerificationTest[
+    StringQ @ Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[ "query", "results" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSearchPrompt-ReturnsString@@Tests/Prompts.wlt:738,1-743,2"
+]
+
+VerificationTest[
+    StringContainsQ[
+        Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[ "my query", "my results" ],
+        "<search-query>my query</search-query>"
+    ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSearchPrompt-ContainsSearchQueryTag@@Tests/Prompts.wlt:745,1-753,2"
+]
+
+VerificationTest[
+    StringContainsQ[
+        Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[ "my query", "my results" ],
+        "<search-results>\nmy results\n</search-results>"
+    ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSearchPrompt-ContainsSearchResultsTag@@Tests/Prompts.wlt:755,1-763,2"
+]
+
+VerificationTest[
+    StringContainsQ[
+        Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[ "my query", "my results" ],
+        "<user-query>my query</user-query>"
+    ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSearchPrompt-ContainsUserQueryTag@@Tests/Prompts.wlt:765,1-773,2"
+]
+
+VerificationTest[
+    StringCount[
+        Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[ "duplicated", "results" ],
+        "duplicated"
+    ],
+    2,
+    SameTest -> SameQ,
+    TestID   -> "FormatSearchPrompt-QueryAppearsInBothTags@@Tests/Prompts.wlt:775,1-783,2"
+]
+
+VerificationTest[
+    StringContainsQ[
+        Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[ "test", "test" ],
+        "Use the above search results to answer the user's query below."
+    ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSearchPrompt-ContainsInstructionalText@@Tests/Prompts.wlt:785,1-793,2"
+]
+
+(* ::Subsection:: *)
+(* Format Used by Search Prompts *)
+
+VerificationTest[
+    StringContainsQ[
+        $DefaultMCPPrompts[ "WolframSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
+        "<search-query>test query</search-query>"
+    ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "WolframSearch-UsesNewFormat@@Tests/Prompts.wlt:798,1-806,2"
+]
+
+VerificationTest[
+    StringContainsQ[
+        $DefaultMCPPrompts[ "WolframLanguageSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
+        "<search-query>test query</search-query>"
+    ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "WolframLanguageSearch-UsesNewFormat@@Tests/Prompts.wlt:808,1-816,2"
+]
+
+VerificationTest[
+    StringContainsQ[
+        $DefaultMCPPrompts[ "WolframAlphaSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
+        "<search-query>test query</search-query>"
+    ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "WolframAlphaSearch-UsesNewFormat@@Tests/Prompts.wlt:818,1-826,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)

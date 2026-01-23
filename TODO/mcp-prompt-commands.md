@@ -48,6 +48,23 @@ See [Specs/MCPPromptCommands.md](../Specs/MCPPromptCommands.md) for the detailed
 - [x] Run full test suite and fix code until all tests pass (Checkpoint E)
 - [x] Verify fix works (tested in Claude Desktop - works correctly; Claude Code has a client-side bug with argument parsing: https://github.com/anthropics/claude-code/issues/14210)
 
-**Phase 6: Developer documentation**
+**Phase 6: Prompt Format Improvements**
+- [x] Generated prompt should add explanatory text and indicate parts with xml-style tags
+    Use the following format for the generated prompt:
+    ```
+    <search-query>{query}</search-query>
+    <search-results>
+    {results}
+    </search-results>
+    Use the above search results to answer the user's query below.
+    <user-query>{query}</user-query>
+    ```
+    We repeat the query so the LLM can infer when something went wrong due to bugs like the Claude Code issue above.
+
+- [x] Ensure the `MCPPromptCommands.md` specification is updated to reflect this change
+- [x] Write tests for the new prompt format
+- [x] Run full test suite and fix code until all tests pass (Checkpoint F)
+
+**Phase 7: Developer documentation**
 - [ ] Create `docs/mcp-prompts.md` (how prompts work, how to add new ones)
 - [ ] Update `AGENTS.md` with links to new documentation

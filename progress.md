@@ -165,5 +165,35 @@ All 406 tests pass.
    - This is a known Claude Code issue: https://github.com/anthropics/claude-code/issues/14210
    - Our MCP server implementation is correct; the bug is in the client
 
-**Next steps**: Phase 6 - Developer documentation
+**Next steps**: Phase 6 - Prompt Format Improvements
+
+## Session 6
+
+**Completed Phase 6: Prompt Format Improvements**
+
+Updated the search prompt format to use XML-style tags for better structure and LLM comprehension:
+
+1. **New `formatSearchPrompt` helper function** (`Kernel/Prompts/Search.wl`):
+   - Generates structured output with `<search-query>`, `<search-results>`, and `<user-query>` tags
+   - Query is intentionally repeated in both `<search-query>` and `<user-query>` to help LLMs detect argument parsing issues
+
+2. **Updated prompt generators**:
+   - `generateWolframSearchPrompt`, `generateWLSearchPrompt`, and `generateWASearchPrompt` now use `formatSearchPrompt`
+   - All three produce consistent XML-structured output
+
+3. **Updated specification** (`Specs/MCPPromptCommands.md`):
+   - Added new "Prompt Output Format" section documenting the XML structure
+   - Updated code examples in the Search.wl section to use `formatSearchPrompt`
+   - Documented rationale for repeating the query (client bug detection, context maintenance, debugging)
+
+4. **Tests** (10 new tests added to `Tests/Prompts.wlt`):
+   - `formatSearchPrompt` basic output, string return type
+   - Tests for each XML tag (`<search-query>`, `<search-results>`, `<user-query>`)
+   - Test for query appearing twice (in both query tags)
+   - Test for instructional text
+   - Integration tests verifying all three search prompts use the new format
+
+All 416 tests pass.
+
+**Next steps**: Phase 7 - Developer documentation
 

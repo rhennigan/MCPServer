@@ -72,6 +72,23 @@ $defaultMCPPrompts[ "WolframAlphaSearch" ] := <|
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*formatSearchPrompt*)
+formatSearchPrompt // beginDefinition;
+
+formatSearchPrompt[ query_String, results_String ] :=
+    StringJoin[
+        "<search-query>", query, "</search-query>\n",
+        "<search-results>\n",
+        results, "\n",
+        "</search-results>\n",
+        "Use the above search results to answer the user's query below.\n",
+        "<user-query>", query, "</user-query>"
+    ];
+
+formatSearchPrompt // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*generateWolframSearchPrompt*)
 generateWolframSearchPrompt // beginDefinition;
 
@@ -86,7 +103,7 @@ generateWolframSearchPrompt[ query_String ] := Enclose[
             StringQ,
             "Result"
         ];
-        StringJoin[ result, "\n\n", query ]
+        formatSearchPrompt[ query, result ]
     ],
     throwInternalFailure
 ];
@@ -109,7 +126,7 @@ generateWLSearchPrompt[ query_String ] := Enclose[
             StringQ,
             "Result"
         ];
-        StringJoin[ result, "\n\n", query ]
+        formatSearchPrompt[ query, result ]
     ],
     throwInternalFailure
 ];
@@ -132,7 +149,7 @@ generateWASearchPrompt[ query_String ] := Enclose[
             StringQ,
             "Result"
         ];
-        StringJoin[ result, "\n\n", query ]
+        formatSearchPrompt[ query, result ]
     ],
     throwInternalFailure
 ];
