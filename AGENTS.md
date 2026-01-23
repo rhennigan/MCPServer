@@ -64,6 +64,8 @@ You can run test files using the TestReport MCP tool on the "Tests" directory.
 
 Use the WolframLanguageContext tool if tests fail to help find a solution.
 
+See [testing.md](docs/testing.md) for more details.
+
 ## Building the Paclet
 
 ```bash
@@ -131,6 +133,15 @@ The server implements the Model Context Protocol, which provides:
 1. **Tool Listing**: Endpoints to list available tools
 2. **Tool Execution**: Ability to execute tools from the LLM
 3. **Prompt Management**: Support for managing prompts
+
+#### MCP Documentation
+
+Use the official MCP documentation when working on the server implementation (`Kernel/StartMCPServer.wl`).
+
+- [Overview](https://modelcontextprotocol.io/specification/2025-11-25/basic/index.md)
+- [Lifecycle](https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle.md)
+- [Tools](https://modelcontextprotocol.io/specification/2025-11-25/server/tools.md)
+- [List of all documentation pages](https://modelcontextprotocol.io/llms.txt)
 
 ## Code Style Guidelines
 
