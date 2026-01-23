@@ -19,6 +19,7 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/StartMCPServer.wl`
 - [ ] Support image outputs from tools according to MCP spec
   - Source: `Kernel/Tools/Tools.wl`
+- [ ] [Implement prompts as commands](TODO/mcp-prompt-commands.md)
 
 ## Tools
 
