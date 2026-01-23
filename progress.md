@@ -44,3 +44,33 @@ Added MCP prompts support following the pattern established by the Tools system:
 
 **Next steps**: Phase 2 - Property access and validation in `MCPServerObject.wl`
 
+## Session 2
+
+**Completed Phase 2: Property access and validation**
+
+Updated `Kernel/MCPServerObject.wl` to support the new `"MCPPrompts"` LLMEvaluator property:
+
+1. **Validation support**:
+   - Added `validateLLMEvaluator0["MCPPrompts", ...]` to validate prompts during server creation
+   - Added `validateMCPPrompts` to validate lists of prompt specifications (strings or associations)
+   - Added `validateMCPPrompt` to validate individual prompts (checks `$DefaultMCPPrompts` for string names)
+
+2. **Updated `getPromptData`**:
+   - Now checks for `"MCPPrompts"` first (new property)
+   - Falls back to `"PromptData"` and issues deprecation failure
+   - Returns empty list if neither property exists
+
+3. **Normalization functions**:
+   - Added `normalizePromptData` to convert prompt specifications (strings to `$DefaultMCPPrompts` lookups, associations get type inference)
+   - Added `determinePromptType` to infer prompt type from content when `"Type"` is `Automatic` or missing
+
+4. **Tests** (23 new tests added to `Tests/Prompts.wlt`):
+   - `validateMCPPrompts` and `validateMCPPrompt` validation
+   - `normalizePromptData` string lookup and type inference
+   - `determinePromptType` for various content types
+   - `getPromptData` with MCPPrompts, inline prompts, and deprecation warning
+
+All 371 tests pass.
+
+**Next steps**: Phase 3 - Protocol handling in `StartMCPServer.wl`
+

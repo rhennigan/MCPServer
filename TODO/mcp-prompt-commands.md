@@ -25,9 +25,9 @@ See [Specs/MCPPromptCommands.md](../Specs/MCPPromptCommands.md) for the detailed
 - [x] Fix code until all tests pass (Checkpoint A)
 
 **Phase 2: Property access and validation**
-- [ ] Update `Kernel/MCPServerObject.wl` for validation and property access
-- [ ] Write tests for `MCPServerObject[...]["PromptData"]`, validation, and other new functionality
-- [ ] Run full test suite and fix code until all tests pass (Checkpoint B)
+- [x] Update `Kernel/MCPServerObject.wl` for validation and property access
+- [x] Write tests for `MCPServerObject[...]["PromptData"]`, validation, and other new functionality
+- [x] Run full test suite and fix code until all tests pass (Checkpoint B)
 
 **Phase 3: Protocol handling**
 - [ ] Update `Kernel/StartMCPServer.wl` for Function-type prompt handling

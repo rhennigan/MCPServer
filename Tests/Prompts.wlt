@@ -161,4 +161,195 @@ VerificationTest[
     TestID   -> "WolframAlphaSearch-HasQueryArgument@@Tests/Prompts.wlt:157,1-162,2"
 ]
 
+(* ::Section:: *)
+(* Validation Functions *)
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompts[ "WolframSearch" ],
+    { "WolframSearch" },
+    SameTest -> SameQ,
+    TestID   -> "ValidateMCPPrompts-SingleString@@Tests/Prompts.wlt:167,1-172,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompts[ { "WolframSearch", "WolframLanguageSearch" } ],
+    { "WolframSearch", "WolframLanguageSearch" },
+    SameTest -> SameQ,
+    TestID   -> "ValidateMCPPrompts-ListOfStrings@@Tests/Prompts.wlt:174,1-179,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompts[ { <| "Name" -> "Custom" |> } ],
+    { <| "Name" -> "Custom" |> },
+    SameTest -> SameQ,
+    TestID   -> "ValidateMCPPrompts-InlineAssociation@@Tests/Prompts.wlt:181,1-186,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompts[ { "WolframSearch", <| "Name" -> "Custom" |> } ],
+    { "WolframSearch", <| "Name" -> "Custom" |> },
+    SameTest -> SameQ,
+    TestID   -> "ValidateMCPPrompts-MixedList@@Tests/Prompts.wlt:188,1-193,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompts[ "NonExistentPrompt" ],
+    _Failure,
+    { MCPServer::PromptNameNotFound, MCPServer::InvalidMCPPromptsSpecification },
+    SameTest -> MatchQ,
+    TestID   -> "ValidateMCPPrompts-InvalidName@@Tests/Prompts.wlt:195,1-201,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompts[ 123 ],
+    _Failure,
+    { MCPServer::InvalidMCPPromptsSpecification },
+    SameTest -> MatchQ,
+    TestID   -> "ValidateMCPPrompts-InvalidType@@Tests/Prompts.wlt:203,1-209,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompt[ "WolframSearch" ],
+    "WolframSearch",
+    SameTest -> SameQ,
+    TestID   -> "ValidateMCPPrompt-ValidString@@Tests/Prompts.wlt:211,1-216,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompt[ <| "Name" -> "Custom" |> ],
+    <| "Name" -> "Custom" |>,
+    SameTest -> SameQ,
+    TestID   -> "ValidateMCPPrompt-Association@@Tests/Prompts.wlt:218,1-223,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompt[ "NonExistent" ],
+    _Failure,
+    { MCPServer::PromptNameNotFound },
+    SameTest -> MatchQ,
+    TestID   -> "ValidateMCPPrompt-InvalidName@@Tests/Prompts.wlt:225,1-231,2"
+]
+
+(* ::Section:: *)
+(* normalizePromptData *)
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`normalizePromptData[ "WolframSearch" ],
+    $DefaultMCPPrompts[ "WolframSearch" ],
+    SameTest -> SameQ,
+    TestID   -> "NormalizePromptData-StringLookup@@Tests/Prompts.wlt:236,1-241,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`normalizePromptData[ <| "Name" -> "Test", "Content" -> "Static text" |> ],
+    <| "Name" -> "Test", "Content" -> "Static text", "Type" -> "Text" |>,
+    SameTest -> SameQ,
+    TestID   -> "NormalizePromptData-TextType@@Tests/Prompts.wlt:243,1-248,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`normalizePromptData[ <| "Name" -> "Test", "Content" -> Function[ x, x ] |> ],
+    KeyValuePattern[ "Type" -> "Function" ],
+    SameTest -> MatchQ,
+    TestID   -> "NormalizePromptData-FunctionType@@Tests/Prompts.wlt:250,1-255,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`normalizePromptData[ "NonExistent" ],
+    _Failure,
+    { MCPServer::PromptNameNotFound },
+    SameTest -> MatchQ,
+    TestID   -> "NormalizePromptData-InvalidName@@Tests/Prompts.wlt:257,1-263,2"
+]
+
+(* ::Section:: *)
+(* determinePromptType *)
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`determinePromptType[ <| "Type" -> "Function" |> ],
+    "Function",
+    SameTest -> SameQ,
+    TestID   -> "DeterminePromptType-ExplicitFunction@@Tests/Prompts.wlt:268,1-273,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`determinePromptType[ <| "Type" -> "Text" |> ],
+    "Text",
+    SameTest -> SameQ,
+    TestID   -> "DeterminePromptType-ExplicitText@@Tests/Prompts.wlt:275,1-280,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`determinePromptType[ <| "Content" -> "Some string" |> ],
+    "Text",
+    SameTest -> SameQ,
+    TestID   -> "DeterminePromptType-StringContent@@Tests/Prompts.wlt:282,1-287,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`determinePromptType[ <| "Content" -> Identity |> ],
+    "Function",
+    SameTest -> SameQ,
+    TestID   -> "DeterminePromptType-FunctionContent@@Tests/Prompts.wlt:289,1-294,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`determinePromptType[ <| |> ],
+    "Text",
+    SameTest -> SameQ,
+    TestID   -> "DeterminePromptType-EmptyDefault@@Tests/Prompts.wlt:296,1-301,2"
+]
+
+(* ::Section:: *)
+(* MCPServerObject PromptData Property *)
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`getPromptData[
+        <| "LLMEvaluator" -> <| "MCPPrompts" -> { "WolframSearch" } |> |>
+    ],
+    { $DefaultMCPPrompts[ "WolframSearch" ] },
+    SameTest -> SameQ,
+    TestID   -> "GetPromptData-WithMCPPrompts@@Tests/Prompts.wlt:306,1-313,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`getPromptData[
+        <| "LLMEvaluator" -> <| |> |>
+    ],
+    { },
+    SameTest -> SameQ,
+    TestID   -> "GetPromptData-NoPrompts@@Tests/Prompts.wlt:315,1-322,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`getPromptData[
+        <| "LLMEvaluator" -> <| "MCPPrompts" -> { "WolframSearch", "WolframLanguageSearch" } |> |>
+    ],
+    { $DefaultMCPPrompts[ "WolframSearch" ], $DefaultMCPPrompts[ "WolframLanguageSearch" ] },
+    SameTest -> SameQ,
+    TestID   -> "GetPromptData-MultiplePrompts@@Tests/Prompts.wlt:324,1-331,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`getPromptData[
+        <| "LLMEvaluator" -> <| "MCPPrompts" -> { <| "Name" -> "Custom", "Content" -> "Test" |> } |> |>
+    ],
+    { <| "Name" -> "Custom", "Content" -> "Test", "Type" -> "Text" |> },
+    SameTest -> SameQ,
+    TestID   -> "GetPromptData-InlinePrompt@@Tests/Prompts.wlt:333,1-340,2"
+]
+
+(* ::Section:: *)
+(* Deprecation Warning *)
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`getPromptData[
+        <| "LLMEvaluator" -> <| "PromptData" -> { <| "Name" -> "Test" |> } |> |>
+    ],
+    _Failure,
+    { MCPServer::DeprecatedPromptData },
+    SameTest -> MatchQ,
+    TestID   -> "GetPromptData-DeprecatedPromptDataFails@@Tests/Prompts.wlt:345,1-353,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)
