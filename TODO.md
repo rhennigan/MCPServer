@@ -64,6 +64,10 @@ Consolidated list of TODO/FIXME items from the codebase.
 
 - [ ] Add message handler to log messages to a file
   - Source: `Kernel/StartMCPServer.wl`
+- [ ] Include information about the current MCP server in bug reports
+  - Source: `Kernel/Common.wl`
+- [ ] Remove empty "Settings" section from bug reports (this paclet has no settings)
+  - Source: `Kernel/Common.wl`
 
 ## Blocked / Dependencies
 

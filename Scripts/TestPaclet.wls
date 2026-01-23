@@ -4,22 +4,33 @@ BeginPackage[ "Wolfram`MCPServerScripts`" ];
 
 If[ ! TrueQ @ $loadedDefinitions, Get @ FileNameJoin @ { DirectoryName @ $InputFileName, "Common.wl" } ];
 
+Needs[ "Wolfram`MCPServer`"  -> "mcp`"  ];
 Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Configure TestReport Output*)
 
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
-(* Improve readability of GitHub Actions output by writing some test events to stdout. *)
+
+(* Improve readability of GitHub Actions output by writing some test events to stdout: *)
+$stdOut = First @ Streams[ "stdout" ];
+SetOptions[ $stdOut, PageWidth -> Infinity ];
+writeLine[ text___ ] := WriteString[ $stdOut, text, "\n" ];
+
 SetOptions[
     TestReport,
     HandlerFunctions -> <|
-        "FileStarted"   -> Function @ Print[ "Starting test file: ", #[ "TestFileName" ] ],
-        "FileFinished"  -> Function @ Print[ "Finished test file: ", #[ "TestFileName" ] ],
-        "TestCreated"   -> Function @ Print[ "\tCurrent test: " , #[ "TestObject" ][ "TestID" ] ],
+        "FileStarted"   -> Function @ writeLine[ "Starting test file: ", #[ "TestFileName" ] ],
+        "FileFinished"  -> Function @ writeLine[ "Finished test file: ", #[ "TestFileName" ] ],
+        "TestCreated"   -> Function @ writeLine[ "\tCurrent test: " , #[ "TestObject" ][ "TestID" ] ],
         "TestEvaluated" -> checkTestResult
     |>,
     HandlerFunctionsKeys -> { "Outcome", "TestFileName", "TestObject" },
     ProgressReporting    -> False
 ];
+
 
 checkTestResult[ as_Association ] :=
     Catch @ Module[ { outcome, testObject, testID, string },
@@ -47,22 +58,51 @@ checkTestResult[ as_Association ] :=
         ]
     ];
 
-$testDirectory = FileNameJoin @ { $pacletDir, "Tests" };
-If[ StringQ @ Environment[ "GITHUB_ACTIONS" ]
-    ,
-    result = UsingFrontEnd @ Block[ { messagePrint }, checkResult @ Wolfram`PacletCICD`TestPaclet @ $testDirectory ]
-    ,
-    report = UsingFrontEnd @ Block[ { messagePrint }, TestReport @ FileNames[ "*.wlt", $testDirectory ] ];
-    failed = Cases[ report[ "TestsFailed" ], _TestObject, Infinity ];
-    If[ Length @ failed === 0, Exit[ 0 ] ];
-    Print[ "Failed tests: " ];
-    Cases[
-        failed,
-        t_TestObject :> Print[ "\n\t", t[ "TestID" ], ": ", ToString[ t, InputForm ] ],
-        Infinity
-    ];
-    Exit[ 1 ]
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Get Test Paths*)
+(* Get positional arguments (test paths) from command line *)
+$testPaths = Select[
+    Rest @ $scriptCommandLine, (* Skip script name *)
+    StringQ[ # ] && ! StringStartsQ[ #, "-" ] & (* Exclude flags *)
 ];
+
+(* Resolve test paths: use absolute paths if they exist, otherwise relative to paclet dir *)
+$testTargets =
+    If[ Length @ $testPaths > 0,
+        Map[
+            Which[
+                FileExistsQ @ #                               , #,
+                FileExistsQ @ FileNameJoin @ { $pacletDir, # }, FileNameJoin @ { $pacletDir, # },
+                True                                          , # (* Let the test framework handle invalid paths *)
+            ] &,
+            $testPaths
+        ],
+        { FileNameJoin @ { $pacletDir, "Tests" } }
+    ];
+
+(* Collect test files from targets (files or directories) *)
+$testFiles = Flatten[ If[ DirectoryQ[ # ], FileNames[ "*.wlt", # ], { # } ] & /@ $testTargets ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Run Tests*)
+(* When running tests in a GitHub Actions workflow, use the `TestPaclet` tool to generate proper GitHub annotations *)
+runTests[ ___ ] /; StringQ @ Environment[ "GITHUB_ACTIONS" ] :=
+    UsingFrontEnd @ checkResult @ cicd`TestPaclet @ FileNameJoin @ { $pacletDir, "Tests" };
+
+(* Use the `TestReportToolFunction` to generate nice readable markdown when running tests locally *)
+runTests[ testFiles_List ] :=
+    Module[ { args, markdown, outcome },
+        args = <| "paths" -> StringRiffle[ testFiles, "," ] |>;
+        markdown = cStr @ mcp`TestReportToolFunction[ args, "External" -> False ];
+        writeLine[ "\n<test-results>\n" <> markdown <> "\n</test-results>\n" ];
+        outcome = cStr @ First @ StringCases[ markdown, "| **Overall Result** | " ~~ o: Except[ "|" ].. ~~ " |" :> o ];
+        If[ outcome =!= "Success", Exit[ 1 ] ];
+        markdown
+    ];
+
+result = Block[ { messagePrint }, runTests @ $testFiles ];
 (* :!CodeAnalysis::EndBlock:: *)
 
 EndPackage[ ];

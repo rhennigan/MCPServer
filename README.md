@@ -99,7 +99,7 @@ For more details on creating custom MCP servers, configuring tools, and advanced
 
 ## Development
 
-See [AGENTS.md](AGENTS.md) for development guidelines and commands.
+See [docs/getting-started.md](docs/getting-started.md) for development setup and workflow, or [AGENTS.md](AGENTS.md) for detailed guidelines.
 
 ## License
 

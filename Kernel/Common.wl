@@ -636,8 +636,10 @@ bugReportBody[ as_Association? AssociationQ ] :=
         bugReportText = TemplateApply[
             $bugReportBodyTemplate,
             TemplateVerbatim /@ <|
+                (* FIXME: This should include information about the current MCP server (if applicable) *)
                 "DebugData"       -> associationMarkdown @ debugData,
                 "Stack"           -> stack,
+                (* FIXME: There are no settings in this paclet, so this is always empty *)
                 "Settings"        -> associationMarkdown @ takeRelevantSettings @ settings,
                 "InternalFailure" -> markdownCodeBlock @ internalFailure,
                 "SourceLink"      -> sourceLink @ internalFailure
