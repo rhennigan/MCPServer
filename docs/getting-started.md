@@ -158,7 +158,7 @@ MCPServer/
 ├── Kernel/                    # Core implementation
 │   ├── MCPServer.wl           # Main entry point
 │   ├── Main.wl                # Package loading, exported symbols
-│   ├── Common.wl              # Utilities and error handling
+│   ├── Common.wl              # Utilities and [error handling](error-handling.md)
 │   ├── CreateMCPServer.wl     # Server creation
 │   ├── StartMCPServer.wl      # Server startup
 │   ├── Messages.wl            # Error messages
@@ -175,12 +175,14 @@ For detailed architecture information, see [AGENTS.md](../AGENTS.md#code-archite
 
 - Review the [Code Architecture](../AGENTS.md#code-architecture) section for understanding the codebase
 - Read the [Code Style Guidelines](../AGENTS.md#code-style-guidelines) before contributing
-- Check the [Key Development Patterns](../AGENTS.md#key-development-patterns) for error handling and function definitions
+- Check the [Key Development Patterns](../AGENTS.md#key-development-patterns) for function definitions
+- Read the [Error Handling](error-handling.md) guide for the error handling architecture
 
 ## Additional Resources
 
 - [Testing](testing.md) - Writing and running tests
 - [Building](building.md) - Building the paclet for distribution
+- [Error Handling](error-handling.md) - Error handling architecture and patterns
 - [AGENTS.md](../AGENTS.md) - Detailed development guidelines and AI agent guidance
 - [README.md](../README.md) - User documentation and quick start
 - [Paclet Documentation](https://paclets.com/Wolfram/MCPServer) - Published user documentation

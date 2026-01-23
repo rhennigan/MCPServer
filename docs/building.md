@@ -49,7 +49,9 @@ The built paclet will be placed in the `build/` directory. The output includes:
 
 ## MX Files
 
-MX files are pre-compiled versions of the paclet that load faster. During development, you may want to:
+MX files are pre-compiled versions of the paclet that load faster. During the MX build, error handling tags are also rewritten to include source file locations for easier debugging (see [Error Handling - Modified Definition](error-handling.md#modified-definition)).
+
+During development, you may want to:
 
 - **Disable MX building** with `--mx=false` for faster build iterations
 - **Delete existing MX files** (`Kernel/64Bit/MCPServer.mx`) when testing source changes
@@ -60,4 +62,5 @@ See [Getting Started](getting-started.md#important-mx-files) for more details on
 
 - [Getting Started](getting-started.md) - Development environment setup
 - [Testing](testing.md) - Writing and running tests
+- [Error Handling](error-handling.md) - Error handling architecture and patterns
 - [AGENTS.md](../AGENTS.md) - Detailed development guidelines

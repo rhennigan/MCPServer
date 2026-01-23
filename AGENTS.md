@@ -82,7 +82,7 @@ This script builds the paclet and performs necessary checks. Options:
 - `Kernel/`: Contains the core implementation files
   - `MCPServer.wl`: Main entry point which loads an MX file if available, otherwise proceeds to `Main.wl`
   - `Main.wl`: Entry point for loading other package files; exported symbols must be declared here
-  - `Common.wl`: Common utilities and error handling
+  - `Common.wl`: Common utilities and [error handling](docs/error-handling.md)
   - `CommonSymbols.wl`: Any symbols shared between paclet files must be declared here
   - `CreateMCPServer.wl`: Implementation for creating MCP servers
   - `DefaultServers.wl`: Defines several predefined named MCP servers
@@ -108,6 +108,12 @@ This script builds the paclet and performs necessary checks. Options:
   - Every test should have a `TestID` specification
   - Do not manually write the trailing `@@path/to/file.wlt:l,c` part of the `TestID` specification; it will be added automatically on commit
 
+- `docs/`: Developer documentation
+  - `getting-started.md`: Development environment setup and workflow
+  - `testing.md`: Writing and running tests
+  - `building.md`: Building the paclet for distribution
+  - `error-handling.md`: Error handling architecture and patterns
+
 ### Key Components
 
 1. **MCPServerObject**: The main data structure representing an MCP server.
@@ -116,7 +122,7 @@ This script builds the paclet and performs necessary checks. Options:
 
 3. **StartMCPServer**: Function that starts a server and processes client requests.
 
-4. **Common Error Handling Framework**: The package uses a sophisticated error handling system with functions like `catchMine`, `throwFailure`, and `throwInternalFailure`.
+4. **Common Error Handling Framework**: The package uses a sophisticated [error handling](docs/error-handling.md) system with functions like `catchTop`, `catchMine`, `throwFailure`, and `throwInternalFailure`.
 
 ### Protocol Implementation
 
@@ -137,6 +143,8 @@ The server implements the Model Context Protocol, which provides:
 ## Key Development Patterns
 
 ### Error Handling
+
+For comprehensive documentation on error handling, see [docs/error-handling.md](docs/error-handling.md).
 
 Error handling is managed using the following helpers:
 - `catchTop` - Catches anything thrown by `throwFailure` or `throwInternalFailure`. Only the outermost `catchTop` is used.
@@ -183,7 +191,7 @@ nameOfFunction[ ... ] := Enclose[
 nameOfFunction // endDefinition;
 ```
 
-The `Enclose` wrapper is only necessary if you are using any `Confirm`, `ConfirmBy`, `ConfirmMatch`, etc. functions in the body, and it will trigger a throw of an internal failure error if any of them fail.
+The `Enclose` wrapper is only necessary if you are using any `Confirm`, `ConfirmBy`, `ConfirmMatch`, etc. functions in the body, and it will trigger a throw of an internal failure error if any of them fail. See [error handling](docs/error-handling.md) for details on how these are optimized.
 
 ### Naming Conventions
 

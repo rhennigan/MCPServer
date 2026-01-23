@@ -15,7 +15,7 @@ VerificationTest[
 ]
 ```
 
-You can optionally include expected messages:
+You can optionally include expected messages (see [Error Handling](error-handling.md) for how messages are defined and thrown):
 
 ```wl
 VerificationTest[
@@ -90,4 +90,5 @@ If tests fail, consider:
 
 - [Getting Started](getting-started.md) - Development environment setup
 - [Building](building.md) - Building the paclet
+- [Error Handling](error-handling.md) - Error handling architecture and patterns
 - [AGENTS.md](../AGENTS.md) - Detailed development guidelines
