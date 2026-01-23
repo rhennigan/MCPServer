@@ -16,13 +16,13 @@ See [Specs/MCPPromptCommands.md](../Specs/MCPPromptCommands.md) for the detailed
 - [x] Create detailed specifications for this feature in the `Specs/` directory
 
 **Phase 1: Core infrastructure**
-- [ ] Add error messages to `Kernel/Messages.wl`
-- [ ] Create `Kernel/Prompts/Prompts.wl` with `$DefaultMCPPrompts`
-- [ ] Create `Kernel/Prompts/Search.wl` with search prompt definitions
-- [ ] Update `Kernel/Main.wl` to export `$DefaultMCPPrompts` and contexts
-- [ ] Update `PacletInfo.wl` to include new symbol
-- [ ] Write and run tests for `$DefaultMCPPrompts`
-- [ ] Fix code until all tests pass (Checkpoint A)
+- [x] Add error messages to `Kernel/Messages.wl`
+- [x] Create `Kernel/Prompts/Prompts.wl` with `$DefaultMCPPrompts`
+- [x] Create `Kernel/Prompts/Search.wl` with search prompt definitions
+- [x] Update `Kernel/Main.wl` to export `$DefaultMCPPrompts` and contexts
+- [x] Update `PacletInfo.wl` to include new symbol
+- [x] Write and run tests for `$DefaultMCPPrompts`
+- [x] Fix code until all tests pass (Checkpoint A)
 
 **Phase 2: Property access and validation**
 - [ ] Update `Kernel/MCPServerObject.wl` for validation and property access

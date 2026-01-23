@@ -18,6 +18,7 @@ PacletObject[ <|
             "Root"    -> "Kernel",
             "Context" -> { "Wolfram`MCPServer`" },
             "Symbols" -> {
+                "Wolfram`MCPServer`$DefaultMCPPrompts",
                 "Wolfram`MCPServer`$DefaultMCPServers",
                 "Wolfram`MCPServer`$DefaultMCPTools",
                 "Wolfram`MCPServer`$LastMCPServerFailure",
