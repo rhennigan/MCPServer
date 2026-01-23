@@ -74,3 +74,35 @@ All 371 tests pass.
 
 **Next steps**: Phase 3 - Protocol handling in `StartMCPServer.wl`
 
+## Session 3
+
+**Completed Phase 3: Protocol handling**
+
+Updated `Kernel/StartMCPServer.wl` to handle Function-type prompts and normalize keys for MCP protocol:
+
+1. **Updated `makePromptContent`**:
+   - Added handler for `"Type" -> "Function"` prompts that calls the function with arguments
+   - Added fallback handler that converts non-string content to string using `ToString`
+   - Existing handlers for Text type, StringTemplate, and plain strings preserved
+
+2. **Updated `makePromptData`**:
+   - Refactored to use new `makePromptData0` helper function
+   - Properly normalizes capitalized keys (`"Name"`, `"Description"`, `"Arguments"`) to lowercase MCP format
+   - Handles both capitalized and lowercase input keys
+   - Only includes `"arguments"` in output if the list is non-empty
+
+3. **Added `normalizeArguments` and `normalizeArgument`**:
+   - Normalize argument specifications to lowercase MCP format
+   - Handle both capitalized and lowercase input keys
+   - Provide defaults for missing `"description"` (empty string) and `"required"` (False)
+
+4. **Tests** (17 new tests added to `Tests/Prompts.wlt`):
+   - `makePromptContent` with Function type, Text type, StringTemplate, plain string, and fallback
+   - `makePromptData` with capitalized keys, lowercase keys, arguments, and no arguments
+   - `normalizeArguments` with capitalized keys, lowercase keys, multiple arguments, and empty list
+   - `normalizeArgument` with all fields, defaults, and lowercase keys
+
+All 388 tests pass.
+
+**Next steps**: Phase 4 - Server configuration in `DefaultServers.wl`
+

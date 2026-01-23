@@ -162,10 +162,62 @@ makePromptLookup // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*makePromptData*)
 makePromptData // beginDefinition;
-makePromptData[ prompts: { ___Association } ] := KeyMap[ ToLowerCase ] @* KeyTake[ $promptKeys ] /@ prompts;
+makePromptData[ prompts: { ___Association } ] := makePromptData0 /@ prompts;
 makePromptData // endDefinition;
 
-$promptKeys = { "Name", "Description", "Arguments" };
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*makePromptData0*)
+makePromptData0 // beginDefinition;
+
+makePromptData0[ prompt_Association ] := Enclose[
+    Module[ { name, description, arguments },
+        name = ConfirmBy[
+            prompt[ "Name" ] /. _Missing :> prompt[ "name" ],
+            StringQ,
+            "Name"
+        ];
+        description = Replace[
+            prompt[ "Description" ] /. _Missing :> prompt[ "description" ],
+            Except[ _String ] :> ""
+        ];
+        arguments = Replace[
+            prompt[ "Arguments" ] /. _Missing :> prompt[ "arguments" ],
+            {
+                args: { ___Association } :> normalizeArguments @ args,
+                _ :> { }
+            }
+        ];
+        <|
+            "name"        -> name,
+            "description" -> description,
+            If[ Length @ arguments > 0, "arguments" -> arguments, Nothing ]
+        |>
+    ],
+    throwInternalFailure
+];
+
+makePromptData0 // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*normalizeArguments*)
+normalizeArguments // beginDefinition;
+normalizeArguments[ args: { ___Association } ] := normalizeArgument /@ args;
+normalizeArguments // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*normalizeArgument*)
+normalizeArgument // beginDefinition;
+
+normalizeArgument[ arg_Association ] := <|
+    "name"        -> (arg[ "Name" ] /. _Missing :> arg[ "name" ]),
+    "description" -> (arg[ "Description" ] /. _Missing :> arg[ "description" ]) /. _Missing :> "",
+    "required"    -> (arg[ "Required" ] /. _Missing :> arg[ "required" ]) /. _Missing :> False
+|>;
+
+normalizeArgument // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -253,14 +305,25 @@ getPrompt // endDefinition;
 (*makePromptContent*)
 makePromptContent // beginDefinition;
 
+(* Handle Function type - call the function with arguments *)
+makePromptContent[ KeyValuePattern[ { "Type" -> "Function", "Content" -> func_ } ], arguments_ ] :=
+    makePromptContent[ func @ arguments, arguments ];
+
+(* Handle Text type with Content *)
 makePromptContent[ KeyValuePattern[ "Content" -> content_ ], arguments_ ] :=
     makePromptContent[ content, arguments ];
 
+(* Handle string content *)
 makePromptContent[ content_String, arguments_ ] :=
     <| "type" -> "text", "text" -> content |>;
 
+(* Handle template content *)
 makePromptContent[ template_TemplateObject, arguments_Association ] :=
     makePromptContent[ TemplateApply[ template, arguments ], arguments ];
+
+(* Fallback - convert to string *)
+makePromptContent[ content_, arguments_ ] :=
+    <| "type" -> "text", "text" -> ToString @ content |>;
 
 makePromptContent // endDefinition;
 

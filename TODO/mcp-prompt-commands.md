@@ -30,9 +30,9 @@ See [Specs/MCPPromptCommands.md](../Specs/MCPPromptCommands.md) for the detailed
 - [x] Run full test suite and fix code until all tests pass (Checkpoint B)
 
 **Phase 3: Protocol handling**
-- [ ] Update `Kernel/StartMCPServer.wl` for Function-type prompt handling
-- [ ] Write tests for `makePromptContent` with Function/Text types and other new functionality
-- [ ] Run full test suite and fix code until all tests pass (Checkpoint C)
+- [x] Update `Kernel/StartMCPServer.wl` for Function-type prompt handling
+- [x] Write tests for `makePromptContent` with Function/Text types and other new functionality
+- [x] Run full test suite and fix code until all tests pass (Checkpoint C)
 
 **Phase 4: Server configuration**
 - [ ] Update `Kernel/DefaultServers.wl` with MCPPrompts configurations

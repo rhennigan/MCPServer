@@ -352,4 +352,191 @@ VerificationTest[
     TestID   -> "GetPromptData-DeprecatedPromptDataFails@@Tests/Prompts.wlt:345,1-353,2"
 ]
 
+(* ::Section:: *)
+(* makePromptContent (Phase 3) *)
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+        <| "Type" -> "Function", "Content" -> Function[ args, "Result: " <> args[ "query" ] ] |>,
+        <| "query" -> "test" |>
+    ],
+    <| "type" -> "text", "text" -> "Result: test" |>,
+    SameTest -> SameQ,
+    TestID   -> "MakePromptContent-FunctionType@@Tests/Prompts.wlt:358,1-366,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+        <| "Type" -> "Text", "Content" -> "Static content" |>,
+        <| |>
+    ],
+    <| "type" -> "text", "text" -> "Static content" |>,
+    SameTest -> SameQ,
+    TestID   -> "MakePromptContent-TextType@@Tests/Prompts.wlt:368,1-376,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+        <| "Content" -> "No explicit type" |>,
+        <| |>
+    ],
+    <| "type" -> "text", "text" -> "No explicit type" |>,
+    SameTest -> SameQ,
+    TestID   -> "MakePromptContent-NoExplicitType@@Tests/Prompts.wlt:378,1-386,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+        <| "Content" -> StringTemplate[ "Hello, `name`!" ] |>,
+        <| "name" -> "World" |>
+    ],
+    <| "type" -> "text", "text" -> "Hello, World!" |>,
+    SameTest -> SameQ,
+    TestID   -> "MakePromptContent-StringTemplate@@Tests/Prompts.wlt:388,1-396,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+        "Plain string",
+        <| |>
+    ],
+    <| "type" -> "text", "text" -> "Plain string" |>,
+    SameTest -> SameQ,
+    TestID   -> "MakePromptContent-PlainString@@Tests/Prompts.wlt:398,1-406,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+        12345,
+        <| |>
+    ],
+    <| "type" -> "text", "text" -> "12345" |>,
+    SameTest -> SameQ,
+    TestID   -> "MakePromptContent-Fallback@@Tests/Prompts.wlt:408,1-416,2"
+]
+
+(* ::Section:: *)
+(* makePromptData (Phase 3) *)
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`makePromptData[ {
+        <| "Name" -> "Test", "Description" -> "A test prompt" |>
+    } ],
+    { <| "name" -> "Test", "description" -> "A test prompt" |> },
+    SameTest -> SameQ,
+    TestID   -> "MakePromptData-CapitalizedKeys@@Tests/Prompts.wlt:421,1-428,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`makePromptData[ {
+        <| "name" -> "Test", "description" -> "A test prompt" |>
+    } ],
+    { <| "name" -> "Test", "description" -> "A test prompt" |> },
+    SameTest -> SameQ,
+    TestID   -> "MakePromptData-LowercaseKeys@@Tests/Prompts.wlt:430,1-437,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`makePromptData[ {
+        <|
+            "Name" -> "Test",
+            "Description" -> "A test prompt",
+            "Arguments" -> {
+                <| "Name" -> "arg1", "Description" -> "First arg", "Required" -> True |>
+            }
+        |>
+    } ],
+    {
+        <|
+            "name" -> "Test",
+            "description" -> "A test prompt",
+            "arguments" -> {
+                <| "name" -> "arg1", "description" -> "First arg", "required" -> True |>
+            }
+        |>
+    },
+    SameTest -> SameQ,
+    TestID   -> "MakePromptData-WithArguments@@Tests/Prompts.wlt:439,1-460,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`makePromptData[ {
+        <| "Name" -> "NoArgs" |>
+    } ],
+    { <| "name" -> "NoArgs", "description" -> "" |> },
+    SameTest -> SameQ,
+    TestID   -> "MakePromptData-NoArguments@@Tests/Prompts.wlt:462,1-469,2"
+]
+
+(* ::Section:: *)
+(* normalizeArguments (Phase 3) *)
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`normalizeArguments[ {
+        <| "Name" -> "query", "Description" -> "The search query", "Required" -> True |>
+    } ],
+    { <| "name" -> "query", "description" -> "The search query", "required" -> True |> },
+    SameTest -> SameQ,
+    TestID   -> "NormalizeArguments-CapitalizedKeys@@Tests/Prompts.wlt:474,1-481,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`normalizeArguments[ {
+        <| "name" -> "query", "description" -> "The search query", "required" -> True |>
+    } ],
+    { <| "name" -> "query", "description" -> "The search query", "required" -> True |> },
+    SameTest -> SameQ,
+    TestID   -> "NormalizeArguments-LowercaseKeys@@Tests/Prompts.wlt:483,1-490,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`normalizeArguments[ {
+        <| "Name" -> "arg1" |>,
+        <| "Name" -> "arg2", "Required" -> False |>
+    } ],
+    {
+        <| "name" -> "arg1", "description" -> "", "required" -> False |>,
+        <| "name" -> "arg2", "description" -> "", "required" -> False |>
+    },
+    SameTest -> SameQ,
+    TestID   -> "NormalizeArguments-MultipleWithDefaults@@Tests/Prompts.wlt:492,1-503,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`normalizeArguments[ { } ],
+    { },
+    SameTest -> SameQ,
+    TestID   -> "NormalizeArguments-Empty@@Tests/Prompts.wlt:505,1-510,2"
+]
+
+(* ::Section:: *)
+(* normalizeArgument (Phase 3) *)
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`normalizeArgument[
+        <| "Name" -> "query", "Description" -> "The query", "Required" -> True |>
+    ],
+    <| "name" -> "query", "description" -> "The query", "required" -> True |>,
+    SameTest -> SameQ,
+    TestID   -> "NormalizeArgument-AllFields@@Tests/Prompts.wlt:515,1-522,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`normalizeArgument[
+        <| "Name" -> "query" |>
+    ],
+    <| "name" -> "query", "description" -> "", "required" -> False |>,
+    SameTest -> SameQ,
+    TestID   -> "NormalizeArgument-DefaultValues@@Tests/Prompts.wlt:524,1-531,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`normalizeArgument[
+        <| "name" -> "query", "description" -> "Lowercase keys", "required" -> True |>
+    ],
+    <| "name" -> "query", "description" -> "Lowercase keys", "required" -> True |>,
+    SameTest -> SameQ,
+    TestID   -> "NormalizeArgument-LowercaseKeys@@Tests/Prompts.wlt:533,1-540,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)
