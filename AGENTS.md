@@ -185,6 +185,21 @@ nameOfFunction // endDefinition;
 
 The `Enclose` wrapper is only necessary if you are using any `Confirm`, `ConfirmBy`, `ConfirmMatch`, etc. functions in the body, and it will trigger a throw of an internal failure error if any of them fail.
 
+### Naming Conventions
+
+- Use `UpperCamelCase` for exported function names.
+- Use `lowerCamelCase` for internal function names.
+- Use `$UpperCamelCase` for exported variables and constants.
+- Use `$lowerCamelCase` for package or file-scoped variables and constants.
+- Use `$$patternName` for reusable patterns to improve readability, e.g.
+  ```wl
+  $$strings = _String | { ___String };
+  ```
+  which can improve readability:
+  ```wl
+  toCommaSeparated[ names: $$strings ] := StringRiffle[ Flatten @ { names }, "," ];
+  ```
+
 ### Other Development Guidelines
 
 - Avoid using `Return` since the return point can sometimes be ambiguous. Instead, use `Catch` and `Throw` to control the flow of execution.
