@@ -455,3 +455,278 @@ VerificationTest[
     SameTest -> MatchQ,
     TestID   -> "InstallMCPServer-DevelopmentMode-Cleanup@@Tests/InstallMCPServer.wlt:452,1-457,2"
 ]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Codex (TOML) Support*)
+
+(* Helper function for TOML test files *)
+testTOMLFile = Function[
+    File @ FileNameJoin @ { $TemporaryDirectory, StringJoin["mcp_test_config_", CreateUUID[], ".toml"] }
+];
+
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Install Location for Codex*)
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Codex", "Windows" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-Codex-Windows@@Tests/InstallMCPServer.wlt:474,1-479,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Codex", "MacOSX" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-Codex-MacOSX@@Tests/InstallMCPServer.wlt:481,1-486,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Codex", "Unix" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-Codex-Unix@@Tests/InstallMCPServer.wlt:488,1-493,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Name Normalization*)
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "codex" ],
+    "Codex",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-codex@@Tests/InstallMCPServer.wlt:498,1-503,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "OpenAICodex" ],
+    "Codex",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-OpenAICodex@@Tests/InstallMCPServer.wlt:505,1-510,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "Codex" ],
+    "Codex",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-Codex@@Tests/InstallMCPServer.wlt:512,1-517,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installDisplayName[ "Codex" ],
+    "Codex CLI",
+    SameTest -> Equal,
+    TestID   -> "InstallDisplayName-Codex@@Tests/InstallMCPServer.wlt:519,1-524,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*TOML Parsing and Writing*)
+VerificationTest[
+    toml = Wolfram`MCPServer`Common`readTOMLFile @ FileNameJoin @ { $TemporaryDirectory, "nonexistent.toml" };
+    toml[ "Data" ],
+    <| |>,
+    SameTest -> Equal,
+    TestID   -> "ReadTOMLFile-NonExistent@@Tests/InstallMCPServer.wlt:529,1-535,2"
+]
+
+VerificationTest[
+    Module[ { tempFile, content },
+        tempFile = First @ testTOMLFile[];
+        content = "[section]\nkey = \"value\"\nnumber = 42\nenabled = true\n";
+        WriteString[ tempFile, content ];
+        Close @ tempFile;
+        toml = Wolfram`MCPServer`Common`readTOMLFile @ tempFile;
+        DeleteFile @ tempFile;
+        toml[ "Data", "section" ]
+    ],
+    <| "key" -> "value", "number" -> 42, "enabled" -> True |>,
+    SameTest -> Equal,
+    TestID   -> "ReadTOMLFile-BasicParsing@@Tests/InstallMCPServer.wlt:537,1-550,2"
+]
+
+VerificationTest[
+    Module[ { tempFile, content },
+        tempFile = First @ testTOMLFile[];
+        content = "[mcp_servers.TestServer]\ncommand = \"wolfram\"\nargs = [\"-run\", \"test\"]\nenv = { KEY = \"value\" }\nenabled = true\n";
+        WriteString[ tempFile, content ];
+        Close @ tempFile;
+        toml = Wolfram`MCPServer`Common`readTOMLFile @ tempFile;
+        DeleteFile @ tempFile;
+        toml[ "Data", "mcp_servers", "TestServer" ]
+    ],
+    <|
+        "command" -> "wolfram",
+        "args" -> { "-run", "test" },
+        "env" -> <| "KEY" -> "value" |>,
+        "enabled" -> True
+    |>,
+    SameTest -> Equal,
+    TestID   -> "ReadTOMLFile-MCPServerSection@@Tests/InstallMCPServer.wlt:552,1-570,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Basic Codex Install/Uninstall*)
+VerificationTest[
+    codexConfigFile = testTOMLFile[];
+    (* Use file-based install - TOML format is auto-detected from .toml extension *)
+    installResult = InstallMCPServer[ codexConfigFile, "WolframLanguage", "VerifyLLMKit" -> False ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-Codex-Basic@@Tests/InstallMCPServer.wlt:575,1-582,2"
+]
+
+VerificationTest[
+    FileExistsQ[ codexConfigFile ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Codex-FileExists@@Tests/InstallMCPServer.wlt:584,1-589,2"
+]
+
+VerificationTest[
+    Module[ { content, toml },
+        content = ReadString @ codexConfigFile;
+        toml = Wolfram`MCPServer`Common`readTOMLFile @ codexConfigFile;
+        KeyExistsQ[ toml[ "Data", "mcp_servers" ], "WolframLanguage" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Codex-VerifyContent@@Tests/InstallMCPServer.wlt:591,1-600,2"
+]
+
+VerificationTest[
+    Module[ { content },
+        content = ReadString @ codexConfigFile;
+        StringContainsQ[ content, "[mcp_servers.WolframLanguage]" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Codex-VerifySectionFormat@@Tests/InstallMCPServer.wlt:602,1-610,2"
+]
+
+VerificationTest[
+    (* Use file-based uninstall - TOML format is auto-detected from .toml extension *)
+    uninstallResult = UninstallMCPServer[ codexConfigFile, "WolframLanguage" ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "UninstallMCPServer-Codex-Basic@@Tests/InstallMCPServer.wlt:612,1-618,2"
+]
+
+VerificationTest[
+    Module[ { toml },
+        toml = Wolfram`MCPServer`Common`readTOMLFile @ codexConfigFile;
+        ! KeyExistsQ[ Lookup[ toml[ "Data" ], "mcp_servers", <| |> ], "WolframLanguage" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "UninstallMCPServer-Codex-VerifyRemoval@@Tests/InstallMCPServer.wlt:620,1-628,2"
+]
+
+VerificationTest[
+    cleanupTestFiles[ codexConfigFile ],
+    { Null },
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-Codex-Cleanup@@Tests/InstallMCPServer.wlt:630,1-635,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Multiple Server Installations (Codex)*)
+VerificationTest[
+    codexConfigFile = testTOMLFile[];
+    (* File-based install with TOML auto-detection *)
+    InstallMCPServer[ codexConfigFile, "WolframAlpha", "VerifyLLMKit" -> False ];
+    InstallMCPServer[ codexConfigFile, "WolframLanguage", "VerifyLLMKit" -> False ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-Codex-MultipleServers@@Tests/InstallMCPServer.wlt:640,1-648,2"
+]
+
+VerificationTest[
+    Module[ { toml, mcpServers },
+        toml = Wolfram`MCPServer`Common`readTOMLFile @ codexConfigFile;
+        mcpServers = Lookup[ toml[ "Data" ], "mcp_servers", <| |> ];
+        KeyExistsQ[ mcpServers, "WolframAlpha" ] && KeyExistsQ[ mcpServers, "WolframLanguage" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Codex-VerifyMultipleServers@@Tests/InstallMCPServer.wlt:650,1-659,2"
+]
+
+VerificationTest[
+    cleanupTestFiles[ codexConfigFile ],
+    { Null },
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-Codex-MultipleServers-Cleanup@@Tests/InstallMCPServer.wlt:661,1-666,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Preserve Existing Config (Codex)*)
+VerificationTest[
+    codexConfigFile = testTOMLFile[];
+    Module[ { stream },
+        stream = OpenWrite[ First @ codexConfigFile ];
+        WriteString[ stream, "# User configuration\nmodel = \"gpt-4\"\nhistory_size = 100\n\n" ];
+        Close @ stream
+    ];
+    (* File-based install with TOML auto-detection *)
+    InstallMCPServer[ codexConfigFile, "WolframLanguage", "VerifyLLMKit" -> False ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-Codex-PreserveExisting@@Tests/InstallMCPServer.wlt:671,1-683,2"
+]
+
+VerificationTest[
+    Module[ { content },
+        content = ReadString @ codexConfigFile;
+        StringContainsQ[ content, "model = \"gpt-4\"" ] &&
+        StringContainsQ[ content, "history_size = 100" ] &&
+        StringContainsQ[ content, "[mcp_servers.WolframLanguage]" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Codex-VerifyPreserved@@Tests/InstallMCPServer.wlt:685,1-695,2"
+]
+
+VerificationTest[
+    cleanupTestFiles[ codexConfigFile ],
+    { Null },
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-Codex-PreserveExisting-Cleanup@@Tests/InstallMCPServer.wlt:697,1-702,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*convertToCodexFormat*)
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`convertToCodexFormat @ <|
+        "command" -> "wolfram",
+        "args" -> { "-run", "test" },
+        "env" -> <| "KEY" -> "value" |>
+    |>,
+    <|
+        "command" -> "wolfram",
+        "args" -> { "-run", "test" },
+        "env" -> <| "KEY" -> "value" |>,
+        "enabled" -> True
+    |>,
+    SameTest -> Equal,
+    TestID   -> "ConvertToCodexFormat-Basic@@Tests/InstallMCPServer.wlt:707,1-721,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`convertToCodexFormat @ <|
+        "command" -> "wolfram"
+    |>,
+    <| "command" -> "wolfram", "enabled" -> True |>,
+    SameTest -> Equal,
+    TestID   -> "ConvertToCodexFormat-MinimalConfig@@Tests/InstallMCPServer.wlt:723,1-730,2"
+]
+
+(* :!CodeAnalysis::EndBlock:: *)
