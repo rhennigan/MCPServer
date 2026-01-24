@@ -12,19 +12,9 @@ MCPServer is a Wolfram Language package that implements a Model Context Protocol
 
 Always use the WolframLanguageContext tool when working with Wolfram Language code to ensure that you are aware of the latest documentation and other Wolfram resources.
 
-In order to test changes to paclet code, you must first evaluate the following as a separate call to the WolframLanguageEvaluator tool:
-```wl
-PacletDirectoryLoad["path/to/MCPServer"];
-Get["Wolfram`MCPServer`"]
-```
-
-Now you can make additional tool calls to run paclet code.
+When you make changes to paclet source code, you should also write and run tests for the changes you made using the TestReport tool.
 
 If you've previously built an MX file for the paclet, you should delete it before testing your changes. You can find it in `Kernel/64Bit/MCPServer.mx`.
-
-If you are only testing changes to test files, you do not need to reload the paclet, since the TestReport tool handles this for you.
-
-When reloading the paclet, do not `Clear`, `ClearAll`, or `Remove` symbols. Reloading the paclet does this automatically in `Kernel/MCPServerLoader.wl` and doing so manually may lead to unexpected behavior.
 
 The kernel used by the WolframLanguageEvaluator tool cannot be restarted via code like `Quit[]` since it's also running the MCP server. If it gets into a bad state, and you can't fix it, you should stop and inform the user that the kernel needs to be restarted.
 
