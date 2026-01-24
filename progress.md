@@ -197,3 +197,27 @@ All 416 tests pass.
 
 **Next steps**: Phase 7 - Developer documentation
 
+## Session 7
+
+**Completed Phase 7: Developer documentation**
+
+Created developer documentation for the MCP prompts system:
+
+1. **Created `docs/mcp-prompts.md`**:
+   - Overview of how MCP prompts work and their protocol flow
+   - Explanation of prompt types (`"Function"` vs `"Text"`)
+   - Documentation of `$DefaultMCPPrompts` and naming conventions
+   - Prompt definition format with all fields explained
+   - Step-by-step guide for adding new prompts
+   - Examples for using prompts in custom servers
+   - Explanation of the XML-style output format
+   - Error handling guidance
+   - List of related source files
+
+2. **Updated `AGENTS.md`**:
+   - Added `mcp-prompts.md` to the `docs/` section in Project Structure
+   - Added `Prompts/` directory entry in Project Structure with link to documentation
+   - Added Prompts link to MCP Documentation section
+
+**MCP prompt commands feature is now complete.**
+

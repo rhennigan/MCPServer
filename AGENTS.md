@@ -95,6 +95,7 @@ This script builds the paclet and performs necessary checks. Options:
   - `Messages.wl`: Definitions for error messages
   - `StartMCPServer.wl`: Implementation for starting MCP servers
   - `Tools/`: Contains several files defining predefined MCP tools used by default servers
+  - `Prompts/`: Contains files defining predefined [MCP prompts](docs/mcp-prompts.md) used by default servers
 
 - `Scripts/`: Contains utility scripts for building, testing, and running the paclet
   - `Common.wl`: Common utilities for scripts
@@ -115,6 +116,7 @@ This script builds the paclet and performs necessary checks. Options:
   - `testing.md`: Writing and running tests
   - `building.md`: Building the paclet for distribution
   - `error-handling.md`: Error handling architecture and patterns
+  - `mcp-prompts.md`: MCP prompts system and how to add new prompts
 
 ### Key Components
 
@@ -141,6 +143,7 @@ Use the official MCP documentation when working on the server implementation (`K
 - [Overview](https://modelcontextprotocol.io/specification/2025-11-25/basic/index.md)
 - [Lifecycle](https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle.md)
 - [Tools](https://modelcontextprotocol.io/specification/2025-11-25/server/tools.md)
+- [Prompts](https://modelcontextprotocol.io/specification/2025-11-25/server/prompts.md)
 - [List of all documentation pages](https://modelcontextprotocol.io/llms.txt)
 
 ## Code Style Guidelines

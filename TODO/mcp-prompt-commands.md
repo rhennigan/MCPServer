@@ -66,5 +66,5 @@ See [Specs/MCPPromptCommands.md](../Specs/MCPPromptCommands.md) for the detailed
 - [x] Run full test suite and fix code until all tests pass (Checkpoint F)
 
 **Phase 7: Developer documentation**
-- [ ] Create `docs/mcp-prompts.md` (how prompts work, how to add new ones)
-- [ ] Update `AGENTS.md` with links to new documentation
+- [x] Create `docs/mcp-prompts.md` (how prompts work, how to add new ones)
+- [x] Update `AGENTS.md` with links to new documentation
