@@ -54,7 +54,7 @@ Consolidated list of TODO/FIXME items from the codebase.
 
 ## Prompts
 
-- [ ] Implement `Notebook` prompt
+- [x] Implement `Notebook` prompt
   - Attaches a notebook (specified as a path) to the context
   - Uses same functionality as the `ReadNotebook` tool
 
