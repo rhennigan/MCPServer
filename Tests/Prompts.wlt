@@ -815,14 +815,18 @@ VerificationTest[
     TestID   -> "WolframLanguageSearch-UsesNewFormat@@Tests/Prompts.wlt:808,1-816,2"
 ]
 
-VerificationTest[
-    StringContainsQ[
-        $DefaultMCPPrompts[ "WolframAlphaSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
-        "<search-query>test query</search-query>"
-    ],
-    True,
-    SameTest -> SameQ,
-    TestID   -> "WolframAlphaSearch-UsesNewFormat@@Tests/Prompts.wlt:818,1-826,2"
+(* We don't have the necessary API keys stored in the CI/CD pipeline to test this *)
+If[ StringQ @ Environment[ "GITHUB_ACTIONS" ],
+    Null,
+    VerificationTest[
+        StringContainsQ[
+            $DefaultMCPPrompts[ "WolframAlphaSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
+            "<search-query>test query</search-query>"
+        ],
+        True,
+        SameTest -> SameQ,
+        TestID   -> "WolframAlphaSearch-UsesNewFormat@@Tests/Prompts.wlt:821,5-829,6"
+    ]
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
