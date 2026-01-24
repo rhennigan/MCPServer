@@ -27,7 +27,8 @@ $defaultMCPPrompts = <| |>;
 (* ::Section::Closed:: *)
 (*Load Subcontexts*)
 $subcontexts = {
-    "Wolfram`MCPServer`Prompts`Search`"
+    "Wolfram`MCPServer`Prompts`Search`",
+    "Wolfram`MCPServer`Prompts`Notebook`"
 };
 
 Scan[ Needs[ # -> None ] &, $subcontexts ];

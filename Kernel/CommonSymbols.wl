@@ -53,4 +53,7 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `writeRawJSONFile;
 `writeWXFFile;
 
+(* Shared symbols with Tools subcontexts: *)
+`exportMarkdownString;
+
 EndPackage[ ];

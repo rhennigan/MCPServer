@@ -4,7 +4,6 @@ BeginPackage[ "Wolfram`MCPServer`Tools`" ];
 
 (* Symbols shared in Tools subcontexts: *)
 `$defaultMCPTools;
-`exportMarkdownString;
 `importMarkdownString;
 `useEvaluatorKernel;
 

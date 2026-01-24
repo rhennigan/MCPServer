@@ -80,7 +80,7 @@ $defaultMCPServers[ "WolframLanguage" ] := <|
             "SymbolDefinition",
             "TestReport"
         },
-        "MCPPrompts" -> { "WolframLanguageSearch" }
+        "MCPPrompts" -> { "WolframLanguageSearch", "Notebook" }
     |>
 |>;
 
@@ -105,7 +105,7 @@ $defaultMCPServers[ "WolframPacletDevelopment" ] := <|
             "EditSymbolDoc",
             "EditSymbolDocExamples"
         },
-        "MCPPrompts" -> { "WolframLanguageSearch" }
+        "MCPPrompts" -> { "WolframLanguageSearch", "Notebook" }
     |>
 |>;
 

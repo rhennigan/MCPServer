@@ -40,6 +40,7 @@ The paclet provides `$DefaultMCPPrompts`, an association of predefined prompt de
 
 ```wl
 $DefaultMCPPrompts = <|
+    "Notebook"              -> <| ... |>,
     "WolframSearch"         -> <| ... |>,
     "WolframLanguageSearch" -> <| ... |>,
     "WolframAlphaSearch"    -> <| ... |>
@@ -55,6 +56,7 @@ Multiple WL prompts can share the same MCP name. Each server includes the approp
 
 | WL Name | MCP Name | Server | Description |
 |---------|----------|--------|-------------|
+| `"Notebook"` | `"Notebook"` | WolframLanguage, WolframPacletDevelopment | Attaches notebook contents to context |
 | `"WolframSearch"` | `"Search"` | Wolfram | Combined documentation + Wolfram Alpha |
 | `"WolframLanguageSearch"` | `"Search"` | WolframLanguage, WolframPacletDevelopment | Documentation only |
 | `"WolframAlphaSearch"` | `"Search"` | WolframAlpha | Wolfram Alpha only |
@@ -215,7 +217,11 @@ CreateMCPServer[ "MyServer", <|
 
 ## Prompt Output Format
 
-The built-in search prompts use a consistent XML-style format:
+The built-in prompts use consistent XML-style formats for structured output.
+
+### Search Prompts
+
+The search prompts (`WolframSearch`, `WolframLanguageSearch`, `WolframAlphaSearch`) use:
 
 ```
 <search-query>{query}</search-query>
@@ -227,6 +233,22 @@ Use the above search results to answer the user's query below.
 ```
 
 The query is intentionally repeated to help LLMs detect argument parsing issues in clients.
+
+### Notebook Prompt
+
+The `Notebook` prompt attaches the contents of a Wolfram notebook (`.nb` file) to the conversation context:
+
+```
+<notebook-path>{path}</notebook-path>
+<notebook-content>
+{markdown}
+</notebook-content>
+```
+
+The notebook is converted to markdown format, preserving:
+- Section headers and text cells
+- Code cells with `In[n]:=` / `Out[n]=` formatting in fenced code blocks
+- Graphics as box expressions
 
 ## Error Handling
 
@@ -248,6 +270,7 @@ yourFunction[ args_ ] := Enclose[
 
 - `Kernel/Prompts/Prompts.wl` - Main prompts module, defines `$DefaultMCPPrompts`
 - `Kernel/Prompts/Search.wl` - Search prompt implementations
+- `Kernel/Prompts/Notebook.wl` - Notebook prompt implementation
 - `Kernel/MCPServerObject.wl` - Prompt validation and normalization
 - `Kernel/StartMCPServer.wl` - Protocol handling for `prompts/list` and `prompts/get`
 - `Kernel/DefaultServers.wl` - Server configurations with `"MCPPrompts"` settings

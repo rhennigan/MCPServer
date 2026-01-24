@@ -226,6 +226,7 @@ The `Enclose` wrapper is only necessary if you are using any `Confirm`, `Confirm
 
 - Avoid using `Return` since the return point can sometimes be ambiguous. Instead, use `Catch` and `Throw` to control the flow of execution.
 - Whenever you modify source code, you should also write and run tests for the changes you made.
+- If you are using a package-scoped symbol defined in a different file, ensure that it is declared in a context that's reachable (e.g. `CommonSymbols.wl`).
 
 ## Special Considerations
 
