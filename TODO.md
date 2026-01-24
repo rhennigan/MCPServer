@@ -13,8 +13,6 @@ Consolidated list of TODO/FIXME items from the codebase.
 
 - [ ] Support logging capability
   - Source: `Kernel/StartMCPServer.wl`
-- [ ] Support prompts capability
-  - Source: `Kernel/StartMCPServer.wl`
 - [ ] Support resources capability
   - Source: `Kernel/StartMCPServer.wl`
 - [ ] Support image outputs from tools according to MCP spec
