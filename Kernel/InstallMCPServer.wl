@@ -76,23 +76,30 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
         If[ devMode =!= False,
             server[ "args" ] = ConfirmMatch[ makeDevelopmentArgs @ devMode, { __String }, "DevelopmentArgs" ]
         ];
-        existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
+        If[ $installName === "Codex",
+            existing = ConfirmBy[ readCodexConfigText @ target, StringQ, "Existing" ];
+            existing = ConfirmBy[ upsertCodexServer[ existing, name, server ], StringQ, "CodexConfig" ];
+            ConfirmBy[ writeCodexConfigText[ target, existing ], FileExistsQ, "Export" ];
+            ConfirmBy[ recordMCPInstallation[ target, obj ], FileExistsQ, "Record" ];
+            installSuccess[ name, target, obj ],
+            existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
 
-        Switch[ $installName,
-            "VisualStudioCode",
-            existing[ "mcp", "servers", name ] = server,
-            "OpenCode",
-            existing[ "mcp", name ] = ConfirmBy[ convertToOpenCodeFormat @ server, AssociationQ, "OpenCodeServer" ],
-            _,
-            existing[ "mcpServers", name ] = server
-        ];
+            Switch[ $installName,
+                "VisualStudioCode",
+                existing[ "mcp", "servers", name ] = server,
+                "OpenCode",
+                existing[ "mcp", name ] = ConfirmBy[ convertToOpenCodeFormat @ server, AssociationQ, "OpenCodeServer" ],
+                _,
+                existing[ "mcpServers", name ] = server
+            ];
 
-        ConfirmBy[ writeRawJSONFile[ target, existing ], FileExistsQ, "Export" ];
-        ConfirmAssert[ readRawJSONFile @ target === existing, "ExportCheck" ];
+            ConfirmBy[ writeRawJSONFile[ target, existing ], FileExistsQ, "Export" ];
+            ConfirmAssert[ readRawJSONFile @ target === existing, "ExportCheck" ];
 
-        ConfirmBy[ recordMCPInstallation[ target, obj ], FileExistsQ, "Record" ];
+            ConfirmBy[ recordMCPInstallation[ target, obj ], FileExistsQ, "Record" ];
 
-        installSuccess[ name, target, obj ]
+            installSuccess[ name, target, obj ]
+        ]
     ],
     throwInternalFailure
 ];
@@ -422,6 +429,259 @@ readExistingMCPConfig[ file_ ] := Enclose[
 readExistingMCPConfig // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Codex TOML Helpers*)
+readCodexConfigText // beginDefinition;
+
+readCodexConfigText[ file_ ] := Enclose[
+    Module[ { text },
+        If[ ! FileExistsQ @ file, Return[ "" ] ];
+        text = Quiet @ Import[ ExpandFileName @ file, "Text" ];
+        If[ ! StringQ @ text, throwFailure[ "InvalidMCPConfiguration", file ] ];
+        text
+    ],
+    throwInternalFailure
+];
+
+readCodexConfigText // endDefinition;
+
+
+writeCodexConfigText // beginDefinition;
+
+writeCodexConfigText[ file_, text_String ] := Enclose[
+    Module[ { target, result },
+        target = ConfirmBy[ ensureFilePath @ file, fileQ, "Target" ];
+        result = Export[ ExpandFileName @ target, text, "Text" ];
+        ConfirmBy[ target, FileExistsQ, "Export" ]
+    ],
+    throwInternalFailure
+];
+
+writeCodexConfigText // endDefinition;
+
+
+upsertCodexServer // beginDefinition;
+
+upsertCodexServer[ text_String, name_String, server_Association ] := Enclose[
+    Module[ { lineBreak, lines, sections, ranges, newBlock, newLines, index, rangeIndex, rangeStart, rangeEnd,
+        insertDone, hasTrailing, trimmed },
+
+        trimmed = StringTrim @ text;
+        lineBreak = codexLineBreak @ text;
+        hasTrailing = StringEndsQ[ text, lineBreak ];
+        If[ trimmed === "",
+            newLines = codexServerBlockLines[ name, server ];
+            Return @ codexJoinLines[ newLines, lineBreak, False ]
+        ];
+
+        lines = StringSplit[ text, lineBreak, All ];
+        sections = tomlSections @ lines;
+        ranges = Select[ sections, codexServerSectionQ[ #[[ 3 ]], name ] & ][[ All, { 1, 2 } ]];
+        newBlock = codexServerBlockLines[ name, server ];
+
+        If[ ranges === { },
+            newLines = lines;
+            If[ newLines =!= { } && Last @ newLines =!= "", newLines = Join[ newLines, { "" } ] ];
+            newLines = Join[ newLines, newBlock ];
+            Return @ codexJoinLines[ newLines, lineBreak, hasTrailing ]
+        ];
+
+        ranges = SortBy[ ranges, First ];
+        newLines = { };
+        index = 1;
+        rangeIndex = 1;
+        insertDone = False;
+
+        While[ index <= Length @ lines,
+            If[ rangeIndex <= Length @ ranges,
+                { rangeStart, rangeEnd } = ranges[[ rangeIndex ]],
+                rangeStart = Infinity;
+                rangeEnd = Infinity
+            ];
+
+            If[ index == rangeStart,
+                If[ ! insertDone,
+                    newLines = Join[ newLines, newBlock ];
+                    insertDone = True
+                ];
+                index = rangeEnd + 1;
+                rangeIndex++;
+                Continue[ ];
+            ];
+
+            newLines = Append[ newLines, lines[[ index ]] ];
+            index++
+        ];
+
+        codexJoinLines[ newLines, lineBreak, hasTrailing ]
+    ],
+    throwInternalFailure
+];
+
+upsertCodexServer // endDefinition;
+
+
+removeCodexServer // beginDefinition;
+
+removeCodexServer[ text_String, name_String ] := Enclose[
+    Module[ { lineBreak, lines, sections, ranges, newLines, index, rangeIndex, rangeStart, rangeEnd, hasTrailing },
+
+        lineBreak = codexLineBreak @ text;
+        hasTrailing = StringEndsQ[ text, lineBreak ];
+        lines = StringSplit[ text, lineBreak, All ];
+        sections = tomlSections @ lines;
+        ranges = Select[ sections, codexServerSectionQ[ #[[ 3 ]], name ] & ][[ All, { 1, 2 } ]];
+        ranges = SortBy[ ranges, First ];
+        If[ ranges === { }, Return @ { text, False } ];
+
+        newLines = { };
+        index = 1;
+        rangeIndex = 1;
+
+        While[ index <= Length @ lines,
+            If[ rangeIndex <= Length @ ranges,
+                { rangeStart, rangeEnd } = ranges[[ rangeIndex ]],
+                rangeStart = Infinity;
+                rangeEnd = Infinity
+            ];
+
+            If[ index == rangeStart,
+                index = rangeEnd + 1;
+                rangeIndex++;
+                Continue[ ];
+            ];
+
+            newLines = Append[ newLines, lines[[ index ]] ];
+            index++
+        ];
+
+        { codexJoinLines[ newLines, lineBreak, hasTrailing ], True }
+    ],
+    throwInternalFailure
+];
+
+removeCodexServer // endDefinition;
+
+
+codexLineBreak // beginDefinition;
+codexLineBreak[ text_String ] := If[ StringContainsQ[ text, "\r\n" ], "\r\n", "\n" ];
+codexLineBreak // endDefinition;
+
+
+codexJoinLines // beginDefinition;
+codexJoinLines[ lines_List, lineBreak_String, hasTrailing_ ] := Module[ { text },
+    text = StringRiffle[ lines, lineBreak ];
+    If[ hasTrailing, text <> lineBreak, text ]
+];
+codexJoinLines // endDefinition;
+
+
+tomlSections // beginDefinition;
+
+tomlSections[ lines_List ] := Module[ { headers, starts, ends },
+    headers = Cases[
+        MapIndexed[
+            { #2[[ 1 ]], tomlHeader @ #1 } &,
+            lines
+        ],
+        { i_, h_String } :> { i, h }
+    ];
+
+    If[ headers === { }, Return @ { } ];
+
+    starts = headers[[ All, 1 ]];
+    ends = Join[ Rest @ starts - 1, { Length @ lines } ];
+    MapThread[ { #1, #2, #3 } &, { starts, ends, headers[[ All, 2 ]] } ]
+];
+
+tomlSections // endDefinition;
+
+
+tomlHeader // beginDefinition;
+
+tomlHeader[ line_String ] := FirstCase[
+    StringCases[ line, RegularExpression[ "^\\s*\\[([^\\]]+)\\]\\s*(?:#.*)?$" ] :> "$1" ],
+    _String,
+    Missing[ "NotFound" ]
+];
+
+tomlHeader // endDefinition;
+
+
+codexServerSectionQ // beginDefinition;
+
+codexServerSectionQ[ header_String, name_String ] :=
+    header === "mcp_servers." <> name || StringStartsQ[ header, "mcp_servers." <> name <> "." ];
+
+codexServerSectionQ[ _, _ ] := False;
+
+codexServerSectionQ // endDefinition;
+
+
+codexServerBlockLines // beginDefinition;
+
+codexServerBlockLines[ name_String, server_Association ] := Enclose[
+    Module[ { lines, command, args, env, header, envHeader },
+        command = ConfirmBy[ Lookup[ server, "command", Missing[ ] ], _String | _Missing, "Command" ];
+        args = Lookup[ server, "args", { } ];
+        env = Lookup[ server, "env", <| |> ];
+
+        header = "[mcp_servers." <> name <> "]";
+        lines = { header };
+
+        If[ command =!= Missing[ ],
+            lines = Join[ lines, { "command = " <> tomlValue @ command } ]
+        ];
+
+        If[ ListQ @ args && args =!= { },
+            lines = Join[ lines, { "args = " <> tomlArray @ args } ]
+        ];
+
+        If[ AssociationQ @ env && Length @ env > 0,
+            envHeader = "[mcp_servers." <> name <> ".env]";
+            lines = Join[ lines, { "", envHeader } ];
+            lines = Join[ lines, KeyValueMap[ tomlKeyValueLine, env ] ]
+        ];
+
+        lines
+    ],
+    throwInternalFailure
+];
+
+codexServerBlockLines // endDefinition;
+
+
+tomlKeyValueLine // beginDefinition;
+tomlKeyValueLine[ key_, value_ ] := tomlKey @ ToString @ key <> " = " <> tomlValue @ value;
+tomlKeyValueLine // endDefinition;
+
+
+tomlKey // beginDefinition;
+tomlKey[ key_String ] := If[ StringMatchQ[ key, RegularExpression[ "^[A-Za-z0-9_\\-]+$" ] ], key, tomlString @ key ];
+tomlKey // endDefinition;
+
+
+tomlArray // beginDefinition;
+tomlArray[ values_List ] := "[" <> StringRiffle[ tomlValue /@ values, ", " ] <> "]";
+tomlArray // endDefinition;
+
+
+tomlValue // beginDefinition;
+
+tomlValue[ value_String ] := tomlString @ value;
+tomlValue[ True ] := "true";
+tomlValue[ False ] := "false";
+tomlValue[ value_? NumberQ ] := ToString[ value, InputForm ];
+tomlValue[ value_ ] := tomlString @ ToString[ value, InputForm ];
+
+tomlValue // endDefinition;
+
+
+tomlString // beginDefinition;
+tomlString[ value_String ] := "\"" <> StringReplace[ value, { "\\" -> "\\\\", "\"" -> "\\\"" } ] <> "\"";
+tomlString // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*UninstallMCPServer*)
 UninstallMCPServer // beginDefinition;
@@ -481,29 +741,37 @@ uninstallMCPServer[ target0_File, obj_MCPServerObject ] := Enclose[
         If[ ! FileExistsQ @ target, Throw @ Missing[ "NotInstalled", target ] ];
 
         name = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
-        existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
+        If[ $installName === "Codex",
+            Module[ { existingText, result, updatedText },
+                existingText = ConfirmBy[ readCodexConfigText @ target, StringQ, "Existing" ];
+                { updatedText, result } = ConfirmMatch[ removeCodexServer[ existingText, name ], { _String, _ }, "CodexConfig" ];
+                If[ ! TrueQ @ result, Throw @ Missing[ "NotInstalled", target ] ];
+                ConfirmBy[ writeCodexConfigText[ target, updatedText ], FileExistsQ, "Export" ];
+            ],
+            existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
 
-        Switch[ $installName,
-            (* Handle VS Code format *)
-            "VisualStudioCode",
-            If[ ! AssociationQ @ existing[ "mcp", "servers" ], Throw @ Missing[ "NotInstalled", target ] ];
-            If[ ! KeyExistsQ[ existing[ "mcp", "servers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
-            KeyDropFrom[ existing[ "mcp", "servers" ], name ],
-            (* Handle OpenCode format *)
-            "OpenCode",
-            If[ ! AssociationQ @ existing[ "mcp" ], Throw @ Missing[ "NotInstalled", target ] ];
-            If[ ! KeyExistsQ[ existing[ "mcp" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
-            KeyDropFrom[ existing[ "mcp" ], name ],
-            (* Handle standard format *)
-            _,
-            If[ ! AssociationQ @ existing[ "mcpServers" ], Throw @ Missing[ "NotInstalled", target ] ];
-            If[ ! KeyExistsQ[ existing[ "mcpServers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
-            KeyDropFrom[ existing[ "mcpServers" ], name ]
+            Switch[ $installName,
+                (* Handle VS Code format *)
+                "VisualStudioCode",
+                If[ ! AssociationQ @ existing[ "mcp", "servers" ], Throw @ Missing[ "NotInstalled", target ] ];
+                If[ ! KeyExistsQ[ existing[ "mcp", "servers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
+                KeyDropFrom[ existing[ "mcp", "servers" ], name ],
+                (* Handle OpenCode format *)
+                "OpenCode",
+                If[ ! AssociationQ @ existing[ "mcp" ], Throw @ Missing[ "NotInstalled", target ] ];
+                If[ ! KeyExistsQ[ existing[ "mcp" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
+                KeyDropFrom[ existing[ "mcp" ], name ],
+                (* Handle standard format *)
+                _,
+                If[ ! AssociationQ @ existing[ "mcpServers" ], Throw @ Missing[ "NotInstalled", target ] ];
+                If[ ! KeyExistsQ[ existing[ "mcpServers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
+                KeyDropFrom[ existing[ "mcpServers" ], name ]
+            ];
+
+            ConfirmBy[ writeRawJSONFile[ target, existing ], FileExistsQ, "Export" ];
+
+            ConfirmAssert[ readRawJSONFile @ target === existing, "ExportCheck" ];
         ];
-
-        ConfirmBy[ writeRawJSONFile[ target, existing ], FileExistsQ, "Export" ];
-
-        ConfirmAssert[ readRawJSONFile @ target === existing, "ExportCheck" ];
         ConfirmMatch[ clearRecordedInstallation[ target, obj ], { ___? fileQ }, "Clear" ];
 
         uninstallSuccess[ name, target, obj ]
@@ -603,6 +871,12 @@ installLocation[ "VisualStudioCode", "Linux" ] :=
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*Codex*)
+installLocation[ "Codex", _ ] :=
+    fileNameJoin[ $HomeDirectory, ".codex", "config.toml" ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*Unknown*)
 installLocation[ name_String, os_String ] := throwFailure[ "UnknownInstallLocation", name, os ];
 installLocation // endDefinition;
@@ -636,6 +910,7 @@ toInstallName[ "VSCode"            ] := "VisualStudioCode";
 toInstallName[ "Code"              ] := "VisualStudioCode";
 toInstallName[ "Gemini"            ] := "GeminiCLI";
 toInstallName[ "GoogleAntigravity" ] := "Antigravity";
+toInstallName[ "codex"             ] := "Codex";
 toInstallName[ name_String         ] := name;
 toInstallName // endDefinition;
 
@@ -649,6 +924,7 @@ installDisplayName[ "VisualStudioCode" ] := "Visual Studio Code";
 installDisplayName[ "GeminiCLI"        ] := "Gemini CLI";
 installDisplayName[ "Antigravity"      ] := "Antigravity";
 installDisplayName[ "OpenCode"         ] := "OpenCode";
+installDisplayName[ "Codex"            ] := "Codex";
 installDisplayName[ name_String        ] := name;
 installDisplayName[ None               ] := None;
 installDisplayName // endDefinition;
