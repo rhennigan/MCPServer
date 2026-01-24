@@ -19,7 +19,6 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/StartMCPServer.wl`
 - [ ] Support image outputs from tools according to MCP spec
   - Source: `Kernel/Tools/Tools.wl`
-- [ ] [Implement prompts as commands](TODO/mcp-prompt-commands.md)
 
 ## Tools
 
@@ -48,13 +47,19 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/Tools/Tools.wl`
 - [ ] Documentation editing tools should have examples evaluation be optional
   - Source: `Kernel/Tools/Tools.wl`
-
-## Content & Output
-
 - [ ] Return multimodal content in tool results when appropriate
   - Source: `Kernel/StartMCPServer.wl`
 - [ ] Implement `ReadableForm` in this paclet for better code formatting
   - Source: `Kernel/Tools/TestReport.wl`
+
+## Prompts
+
+- [ ] Implement `Notebook` prompt
+  - Attaches a notebook (specified as a path) to the context
+  - Uses same functionality as the `ReadNotebook` tool
+
+- [ ] Implement `Documentation` prompt
+  - Attaches full WL documentation pages as markdown
 
 ## UI & Formatting
 
