@@ -372,6 +372,21 @@ Notebook[
          },
          {
           Cell["      ", "ModInfo"],
+          "\"Codex\"",
+          Cell[
+           TextData[
+            ButtonBox[
+             "Codex",
+             BaseStyle -> "Hyperlink",
+             ButtonData -> {URL["https://openai.com/codex"], None},
+             ButtonNote -> "https://openai.com/codex"
+            ]
+           ],
+           "TableText"
+          ]
+         },
+         {
+          Cell["      ", "ModInfo"],
           "\"Cursor\"",
           Cell[
            TextData[
@@ -579,13 +594,13 @@ Notebook[
              {
               nbobj$$ = 
                NotebookObject[
-                "d4f04291-63ae-3749-8bcd-7db0bceb9355",
-                "2be743c8-d049-e94f-983f-cbad29588438"
+                "9d46fc70-8a96-894a-bc1a-1dbcf82fcca7",
+                "6524997d-f6fc-1741-81df-54d39542e779"
                ],
               cellobj$$ = 
                CellObject[
-                "b4c97263-f584-0342-8467-a66e69344660",
-                "655fc3ff-5115-954c-88d1-bcd3f539a1fc"
+                "78d18179-0a79-2c40-b991-df2703eef77f",
+                "cd29bfac-7873-5b41-9fb6-758e7c29dd98"
                ]
              },
              TemplateBox[
