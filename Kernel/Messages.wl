@@ -31,6 +31,8 @@ MCPServer::UninstallMCPServerNamed       = "Successfully uninstalled MCP server 
 MCPServer::UnknownInstallLocation        = "Unable to determine install location for `1` on `2`. Use File[\[Ellipsis]] to specify a custom location.";
 MCPServer::UnknownProjectInstallLocation = "Unable to determine project install location for `1`. Use File[\[Ellipsis]] to specify a custom location.";
 MCPServer::UnsupportedOperatingSystem    = "Unsupported operating system: `1`.";
+MCPServer::InvalidCodexConfiguration     = "Invalid Codex configuration file: `1`.";
+MCPServer::InvalidTOMLFormat             = "Invalid TOML format in file: `1`.";
 
 (* PacletDocumentation messages *)
 MCPServer::NotebookFileExists            = "Notebook already exists: `1`.";

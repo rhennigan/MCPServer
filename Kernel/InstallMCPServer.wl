@@ -97,7 +97,100 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
     throwInternalFailure
 ];
 
+(* Codex uses TOML configuration, handle separately *)
+installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_, devMode_ ] /;
+    $installName === "Codex" :=
+        installMCPServerCodex[ target0, obj, env, verifyLLMKit, devMode ];
+
 installMCPServer // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*installMCPServerCodex*)
+installMCPServerCodex // beginDefinition;
+
+installMCPServerCodex[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_, devMode_ ] := Enclose[
+    Module[ { target, name, serverConfig, existing },
+
+        If[ verifyLLMKit, ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ] ];
+        initializeTools @ obj;
+
+        target = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
+        name = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
+
+        serverConfig = ConfirmBy[
+            makeCodexServerConfig[ obj, env, devMode ],
+            AssociationQ,
+            "ServerConfig"
+        ];
+
+        existing = ConfirmBy[ readExistingCodexConfig @ target, AssociationQ, "Existing" ];
+
+        (* Add the server under mcp_servers *)
+        If[ ! AssociationQ @ existing[ "mcp_servers" ],
+            existing[ "mcp_servers" ] = <| |>
+        ];
+        existing[ "mcp_servers", name ] = serverConfig;
+
+        ConfirmBy[ writeTOMLFile[ target, existing ], fileQ, "Export" ];
+
+        ConfirmBy[ recordMCPInstallation[ target, obj ], FileExistsQ, "Record" ];
+
+        installSuccess[ name, target, obj ]
+    ],
+    throwInternalFailure
+];
+
+installMCPServerCodex // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*readExistingCodexConfig*)
+readExistingCodexConfig // beginDefinition;
+
+readExistingCodexConfig[ file_ ] := Enclose[
+    Module[ { data },
+        data = readTOMLFile @ ExpandFileName @ file;
+        If[ ! AssociationQ @ data, Throw[ <| "mcp_servers" -> <| |> |>, $codexTag ] ];
+        If[ ! AssociationQ @ data[ "mcp_servers" ], data[ "mcp_servers" ] = <| |> ];
+        data
+    ] ~Catch~ $codexTag,
+    throwInternalFailure
+];
+
+readExistingCodexConfig // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*makeCodexServerConfig*)
+makeCodexServerConfig // beginDefinition;
+
+makeCodexServerConfig[ obj_MCPServerObject, env_Association, devMode_ ] := Enclose[
+    Module[ { command, args, result },
+
+        command = ConfirmBy[ getWolframCommand[ ], StringQ, "Command" ];
+        args = If[ devMode =!= False,
+            ConfirmMatch[ makeDevelopmentArgs @ devMode, { __String }, "DevelopmentArgs" ],
+            { "-run", "Needs[\"Wolfram`MCPServer`\"];StartMCPServer[\"" <> obj[ "Name" ] <> "\"]", "-noinit", "-noprompt" }
+        ];
+
+        result = <|
+            "command" -> command,
+            "args" -> args
+        |>;
+
+        (* Add environment variables as nested section if present *)
+        If[ AssociationQ @ env && Length @ env > 0,
+            result[ "env" ] = <| env, "MCP_SERVER_NAME" -> obj[ "Name" ] |>,
+            result[ "env" ] = <| "MCP_SERVER_NAME" -> obj[ "Name" ] |>
+        ];
+
+        result
+    ],
+    throwInternalFailure
+];
+
+makeCodexServerConfig // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -511,7 +604,40 @@ uninstallMCPServer[ target0_File, obj_MCPServerObject ] := Enclose[
     throwInternalFailure
 ];
 
+(* Codex uses TOML configuration, handle separately *)
+uninstallMCPServer[ target0_File, obj_MCPServerObject ] /; $installName === "Codex" :=
+    uninstallMCPServerCodex[ target0, obj ];
+
 uninstallMCPServer // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*uninstallMCPServerCodex*)
+uninstallMCPServerCodex // beginDefinition;
+
+uninstallMCPServerCodex[ target0_File, obj_MCPServerObject ] := Enclose[
+    Catch @ Module[ { target, name, existing },
+
+        target = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
+        If[ ! FileExistsQ @ target, Throw @ Missing[ "NotInstalled", target ] ];
+
+        name = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
+        existing = ConfirmBy[ readExistingCodexConfig @ target, AssociationQ, "Existing" ];
+
+        If[ ! AssociationQ @ existing[ "mcp_servers" ], Throw @ Missing[ "NotInstalled", target ] ];
+        If[ ! KeyExistsQ[ existing[ "mcp_servers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
+        KeyDropFrom[ existing[ "mcp_servers" ], name ];
+
+        ConfirmBy[ writeTOMLFile[ target, existing ], fileQ, "Export" ];
+
+        ConfirmMatch[ clearRecordedInstallation[ target, obj ], { ___? fileQ }, "Clear" ];
+
+        uninstallSuccess[ name, target, obj ]
+    ],
+    throwInternalFailure
+];
+
+uninstallMCPServerCodex // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -591,6 +717,12 @@ installLocation[ "OpenCode", _ ] :=
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*Codex*)
+installLocation[ "Codex", _ ] :=
+    fileNameJoin[ $HomeDirectory, ".codex", "config.toml" ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*Visual Studio Code*)
 installLocation[ "VisualStudioCode", "MacOSX" ] :=
     fileNameJoin[ $HomeDirectory, "Library", "Application Support", "Code", "User", "settings.json" ];
@@ -636,6 +768,8 @@ toInstallName[ "VSCode"            ] := "VisualStudioCode";
 toInstallName[ "Code"              ] := "VisualStudioCode";
 toInstallName[ "Gemini"            ] := "GeminiCLI";
 toInstallName[ "GoogleAntigravity" ] := "Antigravity";
+toInstallName[ "codex"             ] := "Codex";
+toInstallName[ "OpenAICodex"       ] := "Codex";
 toInstallName[ name_String         ] := name;
 toInstallName // endDefinition;
 
@@ -649,6 +783,7 @@ installDisplayName[ "VisualStudioCode" ] := "Visual Studio Code";
 installDisplayName[ "GeminiCLI"        ] := "Gemini CLI";
 installDisplayName[ "Antigravity"      ] := "Antigravity";
 installDisplayName[ "OpenCode"         ] := "OpenCode";
+installDisplayName[ "Codex"            ] := "Codex";
 installDisplayName[ name_String        ] := name;
 installDisplayName[ None               ] := None;
 installDisplayName // endDefinition;

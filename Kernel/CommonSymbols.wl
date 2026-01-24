@@ -51,7 +51,9 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `throwTop;
 `validateMCPServerObjectData;
 `writeRawJSONFile;
+`writeTOMLFile;
 `writeWXFFile;
+`readTOMLFile;
 
 (* Shared symbols with Tools subcontexts: *)
 `exportMarkdownString;
