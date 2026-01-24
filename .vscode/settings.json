@@ -8,6 +8,7 @@
         "LOCALBASE",
         "MCPB",
         "Multicolumn",
+        "newclient",
         "noinit",
         "noprompt",
         "opencode",
