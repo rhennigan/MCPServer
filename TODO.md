@@ -34,6 +34,8 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/Tools/Tools.wl`
 - [ ] Tool to open notebooks for the user (e.g., `UsingFrontEnd[SystemOpen[notebookPath]]`)
   - Source: `Kernel/Tools/Tools.wl`
+  - Might be redundant, since the same can be trivially done with a Bash tool or even the WL tool itself
+  - Maybe just add something to the WL tool description that mentions this can be done?
 
 ### Tool Improvements
 
@@ -45,13 +47,19 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/Tools/Tools.wl`
 - [ ] Documentation editing tools should have examples evaluation be optional
   - Source: `Kernel/Tools/Tools.wl`
-
-## Content & Output
-
 - [ ] Return multimodal content in tool results when appropriate
   - Source: `Kernel/StartMCPServer.wl`
 - [ ] Implement `ReadableForm` in this paclet for better code formatting
   - Source: `Kernel/Tools/TestReport.wl`
+
+## Prompts
+
+- [ ] Implement `Notebook` prompt
+  - Attaches a notebook (specified as a path) to the context
+  - Uses same functionality as the `ReadNotebook` tool
+
+- [ ] Implement `Documentation` prompt
+  - Attaches full WL documentation pages as markdown
 
 ## UI & Formatting
 

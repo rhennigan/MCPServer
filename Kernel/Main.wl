@@ -5,6 +5,7 @@ BeginPackage[ "Wolfram`MCPServer`" ];
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Exported Symbols*)
+`$DefaultMCPPrompts;
 `$DefaultMCPServers;
 `$DefaultMCPTools;
 `$LastMCPServerFailure;
@@ -53,6 +54,7 @@ $MCPServerContexts = {
     "Wolfram`MCPServer`Formatting`",
     "Wolfram`MCPServer`InstallMCPServer`",
     "Wolfram`MCPServer`MCPServerObject`",
+    "Wolfram`MCPServer`Prompts`",
     "Wolfram`MCPServer`StartMCPServer`",
     "Wolfram`MCPServer`Tools`",
     "Wolfram`MCPServer`Utilities`"
@@ -72,6 +74,7 @@ $MCPServerSymbolNames = $MCPServerSymbolNames =
 (* ::Section::Closed:: *)
 (*Protected Symbols*)
 $MCPServerProtectedNames = "Wolfram`MCPServer`" <> # & /@ {
+    "$DefaultMCPPrompts",
     "$DefaultMCPServers",
     "$DefaultMCPTools",
     "$LastMCPServerFailure",

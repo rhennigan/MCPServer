@@ -40,4 +40,10 @@ MCPServer::EmptyUsage                    = "Usage parameter cannot be empty. Pro
 MCPServer::InvalidUsageFormat            = "Invalid usage format: `1`. Expected bullet points with syntax in backticks.";
 MCPServer::InvalidSection                = "Invalid section name: `1`. Expected one of: BasicExamples, Scope, GeneralizationsExtensions, Options, Applications, PropertiesRelations, PossibleIssues, InteractiveExamples, NeatExamples.";
 
+(* MCP Prompts messages *)
+MCPServer::InvalidMCPPromptSpecification  = "Invalid MCP prompt specification: `1`.";
+MCPServer::InvalidMCPPromptsSpecification = "Invalid MCP prompts specification: `1`.";
+MCPServer::PromptNameNotFound             = "No prompt named \"`1`\" found in $DefaultMCPPrompts.";
+MCPServer::DeprecatedPromptData           = "The \"PromptData\" property is deprecated. Use \"MCPPrompts\" instead.";
+
 EndPackage[ ];
