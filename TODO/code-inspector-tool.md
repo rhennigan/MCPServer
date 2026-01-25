@@ -46,6 +46,7 @@ Full specification is in `Specs/CodeInspectorTool.md`.
   - [x] `parseExclusions[str_String]` - parse comma-separated exclusions to list (in CodeInspector.wl)
   - [x] `parseConfidenceLevel[str_String]` - parse confidence level string to number (in CodeInspector.wl)
   - [x] `filterInspections[inspections_List, opts_Association]` - filter by tag, severity, confidence
+- [x] Write and run unit tests, fixing test failures until all tests pass
 
 ### Phase 4: Markdown Formatting (`Formatting.wl`)
 
@@ -57,6 +58,7 @@ Full specification is in `Specs/CodeInspectorTool.md`.
   - [ ] `formatLocation[source_, location_]` - format as `file:line:col`
   - [ ] Handle "no issues found" case with settings summary
   - [ ] Handle truncation notice when limit exceeded
+- [ ] Write and run unit tests, fixing test failures until all tests pass
 
 ### Phase 5: CodeAction Handling (`CodeActions.wl`)
 
@@ -67,10 +69,11 @@ Full specification is in `Specs/CodeInspectorTool.md`.
     - `"DeleteText"` → "Delete"
     - `"InsertText"` → "Insert"
   - [ ] `formatSingleCodeAction[CodeAction[label_, command_, data_]]` - format single action
+- [ ] Write and run unit tests, fixing test failures until all tests pass
 
 ### Phase 6: Testing (`Tests/CodeInspectorTool.wlt`)
 
-- [ ] Create `Tests/CodeInspectorTool.wlt` with tests for:
+- [ ] Add full integration tests for the tool in `Tests/CodeInspectorTool.wlt`
 
   **Basic Functionality:**
   - [ ] Code string inspection with known issues
@@ -99,9 +102,7 @@ Full specification is in `Specs/CodeInspectorTool.md`.
 
 ### Phase 7: Verification
 
-- [ ] Delete any existing MX file (`Kernel/64Bit/MCPServer.mx`)
-- [ ] Build paclet: `wolframscript -f Scripts/BuildPaclet.wls -c`
-- [ ] Run tests: TestReport on `Tests/CodeInspectorTool.wlt`
+- [ ] Run full test suite to ensure there are no regressions
 - [ ] Manual testing via MCP client:
   - [ ] Test basic code inspection: `{"code": "If[a, b, b]"}`
   - [ ] Test file inspection with custom settings
