@@ -151,11 +151,15 @@ MCPServer provides a variety of tools organized by category:
 
 ### Context Tools (Semantic Search)
 
-Search Wolfram documentation and Wolfram Alpha results using semantic similarity:
+Search Wolfram resources using semantic similarity:
 
 - **WolframContext** - Combined search across documentation and Wolfram Alpha
 - **WolframAlphaContext** - Search Wolfram Alpha results (requires [LLMKit](https://www.wolfram.com/notebook-assistant-llm-kit))
 - **WolframLanguageContext** - Search Wolfram Language documentation
+
+Documentation search includes the [Function Repository](https://resources.wolframcloud.com/FunctionRepository), [Data Repository](https://datarepository.wolframcloud.com), [Neural Net Repository](https://resources.wolframcloud.com/NeuralNetRepository), [Paclet Repository](https://resources.wolframcloud.com/PacletRepository), and more.
+
+While only `WolframAlphaContext` *requires* an [LLMKit subscription](https://www.wolfram.com/notebook-assistant-llm-kit), having LLMKit greatly improves search results for all context tools by enabling reranking and filtering.
 
 ### Code Execution Tools
 
