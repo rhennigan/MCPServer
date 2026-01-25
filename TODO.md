@@ -8,6 +8,7 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/CreateMCPServer.wl`
 - [ ] Add `Initialization` option to `CreateMCPServer`
   - Source: `Kernel/CreateMCPServer.wl`
+- [ ] Add `ProcessDirectory` option to `InstallMCPServer` ([See Issue #69](https://github.com/rhennigan/MCPServer/issues/69))
 
 ## MCP Protocol Support
 
@@ -52,10 +53,6 @@ Consolidated list of TODO/FIXME items from the codebase.
 
 ## Prompts
 
-- [x] Implement `Notebook` prompt
-  - Attaches a notebook (specified as a path) to the context
-  - Uses same functionality as the `ReadNotebook` tool
-
 - [ ] Implement `Documentation` prompt
   - Attaches full WL documentation pages as markdown
 
@@ -74,6 +71,8 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/Common.wl`
 - [ ] Remove empty "Settings" section from bug reports (this paclet has no settings)
   - Source: `Kernel/Common.wl`
+- [ ] Convert internal errors into more useful text in MCP tool outputs
+  - Source: `Kernel/StartMCPServer.wl`
 
 ## Blocked / Dependencies
 
