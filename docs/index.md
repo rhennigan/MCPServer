@@ -11,6 +11,7 @@ This is the developer documentation for contributing to MCPServer. For user docu
 - **[Error Handling](error-handling.md)** - Error handling architecture using `catchTop`, `throwFailure`, and the `Enclose`/`Confirm` pattern
 - **[MCP Tools](tools.md)** - How MCP tools work and how to add new tools
 - **[MCP Prompts](mcp-prompts.md)** - How MCP prompts work and how to add new prompts
+- **[Predefined Servers](servers.md)** - Available server configurations and how to choose the right one
 - **[MCP Clients](mcp-clients.md)** - Supported client applications and configuration
 
 ## Development Workflow
