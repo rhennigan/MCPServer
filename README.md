@@ -40,13 +40,13 @@ Implements a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) ser
 
 ### Install the Paclet
 
-```wolfram
+```wl
 PacletInstall["Wolfram/MCPServer"]
 ```
 
 ### Load the Package
 
-```wolfram
+```wl
 Needs["Wolfram`MCPServer`"]
 ```
 
@@ -54,7 +54,7 @@ Needs["Wolfram`MCPServer`"]
 
 Install a Wolfram MCP server for Claude Desktop:
 
-```wolfram
+```wl
 InstallMCPServer["ClaudeDesktop"]
 (* Out: Success["InstallMCPServer", <|...|>] *)
 ```
@@ -65,13 +65,13 @@ After restarting Claude Desktop, it will have access to Wolfram knowledge and to
 
 To install a specific server type:
 
-```wolfram
+```wl
 InstallMCPServer["ClaudeDesktop", "WolframLanguage"]
 ```
 
 To uninstall:
 
-```wolfram
+```wl
 UninstallMCPServer["ClaudeDesktop"]              (* Remove all servers *)
 UninstallMCPServer["ClaudeDesktop", "Wolfram"]   (* Remove specific server *)
 ```
@@ -91,7 +91,7 @@ MCPServer includes four predefined server configurations, each optimized for dif
 
 Install a specific server:
 
-```wolfram
+```wl
 InstallMCPServer["ClaudeDesktop", "WolframLanguage"]
 ```
 
@@ -116,7 +116,7 @@ MCPServer can be installed into the following MCP client applications:
 
 Clients with project support can have servers installed for specific projects:
 
-```wolfram
+```wl
 InstallMCPServer[{"ClaudeCode", "/path/to/project"}, "WolframLanguage"]
 ```
 
@@ -128,7 +128,7 @@ Claude Desktop offers an excellent integration experience with MCPServer, provid
 
 Install an MCP server for use in Cursor:
 
-```wolfram
+```wl
 InstallMCPServer["Cursor"]
 (* Out: Success["InstallMCPServer", <|...|>] *)
 ```
@@ -188,7 +188,7 @@ See [docs/tools.md](docs/tools.md) for detailed information about each tool.
 
 Create custom MCP servers with your own tools using [LLMConfiguration](https://reference.wolfram.com/language/ref/LLMConfiguration.html):
 
-```wolfram
+```wl
 config = LLMConfiguration[<|
     "Tools" -> {LLMTool["PrimeFinder", {"n" -> "Integer"}, Prime[#n]&]}
 |>];
@@ -199,7 +199,7 @@ server = CreateMCPServer["My MCP Server", config]
 
 Install for use in Claude Desktop:
 
-```wolfram
+```wl
 InstallMCPServer["ClaudeDesktop", server]
 (* Out: Success["InstallMCPServer", <|...|>] *)
 ```
@@ -210,8 +210,8 @@ After restarting Claude Desktop, your custom tools will be available:
 
 You can also mix predefined tools with custom tools:
 
-```wolfram
-config = LLMConfiguration[<|
+```wl
+CreateMCPServer["My MCP Server", <|
     "Tools" -> {
         "WolframLanguageEvaluator",  (* Predefined tool *)
         "WolframAlpha",               (* Predefined tool *)
@@ -227,7 +227,6 @@ config = LLMConfiguration[<|
 | Function | Description |
 |----------|-------------|
 | `CreateMCPServer[name, config]` | Create a custom MCP server |
-| `StartMCPServer[server]` | Start an MCP server (typically called automatically) |
 | `InstallMCPServer[client]` | Install the default server for a client |
 | `InstallMCPServer[client, server]` | Install a specific server for a client |
 | `UninstallMCPServer[client]` | Remove all servers from a client |
@@ -248,39 +247,6 @@ config = LLMConfiguration[<|
 | `$DefaultMCPServers` | Association of predefined server configurations |
 | `$DefaultMCPTools` | Association of available tool definitions |
 | `$DefaultMCPPrompts` | Association of available prompt definitions |
-
-### Debugging
-
-| Symbol | Description |
-|--------|-------------|
-| `$LastMCPServerFailure` | The last failure object from server operations |
-| `$LastMCPServerFailureText` | Human-readable text of the last failure |
-
-For complete documentation, see the [paclet documentation](https://paclets.com/Wolfram/MCPServer).
-
-## Advanced Usage
-
-### Development Mode
-
-Test local changes without reinstalling the paclet:
-
-```wolfram
-InstallMCPServer["ClaudeCode", "DevelopmentMode" -> True]
-```
-
-### Environment Variables
-
-Pass environment variables to the server process:
-
-```wolfram
-InstallMCPServer["ClaudeDesktop", "Environment" -> <|"MY_VAR" -> "value"|>]
-```
-
-### MCP Prompts
-
-MCPServer supports MCP prompts for enhanced workflows. See [docs/mcp-prompts.md](docs/mcp-prompts.md) for details.
-
-For more advanced options, refer to the [documentation](https://paclets.com/Wolfram/MCPServer).
 
 ## Development
 
