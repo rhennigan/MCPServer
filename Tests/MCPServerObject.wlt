@@ -2,19 +2,17 @@
 (* ::Section::Closed:: *)
 (*Initialization*)
 VerificationTest[
-    If[ ! TrueQ @ Wolfram`MCPServerTests`$TestDefinitionsLoaded,
-        Get @ FileNameJoin @ { DirectoryName[ $TestFileName ], "Common.wl" }
-    ],
+    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
-    TestID   -> "GetDefinitions@@Tests/MCPServerObject.wlt:4,1-11,2"
+    TestID   -> "GetDefinitions@@Tests/MCPServerObject.wlt:4,1-9,2"
 ]
 
 VerificationTest[
     Needs[ "Wolfram`MCPServer`" ],
     Null,
     SameTest -> MatchQ,
-    TestID   -> "LoadContext@@Tests/MCPServerObject.wlt:13,1-18,2"
+    TestID   -> "LoadContext@@Tests/MCPServerObject.wlt:11,1-16,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -33,7 +31,7 @@ VerificationTest[
     ],
     _MCPServerObject? MCPServerObjectQ,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerObject-Setup@@Tests/MCPServerObject.wlt:27,1-37,2"
+    TestID   -> "MCPServerObject-Setup@@Tests/MCPServerObject.wlt:25,1-35,2"
 ]
 
 VerificationTest[
@@ -41,7 +39,7 @@ VerificationTest[
     obj = MCPServerObject[name],
     _MCPServerObject? MCPServerObjectQ,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerObject-ObjectRetrieval@@Tests/MCPServerObject.wlt:39,1-45,2"
+    TestID   -> "MCPServerObject-ObjectRetrieval@@Tests/MCPServerObject.wlt:37,1-43,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -52,49 +50,49 @@ VerificationTest[
     obj["Name"],
     name,
     SameTest -> Equal,
-    TestID   -> "MCPServerObject-GetName@@Tests/MCPServerObject.wlt:51,1-56,2"
+    TestID   -> "MCPServerObject-GetName@@Tests/MCPServerObject.wlt:49,1-54,2"
 ]
 
 VerificationTest[
     obj["Location"],
     _File? FileExistsQ,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerObject-GetLocation@@Tests/MCPServerObject.wlt:58,1-63,2"
+    TestID   -> "MCPServerObject-GetLocation@@Tests/MCPServerObject.wlt:56,1-61,2"
 ]
 
 VerificationTest[
     obj["LLMConfiguration"],
     _LLMConfiguration,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerObject-GetLLMConfiguration@@Tests/MCPServerObject.wlt:65,1-70,2"
+    TestID   -> "MCPServerObject-GetLLMConfiguration@@Tests/MCPServerObject.wlt:63,1-68,2"
 ]
 
 VerificationTest[
     obj["Tools"],
     { _LLMTool },
     SameTest -> MatchQ,
-    TestID   -> "MCPServerObject-GetTools@@Tests/MCPServerObject.wlt:72,1-77,2"
+    TestID   -> "MCPServerObject-GetTools@@Tests/MCPServerObject.wlt:70,1-75,2"
 ]
 
 VerificationTest[
     obj["ServerVersion"],
     _String? StringQ,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerObject-GetServerVersion@@Tests/MCPServerObject.wlt:79,1-84,2"
+    TestID   -> "MCPServerObject-GetServerVersion@@Tests/MCPServerObject.wlt:77,1-82,2"
 ]
 
 VerificationTest[
     obj["ObjectVersion"],
     _Integer? IntegerQ,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerObject-GetObjectVersion@@Tests/MCPServerObject.wlt:86,1-91,2"
+    TestID   -> "MCPServerObject-GetObjectVersion@@Tests/MCPServerObject.wlt:84,1-89,2"
 ]
 
 VerificationTest[
     obj["JSONConfiguration"],
     _String? StringQ,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerObject-GetJSONConfiguration@@Tests/MCPServerObject.wlt:93,1-98,2"
+    TestID   -> "MCPServerObject-GetJSONConfiguration@@Tests/MCPServerObject.wlt:91,1-96,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -109,7 +107,7 @@ VerificationTest[
         "ObjectVersion" -> _Integer
     }],
     SameTest -> MatchQ,
-    TestID   -> "MCPServerObject-MultipleProperties@@Tests/MCPServerObject.wlt:103,1-113,2"
+    TestID   -> "MCPServerObject-MultipleProperties@@Tests/MCPServerObject.wlt:101,1-111,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -119,21 +117,21 @@ VerificationTest[
     builtInServer = MCPServerObject["WolframLanguage"],
     _MCPServerObject? MCPServerObjectQ,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerObject-BuiltInServer@@Tests/MCPServerObject.wlt:118,1-123,2"
+    TestID   -> "MCPServerObject-BuiltInServer@@Tests/MCPServerObject.wlt:116,1-121,2"
 ]
 
 VerificationTest[
     builtInServer["Name"],
     "WolframLanguage",
     SameTest -> Equal,
-    TestID   -> "MCPServerObject-BuiltInServerName@@Tests/MCPServerObject.wlt:125,1-130,2"
+    TestID   -> "MCPServerObject-BuiltInServerName@@Tests/MCPServerObject.wlt:123,1-128,2"
 ]
 
 VerificationTest[
     builtInServer["Location"],
     "BuiltIn",
     SameTest -> Equal,
-    TestID   -> "MCPServerObject-BuiltInServerLocation@@Tests/MCPServerObject.wlt:132,1-137,2"
+    TestID   -> "MCPServerObject-BuiltInServerLocation@@Tests/MCPServerObject.wlt:130,1-135,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -143,7 +141,7 @@ VerificationTest[
     servers = MCPServerObjects[],
     { ___MCPServerObject? MCPServerObjectQ },
     SameTest -> MatchQ,
-    TestID   -> "MCPServerObject-ListAllServers@@Tests/MCPServerObject.wlt:142,1-147,2"
+    TestID   -> "MCPServerObject-ListAllServers@@Tests/MCPServerObject.wlt:140,1-145,2"
 ]
 
 (* Note: We can't rely on built-in servers being found in MCPServerObjects since
@@ -153,7 +151,7 @@ VerificationTest[
     Length[MCPServerObjects[]] >= 0,
     True,
     SameTest -> Equal,
-    TestID   -> "MCPServerObject-ConfirmServersExist@@Tests/MCPServerObject.wlt:152,1-157,2"
+    TestID   -> "MCPServerObject-ConfirmServersExist@@Tests/MCPServerObject.wlt:150,1-155,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -163,7 +161,7 @@ VerificationTest[
     DeleteObject @ server,
     Null,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerObject-DeleteObject@@Tests/MCPServerObject.wlt:162,1-167,2"
+    TestID   -> "MCPServerObject-DeleteObject@@Tests/MCPServerObject.wlt:160,1-165,2"
 ]
 
 VerificationTest[
@@ -171,7 +169,7 @@ VerificationTest[
     _Failure,
     { MCPServerObject::MCPServerNotFound },
     SameTest -> MatchQ,
-    TestID   -> "MCPServerObject-VerifyDeletion@@Tests/MCPServerObject.wlt:169,1-175,2"
+    TestID   -> "MCPServerObject-VerifyDeletion@@Tests/MCPServerObject.wlt:167,1-173,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -182,7 +180,7 @@ VerificationTest[
     _Failure,
     { MCPServerObject::MCPServerNotFound },
     SameTest -> MatchQ,
-    TestID   -> "MCPServerObject-NonExistentServer@@Tests/MCPServerObject.wlt:180,1-186,2"
+    TestID   -> "MCPServerObject-NonExistentServer@@Tests/MCPServerObject.wlt:178,1-184,2"
 ]
 
 VerificationTest[
@@ -190,7 +188,7 @@ VerificationTest[
     _Failure,
     { MCPServerObject::InvalidArguments },
     SameTest -> MatchQ,
-    TestID   -> "MCPServerObject-InvalidInput@@Tests/MCPServerObject.wlt:188,1-194,2"
+    TestID   -> "MCPServerObject-InvalidInput@@Tests/MCPServerObject.wlt:186,1-192,2"
 ]
 
 VerificationTest[
@@ -198,5 +196,5 @@ VerificationTest[
     _Failure,
     { MCPServerObject::InvalidArguments },
     SameTest -> MatchQ,
-    TestID   -> "MCPServerObject-InvalidAssociation@@Tests/MCPServerObject.wlt:196,1-202,2"
+    TestID   -> "MCPServerObject-InvalidAssociation@@Tests/MCPServerObject.wlt:194,1-200,2"
 ]

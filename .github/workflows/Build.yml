@@ -50,6 +50,9 @@ jobs:
         name: mcpb
         path: ${{ env.MCPB_PATH }}
 
+    - name: Install Test Dependencies
+      run: wolframscript -f Scripts/InstallTestDependencies.wls
+
     - name: Test
       run: wolframscript -f Scripts/TestPaclet.wls
 
