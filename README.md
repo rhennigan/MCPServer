@@ -22,8 +22,8 @@ Implements a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) ser
 
 ## Features
 
-- **Predefined servers** for common use cases (general computation, Wolfram Alpha queries, development)
-- **Semantic search** across Wolfram documentation and Wolfram Alpha results
+- **Predefined servers** for common use cases (general computation, Wolfram\|Alpha queries, development)
+- **Semantic search** across Wolfram documentation and Wolfram\|Alpha results
 - **Code evaluation** with Wolfram Language directly in AI conversations
 - **Notebook support** for reading and writing Wolfram notebooks
 - **Custom servers** with tailored tools for specific needs
@@ -153,9 +153,11 @@ MCPServer provides a variety of tools organized by category:
 
 Search Wolfram resources using semantic similarity:
 
-- **WolframContext** - Combined search across documentation and Wolfram Alpha
-- **WolframAlphaContext** - Search Wolfram Alpha results (requires [LLMKit](https://www.wolfram.com/notebook-assistant-llm-kit))
-- **WolframLanguageContext** - Search Wolfram Language documentation
+- **WolframContext** - Combines the functionality of `WolframLanguageContext` and `WolframAlphaContext` in a single tool
+- **WolframAlphaContext** - Semantic search of Wolfram\|Alpha results (requires [LLMKit](https://www.wolfram.com/notebook-assistant-llm-kit))
+- **WolframLanguageContext** - Semantic search of Wolfram Language documentation and other resources
+
+> **Note:** Since `WolframContext` combines the other two, a server should only include one of these three tools. Without LLMKit, `WolframContext` is effectively the same as `WolframLanguageContext` since the Wolfram\|Alpha semantic search functionality is disabled.
 
 Documentation search includes the [Function Repository](https://resources.wolframcloud.com/FunctionRepository), [Data Repository](https://datarepository.wolframcloud.com), [Neural Net Repository](https://resources.wolframcloud.com/NeuralNetRepository), [Paclet Repository](https://resources.wolframcloud.com/PacletRepository), and more.
 
@@ -164,7 +166,7 @@ While only `WolframAlphaContext` *requires* an [LLMKit subscription](https://www
 ### Code Execution Tools
 
 - **WolframLanguageEvaluator** - Execute Wolfram Language code with time constraints
-- **WolframAlpha** - Natural language queries to Wolfram Alpha
+- **WolframAlpha** - Natural language queries to Wolfram\|Alpha
 - **SymbolDefinition** - Retrieve symbol definitions in readable markdown format
 
 ### Notebook Tools
