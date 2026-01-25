@@ -626,7 +626,7 @@ $bugReportLink := Hyperlink[
 bugReportBody[ ] := bugReportBody @ $thisPaclet[ "PacletInfo" ];
 
 bugReportBody[ as_Association? AssociationQ ] :=
-    Module[ { debugData, stack, settings, internalFailure, bugReportText, file, data },
+    Module[ { debugData, stack, settings, internalFailure, bugReportText, dir, fileName, filePath, file, data },
 
         debugData        = $debugData;
         stack            = $bugReportStack;
@@ -655,11 +655,17 @@ bugReportBody[ as_Association? AssociationQ ] :=
             "InternalFailure" -> internalFailure
         |>;
 
-        file = File @ Export[
-            FileNameJoin @ { $UserBaseDirectory, "Logs", "MCPServer", "LastInternalFailureData.mx" },
-            data,
-            "MX"
-        ];
+        (* Log to unique file in InternalFailures subdirectory *)
+        dir = FileNameJoin @ { $UserBaseDirectory, "Logs", "MCPServer", "InternalFailures" };
+        If[ ! DirectoryQ @ dir, Quiet @ CreateDirectory[ dir, CreateIntermediateDirectories -> True ] ];
+        fileName = generateUniqueFailureFileName[ ];
+        filePath = FileNameJoin @ { dir, fileName };
+
+        file = File @ Export[ filePath, data, "MX" ];
+        $internalFailureLogPath = filePath;
+
+        (* Cleanup old logs, keeping only 50 most recent *)
+        cleanupOldFailureLogs[ ];
 
         WithCleanup[
             Unprotect[ $LastMCPServerFailure, $LastMCPServerFailureText ]
@@ -701,6 +707,174 @@ sourceLink[ { tag_String, file_String, { l1_String, c1_String }, { l2_String, c2
     ];
 
 sourceLink[ ___ ] := "";
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*extractFailureTag*)
+extractFailureTag // beginDefinition;
+
+(* Handle MCPServer internal failures *)
+extractFailureTag[ Failure[ "MCPServer::Internal", as_Association ] ] :=
+    extractFailureTag0[ "MCPServer", as ];
+
+(* Handle Chatbook internal failures *)
+extractFailureTag[ Failure[ "General::ChatbookInternal", as_Association ] ] :=
+    extractFailureTag0[ "Chatbook", as ];
+
+(* Fallback *)
+extractFailureTag[ Failure[ tag_String, _ ] ] := tag;
+extractFailureTag[ _ ] := "Unknown";
+
+extractFailureTag // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*extractFailureTag0*)
+extractFailureTag0 // beginDefinition;
+
+extractFailureTag0[ prefix_String, as_Association ] :=
+    Module[ { msgParams, innerAs, source, topInfo, info, shortSource, args, symbolName, funcName, confirmType },
+
+        (* Extract nested association from MessageParameters *)
+        msgParams = Lookup[ as, "MessageParameters", { } ];
+        innerAs = Replace[ msgParams, { { _, inner_Association } :> inner, _ :> <| |> } ];
+
+        (* Get source info - check multiple locations *)
+        source = Lookup[ as, "Source", None ];
+        topInfo = Lookup[ as, "Information", None ];
+        info = Which[
+            (* MX failures have Source at top level with full path *)
+            StringQ @ source && StringContainsQ[ source, "@@" ],
+                source,
+            (* Non-MX failures may have Information at top level *)
+            StringQ @ topInfo && StringContainsQ[ topInfo, "@@" ],
+                topInfo,
+            (* Or Information in nested association *)
+            True,
+                Lookup[ innerAs, "Information", None ]
+        ];
+
+        (* Get short source tag (e.g., "Path") for non-MX builds *)
+        shortSource = Which[
+            StringQ @ source && ! StringContainsQ[ source, "@@" ],
+                source,
+            StringQ @ topInfo && ! StringContainsQ[ topInfo, "@@" ],
+                topInfo,
+            StringQ @ info && ! StringContainsQ[ info, "@@" ],
+                info,
+            True,
+                None
+        ];
+
+        (* Extract arguments for unhandled down values check *)
+        args = Lookup[ innerAs, "Arguments", Lookup[ as, "Arguments", { } ] ];
+
+        (* Check for unhandled down values with symbol name *)
+        symbolName = Cases[
+            { args },
+            { "UnhandledDownValues", HoldForm[ sym_Symbol ] } :>
+                SymbolName @ Unevaluated @ sym,
+            { 0, Infinity },
+            1
+        ];
+
+        (* Get function name and confirmation type for additional context *)
+        funcName = Replace[
+            Lookup[ innerAs, "Function", None ],
+            s_Symbol :> SymbolName @ Unevaluated @ s
+        ];
+        confirmType = Lookup[ innerAs, "ConfirmationType", None ];
+
+        Which[
+            (* Unhandled down values case *)
+            Length @ symbolName > 0,
+                prefix <> "::Internal::UnhandledDownValues::" <> First @ symbolName,
+
+            (* Source location available with full path *)
+            StringQ @ info && StringContainsQ[ info, "@@" ],
+                prefix <> "::Internal::Path@@" <> Last @ StringSplit[ info, "@@" ],
+
+            (* Confirmation failure with function name and short source *)
+            StringQ @ confirmType && StringQ @ funcName && StringQ @ shortSource,
+                prefix <> "::Internal::" <> confirmType <> "::" <> funcName <> "::" <> shortSource,
+
+            (* Confirmation failure with function name *)
+            StringQ @ confirmType && StringQ @ funcName,
+                prefix <> "::Internal::" <> confirmType <> "::" <> funcName,
+
+            (* Just function name available (but not None) with short source *)
+            StringQ @ funcName && funcName =!= "None" && StringQ @ shortSource,
+                prefix <> "::Internal::Function::" <> funcName <> "::" <> shortSource,
+
+            (* Just function name available (but not None) *)
+            StringQ @ funcName && funcName =!= "None",
+                prefix <> "::Internal::Function::" <> funcName,
+
+            (* Default *)
+            True,
+                prefix <> "::Internal"
+        ]
+    ];
+
+extractFailureTag0 // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*generateUniqueFailureFileName*)
+generateUniqueFailureFileName // beginDefinition;
+
+generateUniqueFailureFileName[ ] :=
+    Module[ { timestamp, uniqueID },
+        timestamp = DateString[ { "Year", "-", "Month", "-", "Day", "_", "Hour", "-", "Minute", "-", "Second" } ];
+        uniqueID = IntegerString[ Hash[ CreateUUID[ ], "MD5" ], 36, 8 ];
+        timestamp <> "_" <> uniqueID <> ".mx"
+    ];
+
+generateUniqueFailureFileName // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*cleanupOldFailureLogs*)
+cleanupOldFailureLogs // beginDefinition;
+
+cleanupOldFailureLogs[ ] := cleanupOldFailureLogs[ 50 ];
+
+cleanupOldFailureLogs[ maxFiles_Integer ] :=
+    Module[ { dir, files, toDelete },
+        dir = FileNameJoin @ { $UserBaseDirectory, "Logs", "MCPServer", "InternalFailures" };
+        If[ ! DirectoryQ @ dir, Return @ Null ];
+        files = FileNames[ "*.mx", dir ];
+        If[ Length @ files <= maxFiles, Return @ Null ];
+        (* Sort by modification time, newest first *)
+        files = SortBy[ files, -FileDate[ #, "Modification" ] & ];
+        toDelete = Drop[ files, maxFiles ];
+        Quiet @ DeleteFile /@ toDelete;
+    ];
+
+cleanupOldFailureLogs // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*formatInternalFailureForMCP*)
+formatInternalFailureForMCP // beginDefinition;
+
+formatInternalFailureForMCP[ failure: Failure[ "MCPServer::Internal" | "General::ChatbookInternal", _ ] ] :=
+    Module[ { tag, logPath },
+        tag = extractFailureTag @ failure;
+        logPath = $internalFailureLogPath;
+        StringJoin[
+            "[Error] An unexpected error occurred: ", tag, ".\n",
+            If[ StringQ @ logPath,
+                "Full details of the error have been logged to: " <> logPath <> "\n",
+                ""
+            ],
+            "Report this issue at https://github.com/rhennigan/MCPServer/issues/new"
+        ]
+    ];
+
+formatInternalFailureForMCP[ _ ] := None;
+
+formatInternalFailureForMCP // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)

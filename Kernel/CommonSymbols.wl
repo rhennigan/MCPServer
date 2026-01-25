@@ -63,4 +63,11 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 (* Shared symbols with Tools subcontexts: *)
 `exportMarkdownString;
 
+(* Internal failure formatting: *)
+`$internalFailureLogPath;
+`extractFailureTag;
+`formatInternalFailureForMCP;
+`generateUniqueFailureFileName;
+`cleanupOldFailureLogs;
+
 EndPackage[ ];
