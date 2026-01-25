@@ -235,9 +235,9 @@ parseTOMLValue // endDefinition;
 parseTOMLArray // beginDefinition;
 
 parseTOMLArray[ s_String ] := Enclose[
-    Module[ { inner, elements },
+    Catch @ Module[ { inner, elements },
         inner = StringTrim @ StringTake[ s, { 2, -2 } ];
-        If[ inner === "", Return[ { }, Module ] ];
+        If[ inner === "", Throw @ { } ];
         elements = splitTOMLElements[ inner, "," ];
         ConfirmMatch[ parseTOMLValue /@ elements, { ___? validTOMLValueQ }, "Elements" ]
     ],
@@ -305,9 +305,9 @@ splitTOMLElements // endDefinition;
 parseTOMLInlineTable // beginDefinition;
 
 parseTOMLInlineTable[ s_String ] := Enclose[
-    Module[ { inner, pairs, result },
+    Catch @ Module[ { inner, pairs, result },
         inner = StringTrim @ StringTake[ s, { 2, -2 } ];
-        If[ inner === "", Return[ <| |>, Module ] ];
+        If[ inner === "", Throw @ <| |> ];
         pairs = splitTOMLElements[ inner, "," ];
         result = <| |>;
         Do[
@@ -424,10 +424,10 @@ buildOutputLines // endDefinition;
 generateMCPServerLines // beginDefinition;
 
 generateMCPServerLines[ data_Association ] := Enclose[
-    Module[ { mcpServers, lines },
+    Catch @ Module[ { mcpServers, lines },
         mcpServers = Lookup[ data, "mcp_servers", <| |> ];
         If[ ! AssociationQ @ mcpServers || mcpServers === <| |>,
-            Return[ { }, Module ]
+            Throw @ { }
         ];
 
         lines = Flatten @ KeyValueMap[

@@ -234,7 +234,7 @@ insertAtPositionInExtendedExamples // endDefinition;
 insertInExtendedSectionAtPosition // beginDefinition;
 
 insertInExtendedSectionAtPosition[ groupCells_List, sectionTitle_String, newCells_List, position_Integer ] := Enclose[
-    Module[ { sectionIndex, sectionEndIndex, sectionContent, groups, insertedContent, newSectionContent },
+    Catch @ Module[ { sectionIndex, sectionEndIndex, sectionContent, groups, insertedContent, newSectionContent },
 
         (* Find the section header *)
         sectionIndex = FirstPosition[
@@ -245,7 +245,7 @@ insertInExtendedSectionAtPosition[ groupCells_List, sectionTitle_String, newCell
         ];
 
         If[ sectionIndex === None,
-            Return @ groupCells
+            Throw @ groupCells
         ];
 
         sectionIndex = First @ sectionIndex;
@@ -485,7 +485,7 @@ replaceAtPositionInExtendedExamples // endDefinition;
 replaceInExtendedSectionAtPosition // beginDefinition;
 
 replaceInExtendedSectionAtPosition[ groupCells_List, sectionTitle_String, newCells_List, position_Integer ] := Enclose[
-    Module[ { sectionIndex, sectionEndIndex, sectionContent, groups, replacedContent, newSectionContent },
+    Catch @ Module[ { sectionIndex, sectionEndIndex, sectionContent, groups, replacedContent, newSectionContent },
 
         sectionIndex = FirstPosition[
             groupCells,
@@ -495,7 +495,7 @@ replaceInExtendedSectionAtPosition[ groupCells_List, sectionTitle_String, newCel
         ];
 
         If[ sectionIndex === None,
-            Return @ groupCells
+            Throw @ groupCells
         ];
 
         sectionIndex = First @ sectionIndex;
@@ -539,13 +539,13 @@ replaceExampleGroupAtPosition // endDefinition;
 replaceExampleGroupAtList // beginDefinition;
 
 replaceExampleGroupAtList[ groups_List, newCells_List, position_Integer ] :=
-    Module[ { pos, before, after, result },
+    Catch @ Module[ { pos, before, after, result },
         (* Normalize position using 1-indexed with negative support *)
         pos = normalizeElementPosition[ position, Length @ groups ];
 
         If[ Length @ groups === 0,
             (* No existing groups, just add the new cells *)
-            Return @ newCells
+            Throw @ newCells
         ];
 
         before = Take[ groups, pos - 1 ];
@@ -650,7 +650,7 @@ removeAtPositionInExtendedExamples // endDefinition;
 removeInExtendedSectionAtPosition // beginDefinition;
 
 removeInExtendedSectionAtPosition[ groupCells_List, sectionTitle_String, position_Integer ] := Enclose[
-    Module[ { sectionIndex, sectionEndIndex, sectionContent, groups, removedContent, newSectionContent },
+    Catch @ Module[ { sectionIndex, sectionEndIndex, sectionContent, groups, removedContent, newSectionContent },
 
         sectionIndex = FirstPosition[
             groupCells,
@@ -660,7 +660,7 @@ removeInExtendedSectionAtPosition[ groupCells_List, sectionTitle_String, positio
         ];
 
         If[ sectionIndex === None,
-            Return @ groupCells
+            Throw @ groupCells
         ];
 
         sectionIndex = First @ sectionIndex;
@@ -704,12 +704,12 @@ removeExampleGroupAtPosition // endDefinition;
 removeExampleGroupAtList // beginDefinition;
 
 removeExampleGroupAtList[ groups_List, position_Integer ] :=
-    Module[ { pos, remaining },
+    Catch @ Module[ { pos, remaining },
         (* Normalize position using 1-indexed with negative support *)
         pos = normalizeElementPosition[ position, Length @ groups ];
 
         If[ Length @ groups === 0,
-            Return @ { }
+            Throw @ { }
         ];
 
         remaining = Delete[ groups, pos ];

@@ -14,6 +14,7 @@ $inGitHub := $inGitHub = StringQ @ Environment[ "GITHUB_ACTIONS" ];
 CodeInspector`AbstractRules`$DefaultAbstractRules = <|
     CodeInspector`AbstractRules`$DefaultAbstractRules,
     cp`CallNode[ cp`LeafNode[ Symbol, "Throw", _ ], { _ }, _ ] -> scanSingleArgThrow,
+    CodeParser`CallNode[ CodeParser`LeafNode[ Symbol, "Return"|"System`Return", _ ], _, _ ] -> scanReturn,
     cp`LeafNode[ Symbol, _String? privateContextQ, _ ] -> scanPrivateContext,
     cp`LeafNode[ Symbol, _String? globalSymbolQ, _ ] -> scanGlobalSymbol
 |>;
@@ -58,6 +59,22 @@ walkASTForCatch[ cp`CallNode[ cp`LeafNode[ Symbol, "Catch"|"Hold"|"HoldForm"|"Ho
 
 walkASTForCatch[ ast_, pos_ ] :=
     Extract[ ast, pos ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*scanReturn*)
+scanReturn // ClearAll;
+scanReturn[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, as },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        ci`InspectionObject[
+            "ReturnAmbiguous",
+            "The return point of ``Return`` is ambiguous, consider using ``Catch``/``Throw`` instead",
+            "Warning",
+            <| as, ConfidenceLevel -> 0.9 |>
+        ]
+    ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
