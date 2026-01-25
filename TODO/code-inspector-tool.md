@@ -62,14 +62,14 @@ Full specification is in `Specs/CodeInspectorTool.md`.
 
 ### Phase 5: CodeAction Handling (`CodeActions.wl`)
 
-- [ ] Create `Kernel/Tools/CodeInspector/CodeActions.wl` with:
-  - [ ] `formatCodeActions[actions_List]` - format list of CodeActions as suggestions
-  - [ ] `codeActionCommandToString[command_]` - convert command to human-readable text
+- [x] Create `Kernel/Tools/CodeInspector/CodeActions.wl` with:
+  - [x] `formatCodeActions[actions_List]` - format list of CodeActions as suggestions
+  - [x] `codeActionCommandToString[command_]` - convert command to human-readable text
     - `"ReplaceText"` → "Replace with"
     - `"DeleteText"` → "Delete"
     - `"InsertText"` → "Insert"
-  - [ ] `formatSingleCodeAction[CodeAction[label_, command_, data_]]` - format single action
-- [ ] Write and run unit tests, fixing test failures until all tests pass
+  - [x] `formatSingleCodeAction[CodeAction[label_, command_, data_]]` - format single action
+- [x] Write and run unit tests, fixing test failures until all tests pass
 
 ### Phase 6: Testing (`Tests/CodeInspectorTool.wlt`)
 

@@ -801,6 +801,224 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*CodeActions Formatting*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*formatCodeActions - Empty List*)
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`formatCodeActions[ { } ],
+    "",
+    SameTest -> SameQ,
+    TestID   -> "FormatCodeActions-EmptyList@@Tests/CodeInspectorTool.wlt:809,1-814,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*formatCodeActions - Single Action*)
+VerificationTest[
+    $singleActionResult = Wolfram`MCPServer`Tools`CodeInspector`Private`formatCodeActions @ {
+        CodeParser`CodeAction[ "Delete ``,``", CodeParser`DeleteText, <| CodeParser`Source -> { { 1, 5 }, { 1, 6 } } |> ]
+    },
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "FormatCodeActions-SingleAction-ReturnsString@@Tests/CodeInspectorTool.wlt:819,1-826,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $singleActionResult, "**Suggested Fix:**" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatCodeActions-SingleAction-HasHeader@@Tests/CodeInspectorTool.wlt:828,1-833,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $singleActionResult, "Delete `,`" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatCodeActions-SingleAction-HasLabel@@Tests/CodeInspectorTool.wlt:835,1-840,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*formatCodeActions - Multiple Actions*)
+VerificationTest[
+    $multiActionResult = Wolfram`MCPServer`Tools`CodeInspector`Private`formatCodeActions @ {
+        CodeParser`CodeAction[ "Insert ``*``", CodeParser`InsertNode, <| CodeParser`Source -> { { 1, 5 }, { 1, 5 } } |> ],
+        CodeParser`CodeAction[ "Insert ``,``", CodeParser`InsertNode, <| CodeParser`Source -> { { 1, 5 }, { 1, 5 } } |> ]
+    },
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "FormatCodeActions-MultipleActions-ReturnsString@@Tests/CodeInspectorTool.wlt:845,1-853,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $multiActionResult, "**Suggested Fixes:**" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatCodeActions-MultipleActions-HasPluralHeader@@Tests/CodeInspectorTool.wlt:855,1-860,2"
+]
+
+VerificationTest[
+    StringCount[ $multiActionResult, "- Insert" ],
+    2,
+    SameTest -> SameQ,
+    TestID   -> "FormatCodeActions-MultipleActions-HasTwoActions@@Tests/CodeInspectorTool.wlt:862,1-867,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*formatSingleCodeAction*)
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`formatSingleCodeAction[
+        CodeParser`CodeAction[ "Replace with ``StringQ``", CodeParser`ReplaceNode, <| "ReplacementNode" -> CodeParser`LeafNode[ Symbol, "StringQ", <||> ] |> ]
+    ],
+    _String ? (StringContainsQ[ #, "Replace with `StringQ`" ] &),
+    SameTest -> MatchQ,
+    TestID   -> "FormatSingleCodeAction-ReplaceNode@@Tests/CodeInspectorTool.wlt:872,1-879,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`formatSingleCodeAction[
+        CodeParser`CodeAction[ "Delete key 1", CodeParser`DeleteNode, <| CodeParser`Source -> { { 1, 1 }, { 1, 5 } } |> ]
+    ],
+    _String ? (StringContainsQ[ #, "Delete key 1" ] &),
+    SameTest -> MatchQ,
+    TestID   -> "FormatSingleCodeAction-DeleteNode@@Tests/CodeInspectorTool.wlt:881,1-888,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`formatSingleCodeAction[ "invalid" ],
+    "",
+    SameTest -> SameQ,
+    TestID   -> "FormatSingleCodeAction-Invalid@@Tests/CodeInspectorTool.wlt:890,1-895,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*codeActionCommandToString*)
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`ReplaceText ],
+    "Replace with",
+    SameTest -> SameQ,
+    TestID   -> "CodeActionCommandToString-ReplaceText@@Tests/CodeInspectorTool.wlt:900,1-905,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`DeleteText ],
+    "Delete",
+    SameTest -> SameQ,
+    TestID   -> "CodeActionCommandToString-DeleteText@@Tests/CodeInspectorTool.wlt:907,1-912,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`InsertText ],
+    "Insert",
+    SameTest -> SameQ,
+    TestID   -> "CodeActionCommandToString-InsertText@@Tests/CodeInspectorTool.wlt:914,1-919,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`ReplaceNode ],
+    "Replace with",
+    SameTest -> SameQ,
+    TestID   -> "CodeActionCommandToString-ReplaceNode@@Tests/CodeInspectorTool.wlt:921,1-926,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`DeleteNode ],
+    "Delete",
+    SameTest -> SameQ,
+    TestID   -> "CodeActionCommandToString-DeleteNode@@Tests/CodeInspectorTool.wlt:928,1-933,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`InsertNode ],
+    "Insert",
+    SameTest -> SameQ,
+    TestID   -> "CodeActionCommandToString-InsertNode@@Tests/CodeInspectorTool.wlt:935,1-940,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`InsertNodeAfter ],
+    "Insert after",
+    SameTest -> SameQ,
+    TestID   -> "CodeActionCommandToString-InsertNodeAfter@@Tests/CodeInspectorTool.wlt:942,1-947,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ UnknownCommand ],
+    "UnknownCommand",
+    SameTest -> SameQ,
+    TestID   -> "CodeActionCommandToString-Unknown@@Tests/CodeInspectorTool.wlt:949,1-954,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*cleanLabel*)
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`cleanLabel[ "Replace with ``StringQ``" ],
+    "Replace with `StringQ`",
+    SameTest -> SameQ,
+    TestID   -> "CleanLabel-SingleBackticks@@Tests/CodeInspectorTool.wlt:959,1-964,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`cleanLabel[ "Insert ``*`` and ``+``" ],
+    "Insert `*` and `+`",
+    SameTest -> SameQ,
+    TestID   -> "CleanLabel-MultipleBackticks@@Tests/CodeInspectorTool.wlt:966,1-971,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`cleanLabel[ "No backticks here" ],
+    "No backticks here",
+    SameTest -> SameQ,
+    TestID   -> "CleanLabel-NoBackticks@@Tests/CodeInspectorTool.wlt:973,1-978,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*formatCodeActions Integration with formatInspection*)
+VerificationTest[
+    (* Test that formatInspection includes CodeActions *)
+    $inspectionWithActions = Wolfram`MCPServer`Tools`CodeInspector`Private`formatInspection[
+        InspectionObject[
+            "Comma",
+            "Extra comma.",
+            "Error",
+            <|
+                ConfidenceLevel -> 1.0,
+                CodeParser`Source -> { { 1, 5 }, { 1, 5 } },
+                "CodeActions" -> {
+                    CodeParser`CodeAction[ "Delete ``,``", CodeParser`DeleteText, <| CodeParser`Source -> { { 1, 5 }, { 1, 6 } } |> ]
+                }
+            |>
+        ],
+        1,
+        "1+f[,2]"
+    ],
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "FormatInspection-WithCodeActions-ReturnsString@@Tests/CodeInspectorTool.wlt:983,1-1004,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $inspectionWithActions, "**Suggested Fix:**" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatInspection-WithCodeActions-ShowsSuggestedFix@@Tests/CodeInspectorTool.wlt:1006,1-1011,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $inspectionWithActions, "Delete `,`" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatInspection-WithCodeActions-ShowsActionLabel@@Tests/CodeInspectorTool.wlt:1013,1-1018,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Error Cases*)
 
 (* ::**************************************************************************************************************:: *)
@@ -811,7 +1029,7 @@ VerificationTest[
     DirectoryQ @ $emptyDir,
     True,
     SameTest -> SameQ,
-    TestID   -> "ErrorCase-CreateEmptyDir@@Tests/CodeInspectorTool.wlt:809,1-815,2"
+    TestID   -> "ErrorCase-CreateEmptyDir@@Tests/CodeInspectorTool.wlt:1027,1-1033,2"
 ]
 
 VerificationTest[
@@ -822,7 +1040,7 @@ VerificationTest[
     _Failure,
     { MCPServer::CodeInspectorNoFilesFound },
     SameTest -> MatchQ,
-    TestID   -> "ErrorCase-EmptyDirectory@@Tests/CodeInspectorTool.wlt:817,1-826,2"
+    TestID   -> "ErrorCase-EmptyDirectory@@Tests/CodeInspectorTool.wlt:1035,1-1044,2"
 ]
 
 VerificationTest[
@@ -830,7 +1048,7 @@ VerificationTest[
     ! DirectoryQ @ $emptyDir,
     True,
     SameTest -> SameQ,
-    TestID   -> "Cleanup-EmptyDirectory@@Tests/CodeInspectorTool.wlt:828,1-834,2"
+    TestID   -> "Cleanup-EmptyDirectory@@Tests/CodeInspectorTool.wlt:1046,1-1052,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

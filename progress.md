@@ -109,3 +109,29 @@ Completed Phase 4: Markdown Formatting (`Formatting.wl`)
 - When using symbols like `InspectionObject` from external packages in pattern matching, must ensure `Needs["CodeInspector`"]` is called before the pattern definitions, otherwise the symbol resolves to the wrong context and patterns won't match
 - Similar issue with `CodeParser`Source` - need to load CodeParser before using the symbol as a key
 
+
+## Session 5
+
+Completed Phase 5: CodeAction Handling (`CodeActions.wl`)
+
+**Completed tasks:**
+- Implemented full `Kernel/Tools/CodeInspector/CodeActions.wl` with:
+  - `formatCodeActions[actions_List]` - formats list of CodeActions as markdown suggestions with singular/plural header
+  - `formatSingleCodeAction[CodeAction[...]]` - formats a single CodeAction, handling both `CodeParser`CodeAction` and unqualified forms
+  - `codeActionCommandToString[command_]` - converts command symbols to human-readable text (handles text and node operations)
+  - `cleanLabel[label_String]` - converts WL double-backtick formatting to markdown single backticks
+  - `extractActionDetails[command_, data_]` - extracts additional details from CodeAction data (though label usually contains all needed info)
+  - `nodeToString[node_]` - converts CodeParser nodes to displayable strings (used sparingly to avoid duplication with label)
+- Added 24 new unit tests for CodeActions functions covering:
+  - `formatCodeActions` - empty list, single action, multiple actions with plural header
+  - `formatSingleCodeAction` - ReplaceNode, DeleteNode, invalid input
+  - `codeActionCommandToString` - all command types (ReplaceText, DeleteText, InsertText, ReplaceNode, DeleteNode, InsertNode, InsertNodeAfter, unknown)
+  - `cleanLabel` - single/multiple backtick conversions, no backticks
+  - Integration tests - formatInspection with CodeActions shows suggested fixes
+
+**Implementation notes:**
+- CodeAction commands in CodeInspector are symbols (e.g., `CodeParser`ReplaceNode`) not strings
+- The label in CodeAction is already human-readable and contains the key information
+- WL uses double backticks (`` `` ``) for inline code which needs conversion to markdown single backticks
+- All 111 tests pass (54 existing + 24 new CodeActions tests + 33 formatting tests)
+
