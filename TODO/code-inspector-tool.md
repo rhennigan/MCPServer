@@ -50,15 +50,15 @@ Full specification is in `Specs/CodeInspectorTool.md`.
 
 ### Phase 4: Markdown Formatting (`Formatting.wl`)
 
-- [ ] Create `Kernel/Tools/CodeInspector/Formatting.wl` with:
-  - [ ] `inspectionsToMarkdown[inspections_List, source_, opts_Association]` - main formatter
-  - [ ] `summaryTable[inspections_List]` - generate severity count table
-  - [ ] `formatInspection[inspection_InspectionObject, index_Integer, source_]` - format single issue
-  - [ ] `extractCodeSnippet[source_, location_, contextLines_Integer]` - extract code with context
-  - [ ] `formatLocation[source_, location_]` - format as `file:line:col`
-  - [ ] Handle "no issues found" case with settings summary
-  - [ ] Handle truncation notice when limit exceeded
-- [ ] Write and run unit tests, fixing test failures until all tests pass
+- [x] Create `Kernel/Tools/CodeInspector/Formatting.wl` with:
+  - [x] `inspectionsToMarkdown[inspections_List, source_, opts_Association]` - main formatter
+  - [x] `summaryTable[inspections_List]` - generate severity count table
+  - [x] `formatInspection[inspection_InspectionObject, index_Integer, source_]` - format single issue
+  - [x] `extractCodeSnippet[source_, location_, contextLines_Integer]` - extract code with context
+  - [x] `formatLocation[source_, location_]` - format as `file:line:col`
+  - [x] Handle "no issues found" case with settings summary
+  - [x] Handle truncation notice when limit exceeded
+- [x] Write and run unit tests, fixing test failures until all tests pass
 
 ### Phase 5: CodeAction Handling (`CodeActions.wl`)
 

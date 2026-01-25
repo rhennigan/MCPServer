@@ -470,6 +470,337 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Formatting*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*summaryTable*)
+VerificationTest[
+    $summaryTableResult = Wolfram`MCPServer`Tools`CodeInspector`Private`summaryTable @ {
+        InspectionObject[ "Tag1", "Desc1", "Error", <| ConfidenceLevel -> 0.9 |> ],
+        InspectionObject[ "Tag2", "Desc2", "Warning", <| ConfidenceLevel -> 0.8 |> ],
+        InspectionObject[ "Tag3", "Desc3", "Error", <| ConfidenceLevel -> 0.7 |> ]
+    },
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "SummaryTable-ReturnsString@@Tests/CodeInspectorTool.wlt:478,1-487,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $summaryTableResult, "## Summary" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "SummaryTable-HasHeader@@Tests/CodeInspectorTool.wlt:489,1-494,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $summaryTableResult, "| Error | 2 |" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "SummaryTable-CountsErrors@@Tests/CodeInspectorTool.wlt:496,1-501,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $summaryTableResult, "| Warning | 1 |" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "SummaryTable-CountsWarnings@@Tests/CodeInspectorTool.wlt:503,1-508,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $summaryTableResult, "| **Total** | **3** |" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "SummaryTable-ShowsTotal@@Tests/CodeInspectorTool.wlt:510,1-515,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*formatLocation*)
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`formatLocation[
+        "If[a, b, b]",
+        { { 1, 7 }, { 1, 8 } }
+    ],
+    "Line 1, Column 7 - Line 1, Column 8",
+    SameTest -> SameQ,
+    TestID   -> "FormatLocation-CodeStringRange@@Tests/CodeInspectorTool.wlt:520,1-528,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`formatLocation[
+        "x",
+        { { 1, 1 }, { 1, 1 } }
+    ],
+    "Line 1, Column 1",
+    SameTest -> SameQ,
+    TestID   -> "FormatLocation-CodeStringSinglePoint@@Tests/CodeInspectorTool.wlt:530,1-538,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`formatLocation[
+        File[ "/path/to/file.wl" ],
+        { { 42, 7 }, { 42, 15 } }
+    ],
+    "`file.wl:42:7`",
+    SameTest -> SameQ,
+    TestID   -> "FormatLocation-File@@Tests/CodeInspectorTool.wlt:540,1-548,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`formatLocation[
+        "code",
+        Missing[ "NotAvailable" ]
+    ],
+    "Unknown",
+    SameTest -> SameQ,
+    TestID   -> "FormatLocation-Missing@@Tests/CodeInspectorTool.wlt:550,1-558,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*extractCodeSnippet*)
+VerificationTest[
+    $snippetResult = Wolfram`MCPServer`Tools`CodeInspector`Private`extractCodeSnippet[
+        "If[a, b, b]",
+        { { 1, 7 }, { 1, 8 } },
+        1
+    ],
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "ExtractCodeSnippet-ReturnsString@@Tests/CodeInspectorTool.wlt:563,1-572,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $snippetResult, "**Code:**" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "ExtractCodeSnippet-HasCodeHeader@@Tests/CodeInspectorTool.wlt:574,1-579,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $snippetResult, "```wl" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "ExtractCodeSnippet-HasCodeBlock@@Tests/CodeInspectorTool.wlt:581,1-586,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $snippetResult, "(* <- issue here *)" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "ExtractCodeSnippet-HasIssueMarker@@Tests/CodeInspectorTool.wlt:588,1-593,2"
+]
+
+VerificationTest[
+    (* Multi-line code with context *)
+    $multiLineSnippet = Wolfram`MCPServer`Tools`CodeInspector`Private`extractCodeSnippet[
+        "line1\nline2\nIf[a, b, b]\nline4\nline5",
+        { { 3, 7 }, { 3, 8 } },
+        1
+    ];
+    StringContainsQ[ $multiLineSnippet, "2 | line2" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "ExtractCodeSnippet-ShowsContextBefore@@Tests/CodeInspectorTool.wlt:595,1-606,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $multiLineSnippet, "4 | line4" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "ExtractCodeSnippet-ShowsContextAfter@@Tests/CodeInspectorTool.wlt:608,1-613,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Tools`CodeInspector`Private`extractCodeSnippet[
+        "code",
+        Missing[ "NotAvailable" ],
+        1
+    ],
+    "",
+    SameTest -> SameQ,
+    TestID   -> "ExtractCodeSnippet-MissingLocationReturnsEmpty@@Tests/CodeInspectorTool.wlt:615,1-624,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*formatInspection*)
+VerificationTest[
+    $formattedInspection = Wolfram`MCPServer`Tools`CodeInspector`Private`formatInspection[
+        InspectionObject[
+            "DuplicateClauses",
+            "Both branches of ``If`` are the same.",
+            "Error",
+            <| ConfidenceLevel -> 0.95, CodeParser`Source -> { { 1, 7 }, { 1, 8 } } |>
+        ],
+        1,
+        "If[a, b, b]"
+    ],
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "FormatInspection-ReturnsString@@Tests/CodeInspectorTool.wlt:629,1-643,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $formattedInspection, "### Issue 1: DuplicateClauses" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatInspection-HasHeader@@Tests/CodeInspectorTool.wlt:645,1-650,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $formattedInspection, "(Error, 95%)" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatInspection-ShowsSeverityAndConfidence@@Tests/CodeInspectorTool.wlt:652,1-657,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $formattedInspection, "**Location:**" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatInspection-HasLocation@@Tests/CodeInspectorTool.wlt:659,1-664,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $formattedInspection, "**Description:**" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatInspection-HasDescription@@Tests/CodeInspectorTool.wlt:666,1-671,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectionsToMarkdown - No Issues*)
+VerificationTest[
+    $noIssuesResult = Wolfram`MCPServer`Tools`CodeInspector`Private`inspectionsToMarkdown[
+        { },
+        "f[x_] := x + 1",
+        <| "confidenceLevel" -> 0.75, "severityExclusions" -> { "Formatting" }, "tagExclusions" -> { }, "limit" -> 100 |>
+    ],
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "InspectionsToMarkdown-NoIssuesReturnsString@@Tests/CodeInspectorTool.wlt:676,1-685,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $noIssuesResult, "No issues found matching the specified criteria." ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "InspectionsToMarkdown-NoIssuesMessage@@Tests/CodeInspectorTool.wlt:687,1-692,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $noIssuesResult, "Confidence Level: 0.75" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "InspectionsToMarkdown-ShowsConfidenceLevel@@Tests/CodeInspectorTool.wlt:694,1-699,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $noIssuesResult, "Severity Exclusions: Formatting" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "InspectionsToMarkdown-ShowsSeverityExclusions@@Tests/CodeInspectorTool.wlt:701,1-706,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectionsToMarkdown - With Issues*)
+VerificationTest[
+    $withIssuesResult = Wolfram`MCPServer`Tools`CodeInspector`Private`inspectionsToMarkdown[
+        {
+            InspectionObject[
+                "DuplicateClauses",
+                "Both branches are the same.",
+                "Error",
+                <| ConfidenceLevel -> 0.95, CodeParser`Source -> { { 1, 7 }, { 1, 8 } } |>
+            ]
+        },
+        "If[a, b, b]",
+        <| "confidenceLevel" -> 0.75, "severityExclusions" -> { }, "tagExclusions" -> { }, "limit" -> 100 |>
+    ],
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "InspectionsToMarkdown-WithIssuesReturnsString@@Tests/CodeInspectorTool.wlt:711,1-727,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $withIssuesResult, "# Code Inspection Results" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "InspectionsToMarkdown-HasMainHeader@@Tests/CodeInspectorTool.wlt:729,1-734,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $withIssuesResult, "## Summary" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "InspectionsToMarkdown-HasSummary@@Tests/CodeInspectorTool.wlt:736,1-741,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $withIssuesResult, "## Issues" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "InspectionsToMarkdown-HasIssuesSection@@Tests/CodeInspectorTool.wlt:743,1-748,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectionsToMarkdown - Truncation*)
+VerificationTest[
+    $truncatedResult = Wolfram`MCPServer`Tools`CodeInspector`Private`inspectionsToMarkdown[
+        Table[
+            InspectionObject[ "Tag" <> ToString @ i, "Desc", "Warning", <| ConfidenceLevel -> 0.9 |> ],
+            { i, 10 }
+        ],
+        "code",
+        <| "confidenceLevel" -> 0.5, "severityExclusions" -> { }, "tagExclusions" -> { }, "limit" -> 5 |>
+    ],
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "InspectionsToMarkdown-TruncationReturnsString@@Tests/CodeInspectorTool.wlt:753,1-765,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $truncatedResult, "Showing 5 of 10 issues" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "InspectionsToMarkdown-ShowsTruncationNotice@@Tests/CodeInspectorTool.wlt:767,1-772,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectionsToMarkdown - File Source*)
+VerificationTest[
+    $fileSourceResult = Wolfram`MCPServer`Tools`CodeInspector`Private`inspectionsToMarkdown[
+        {
+            InspectionObject[
+                "TestIssue",
+                "Test description.",
+                "Warning",
+                <| ConfidenceLevel -> 0.9, CodeParser`Source -> { { 1, 1 }, { 1, 5 } } |>
+            ]
+        },
+        File[ "/path/to/test.wl" ],
+        <| "confidenceLevel" -> 0.5, "severityExclusions" -> { }, "tagExclusions" -> { }, "limit" -> 100 |>
+    ],
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "InspectionsToMarkdown-FileSourceReturnsString@@Tests/CodeInspectorTool.wlt:777,1-793,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $fileSourceResult, "**File:** `/path/to/test.wl`" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "InspectionsToMarkdown-ShowsFileHeader@@Tests/CodeInspectorTool.wlt:795,1-800,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Error Cases*)
 
 (* ::**************************************************************************************************************:: *)
@@ -480,7 +811,7 @@ VerificationTest[
     DirectoryQ @ $emptyDir,
     True,
     SameTest -> SameQ,
-    TestID   -> "ErrorCase-CreateEmptyDir@@Tests/CodeInspectorTool.wlt:478,1-484,2"
+    TestID   -> "ErrorCase-CreateEmptyDir@@Tests/CodeInspectorTool.wlt:809,1-815,2"
 ]
 
 VerificationTest[
@@ -491,7 +822,7 @@ VerificationTest[
     _Failure,
     { MCPServer::CodeInspectorNoFilesFound },
     SameTest -> MatchQ,
-    TestID   -> "ErrorCase-EmptyDirectory@@Tests/CodeInspectorTool.wlt:486,1-495,2"
+    TestID   -> "ErrorCase-EmptyDirectory@@Tests/CodeInspectorTool.wlt:817,1-826,2"
 ]
 
 VerificationTest[
@@ -499,7 +830,7 @@ VerificationTest[
     ! DirectoryQ @ $emptyDir,
     True,
     SameTest -> SameQ,
-    TestID   -> "Cleanup-EmptyDirectory@@Tests/CodeInspectorTool.wlt:497,1-503,2"
+    TestID   -> "Cleanup-EmptyDirectory@@Tests/CodeInspectorTool.wlt:828,1-834,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

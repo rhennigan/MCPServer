@@ -83,3 +83,29 @@ Completed Phase 3: Core Inspection Logic (`Inspection.wl`)
 **Key learnings:**
 - Submodule files must use the same `BeginPackage` context as the parent file to share `Private` symbols
 
+
+## Session 4
+
+Completed Phase 4: Markdown Formatting (`Formatting.wl`)
+
+**Completed tasks:**
+- Implemented full `Kernel/Tools/CodeInspector/Formatting.wl` with:
+  - `inspectionsToMarkdown[inspections_List, source_, opts_Association]` - main formatter that handles both single-source and directory inspection results
+  - `summaryTable[inspections_List]` - generates severity count table in markdown format with ordered severities
+  - `formatInspection[inspection_InspectionObject, index_Integer, source_]` - formats single issue with header, location, description, code snippet, and CodeActions
+  - `extractCodeSnippet[source_, location_, contextLines_Integer]` - extracts code with context lines and issue markers
+  - `formatLocation[source_, location_]` - formats location as `file:line:col` for files or `Line X, Column Y` for code strings
+  - `noIssuesMarkdown` - handles "no issues found" case with settings summary
+  - Truncation notice when limit exceeded
+- Added helper functions: `formatSourceHeader`, `formatExclusionsList`, `inspectionSeverity`, `formatIssuesList`, `formatFilesSections`, `formatFileSection`, `formatInspectionForFile`, `formatPercent`
+- Added 33 new unit tests for formatting functions covering:
+  - `summaryTable` - header, counts, total
+  - `formatLocation` - code strings, files, missing locations
+  - `extractCodeSnippet` - code blocks, markers, context lines
+  - `formatInspection` - headers, severity, confidence, location, description
+  - `inspectionsToMarkdown` - no issues, with issues, truncation, file source
+
+**Key learnings:**
+- When using symbols like `InspectionObject` from external packages in pattern matching, must ensure `Needs["CodeInspector`"]` is called before the pattern definitions, otherwise the symbol resolves to the wrong context and patterns won't match
+- Similar issue with `CodeParser`Source` - need to load CodeParser before using the symbol as a key
+
