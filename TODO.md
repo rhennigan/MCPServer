@@ -71,8 +71,6 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/Common.wl`
 - [ ] Remove empty "Settings" section from bug reports (this paclet has no settings)
   - Source: `Kernel/Common.wl`
-- [ ] Convert internal errors into more useful text in MCP tool outputs
-  - Source: `Kernel/StartMCPServer.wl`
 
 ## Blocked / Dependencies
 
