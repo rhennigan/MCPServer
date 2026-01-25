@@ -101,16 +101,16 @@ See [docs/servers.md](docs/servers.md) for detailed information about each serve
 
 MCPServer can be installed into the following MCP client applications:
 
-| Client | Install Command | Project Support |
-|--------|-----------------|-----------------|
-| [Claude Desktop](https://claude.ai/download) | `InstallMCPServer["ClaudeDesktop"]` | No |
-| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | `InstallMCPServer["ClaudeCode"]` | Yes |
-| [Cursor](https://www.cursor.com) | `InstallMCPServer["Cursor"]` | No |
-| [Gemini CLI](https://github.com/google-gemini/gemini-cli) | `InstallMCPServer["GeminiCLI"]` | No |
-| [VS Code](https://code.visualstudio.com) | `InstallMCPServer["VSCode"]` | Yes |
-| [OpenCode](https://opencode.ai) | `InstallMCPServer["OpenCode"]` | Yes |
-| [OpenAI Codex](https://openai.com/index/introducing-codex/) | `InstallMCPServer["OpenAICodex"]` | No |
-| [Antigravity](https://www.antigravity.dev) | `InstallMCPServer["Antigravity"]` | No |
+| Client | Name | Project Support |
+|--------|------|-----------------|
+| [Claude Desktop](https://claude.ai/download) | `"ClaudeDesktop"` | No |
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | `"ClaudeCode"` | Yes |
+| [Cursor](https://www.cursor.com) | `"Cursor"` | No |
+| [Gemini CLI](https://github.com/google-gemini/gemini-cli) | `"GeminiCLI"` | No |
+| [VS Code](https://code.visualstudio.com) | `"VSCode"` | Yes |
+| [OpenCode](https://opencode.ai) | `"OpenCode"` | Yes |
+| [OpenAI Codex](https://openai.com/index/introducing-codex/) | `"OpenAICodex"` | No |
+| [Antigravity](https://www.antigravity.dev) | `"Antigravity"` | No |
 
 ### Project-Level Installation
 
