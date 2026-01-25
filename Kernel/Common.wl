@@ -26,6 +26,8 @@ $cloudNotebooks         := TrueQ @ CloudSystem`$CloudNotebooks;
 $mxFlag                 := Wolfram`MCPServerInternal`$BuildingMX;
 $resourceFunctionContext = "Wolfram`MCPServer`ResourceFunctions`";
 
+$internalFailureLogDirectory := FileNameJoin @ { $UserBaseDirectory, "Logs", "MCPServer", "InternalFailures" };
+
 $resourceVersions = <|
     "BinarySerializeWithDefinitions" -> "1.0.0",
     "ExportMarkdownString"           -> "1.0.0",
@@ -366,11 +368,12 @@ catchTop[ eval_ ] := catchTop[ eval, MCPServer ];
 catchTop[ eval_, sym_Symbol ] :=
     Block[
         {
-            $messageSymbol = Replace[ $messageSymbol, MCPServer -> sym ],
-            $catching      = True,
-            $failed        = False,
-            catchTop       = # &,
-            catchTopAs     = (#1 &) &
+            $messageSymbol          = Replace[ $messageSymbol, MCPServer -> sym ],
+            $catching               = True,
+            $failed                 = False,
+            catchTop                = # &,
+            catchTopAs              = (#1 &) &,
+            $internalFailureLogPath = None
         },
         Catch[ eval, $catchTopTag ]
     ];
@@ -656,13 +659,13 @@ bugReportBody[ as_Association? AssociationQ ] :=
         |>;
 
         (* Log to unique file in InternalFailures subdirectory *)
-        dir = FileNameJoin @ { $UserBaseDirectory, "Logs", "MCPServer", "InternalFailures" };
+        dir = $internalFailureLogDirectory;
         If[ ! DirectoryQ @ dir, Quiet @ CreateDirectory[ dir, CreateIntermediateDirectories -> True ] ];
         fileName = generateUniqueFailureFileName[ ];
         filePath = FileNameJoin @ { dir, fileName };
 
         file = File @ Export[ filePath, data, "MX" ];
-        $internalFailureLogPath = filePath;
+        $internalFailureLogPath = If[ FileExistsQ @ filePath, filePath, None ];
 
         (* Cleanup old logs, keeping only 50 most recent *)
         cleanupOldFailureLogs[ ];
@@ -841,7 +844,7 @@ cleanupOldFailureLogs[ ] := cleanupOldFailureLogs[ 50 ];
 
 cleanupOldFailureLogs[ maxFiles_Integer ] :=
     Module[ { dir, files, toDelete },
-        dir = FileNameJoin @ { $UserBaseDirectory, "Logs", "MCPServer", "InternalFailures" };
+        dir = $internalFailureLogDirectory;
         If[ ! DirectoryQ @ dir, Return @ Null ];
         files = FileNames[ "*.mx", dir ];
         If[ Length @ files <= maxFiles, Return @ Null ];
