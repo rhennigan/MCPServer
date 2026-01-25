@@ -82,6 +82,4 @@ Completed Phase 3: Core Inspection Logic (`Inspection.wl`)
 
 **Key learnings:**
 - Submodule files must use the same `BeginPackage` context as the parent file to share `Private` symbols
-- `throwFailure` only throws when `$catching` is True (inside `catchTop`/`catchMine`); otherwise it returns a `Failure` object - so it must be the return expression, not buried in an `If` statement
-- When using `throwFailure` in conditionals, restructure code so the failure is the return value of the `If` branch (use `If[cond, throwFailure[...], normalResult]` pattern)
 

@@ -56,6 +56,8 @@ You can write unit tests for private symbols, but you should suppress linting er
 (* :!CodeAnalysis::EndBlock:: *)
 ```
 
+If you are writing unit tests for low-level code that you expect to throw errors, you should wrap it in a `catchTop` block to ensure that the failure returns properly.
+
 ### Running Tests
 
 You can run test files using the TestReport MCP tool on the "Tests" directory.
