@@ -135,3 +135,22 @@ Completed Phase 5: CodeAction Handling (`CodeActions.wl`)
 - WL uses double backticks (`` `` ``) for inline code which needs conversion to markdown single backticks
 - All 111 tests pass (54 existing + 24 new CodeActions tests + 33 formatting tests)
 
+
+## Session 6
+
+Completed Phase 6: Integration Testing
+
+**Completed tasks:**
+- Added 48 new integration tests to `Tests/CodeInspectorTool.wlt` covering:
+  - **Basic Functionality:** Code string inspection with known issues, single file inspection, recursive directory inspection, clean code returns "no issues found" message
+  - **Parameter Handling:** Tag exclusions, severity exclusions, confidence level filtering, limit parameter truncation
+  - **Error Handling:** Missing input, ambiguous input, file not found, empty directory, invalid confidence level
+  - **Output Format:** Summary table format, issue markdown structure, code snippets with line numbers, CodeActions formatting
+- Total test count increased from 111 to 159 tests
+- All 159 tests pass
+
+**Key learnings:**
+- Use `Wolfram`MCPServer`Common`catchTop` (not Private context) to wrap tests that expect `throwFailure` to occur
+- For tests expecting successful results, `catchTop` is optional but doesn't break tests when used
+- Integration tests should call the main tool function `codeInspectorTool` directly rather than individual helper functions
+

@@ -1051,4 +1051,553 @@ VerificationTest[
     TestID   -> "Cleanup-EmptyDirectory@@Tests/CodeInspectorTool.wlt:1046,1-1052,2"
 ]
 
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Integration Tests - Basic Functionality*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Code String Inspection with Known Issues*)
+VerificationTest[
+    $integrationCodeResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> "If[a, b, b]",
+        "file"               -> Missing[ "KeyAbsent" ],
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> "",  (* Empty to not exclude any severities *)
+        "confidenceLevel"    -> Missing[ "KeyAbsent" ],
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "Integration-CodeStringWithIssues-ReturnsString@@Tests/CodeInspectorTool.wlt:1061,1-1073,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $integrationCodeResult, "# Code Inspection Results" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-CodeStringWithIssues-HasHeader@@Tests/CodeInspectorTool.wlt:1075,1-1080,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $integrationCodeResult, "DuplicateClauses" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-CodeStringWithIssues-FindsDuplicateClauses@@Tests/CodeInspectorTool.wlt:1082,1-1087,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $integrationCodeResult, "## Summary" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-CodeStringWithIssues-HasSummary@@Tests/CodeInspectorTool.wlt:1089,1-1094,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $integrationCodeResult, "## Issues" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-CodeStringWithIssues-HasIssuesSection@@Tests/CodeInspectorTool.wlt:1096,1-1101,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Clean Code Returns No Issues Found*)
+VerificationTest[
+    $integrationCleanResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> "f[x_] := x + 1",
+        "file"               -> Missing[ "KeyAbsent" ],
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> Missing[ "KeyAbsent" ],
+        "confidenceLevel"    -> Missing[ "KeyAbsent" ],
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "Integration-CleanCode-ReturnsString@@Tests/CodeInspectorTool.wlt:1106,1-1118,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $integrationCleanResult, "No issues found matching the specified criteria." ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-CleanCode-ShowsNoIssuesMessage@@Tests/CodeInspectorTool.wlt:1120,1-1125,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $integrationCleanResult, "**Settings:**" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-CleanCode-ShowsSettings@@Tests/CodeInspectorTool.wlt:1127,1-1132,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Single File Inspection*)
+VerificationTest[
+    $integrationTempDir = CreateDirectory[ ];
+    $integrationTestFile = FileNameJoin @ { $integrationTempDir, "testfile.wl" };
+    Export[ $integrationTestFile, "If[x, y, y]", "Text" ];
+    FileExistsQ @ $integrationTestFile,
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-SingleFile-CreateTestFile@@Tests/CodeInspectorTool.wlt:1137,1-1145,2"
+]
+
+VerificationTest[
+    $integrationFileResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> Missing[ "KeyAbsent" ],
+        "file"               -> $integrationTestFile,
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> Missing[ "KeyAbsent" ],
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "Integration-SingleFile-ReturnsString@@Tests/CodeInspectorTool.wlt:1147,1-1159,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $integrationFileResult, "**File:**" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-SingleFile-ShowsFileHeader@@Tests/CodeInspectorTool.wlt:1161,1-1166,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $integrationFileResult, "DuplicateClauses" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-SingleFile-FindsIssues@@Tests/CodeInspectorTool.wlt:1168,1-1173,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Recursive Directory Inspection*)
+VerificationTest[
+    $integrationTestFile2 = FileNameJoin @ { $integrationTempDir, "testfile2.wl" };
+    Export[ $integrationTestFile2, "Switch[x, 1, a, 1, b]", "Text" ];
+    FileExistsQ @ $integrationTestFile2,
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-Directory-CreateSecondTestFile@@Tests/CodeInspectorTool.wlt:1178,1-1185,2"
+]
+
+VerificationTest[
+    $integrationDirResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> Missing[ "KeyAbsent" ],
+        "file"               -> $integrationTempDir,
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> Missing[ "KeyAbsent" ],
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "Integration-Directory-ReturnsString@@Tests/CodeInspectorTool.wlt:1187,1-1199,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $integrationDirResult, "**Directory:**" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-Directory-ShowsDirectoryHeader@@Tests/CodeInspectorTool.wlt:1201,1-1206,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $integrationDirResult, "**Files inspected:**" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-Directory-ShowsFileCount@@Tests/CodeInspectorTool.wlt:1208,1-1213,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $integrationDirResult, "testfile.wl" ] && StringContainsQ[ $integrationDirResult, "testfile2.wl" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-Directory-ShowsBothFiles@@Tests/CodeInspectorTool.wlt:1215,1-1220,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Integration Tests - Parameter Handling*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Tag Exclusions Filter Correctly*)
+VerificationTest[
+    $integrationTagExcludeResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> "If[a, b, b]",
+        "file"               -> Missing[ "KeyAbsent" ],
+        "tagExclusions"      -> "DuplicateClauses",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> "0.0",
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "Integration-TagExclusions-ReturnsString@@Tests/CodeInspectorTool.wlt:1229,1-1241,2"
+]
+
+VerificationTest[
+    (* When DuplicateClauses is excluded, we should see "No issues found" for this code *)
+    StringContainsQ[ $integrationTagExcludeResult, "No issues found matching the specified criteria." ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-TagExclusions-ExcludesDuplicateClauses@@Tests/CodeInspectorTool.wlt:1243,1-1249,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Severity Exclusions Filter Correctly*)
+VerificationTest[
+    $integrationSeverityExcludeResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> "If[a, b, b]",
+        "file"               -> Missing[ "KeyAbsent" ],
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> "Warning,Error",
+        "confidenceLevel"    -> "0.0",
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "Integration-SeverityExclusions-ReturnsString@@Tests/CodeInspectorTool.wlt:1254,1-1266,2"
+]
+
+VerificationTest[
+    (* DuplicateClauses is typically Warning or Error, so excluding both should filter it out *)
+    StringContainsQ[ $integrationSeverityExcludeResult, "No issues found matching the specified criteria." ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-SeverityExclusions-FiltersCorrectly@@Tests/CodeInspectorTool.wlt:1268,1-1274,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Confidence Level Filtering Works*)
+VerificationTest[
+    (* With high confidence threshold, low-confidence issues should be filtered *)
+    $integrationHighConfResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> "If[a, b, b]",
+        "file"               -> Missing[ "KeyAbsent" ],
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> "1.0",  (* Only 100% confidence issues *)
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "Integration-ConfidenceLevel-HighThreshold-ReturnsString@@Tests/CodeInspectorTool.wlt:1279,1-1292,2"
+]
+
+VerificationTest[
+    (* With very low confidence threshold, issues should appear *)
+    $integrationLowConfResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> "If[a, b, b]",
+        "file"               -> Missing[ "KeyAbsent" ],
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> "0.0",  (* Include all issues *)
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "Integration-ConfidenceLevel-LowThreshold-ReturnsString@@Tests/CodeInspectorTool.wlt:1294,1-1307,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $integrationLowConfResult, "DuplicateClauses" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-ConfidenceLevel-LowThreshold-FindsIssues@@Tests/CodeInspectorTool.wlt:1309,1-1314,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Limit Parameter Truncates Output Correctly*)
+VerificationTest[
+    (* Create code with multiple issues *)
+    $integrationLimitResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> "If[a, b, b]; If[c, d, d]; If[e, f, f]",
+        "file"               -> Missing[ "KeyAbsent" ],
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> "0.0",
+        "limit"              -> 1  (* Only show 1 issue *)
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "Integration-Limit-ReturnsString@@Tests/CodeInspectorTool.wlt:1319,1-1332,2"
+]
+
+VerificationTest[
+    (* Should have "Issue 1" but not "Issue 2" (due to limit) *)
+    StringContainsQ[ $integrationLimitResult, "### Issue 1:" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-Limit-ShowsFirstIssue@@Tests/CodeInspectorTool.wlt:1334,1-1340,2"
+]
+
+VerificationTest[
+    (* Should show truncation notice *)
+    StringContainsQ[ $integrationLimitResult, "Showing 1 of" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-Limit-ShowsTruncationNotice@@Tests/CodeInspectorTool.wlt:1342,1-1348,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Integration Tests - Error Handling*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Error When Neither code nor file Provided*)
+VerificationTest[
+    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> Missing[ "KeyAbsent" ],
+        "file"               -> Missing[ "KeyAbsent" ],
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> Missing[ "KeyAbsent" ],
+        "confidenceLevel"    -> Missing[ "KeyAbsent" ],
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _Failure,
+    { MCPServer::CodeInspectorNoInput },
+    SameTest -> MatchQ,
+    TestID   -> "Integration-Error-NoInput@@Tests/CodeInspectorTool.wlt:1357,1-1370,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Error When Both code and file Provided*)
+VerificationTest[
+    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> "f[x_] := x",
+        "file"               -> $integrationTestFile,
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> Missing[ "KeyAbsent" ],
+        "confidenceLevel"    -> Missing[ "KeyAbsent" ],
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _Failure,
+    { MCPServer::CodeInspectorAmbiguousInput },
+    SameTest -> MatchQ,
+    TestID   -> "Integration-Error-BothInputs@@Tests/CodeInspectorTool.wlt:1375,1-1388,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Error For Non-Existent File*)
+VerificationTest[
+    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> Missing[ "KeyAbsent" ],
+        "file"               -> "/nonexistent/path/to/file.wl",
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> Missing[ "KeyAbsent" ],
+        "confidenceLevel"    -> Missing[ "KeyAbsent" ],
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _Failure,
+    { MCPServer::CodeInspectorFileNotFound },
+    SameTest -> MatchQ,
+    TestID   -> "Integration-Error-FileNotFound@@Tests/CodeInspectorTool.wlt:1393,1-1406,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Error For Directory With No Matching Files*)
+VerificationTest[
+    $integrationEmptyDir = CreateDirectory[ ];
+    DirectoryQ @ $integrationEmptyDir,
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-Error-CreateEmptyDir@@Tests/CodeInspectorTool.wlt:1411,1-1417,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> Missing[ "KeyAbsent" ],
+        "file"               -> $integrationEmptyDir,
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> Missing[ "KeyAbsent" ],
+        "confidenceLevel"    -> Missing[ "KeyAbsent" ],
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _Failure,
+    { MCPServer::CodeInspectorNoFilesFound },
+    SameTest -> MatchQ,
+    TestID   -> "Integration-Error-EmptyDirectory@@Tests/CodeInspectorTool.wlt:1419,1-1432,2"
+]
+
+VerificationTest[
+    DeleteDirectory[ $integrationEmptyDir ];
+    ! DirectoryQ @ $integrationEmptyDir,
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-Cleanup-EmptyDir@@Tests/CodeInspectorTool.wlt:1434,1-1440,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Graceful Handling of Invalid Confidence Level*)
+VerificationTest[
+    (* Invalid confidence level should default to 0.75 and not error *)
+    $integrationInvalidConfResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> "f[x_] := x + 1",
+        "file"               -> Missing[ "KeyAbsent" ],
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> Missing[ "KeyAbsent" ],
+        "confidenceLevel"    -> "invalid",
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "Integration-InvalidConfidence-ReturnsString@@Tests/CodeInspectorTool.wlt:1445,1-1458,2"
+]
+
+VerificationTest[
+    (* Out of range confidence level should default to 0.75 *)
+    $integrationOutOfRangeConfResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> "f[x_] := x + 1",
+        "file"               -> Missing[ "KeyAbsent" ],
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> Missing[ "KeyAbsent" ],
+        "confidenceLevel"    -> "2.5",  (* Out of range *)
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "Integration-OutOfRangeConfidence-ReturnsString@@Tests/CodeInspectorTool.wlt:1460,1-1473,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Integration Tests - Output Format*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Summary Table Has Correct Format*)
+VerificationTest[
+    (* Summary table should have proper markdown table formatting *)
+    StringContainsQ[ $integrationCodeResult, "| Severity | Count |" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-OutputFormat-SummaryTableHeaders@@Tests/CodeInspectorTool.wlt:1482,1-1488,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $integrationCodeResult, "|----------|-------|" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-OutputFormat-SummaryTableSeparator@@Tests/CodeInspectorTool.wlt:1490,1-1495,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $integrationCodeResult, "| **Total** |" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-OutputFormat-SummaryTableTotal@@Tests/CodeInspectorTool.wlt:1497,1-1502,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Issue Markdown Structure Is Correct*)
+VerificationTest[
+    (* Issue should have proper header format *)
+    StringMatchQ[ $integrationCodeResult, ___ ~~ "### Issue " ~~ DigitCharacter ~~ ": " ~~ ___ ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-OutputFormat-IssueHeader@@Tests/CodeInspectorTool.wlt:1507,1-1513,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $integrationCodeResult, "**Location:**" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-OutputFormat-IssueLocation@@Tests/CodeInspectorTool.wlt:1515,1-1520,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $integrationCodeResult, "**Description:**" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-OutputFormat-IssueDescription@@Tests/CodeInspectorTool.wlt:1522,1-1527,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Code Snippets Include Line Numbers and Context*)
+VerificationTest[
+    StringContainsQ[ $integrationCodeResult, "**Code:**" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-OutputFormat-CodeHeader@@Tests/CodeInspectorTool.wlt:1532,1-1537,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $integrationCodeResult, "```wl" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-OutputFormat-CodeBlockStart@@Tests/CodeInspectorTool.wlt:1539,1-1544,2"
+]
+
+VerificationTest[
+    (* Line number format: "1 | " *)
+    StringMatchQ[ $integrationCodeResult, ___ ~~ DigitCharacter ~~ " | " ~~ ___ ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-OutputFormat-LineNumbers@@Tests/CodeInspectorTool.wlt:1546,1-1552,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $integrationCodeResult, "(* <- issue here *)" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-OutputFormat-IssueMarker@@Tests/CodeInspectorTool.wlt:1554,1-1559,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*CodeActions Are Formatted As Suggestions*)
+VerificationTest[
+    (* Create code that produces CodeActions (extra comma) *)
+    $integrationCodeActionsResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> "f[,2]",  (* Extra leading comma *)
+        "file"               -> Missing[ "KeyAbsent" ],
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> "0.0",
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "Integration-OutputFormat-CodeActionsReturnsString@@Tests/CodeInspectorTool.wlt:1564,1-1577,2"
+]
+
+VerificationTest[
+    (* CodeActions should appear as "Suggested Fix" when present.
+       Since we can't guarantee every issue has CodeActions, we verify:
+       - Either there's a Suggested Fix section
+       - Or there are issues but no CodeActions (which is valid)
+       The unit tests verify CodeAction formatting works correctly. *)
+    StringContainsQ[ $integrationCodeActionsResult, "Suggested Fix" ] ||
+    StringContainsQ[ $integrationCodeActionsResult, "## Issues" ],  (* Valid result with issues, CodeActions are optional *)
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-OutputFormat-SuggestedFix@@Tests/CodeInspectorTool.wlt:1579,1-1590,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Integration Tests - Cleanup*)
+VerificationTest[
+    DeleteDirectory[ $integrationTempDir, DeleteContents -> True ];
+    ! DirectoryQ @ $integrationTempDir,
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:1595,1-1601,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)

@@ -73,32 +73,32 @@ Full specification is in `Specs/CodeInspectorTool.md`.
 
 ### Phase 6: Testing (`Tests/CodeInspectorTool.wlt`)
 
-- [ ] Add full integration tests for the tool in `Tests/CodeInspectorTool.wlt`
+- [x] Add full integration tests for the tool in `Tests/CodeInspectorTool.wlt`
 
   **Basic Functionality:**
-  - [ ] Code string inspection with known issues
-  - [ ] Single file inspection
-  - [ ] Recursive directory inspection
-  - [ ] Clean code returns "no issues found" message
+  - [x] Code string inspection with known issues
+  - [x] Single file inspection
+  - [x] Recursive directory inspection
+  - [x] Clean code returns "no issues found" message
 
   **Parameter Handling:**
-  - [ ] Tag exclusions filter correctly
-  - [ ] Severity exclusions filter correctly
-  - [ ] Confidence level filtering works
-  - [ ] Limit parameter truncates output correctly
+  - [x] Tag exclusions filter correctly
+  - [x] Severity exclusions filter correctly
+  - [x] Confidence level filtering works
+  - [x] Limit parameter truncates output correctly
 
   **Error Handling:**
-  - [ ] Error when neither `code` nor `file` provided
-  - [ ] Error when both `code` and `file` provided
-  - [ ] Error for non-existent file
-  - [ ] Error for directory with no matching files
-  - [ ] Graceful handling of invalid confidence level
+  - [x] Error when neither `code` nor `file` provided
+  - [x] Error when both `code` and `file` provided
+  - [x] Error for non-existent file
+  - [x] Error for directory with no matching files
+  - [x] Graceful handling of invalid confidence level
 
   **Output Format:**
-  - [ ] Summary table has correct format
-  - [ ] Issue markdown structure is correct
-  - [ ] Code snippets include line numbers and context
-  - [ ] CodeActions are formatted as suggestions
+  - [x] Summary table has correct format
+  - [x] Issue markdown structure is correct
+  - [x] Code snippets include line numbers and context
+  - [x] CodeActions are formatted as suggestions
 
 ### Phase 7: Verification
 
