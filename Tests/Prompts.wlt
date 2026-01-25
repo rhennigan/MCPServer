@@ -816,38 +816,40 @@ VerificationTest[
 (* ::Subsection:: *)
 (* Format Used by Search Prompts *)
 
-VerificationTest[
+(* Skip these in GitHub Actions due to an issue with wolframscript hanging when checking the license server during
+   tests that potentially spend a long time downloading files. *)
+skipIfGitHub // Attributes = { HoldFirst };
+skipIfGitHub[ test_ ] := If[ StringQ @ Environment[ "GITHUB_ACTIONS" ], Null, test ];
+
+
+skipIfGitHub @ VerificationTest[
     StringContainsQ[
         $DefaultMCPPrompts[ "WolframSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
         "<search-query>test query</search-query>"
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframSearch-UsesNewFormat@@Tests/Prompts.wlt:819,1-827,2"
+    TestID   -> "WolframSearch-UsesNewFormat@@Tests/Prompts.wlt:825,16-833,2"
 ]
 
-VerificationTest[
+skipIfGitHub @ VerificationTest[
     StringContainsQ[
         $DefaultMCPPrompts[ "WolframLanguageSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
         "<search-query>test query</search-query>"
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframLanguageSearch-UsesNewFormat@@Tests/Prompts.wlt:829,1-837,2"
+    TestID   -> "WolframLanguageSearch-UsesNewFormat@@Tests/Prompts.wlt:835,16-843,2"
 ]
 
-(* We don't have the necessary API keys stored in the CI/CD pipeline to test this *)
-If[ StringQ @ Environment[ "GITHUB_ACTIONS" ],
-    Null,
-    VerificationTest[
-        StringContainsQ[
-            $DefaultMCPPrompts[ "WolframAlphaSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
-            "<search-query>test query</search-query>"
-        ],
-        True,
-        SameTest -> SameQ,
-        TestID   -> "WolframAlphaSearch-UsesNewFormat@@Tests/Prompts.wlt:842,5-850,6"
-    ]
+skipIfGitHub @ VerificationTest[
+    StringContainsQ[
+        $DefaultMCPPrompts[ "WolframAlphaSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
+        "<search-query>test query</search-query>"
+    ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "WolframAlphaSearch-UsesNewFormat@@Tests/Prompts.wlt:845,16-853,2"
 ]
 
 (* ::Subsection:: *)
@@ -857,14 +859,14 @@ VerificationTest[
     Wolfram`MCPServer`Prompts`Notebook`Private`formatNotebookPrompt[ "/path/to/file.nb", "# Heading\n\nContent" ],
     "<notebook-path>/path/to/file.nb</notebook-path>\n<notebook-content>\n# Heading\n\nContent\n</notebook-content>",
     SameTest -> SameQ,
-    TestID   -> "FormatNotebookPrompt-BasicOutput@@Tests/Prompts.wlt:856,1-861,2"
+    TestID   -> "FormatNotebookPrompt-BasicOutput@@Tests/Prompts.wlt:858,1-863,2"
 ]
 
 VerificationTest[
     StringQ @ Wolfram`MCPServer`Prompts`Notebook`Private`formatNotebookPrompt[ "/path/to/file.nb", "content" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "FormatNotebookPrompt-ReturnsString@@Tests/Prompts.wlt:863,1-868,2"
+    TestID   -> "FormatNotebookPrompt-ReturnsString@@Tests/Prompts.wlt:865,1-870,2"
 ]
 
 VerificationTest[
@@ -874,7 +876,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "FormatNotebookPrompt-ContainsPathTag@@Tests/Prompts.wlt:870,1-878,2"
+    TestID   -> "FormatNotebookPrompt-ContainsPathTag@@Tests/Prompts.wlt:872,1-880,2"
 ]
 
 VerificationTest[
@@ -884,7 +886,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "FormatNotebookPrompt-ContainsContentTag@@Tests/Prompts.wlt:880,1-888,2"
+    TestID   -> "FormatNotebookPrompt-ContainsContentTag@@Tests/Prompts.wlt:882,1-890,2"
 ]
 
 (* ::Subsection:: *)
@@ -897,7 +899,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "NotebookPrompt-NonexistentFile@@Tests/Prompts.wlt:893,1-901,2"
+    TestID   -> "NotebookPrompt-NonexistentFile@@Tests/Prompts.wlt:895,1-903,2"
 ]
 
 VerificationTest[
@@ -907,7 +909,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "NotebookPrompt-InvalidExtension@@Tests/Prompts.wlt:903,1-911,2"
+    TestID   -> "NotebookPrompt-InvalidExtension@@Tests/Prompts.wlt:905,1-913,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
