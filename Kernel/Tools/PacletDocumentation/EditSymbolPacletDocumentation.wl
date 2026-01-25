@@ -203,12 +203,12 @@ replaceNotesCells // endDefinition;
 replaceNotesInGroup // beginDefinition;
 
 replaceNotesInGroup[ groupCells_List, notesCells_List ] :=
-    Module[ { usagePos, beforeNotes },
+    Catch @ Module[ { usagePos, beforeNotes },
         (* Find Usage position *)
         usagePos = FirstPosition[ groupCells, Cell[ _, "Usage", ___ ], None, { 1 } ];
 
         If[ usagePos === None,
-            Return @ groupCells
+            Throw @ groupCells
         ];
 
         (* Take cells up to and including Usage *)
@@ -290,11 +290,11 @@ insertNoteCell // endDefinition;
 insertNoteInGroup // beginDefinition;
 
 insertNoteInGroup[ groupCells_List, noteCell_Cell, position_ ] :=
-    Module[ { usagePos, existingNotes, insertPos, beforeInsert, afterInsert },
+    Catch @ Module[ { usagePos, existingNotes, insertPos, beforeInsert, afterInsert },
         usagePos = FirstPosition[ groupCells, Cell[ _, "Usage", ___ ], None, { 1 } ];
 
         If[ usagePos === None,
-            Return @ groupCells
+            Throw @ groupCells
         ];
 
         (* Get existing notes (all cells after Usage) *)
@@ -318,7 +318,7 @@ insertNoteInGroup // endDefinition;
 setDetailsTableInNotebook // beginDefinition;
 
 setDetailsTableInNotebook[ Notebook[ cells_List, opts___ ], tableMarkdown_String, position_ ] := Enclose[
-    Module[ { tableCells, newCells },
+    Catch @ Module[ { tableCells, newCells },
         (* Generate cells from the markdown, which may include text before the table *)
         tableCells = ConfirmMatch[
             generateNotesCells @ tableMarkdown,
@@ -327,7 +327,7 @@ setDetailsTableInNotebook[ Notebook[ cells_List, opts___ ], tableMarkdown_String
         ];
 
         If[ Length @ tableCells === 0,
-            Return @ Notebook[ cells, opts ]
+            Throw @ Notebook[ cells, opts ]
         ];
 
         newCells = ConfirmMatch[
@@ -361,11 +361,11 @@ insertNotesCells // endDefinition;
 insertNotesInGroup // beginDefinition;
 
 insertNotesInGroup[ groupCells_List, noteCells_List, position_ ] :=
-    Module[ { usagePos, existingNotes, insertPos, beforeInsert, afterInsert },
+    Catch @ Module[ { usagePos, existingNotes, insertPos, beforeInsert, afterInsert },
         usagePos = FirstPosition[ groupCells, Cell[ _, "Usage", ___ ], None, { 1 } ];
 
         If[ usagePos === None,
-            Return @ groupCells
+            Throw @ groupCells
         ];
 
         (* Get existing notes (all cells after Usage) *)
@@ -463,11 +463,11 @@ replaceCellsInSection // endDefinition;
 replaceSectionContent // beginDefinition;
 
 replaceSectionContent[ groupCells_List, headerStyle_String, contentStyle_String, newContentCells_List ] :=
-    Module[ { headerPos, header },
+    Catch @ Module[ { headerPos, header },
         headerPos = FirstPosition[ groupCells, Cell[ _, headerStyle, ___ ], None, { 1 } ];
 
         If[ headerPos === None,
-            Return @ groupCells
+            Throw @ groupCells
         ];
 
         header = groupCells[[ First @ headerPos ]];
@@ -848,7 +848,7 @@ insertInExtendedExamplesSection // endDefinition;
 insertInExampleSection // beginDefinition;
 
 insertInExampleSection[ groupCells_List, sectionTitle_String, newCells_List, mode_String ] := Enclose[
-    Module[ { sectionIndex, beforeSection, sectionCell, afterSection, modifiedSection },
+    Catch @ Module[ { sectionIndex, beforeSection, sectionCell, afterSection, modifiedSection },
 
         (* Find the index of the target section *)
         sectionIndex = FirstPosition[
@@ -860,7 +860,7 @@ insertInExampleSection[ groupCells_List, sectionTitle_String, newCells_List, mod
 
         If[ sectionIndex === None,
             (* Section not found, return cells unchanged *)
-            Return @ groupCells
+            Throw @ groupCells
         ];
 
         sectionIndex = First @ sectionIndex;
@@ -957,7 +957,7 @@ clearExtendedExamplesSection // endDefinition;
 clearExamplesFromExtendedSection // beginDefinition;
 
 clearExamplesFromExtendedSection[ groupCells_List, sectionTitle_String ] := Enclose[
-    Module[ { sectionIndex, sectionEndIndex, newCells },
+    Catch @ Module[ { sectionIndex, sectionEndIndex, newCells },
 
         sectionIndex = FirstPosition[
             groupCells,
@@ -967,7 +967,7 @@ clearExamplesFromExtendedSection[ groupCells_List, sectionTitle_String ] := Encl
         ];
 
         If[ sectionIndex === None,
-            Return @ groupCells
+            Throw @ groupCells
         ];
 
         sectionIndex = First @ sectionIndex;
