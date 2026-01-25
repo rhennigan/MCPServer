@@ -14,6 +14,14 @@ Always use the WolframLanguageContext tool when working with Wolfram Language co
 
 When you make changes to paclet source code, you should also write and run tests for the changes you made using the TestReport tool.
 
+If you need to test changes in the WolframLanguageEvaluator tool, you'll first need to evaluate:
+```wl
+PacletDirectoryLoad[ "path/to/MCPServer" ];
+Get[ "Wolfram`MCPServer`" ]
+```
+
+Note: Using the TestReport tool is much more reliable for testing code changes.
+
 If you've previously built an MX file for the paclet, you should delete it before testing your changes. You can find it in `Kernel/64Bit/MCPServer.mx`.
 
 The kernel used by the WolframLanguageEvaluator tool cannot be restarted via code like `Quit[]` since it's also running the MCP server. If it gets into a bad state, and you can't fix it, you should stop and inform the user that the kernel needs to be restarted.
