@@ -18,6 +18,19 @@ $defaultLimit              = 100;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*CodeInspectorToolFunction*)
+(* Exported for use in scripts *)
+CodeInspectorToolFunction // beginDefinition;
+CodeInspectorToolFunction[ parameters_Association ] := catchMine @ codeInspectorTool @ <| $defaults, parameters |>;
+CodeInspectorToolFunction // endExportedDefinition;
+
+$defaults = AssociationMap[
+    Missing[ "NoInput" ] &,
+    { "code", "file", "tagExclusions", "severityExclusions", "confidenceLevel", "limit" }
+];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Prompts*)
 $codeInspectorDescription = "\
 Inspects Wolfram Language code using the CodeInspector package and returns a formatted report of issues found. \
@@ -31,7 +44,7 @@ $defaultMCPTools[ "CodeInspector" ] := LLMTool @ <|
     "Name"        -> "CodeInspector",
     "DisplayName" -> "Code Inspector",
     "Description" -> $codeInspectorDescription,
-    "Function"    -> codeInspectorTool,
+    "Function"    -> CodeInspectorToolFunction,
     "Options"     -> { },
     "Parameters"  -> {
         "code" -> <|
