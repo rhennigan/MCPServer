@@ -39,13 +39,13 @@ Full specification is in `Specs/CodeInspectorTool.md`.
 
 ### Phase 3: Core Inspection Logic (`Inspection.wl`)
 
-- [ ] Create `Kernel/Tools/CodeInspector/Inspection.wl` with:
-  - [ ] `runInspection[code_String, opts_Association]` - inspect code strings
-  - [ ] `runInspection[File[path_String], opts_Association]` - inspect single files
-  - [ ] `runInspectionOnDirectory[dir_String, opts_Association]` - recursive directory inspection
-  - [ ] `parseExclusions[str_String]` - parse comma-separated exclusions to list
-  - [ ] `parseConfidenceLevel[str_String]` - parse confidence level string to number
-  - [ ] `filterInspections[inspections_List, opts_Association]` - filter by tag, severity, confidence
+- [x] Create `Kernel/Tools/CodeInspector/Inspection.wl` with:
+  - [x] `runInspection[code_String, opts_Association]` - inspect code strings
+  - [x] `runInspection[File[path_String], opts_Association]` - inspect single files
+  - [x] `runInspectionOnDirectory[dir_String, opts_Association]` - recursive directory inspection
+  - [x] `parseExclusions[str_String]` - parse comma-separated exclusions to list (in CodeInspector.wl)
+  - [x] `parseConfidenceLevel[str_String]` - parse confidence level string to number (in CodeInspector.wl)
+  - [x] `filterInspections[inspections_List, opts_Association]` - filter by tag, severity, confidence
 
 ### Phase 4: Markdown Formatting (`Formatting.wl`)
 

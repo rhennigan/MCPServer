@@ -55,3 +55,33 @@ Completed Phase 2: Main Entry Point (`CodeInspector.wl`)
 - Returns directory path as string (for directory inspection) or `File[path]` wrapper (for file inspection) or code string directly
 - Verified all files have valid WL syntax using `SyntaxQ`
 
+
+## Session 3
+
+Completed Phase 3: Core Inspection Logic (`Inspection.wl`)
+
+**Completed tasks:**
+- Implemented full `Kernel/Tools/CodeInspector/Inspection.wl` with:
+  - `runInspection[code_String, opts_Association]` - inspects code strings using `CodeInspect`
+  - `runInspection[File[path_String], opts_Association]` - inspects single files
+  - `runInspection[dir_String, opts_Association]` - inspects directories (returns Association of file -> inspections)
+  - `runInspectionOnDirectory` - recursive directory inspection finding all .wl, .m, .wls files
+  - `inspectSingleFile` - helper that handles individual file inspection with error handling
+  - `filterInspections[inspections_List, opts_Association]` - filters by tag, severity, confidence
+  - `passesFilters` - checks if an InspectionObject passes all filter criteria
+- Fixed submodule context structure - all submodules now use parent context `Wolfram`MCPServer`Tools`CodeInspector`` so they share the `Private` context (matching PacletDocumentation pattern)
+- Created comprehensive test file `Tests/CodeInspectorTool.wlt` with 54 tests covering:
+  - Tool registration
+  - Parameter parsing (parseExclusions, parseConfidenceLevel, parseLimit)
+  - Input validation
+  - Inspection filtering (passesFilters, filterInspections)
+  - Code string inspection
+  - File inspection
+  - Directory inspection
+  - Error cases (empty directory, missing input, etc.)
+
+**Key learnings:**
+- Submodule files must use the same `BeginPackage` context as the parent file to share `Private` symbols
+- `throwFailure` only throws when `$catching` is True (inside `catchTop`/`catchMine`); otherwise it returns a `Failure` object - so it must be the return expression, not buried in an `If` statement
+- When using `throwFailure` in conditionals, restructure code so the failure is the return value of the `If` branch (use `If[cond, throwFailure[...], normalResult]` pattern)
+

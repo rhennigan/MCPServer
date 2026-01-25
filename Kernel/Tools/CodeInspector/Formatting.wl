@@ -1,12 +1,11 @@
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Tools`CodeInspector`Formatting`" ];
+BeginPackage[ "Wolfram`MCPServer`Tools`CodeInspector`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"                      ];
-Needs[ "Wolfram`MCPServer`Common`"               ];
-Needs[ "Wolfram`MCPServer`Tools`CodeInspector`"  ];
+Needs[ "Wolfram`MCPServer`"        ];
+Needs[ "Wolfram`MCPServer`Common`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
