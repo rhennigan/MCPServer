@@ -843,11 +843,11 @@ cleanupOldFailureLogs // beginDefinition;
 cleanupOldFailureLogs[ ] := cleanupOldFailureLogs[ 50 ];
 
 cleanupOldFailureLogs[ maxFiles_Integer ] :=
-    Module[ { dir, files, toDelete },
+    Catch @ Module[ { dir, files, toDelete },
         dir = $internalFailureLogDirectory;
-        If[ ! DirectoryQ @ dir, Return @ Null ];
+        If[ ! DirectoryQ @ dir, Throw @ Null ];
         files = FileNames[ "*.mx", dir ];
-        If[ Length @ files <= maxFiles, Return @ Null ];
+        If[ Length @ files <= maxFiles, Throw @ Null ];
         (* Sort by modification time, newest first *)
         files = SortBy[ files, -FileDate[ #, "Modification" ] & ];
         toDelete = Drop[ files, maxFiles ];
