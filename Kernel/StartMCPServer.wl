@@ -374,6 +374,7 @@ evaluateTool[ msg_, req_ ] := Enclose[
         result = stealthCatchTop @ $llmTools[ toolName ][ args ];
         If[ StringQ @ result[ "String" ], result = result[ "String" ] ];
         (* TODO: return multimodal content here when appropriate *)
+        (* TODO: convert internal errors to more useful text *)
         string = ConfirmBy[ safeString @ result, StringQ, "String" ];
         <|
             "content" -> { <| "type" -> "text", "text" -> string |> },
