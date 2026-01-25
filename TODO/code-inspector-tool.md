@@ -23,19 +23,19 @@ Full specification is in `Specs/CodeInspectorTool.md`.
 
 ### Phase 2: Main Entry Point (`CodeInspector.wl`)
 
-- [ ] Create `Kernel/Tools/CodeInspector/CodeInspector.wl` with:
-  - [ ] Package header with context ``Wolfram`MCPServer`Tools`CodeInspector` ``
-  - [ ] Tool description string for MCP
-  - [ ] Tool definition in `$defaultMCPTools["CodeInspector"]` with all parameters:
+- [x] Create `Kernel/Tools/CodeInspector/CodeInspector.wl` with:
+  - [x] Package header with context ``Wolfram`MCPServer`Tools`CodeInspector` ``
+  - [x] Tool description string for MCP
+  - [x] Tool definition in `$defaultMCPTools["CodeInspector"]` with all parameters:
     - `code` (String, optional)
     - `file` (String, optional)
     - `tagExclusions` (String, default `""`)
     - `severityExclusions` (String, default `"Formatting,Remark,Scoping"`)
     - `confidenceLevel` (String, default `"0.75"`)
     - `limit` (Integer, default `100`)
-  - [ ] Main entry function `codeInspectorTool`
-  - [ ] Input validation function `validateAndNormalizeInput`
-  - [ ] Load submodules via `Get`
+  - [x] Main entry function `codeInspectorTool`
+  - [x] Input validation function `validateAndNormalizeInput`
+  - [x] Load submodules via `Get`
 
 ### Phase 3: Core Inspection Logic (`Inspection.wl`)
 
