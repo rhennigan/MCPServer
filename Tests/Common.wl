@@ -5,6 +5,8 @@ BeginPackage[ "Wolfram`MCPServerTests`" ];
 (* :!CodeAnalysis::BeginBlock:: *)
 `$BuiltPaclet;
 `$TestDefinitionsLoaded = True;
+`ConditionalTest;
+`SkipIfGitHubActions;
 
 Begin[ "`Private`" ];
 
@@ -26,6 +28,25 @@ Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Definitions*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*ConditionalTest*)
+ConditionalTest // Attributes = { HoldAllComplete };
+
+ConditionalTest[ condition_ ] :=
+    Function[ test, ConditionalTest[ condition, test ], HoldAllComplete ];
+
+ConditionalTest[ condition_, test: VerificationTest[ ___, TestID -> id_String, ___ ] ] :=
+    If[ condition,
+        test,
+        cicd`ConsoleLog @ SequenceForm[ "\tSkipping test: ", id ]
+    ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*SkipIfGitHubActions*)
+SkipIfGitHubActions = ConditionalTest @ Not @ StringQ @ Environment[ "GITHUB_ACTIONS" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
