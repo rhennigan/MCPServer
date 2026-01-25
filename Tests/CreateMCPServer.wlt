@@ -212,3 +212,90 @@ VerificationTest[
     SameTest -> MatchQ,
     TestID   -> "CreateMCPServer-ConfigCleanup@@Tests/CreateMCPServer.wlt:209,1-214,2"
 ]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Chatbook Tool Rewriting*)
+
+(* Test that LLMConfiguration with string tool names produces equivalent results to association input *)
+VerificationTest[
+    name1 = CreateUUID[ ];
+    name2 = CreateUUID[ ];
+    server1 = CreateMCPServer[ name1, LLMConfiguration @ <| "Tools" -> { "WolframLanguageEvaluator" } |> ];
+    server2 = CreateMCPServer[ name2, <| "Tools" -> { "WolframLanguageEvaluator" } |> ];
+    SameQ[ server1[ "Tools" ], server2[ "Tools" ] ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "CreateMCPServer-RewriteChatbookTools-WLEvaluatorEquivalence@@Tests/CreateMCPServer.wlt:221,1-230,2"
+]
+
+VerificationTest[
+    { DeleteObject @ server1, DeleteObject @ server2 },
+    { Null, Null },
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-RewriteChatbookTools-WLEvaluatorCleanup@@Tests/CreateMCPServer.wlt:232,1-237,2"
+]
+
+VerificationTest[
+    name1 = CreateUUID[ ];
+    name2 = CreateUUID[ ];
+    server1 = CreateMCPServer[ name1, LLMConfiguration @ <| "Tools" -> { "WolframAlpha" } |> ];
+    server2 = CreateMCPServer[ name2, <| "Tools" -> { "WolframAlpha" } |> ];
+    SameQ[ server1[ "Tools" ], server2[ "Tools" ] ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "CreateMCPServer-RewriteChatbookTools-WolframAlphaEquivalence@@Tests/CreateMCPServer.wlt:239,1-248,2"
+]
+
+VerificationTest[
+    { DeleteObject @ server1, DeleteObject @ server2 },
+    { Null, Null },
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-RewriteChatbookTools-WolframAlphaCleanup@@Tests/CreateMCPServer.wlt:250,1-255,2"
+]
+
+(* Test that both tools together are rewritten correctly *)
+VerificationTest[
+    name1 = CreateUUID[ ];
+    name2 = CreateUUID[ ];
+    server1 = CreateMCPServer[ name1, LLMConfiguration @ <| "Tools" -> { "WolframLanguageEvaluator", "WolframAlpha" } |> ];
+    server2 = CreateMCPServer[ name2, <| "Tools" -> { "WolframLanguageEvaluator", "WolframAlpha" } |> ];
+    SameQ[ server1[ "Tools" ], server2[ "Tools" ] ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "CreateMCPServer-RewriteChatbookTools-BothToolsEquivalence@@Tests/CreateMCPServer.wlt:258,1-267,2"
+]
+
+VerificationTest[
+    { DeleteObject @ server1, DeleteObject @ server2 },
+    { Null, Null },
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-RewriteChatbookTools-BothToolsCleanup@@Tests/CreateMCPServer.wlt:269,1-274,2"
+]
+
+(* Test that custom tools are not affected by the rewriting *)
+VerificationTest[
+    name1 = CreateUUID[ ];
+    name2 = CreateUUID[ ];
+    customTool = LLMTool[ "CustomTool", { "x" -> "Integer" }, #x^2 & ];
+    server1 = CreateMCPServer[ name1, LLMConfiguration @ <| "Tools" -> { customTool, "WolframLanguageEvaluator" } |> ];
+    server2 = CreateMCPServer[ name2, <| "Tools" -> { customTool, "WolframLanguageEvaluator" } |> ];
+    SameQ[ server1[ "Tools" ], server2[ "Tools" ] ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "CreateMCPServer-RewriteChatbookTools-CustomToolPreserved@@Tests/CreateMCPServer.wlt:277,1-287,2"
+]
+
+VerificationTest[
+    server1[ "Tools" ][[ 1 ]][ "Name" ],
+    "CustomTool",
+    SameTest -> Equal,
+    TestID   -> "CreateMCPServer-RewriteChatbookTools-CustomToolName@@Tests/CreateMCPServer.wlt:289,1-294,2"
+]
+
+VerificationTest[
+    { DeleteObject @ server1, DeleteObject @ server2 },
+    { Null, Null },
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-RewriteChatbookTools-CustomToolCleanup@@Tests/CreateMCPServer.wlt:296,1-301,2"
+]
