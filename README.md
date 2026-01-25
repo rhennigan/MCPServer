@@ -1,4 +1,4 @@
-# [MCPServer](https://paclets.com/Wolfram/MCPServer)
+# [Wolfram/MCPServer](https://paclets.com/Wolfram/MCPServer)
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Wolfram Version](https://img.shields.io/badge/Wolfram-14.2%2B-red.svg)](https://www.wolfram.com/language/)
@@ -104,13 +104,13 @@ MCPServer can be installed into the following MCP client applications:
 | Client | Name | Project Support |
 |--------|------|-----------------|
 | [Claude Desktop](https://claude.ai/download) | `"ClaudeDesktop"` | No |
-| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | `"ClaudeCode"` | Yes |
+| [Claude Code](https://code.claude.com) | `"ClaudeCode"` | Yes |
 | [Cursor](https://www.cursor.com) | `"Cursor"` | No |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | `"GeminiCLI"` | No |
 | [VS Code](https://code.visualstudio.com) | `"VSCode"` | Yes |
 | [OpenCode](https://opencode.ai) | `"OpenCode"` | Yes |
-| [OpenAI Codex](https://openai.com/index/introducing-codex/) | `"OpenAICodex"` | No |
-| [Antigravity](https://www.antigravity.dev) | `"Antigravity"` | No |
+| [OpenAI Codex](https://openai.com/codex) | `"OpenAICodex"` | No |
+| [Antigravity](https://antigravity.google) | `"Antigravity"` | No |
 
 ### Project-Level Installation
 
