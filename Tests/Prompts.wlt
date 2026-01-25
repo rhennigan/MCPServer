@@ -814,34 +814,36 @@ VerificationTest[
 (* ::Subsection:: *)
 (* Format Used by Search Prompts *)
 
-VerificationTest[
+(* Skip these in GitHub Actions due to an issue with wolframscript hanging when checking the license server during
+   tests that potentially spend a long time downloading files. *)
+SkipIfGitHubActions @ VerificationTest[
     StringContainsQ[
         $DefaultMCPPrompts[ "WolframSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
         "<search-query>test query</search-query>"
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframSearch-UsesNewFormat@@Tests/Prompts.wlt:817,1-825,2"
+    TestID   -> "WolframSearch-UsesNewFormat@@Tests/Prompts.wlt:819,23-827,2"
 ]
 
-VerificationTest[
+SkipIfGitHubActions @ VerificationTest[
     StringContainsQ[
         $DefaultMCPPrompts[ "WolframLanguageSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
         "<search-query>test query</search-query>"
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframLanguageSearch-UsesNewFormat@@Tests/Prompts.wlt:827,1-835,2"
+    TestID   -> "WolframLanguageSearch-UsesNewFormat@@Tests/Prompts.wlt:829,23-837,2"
 ]
 
-VerificationTest[
+SkipIfGitHubActions @ VerificationTest[
     StringContainsQ[
         $DefaultMCPPrompts[ "WolframAlphaSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
         "<search-query>test query</search-query>"
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframAlphaSearch-UsesNewFormat@@Tests/Prompts.wlt:837,1-845,2"
+    TestID   -> "WolframAlphaSearch-UsesNewFormat@@Tests/Prompts.wlt:839,23-847,2"
 ]
 
 (* ::Subsection:: *)
@@ -851,14 +853,14 @@ VerificationTest[
     Wolfram`MCPServer`Prompts`Notebook`Private`formatNotebookPrompt[ "/path/to/file.nb", "# Heading\n\nContent" ],
     "<notebook-path>/path/to/file.nb</notebook-path>\n<notebook-content>\n# Heading\n\nContent\n</notebook-content>",
     SameTest -> SameQ,
-    TestID   -> "FormatNotebookPrompt-BasicOutput@@Tests/Prompts.wlt:850,1-855,2"
+    TestID   -> "FormatNotebookPrompt-BasicOutput@@Tests/Prompts.wlt:852,1-857,2"
 ]
 
 VerificationTest[
     StringQ @ Wolfram`MCPServer`Prompts`Notebook`Private`formatNotebookPrompt[ "/path/to/file.nb", "content" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "FormatNotebookPrompt-ReturnsString@@Tests/Prompts.wlt:857,1-862,2"
+    TestID   -> "FormatNotebookPrompt-ReturnsString@@Tests/Prompts.wlt:859,1-864,2"
 ]
 
 VerificationTest[
@@ -868,7 +870,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "FormatNotebookPrompt-ContainsPathTag@@Tests/Prompts.wlt:864,1-872,2"
+    TestID   -> "FormatNotebookPrompt-ContainsPathTag@@Tests/Prompts.wlt:866,1-874,2"
 ]
 
 VerificationTest[
@@ -878,7 +880,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "FormatNotebookPrompt-ContainsContentTag@@Tests/Prompts.wlt:874,1-882,2"
+    TestID   -> "FormatNotebookPrompt-ContainsContentTag@@Tests/Prompts.wlt:876,1-884,2"
 ]
 
 (* ::Subsection:: *)
@@ -891,7 +893,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "NotebookPrompt-NonexistentFile@@Tests/Prompts.wlt:887,1-895,2"
+    TestID   -> "NotebookPrompt-NonexistentFile@@Tests/Prompts.wlt:889,1-897,2"
 ]
 
 VerificationTest[
@@ -901,7 +903,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "NotebookPrompt-InvalidExtension@@Tests/Prompts.wlt:897,1-905,2"
+    TestID   -> "NotebookPrompt-InvalidExtension@@Tests/Prompts.wlt:899,1-907,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
