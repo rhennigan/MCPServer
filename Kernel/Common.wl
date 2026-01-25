@@ -868,7 +868,7 @@ formatInternalFailureForMCP[ failure: Failure[ "MCPServer::Internal" | "General:
                 "Full details of the error have been logged to: " <> logPath <> "\n",
                 ""
             ],
-            "Report this issue at https://github.com/rhennigan/MCPServer/issues/new"
+            "Report this issue at " <> $issuesURL
         ]
     ];
 
