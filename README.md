@@ -16,7 +16,6 @@ Implements a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) ser
 - [Available Tools](#available-tools)
 - [Creating Custom Servers](#creating-custom-servers)
 - [API Reference](#api-reference)
-- [Advanced Usage](#advanced-usage)
 - [Development](#development)
 - [License](#license)
 
