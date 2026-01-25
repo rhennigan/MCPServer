@@ -816,7 +816,7 @@ VerificationTest[
 
 (* Skip these in GitHub Actions due to an issue with wolframscript hanging when checking the license server during
    tests that potentially spend a long time downloading files. *)
-SkipIfGitHubActions @ VerificationTest[
+skipIfGitHubActions @ VerificationTest[
     StringContainsQ[
         $DefaultMCPPrompts[ "WolframSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
         "<search-query>test query</search-query>"
@@ -826,7 +826,7 @@ SkipIfGitHubActions @ VerificationTest[
     TestID   -> "WolframSearch-UsesNewFormat@@Tests/Prompts.wlt:819,23-827,2"
 ]
 
-SkipIfGitHubActions @ VerificationTest[
+skipIfGitHubActions @ VerificationTest[
     StringContainsQ[
         $DefaultMCPPrompts[ "WolframLanguageSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
         "<search-query>test query</search-query>"
@@ -836,7 +836,7 @@ SkipIfGitHubActions @ VerificationTest[
     TestID   -> "WolframLanguageSearch-UsesNewFormat@@Tests/Prompts.wlt:829,23-837,2"
 ]
 
-SkipIfGitHubActions @ VerificationTest[
+skipIfGitHubActions @ VerificationTest[
     StringContainsQ[
         $DefaultMCPPrompts[ "WolframAlphaSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
         "<search-query>test query</search-query>"

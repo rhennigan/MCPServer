@@ -390,6 +390,13 @@ evaluateTool // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*safeString*)
 safeString // beginDefinition;
+
+(* Special handling for internal failures - format cleanly for MCP output *)
+safeString[ failure: Failure[ "MCPServer::Internal" | "General::ChatbookInternal", _ ] ] :=
+    With[ { formatted = formatInternalFailureForMCP @ failure },
+        formatted /; StringQ @ formatted
+    ];
+
 safeString[ failure_Failure ] := With[ { s = failure[ "Message" ] }, "[Error] " <> safeString @ s /; StringQ @ s ];
 safeString[ arg_ ] := convertPUACharacters @ ToString @ Unevaluated @ arg;
 safeString // endDefinition;
