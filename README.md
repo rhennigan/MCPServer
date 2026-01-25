@@ -109,7 +109,7 @@ MCPServer can be installed into the following MCP client applications:
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | `"GeminiCLI"` | No |
 | [VS Code](https://code.visualstudio.com) | `"VSCode"` | Yes |
 | [OpenCode](https://opencode.ai) | `"OpenCode"` | Yes |
-| [OpenAI Codex](https://openai.com/codex) | `"OpenAICodex"` | No |
+| [OpenAI Codex](https://openai.com/codex) | `"Codex"` | No |
 | [Antigravity](https://antigravity.google) | `"Antigravity"` | No |
 
 ### Project-Level Installation
