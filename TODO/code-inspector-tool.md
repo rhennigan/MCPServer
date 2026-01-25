@@ -11,15 +11,15 @@ Full specification is in `Specs/CodeInspectorTool.md`.
 
 ### Phase 1: Setup & Infrastructure
 
-- [ ] Create directory structure `Kernel/Tools/CodeInspector/`
-- [ ] Add error messages to `Kernel/Messages.wl`:
+- [x] Create directory structure `Kernel/Tools/CodeInspector/`
+- [x] Add error messages to `Kernel/Messages.wl`:
   - `CodeInspectorNoInput`
   - `CodeInspectorAmbiguousInput`
   - `CodeInspectorFileNotFound`
   - `CodeInspectorNoFilesFound`
   - `CodeInspectorFailed`
-- [ ] Register subcontext `Wolfram`MCPServer`Tools`CodeInspector`` in `Kernel/Tools/Tools.wl`
-- [ ] Remove CodeInspector from the TODO comment in `Kernel/Tools/Tools.wl`
+- [x] Register subcontext `Wolfram`MCPServer`Tools`CodeInspector`` in `Kernel/Tools/Tools.wl`
+- [x] Remove CodeInspector from the TODO comment in `Kernel/Tools/Tools.wl`
 
 ### Phase 2: Main Entry Point (`CodeInspector.wl`)
 

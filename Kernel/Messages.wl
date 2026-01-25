@@ -47,4 +47,11 @@ MCPServer::InvalidMCPPromptsSpecification = "Invalid MCP prompts specification: 
 MCPServer::PromptNameNotFound             = "No prompt named \"`1`\" found in $DefaultMCPPrompts.";
 MCPServer::DeprecatedPromptData           = "The \"PromptData\" property is deprecated. Use \"MCPPrompts\" instead.";
 
+(* CodeInspector messages *)
+MCPServer::CodeInspectorNoInput        = "Either 'code' or 'file' parameter must be provided.";
+MCPServer::CodeInspectorAmbiguousInput = "Provide either 'code' or 'file', not both.";
+MCPServer::CodeInspectorFileNotFound   = "File or directory not found: `1`.";
+MCPServer::CodeInspectorNoFilesFound   = "No .wl, .m, or .wls files found in directory: `1`.";
+MCPServer::CodeInspectorFailed         = "CodeInspector failed: `1`.";
+
 EndPackage[ ];
