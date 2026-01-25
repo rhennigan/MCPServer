@@ -106,7 +106,7 @@ MCPServer can be installed into the following MCP client applications:
 | [Claude Code](https://code.claude.com) | `"ClaudeCode"` | Yes |
 | [Cursor](https://www.cursor.com) | `"Cursor"` | No |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | `"GeminiCLI"` | No |
-| [VS Code](https://code.visualstudio.com) | `"VSCode"` | Yes |
+| [Visual Studio Code](https://code.visualstudio.com) | `"VisualStudioCode"` | Yes |
 | [OpenCode](https://opencode.ai) | `"OpenCode"` | Yes |
 | [OpenAI Codex](https://openai.com/codex) | `"Codex"` | No |
 | [Antigravity](https://antigravity.google) | `"Antigravity"` | No |
