@@ -6,7 +6,8 @@ Begin[ "`Private`" ];
 
 Needs[ "Wolfram`MCPServer`"        ];
 Needs[ "Wolfram`MCPServer`Common`" ];
-Needs[ "CodeInspector`"            ];
+Needs[ "CodeInspector`" -> "ci`"   ];
+Needs[ "CodeParser`"    -> "cp`"   ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -22,8 +23,8 @@ runInspection // beginDefinition;
 runInspection[ code_String, opts_Association ] := Enclose[
     Module[ { rawInspections, filtered },
         rawInspections = ConfirmMatch[
-            CodeInspect @ code,
-            { ___InspectionObject },
+            ci`CodeInspect @ code,
+            { ___ci`InspectionObject },
             "CodeInspect"
         ];
         filtered = filterInspections[ rawInspections, opts ];
@@ -36,8 +37,8 @@ runInspection[ code_String, opts_Association ] := Enclose[
 runInspection[ File[ path_String ], opts_Association ] := Enclose[
     Module[ { rawInspections, filtered },
         rawInspections = ConfirmMatch[
-            CodeInspect @ File @ path,
-            { ___InspectionObject },
+            ci`CodeInspect @ File @ path,
+            { ___ci`InspectionObject },
             "CodeInspect"
         ];
         filtered = filterInspections[ rawInspections, opts ];
@@ -73,7 +74,7 @@ runInspectionOnDirectory[ dir_String, opts_Association ] := Enclose[
                 Function[ file,
                     file -> ConfirmMatch[
                         inspectSingleFile[ file, opts ],
-                        { ___InspectionObject },
+                        { ___ci`InspectionObject },
                         "InspectFile"
                     ]
                 ],
@@ -94,11 +95,11 @@ inspectSingleFile // beginDefinition;
 inspectSingleFile[ file_String, opts_Association ] :=
     Module[ { rawInspections },
         rawInspections = Quiet[
-            CodeInspect @ File @ file,
+            ci`CodeInspect @ File @ file,
             { CodeInspector::InternalUnhandled }
         ];
         (* Handle cases where CodeInspect fails *)
-        If[ MatchQ[ rawInspections, { ___InspectionObject } ],
+        If[ MatchQ[ rawInspections, { ___ci`InspectionObject } ],
             filterInspections[ rawInspections, opts ],
             { } (* Return empty list if inspection fails for a file *)
         ]
@@ -131,7 +132,7 @@ filterInspections // endDefinition;
 passesFilters // beginDefinition;
 
 passesFilters[
-    InspectionObject[ tag_String, description_, severity_String, data_Association ],
+    ci`InspectionObject[ tag_String, description_, severity_String, data_Association ],
     tagExclusions_List,
     severityExclusions_List,
     minConfidence_
@@ -146,7 +147,7 @@ passesFilters[
     ];
 
 (* Handle unexpected InspectionObject format gracefully *)
-passesFilters[ _InspectionObject, _, _, _ ] := False;
+passesFilters[ _ci`InspectionObject, _, _, _ ] := False;
 
 passesFilters // endDefinition;
 

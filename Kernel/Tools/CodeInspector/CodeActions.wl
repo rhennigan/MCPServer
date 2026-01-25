@@ -6,7 +6,7 @@ Begin[ "`Private`" ];
 
 Needs[ "Wolfram`MCPServer`"        ];
 Needs[ "Wolfram`MCPServer`Common`" ];
-Needs[ "CodeParser`"               ];
+Needs[ "CodeParser`" -> "cp`"      ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -21,7 +21,12 @@ formatCodeActions[ actions_List ] :=
         formatted = Select[ formatted, StringQ @* StringTrim ];
         If[ formatted === { },
             "",
-            StringJoin[ "\n**Suggested Fix", If[ Length @ formatted > 1, "es", "" ], ":**\n", StringRiffle[ formatted, "\n" ] ]
+            StringJoin[
+                "\n**Suggested Fix",
+                If[ Length @ formatted > 1, "es", "" ],
+                ":**\n",
+                StringRiffle[ formatted, "\n" ]
+            ]
         ]
     ];
 
@@ -33,11 +38,11 @@ formatCodeActions // endDefinition;
 formatSingleCodeAction // beginDefinition;
 
 (* Standard CodeAction with label, command, and data *)
-formatSingleCodeAction[ CodeParser`CodeAction[ label_String, command_, data_Association ] ] :=
+formatSingleCodeAction[ cp`CodeAction[ label_String, command_, data_Association ] ] :=
     formatSingleCodeAction[ label, command, data ];
 
 (* Handle without CodeParser` context prefix *)
-formatSingleCodeAction[ HoldPattern[ CodeAction ][ label_String, command_, data_Association ] ] :=
+formatSingleCodeAction[ HoldPattern[ cp`CodeAction ][ label_String, command_, data_Association ] ] :=
     formatSingleCodeAction[ label, command, data ];
 
 (* Internal formatting function *)
@@ -71,15 +76,15 @@ cleanLabel // endDefinition;
 codeActionCommandToString // beginDefinition;
 
 (* Text operations *)
-codeActionCommandToString[ CodeParser`ReplaceText | ReplaceText ] := "Replace with";
-codeActionCommandToString[ CodeParser`DeleteText | DeleteText ]   := "Delete";
-codeActionCommandToString[ CodeParser`InsertText | InsertText ]   := "Insert";
+codeActionCommandToString[ cp`ReplaceText ] := "Replace with";
+codeActionCommandToString[ cp`DeleteText  ] := "Delete";
+codeActionCommandToString[ cp`InsertText  ] := "Insert";
 
 (* Node operations *)
-codeActionCommandToString[ CodeParser`ReplaceNode | ReplaceNode ]       := "Replace with";
-codeActionCommandToString[ CodeParser`DeleteNode | DeleteNode ]         := "Delete";
-codeActionCommandToString[ CodeParser`InsertNode | InsertNode ]         := "Insert";
-codeActionCommandToString[ CodeParser`InsertNodeAfter | InsertNodeAfter ] := "Insert after";
+codeActionCommandToString[ cp`ReplaceNode     ] := "Replace with";
+codeActionCommandToString[ cp`DeleteNode      ] := "Delete";
+codeActionCommandToString[ cp`InsertNode      ] := "Insert";
+codeActionCommandToString[ cp`InsertNodeAfter ] := "Insert after";
 
 (* Fallback *)
 codeActionCommandToString[ cmd_ ] := ToString @ cmd;
@@ -94,7 +99,7 @@ codeActionCommandToString // endDefinition;
 extractActionDetails // beginDefinition;
 
 (* For ReplaceNode, try to show the replacement *)
-extractActionDetails[ CodeParser`ReplaceNode | ReplaceNode, data_Association ] :=
+extractActionDetails[ cp`ReplaceNode, data_Association ] :=
     Module[ { replacement },
         replacement = Lookup[ data, "ReplacementNode", None ];
         If[ replacement === None,
@@ -104,7 +109,7 @@ extractActionDetails[ CodeParser`ReplaceNode | ReplaceNode, data_Association ] :
     ];
 
 (* For InsertNode, try to show what will be inserted *)
-extractActionDetails[ CodeParser`InsertNode | CodeParser`InsertNodeAfter | InsertNode | InsertNodeAfter, data_Association ] :=
+extractActionDetails[ cp`InsertNode | cp`InsertNodeAfter, data_Association ] :=
     Module[ { insertion },
         insertion = Lookup[ data, "InsertionNode", None ];
         If[ insertion === None,
@@ -114,7 +119,7 @@ extractActionDetails[ CodeParser`InsertNode | CodeParser`InsertNodeAfter | Inser
     ];
 
 (* For delete operations, no additional details needed - the label says what's being deleted *)
-extractActionDetails[ CodeParser`DeleteNode | CodeParser`DeleteText | DeleteNode | DeleteText, _ ] := "";
+extractActionDetails[ cp`DeleteNode | cp`DeleteText, _ ] := "";
 
 (* Fallback - no additional details *)
 extractActionDetails[ _, _ ] := "";
@@ -129,13 +134,13 @@ extractActionDetails // endDefinition;
 nodeToString // beginDefinition;
 
 (* LeafNode contains the actual text representation *)
-nodeToString[ CodeParser`LeafNode[ _, text_String, _ ] ] := "";  (* Label already contains this info *)
+nodeToString[ cp`LeafNode[ _, text_String, _ ] ] := "";  (* Label already contains this info *)
 nodeToString[ HoldPattern[ LeafNode ][ _, text_String, _ ] ] := "";
 
 (* For other nodes, try to extract string representation *)
 nodeToString[ node_ ] :=
     Module[ { str },
-        str = Quiet @ CodeParser`ToSourceCharacterString @ node;
+        str = Quiet @ cp`ToSourceCharacterString @ node;
         If[ StringQ @ str,
             "",  (* Label already contains this info, avoid duplication *)
             ""

@@ -6,8 +6,8 @@ Begin[ "`Private`" ];
 
 Needs[ "Wolfram`MCPServer`"        ];
 Needs[ "Wolfram`MCPServer`Common`" ];
-Needs[ "CodeInspector`"            ];
-Needs[ "CodeParser`"               ];
+Needs[ "CodeInspector`" -> "ci`"   ];
+Needs[ "CodeParser`"    -> "cp`"   ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -35,10 +35,22 @@ inspectionsToMarkdown[ inspections_List, source_, opts_Association ] := Enclose[
             summary = ConfirmBy[ summaryTable @ inspections, StringQ, "Summary" ];
             issues = ConfirmBy[ formatIssuesList[ displayInspections, source ], StringQ, "Issues" ];
             truncationNotice = If[ truncated,
-                StringJoin[ "\n\n---\n\n*Showing ", ToString @ limit, " of ", ToString @ Length @ inspections, " issues. Adjust the `limit` parameter to see more.*" ],
+                StringJoin[
+                    "\n\n---\n\n*Showing ",
+                    ToString @ limit, " of ",
+                    ToString @ Length @ inspections,
+                    " issues. Adjust the `limit` parameter to see more.*"
+                ],
                 ""
             ];
-            StringJoin[ "# Code Inspection Results\n\n", formatSourceHeader @ source, summary, "\n\n", issues, truncationNotice ]
+            StringJoin[
+                "# Code Inspection Results\n\n",
+                formatSourceHeader @ source,
+                summary,
+                "\n\n",
+                issues,
+                truncationNotice
+            ]
         ]
     ],
     throwInternalFailure
@@ -70,7 +82,13 @@ inspectionsToMarkdown[ resultsByFile_Association, dir_String, opts_Association ]
             ];
             fileSections = ConfirmBy[ formatFilesSections[ resultsByFile, limit ], StringQ, "FileSections" ];
             truncationNotice = If[ truncated,
-                StringJoin[ "\n\n---\n\n*Showing ", ToString @ Min[ limit, totalCount ], " of ", ToString @ totalCount, " issues. Adjust the `limit` parameter to see more.*" ],
+                StringJoin[
+                    "\n\n---\n\n*Showing ",
+                    ToString @ Min[ limit, totalCount ],
+                    " of ",
+                    ToString @ totalCount,
+                    " issues. Adjust the `limit` parameter to see more.*"
+                ],
                 ""
             ];
             StringJoin[ header, fileSections, truncationNotice ]
@@ -163,7 +181,7 @@ summaryTable // endDefinition;
 (* ::Subsection::Closed:: *)
 (*inspectionSeverity*)
 inspectionSeverity // beginDefinition;
-inspectionSeverity[ InspectionObject[ _, _, severity_String, _ ] ] := severity;
+inspectionSeverity[ ci`InspectionObject[ _, _, severity_String, _ ] ] := severity;
 inspectionSeverity[ _ ] := "Unknown";
 inspectionSeverity // endDefinition;
 
@@ -235,7 +253,7 @@ formatFileSection // endDefinition;
 (*formatInspectionForFile*)
 formatInspectionForFile // beginDefinition;
 
-formatInspectionForFile[ inspection_InspectionObject, index_Integer, file_String ] :=
+formatInspectionForFile[ inspection_ci`InspectionObject, index_Integer, file_String ] :=
     formatInspection[ inspection, index, File @ file ];
 
 formatInspectionForFile // endDefinition;
@@ -245,13 +263,17 @@ formatInspectionForFile // endDefinition;
 (*formatInspection*)
 formatInspection // beginDefinition;
 
-formatInspection[ InspectionObject[ tag_String, description_String, severity_String, data_Association ], index_Integer, source_ ] :=
+formatInspection[
+    ci`InspectionObject[ tag_String, description_String, severity_String, data_Association ],
+    index_Integer,
+    source_
+] :=
     Module[ { confidence, location, locationStr, codeSnippet, codeActions, actionStr },
         (* Extract confidence level *)
         confidence = Lookup[ data, ConfidenceLevel, 1.0 ];
 
         (* Extract source location *)
-        location = Lookup[ data, CodeParser`Source, Missing[ "NotAvailable" ] ];
+        location = Lookup[ data, cp`Source, Missing[ "NotAvailable" ] ];
 
         (* Format location *)
         locationStr = formatLocation[ source, location ];
@@ -274,7 +296,7 @@ formatInspection[ InspectionObject[ tag_String, description_String, severity_Str
     ];
 
 (* Handle malformed InspectionObject *)
-formatInspection[ insp_InspectionObject, index_Integer, _ ] :=
+formatInspection[ insp_ci`InspectionObject, index_Integer, _ ] :=
     StringJoin[ "### Issue ", ToString @ index, ": Malformed inspection object" ];
 
 formatInspection // endDefinition;
@@ -322,8 +344,12 @@ formatLocation // endDefinition;
 extractCodeSnippet // beginDefinition;
 
 (* Code string with location *)
-extractCodeSnippet[ code_String, { { startLine_Integer, startCol_Integer }, { endLine_Integer, endCol_Integer } }, contextLines_Integer ] :=
-    Module[ { lines, totalLines, firstLine, lastLine, snippetLines, numbered, marker },
+extractCodeSnippet[
+    code_String,
+    { { startLine_Integer, startCol_Integer }, { endLine_Integer, endCol_Integer } },
+    contextLines_Integer
+] :=
+    Module[ { lines, totalLines, firstLine, lastLine, snippetLines, numbered },
         lines = StringSplit[ code, "\n" ];
         totalLines = Length @ lines;
 
@@ -359,7 +385,11 @@ extractCodeSnippet[ code_String, { { startLine_Integer, startCol_Integer }, { en
     ];
 
 (* File with location *)
-extractCodeSnippet[ File[ path_String ], location: { { startLine_Integer, _ }, { endLine_Integer, _ } }, contextLines_Integer ] :=
+extractCodeSnippet[
+    File[ path_String ],
+    location: { { startLine_Integer, _ }, { endLine_Integer, _ } },
+    contextLines_Integer
+] :=
     Module[ { content },
         content = Quiet @ ReadString @ path;
         If[ StringQ @ content,
