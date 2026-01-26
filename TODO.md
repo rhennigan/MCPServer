@@ -53,6 +53,8 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/StartMCPServer.wl`
 - [ ] Implement `ReadableForm` in this paclet for better code formatting
   - Source: `Kernel/Tools/TestReport.wl`
+- [ ] Show relative paths in CodeInspector output when inspecting directories
+  - Source: `Kernel/Tools/CodeInspector/Formatting.wl`
 
 ## Prompts
 

@@ -354,6 +354,8 @@ formatLocation[ _String, { { line_Integer, col_Integer }, { endLine_Integer, end
         ]
     ];
 
+(* TODO: If original source was a directory, we should show relative paths instead of using FileNameTake *)
+
 (* File with line/column *)
 formatLocation[ File[ path_String ], { { line_Integer, col_Integer }, _ } ] :=
     StringJoin[ "`", FileNameTake @ path, ":", ToString @ line, ":", ToString @ col, "`" ];
