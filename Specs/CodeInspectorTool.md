@@ -29,7 +29,7 @@ Inspects Wolfram Language code using the CodeInspector package and returns a for
 | `file` | String | No* | - | File or directory path to inspect |
 | `tagExclusions` | String | No | `""` | Comma-separated list of tags to exclude |
 | `severityExclusions` | String | No | `"Formatting,Remark,Scoping"` | Comma-separated list of severities to exclude |
-| `confidenceLevel` | String | No | `"0.75"` | Minimum confidence level (0.0 to 1.0) |
+| `confidenceLevel` | Number | No | `0.75` | Minimum confidence level (0.0 to 1.0) |
 | `limit` | Integer | No | `100` | Maximum number of issues to display |
 
 *One of `code` or `file` must be provided, but not both.
