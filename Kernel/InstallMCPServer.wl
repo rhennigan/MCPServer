@@ -120,6 +120,8 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
             existing[ "mcp", "servers", name ] = server,
             "OpenCode",
             existing[ "mcp", name ] = ConfirmBy[ convertToOpenCodeFormat @ server, AssociationQ, "OpenCodeServer" ],
+            "CopilotCLI",
+            existing[ "mcpServers", name ] = ConfirmBy[ convertToCopilotCLIFormat @ server, AssociationQ, "CopilotCLIServer" ],
             _,
             existing[ "mcpServers", name ] = server
         ];
@@ -348,6 +350,22 @@ convertToOpenCodeFormat[ server_Association ] := Enclose[
 ];
 
 convertToOpenCodeFormat // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*convertToCopilotCLIFormat*)
+convertToCopilotCLIFormat // beginDefinition;
+
+convertToCopilotCLIFormat[ server_Association ] := Enclose[
+    Module[ { result },
+        result = ConfirmBy[ server, AssociationQ, "Server" ];
+        result[ "tools" ] = { "*" };
+        result
+    ],
+    throwInternalFailure
+];
+
+convertToCopilotCLIFormat // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -693,6 +711,12 @@ installLocation[ "Codex", _ ] :=
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*Copilot CLI*)
+installLocation[ "CopilotCLI", _ ] :=
+    fileNameJoin[ $HomeDirectory, ".copilot", "mcp-config.json" ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*OpenCode*)
 installLocation[ "OpenCode", _ ] :=
     fileNameJoin[ $HomeDirectory, ".config", "opencode", "opencode.json" ];
@@ -746,6 +770,9 @@ toInstallName[ "Gemini"            ] := "GeminiCLI";
 toInstallName[ "GoogleAntigravity" ] := "Antigravity";
 toInstallName[ "codex"             ] := "Codex";
 toInstallName[ "OpenAICodex"       ] := "Codex";
+toInstallName[ "Copilot"           ] := "CopilotCLI";
+toInstallName[ "copilot-cli"       ] := "CopilotCLI";
+toInstallName[ "GitHubCopilotCLI"  ] := "CopilotCLI";
 toInstallName[ name_String         ] := name;
 toInstallName // endDefinition;
 
@@ -759,6 +786,7 @@ installDisplayName[ "VisualStudioCode" ] := "Visual Studio Code";
 installDisplayName[ "GeminiCLI"        ] := "Gemini CLI";
 installDisplayName[ "Antigravity"      ] := "Antigravity";
 installDisplayName[ "Codex"            ] := "Codex CLI";
+installDisplayName[ "CopilotCLI"       ] := "Copilot CLI";
 installDisplayName[ "OpenCode"         ] := "OpenCode";
 installDisplayName[ name_String        ] := name;
 installDisplayName[ None               ] := None;

@@ -16,6 +16,7 @@ The following clients have built-in support for automatic configuration via `Ins
 |--------|---------------|---------|---------------|-----------------|
 | Claude Desktop | `"ClaudeDesktop"` | `"Claude"` | JSON | No |
 | Claude Code | `"ClaudeCode"` | `"claude-code"` | JSON | Yes |
+| Copilot CLI | `"CopilotCLI"` | `"Copilot"`, `"copilot-cli"`, `"GitHubCopilotCLI"` | JSON | No |
 | Cursor | `"Cursor"` | — | JSON | No |
 | Gemini CLI | `"GeminiCLI"` | `"Gemini"` | JSON | No |
 | Antigravity | `"Antigravity"` | `"GoogleAntigravity"` | JSON | No |
@@ -97,6 +98,28 @@ UninstallMCPServer[myServerObject]               (* Remove from all locations *)
 | Project | `.mcp.json` (in project root) |
 
 **Format:** Same as Claude Desktop (`mcpServers` key).
+
+### Copilot CLI
+
+| Scope | Config Location |
+|-------|----------------|
+| Global | `~/.copilot/mcp-config.json` |
+
+**Format:**
+```json
+{
+    "mcpServers": {
+        "ServerName": {
+            "command": "...",
+            "args": ["..."],
+            "env": { ... },
+            "tools": ["*"]
+        }
+    }
+}
+```
+
+Note: Copilot CLI requires the `tools` field to specify which tools to enable. `InstallMCPServer` automatically adds `"tools": ["*"]` to enable all tools.
 
 ### Cursor
 
