@@ -727,4 +727,98 @@ VerificationTest[
     TestID   -> "ConvertToCodexFormat-MinimalConfig@@Tests/InstallMCPServer.wlt:721,1-728,2"
 ]
 
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Copilot CLI Support*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Install Location for Copilot CLI*)
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "CopilotCLI", "Windows" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-CopilotCLI-Windows@@Tests/InstallMCPServer.wlt:737,1-742,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "CopilotCLI", "MacOSX" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-CopilotCLI-MacOSX@@Tests/InstallMCPServer.wlt:744,1-749,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "CopilotCLI", "Unix" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-CopilotCLI-Unix@@Tests/InstallMCPServer.wlt:751,1-756,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Name Normalization*)
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "Copilot" ],
+    "CopilotCLI",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-Copilot@@Tests/InstallMCPServer.wlt:761,1-766,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "copilot-cli" ],
+    "CopilotCLI",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-copilot-cli@@Tests/InstallMCPServer.wlt:768,1-773,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "GitHubCopilotCLI" ],
+    "CopilotCLI",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-GitHubCopilotCLI@@Tests/InstallMCPServer.wlt:775,1-780,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "CopilotCLI" ],
+    "CopilotCLI",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-CopilotCLI@@Tests/InstallMCPServer.wlt:782,1-787,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installDisplayName[ "CopilotCLI" ],
+    "Copilot CLI",
+    SameTest -> Equal,
+    TestID   -> "InstallDisplayName-CopilotCLI@@Tests/InstallMCPServer.wlt:789,1-794,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*convertToCopilotCLIFormat*)
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`convertToCopilotCLIFormat @ <|
+        "command" -> "wolfram",
+        "args" -> { "-run", "test" },
+        "env" -> <| "KEY" -> "value" |>
+    |>,
+    <|
+        "command" -> "wolfram",
+        "args" -> { "-run", "test" },
+        "env" -> <| "KEY" -> "value" |>,
+        "tools" -> { "*" }
+    |>,
+    SameTest -> Equal,
+    TestID   -> "ConvertToCopilotCLIFormat-Basic@@Tests/InstallMCPServer.wlt:799,1-813,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`convertToCopilotCLIFormat @ <|
+        "command" -> "wolfram"
+    |>,
+    <| "command" -> "wolfram", "tools" -> { "*" } |>,
+    SameTest -> Equal,
+    TestID   -> "ConvertToCopilotCLIFormat-MinimalConfig@@Tests/InstallMCPServer.wlt:815,1-822,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)

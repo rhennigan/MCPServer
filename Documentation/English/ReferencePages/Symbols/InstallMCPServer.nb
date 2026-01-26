@@ -387,6 +387,21 @@ Notebook[
          },
          {
           Cell["      ", "ModInfo"],
+          "\"CopilotCLI\"",
+          Cell[
+           TextData[
+            ButtonBox[
+             "GitHub Copilot CLI",
+             BaseStyle -> "Hyperlink",
+             ButtonData -> {URL["https://github.com/features/copilot/cli"], None},
+             ButtonNote -> "https://github.com/features/copilot/cli"
+            ]
+           ],
+           "TableText"
+          ]
+         },
+         {
+          Cell["      ", "ModInfo"],
           "\"Cursor\"",
           Cell[
            TextData[
@@ -594,13 +609,13 @@ Notebook[
              {
               nbobj$$ = 
                NotebookObject[
-                "9d46fc70-8a96-894a-bc1a-1dbcf82fcca7",
-                "6524997d-f6fc-1741-81df-54d39542e779"
+                "3699d3a3-6f13-2e4f-8ea2-40af82a923cb",
+                "30d3ecbf-349b-4749-a644-4222cd2d6862"
                ],
               cellobj$$ = 
                CellObject[
-                "78d18179-0a79-2c40-b991-df2703eef77f",
-                "cd29bfac-7873-5b41-9fb6-758e7c29dd98"
+                "efc1bb16-0315-ca42-80e5-6e432ec9822f",
+                "8d67e825-cf41-1141-9417-675265e947dd"
                ]
              },
              TemplateBox[
