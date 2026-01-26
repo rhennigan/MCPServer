@@ -17,8 +17,8 @@ formatCodeActions[ { } ] := "";
 
 formatCodeActions[ actions_List ] :=
     Module[ { formatted },
-        formatted = formatSingleCodeAction /@ actions;
-        formatted = Select[ formatted, StringQ @* StringTrim ];
+        formatted = StringTrim @ Select[ formatSingleCodeAction /@ actions, StringQ ];
+        formatted = DeleteCases[ formatted, "" ];
         If[ formatted === { },
             "",
             StringJoin[
@@ -47,8 +47,7 @@ formatSingleCodeAction[ HoldPattern[ cp`CodeAction ][ label_String, command_, da
 
 (* Internal formatting function *)
 formatSingleCodeAction[ label_String, command_, data_Association ] :=
-    Module[ { actionType, details },
-        actionType = codeActionCommandToString @ command;
+    Module[ { details },
         details = extractActionDetails[ command, data ];
         StringJoin[ "- ", cleanLabel @ label, If[ StringQ @ details && details =!= "", " " <> details, "" ] ]
     ];
@@ -62,11 +61,11 @@ formatSingleCodeAction // endDefinition;
 (* ::Subsection::Closed:: *)
 (*cleanLabel*)
 
-(* Clean up the label - convert WL backtick formatting to markdown *)
+(* Clean up the label - preserve double backticks if code contains backticks, otherwise convert to single backticks *)
 cleanLabel // beginDefinition;
 
 cleanLabel[ label_String ] :=
-    StringReplace[ label, "``" ~~ text : Shortest[ __ ] ~~ "``" :> "`" <> text <> "`" ];
+    StringReplace[ label, "``" ~~ text: Shortest[ __ ] ~~ "``" /; StringFreeQ[ text, "`" ] :> "`" <> text <> "`" ];
 
 cleanLabel // endDefinition;
 

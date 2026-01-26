@@ -295,7 +295,7 @@ formatInspection[
         codeSnippet = extractCodeSnippet[ source, location, $contextLines ];
 
         (* Extract and format CodeActions if present *)
-        codeActions = Lookup[ data, "CodeActions", { } ];
+        codeActions = Lookup[ data, cp`CodeActions, { } ];
         actionStr = formatCodeActions @ codeActions;
 
         (* Format tag with argument if present *)

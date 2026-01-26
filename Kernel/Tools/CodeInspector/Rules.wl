@@ -189,22 +189,6 @@ scanFixMeComment // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*Temporary Testing*)
-(* Uncomment the following code to test these rules *)
-
-(* Global`x = 1;
-
-SomePaclet`Private`y = 2;
-
-f[ x_ ] := Throw @ x;*)
-
-(* :!CodeAnalysis::BeginBlock:: *)
-(* :!CodeAnalysis::Disable::VariableError::Block:: *)
-g[ x_ ] := Block[ { x }, x + 1 ];
-(* :!CodeAnalysis::EndBlock:: *)
-
-(* ::**************************************************************************************************************:: *)
-(* ::Section::Closed:: *)
 (*Package Footer*)
 End[ ];
 EndPackage[ ];

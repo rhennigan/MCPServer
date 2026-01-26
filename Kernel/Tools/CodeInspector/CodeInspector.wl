@@ -176,18 +176,12 @@ validateAndNormalizeInput // endDefinition;
 (* ::Subsection::Closed:: *)
 (*parseExclusions*)
 parseExclusions // beginDefinition;
-
 parseExclusions[ _Missing ] := { };
 parseExclusions[ _Missing, default_List ] := default;
-parseExclusions[ ""       ] := { };
+parseExclusions[ "" ] := { };
 parseExclusions[ "", default_List ] := default;
-
-parseExclusions[ str_String ] :=
-    StringTrim /@ StringSplit[ str, "," ];
-
-parseExclusions[ str_String, _List ] :=
-    parseExclusions @ str;
-
+parseExclusions[ str_String ] := DeleteCases[ StringTrim @ StringSplit[ str, "," ], "" ];
+parseExclusions[ str_String, _List ] := parseExclusions @ str;
 parseExclusions // endDefinition;
 
 (* ::**************************************************************************************************************:: *)

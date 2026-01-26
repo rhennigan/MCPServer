@@ -984,7 +984,7 @@ VerificationTest[
             <|
                 ConfidenceLevel -> 1.0,
                 CodeParser`Source -> { { 1, 5 }, { 1, 5 } },
-                "CodeActions" -> {
+                CodeParser`CodeActions -> {
                     CodeParser`CodeAction[ "Delete ``,``", CodeParser`DeleteText, <| CodeParser`Source -> { { 1, 5 }, { 1, 6 } } |> ]
                 }
             |>
