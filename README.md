@@ -83,8 +83,8 @@ MCPServer includes four predefined server configurations, each optimized for dif
 |--------|----------|-------|
 | **Wolfram** (default) | General-purpose use combining computational power with natural language | `WolframContext`, `WolframLanguageEvaluator`, `WolframAlpha` |
 | **WolframAlpha** | Natural language queries without code execution | `WolframAlphaContext`*, `WolframAlpha` |
-| **WolframLanguage** | Wolfram Language development and learning | `WolframLanguageContext`, `WolframLanguageEvaluator`, `ReadNotebook`, `WriteNotebook`, `SymbolDefinition`, `TestReport` |
-| **WolframPacletDevelopment** | Developing and maintaining Wolfram paclets | All WolframLanguage tools plus `CreateSymbolDoc`, `EditSymbolDoc`, `EditSymbolDocExamples` |
+| **WolframLanguage** | Wolfram Language development and learning | `WolframLanguageContext`, `WolframLanguageEvaluator`, `ReadNotebook`, `WriteNotebook`, `SymbolDefinition`, `CodeInspector`, `TestReport` |
+| **WolframPacletDevelopment** | Developing and maintaining Wolfram paclets | All WolframLanguage tools plus documentation tools (`CreateSymbolDoc`, `EditSymbolDoc`, `EditSymbolDocExamples`) |
 
 *\*Requires [LLMKit subscription](https://www.wolfram.com/notebook-assistant-llm-kit)*
 
@@ -176,6 +176,10 @@ While only `WolframAlphaContext` *requires* an [LLMKit subscription](https://www
 ### Testing Tools
 
 - **TestReport** - Run Wolfram Language test files (.wlt) and return reports
+
+### Code Analysis Tools
+
+- **CodeInspector** - Inspect Wolfram Language code for issues and return formatted reports
 
 ### Documentation Tools (Paclet Development)
 
