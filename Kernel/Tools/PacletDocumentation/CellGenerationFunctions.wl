@@ -24,7 +24,7 @@ generateUsageContent[ symbolName_String, pacletBase_String, usageCases_List ] :=
                 generateSingleUsageContent[ symbolName, pacletBase, # ] & /@ usageCases,
                 { "\n", Cell[ "   ", "ModInfo" ] }
             ],
-            { __},
+            { __ },
             "UsageElements"
         ];
         TextData @ Flatten @ { Cell[ "   ", "ModInfo" ], usageElements }
