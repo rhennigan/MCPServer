@@ -12,6 +12,9 @@ Consolidated list of TODO/FIXME items from the codebase.
 
 ## MCP Protocol Support
 
+- [ ] Query client roots and set directory appropriately
+  - Source: `Kernel/StartMCPServer.wl`
+  - Spec: https://modelcontextprotocol.io/specification/2025-11-25/client/roots#protocol-messages
 - [ ] Support logging capability
   - Source: `Kernel/StartMCPServer.wl`
 - [ ] Support resources capability
