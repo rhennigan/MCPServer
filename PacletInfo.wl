@@ -44,7 +44,8 @@ PacletObject[ <|
             "Root"   -> "Assets",
             "Assets" -> {
                 { "SymbolPageTemplate", "Templates/SymbolPage.wl" },
-                { "TestReportScript"  , "TestReport.wls"          }
+                { "TestReportScript"  , "TestReport.wls"          },
+                { "AgentsPrompt"      , "AGENTS.md"               }
             }
         }
     }
