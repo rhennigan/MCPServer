@@ -175,15 +175,13 @@ globalSymbolQ // endDefinition;
 (*scanFixMeComment*)
 scanFixMeComment // beginDefinition;
 
-(* scanFixMeComment[ pos_, ast_ ] :=
+scanFixMeComment[ pos_, ast_ ] :=
     Enclose @ Module[ { node, comment, as },
         node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
         comment = StringTrim @ StringTrim[ ConfirmBy[ node[[ 2 ]], StringQ, "Comment" ], { "(*", "*)" } ];
         as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
-        ci`InspectionObject[ "FixMeComment", comment, "Remark", <| as, ConfidenceLevel -> 0.9 |> ]
-    ]; *)
-
-scanFixMeComment[ pos_, ast_ ] := { };
+        ci`InspectionObject[ "FixMeComment", comment, "Warning", <| as, ConfidenceLevel -> 0.9 |> ]
+    ];
 
 scanFixMeComment // endDefinition;
 
