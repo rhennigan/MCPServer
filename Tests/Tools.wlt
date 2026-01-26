@@ -319,25 +319,25 @@ VerificationTest[
     TestID   -> "WolframLanguageContext-GetTool@@Tests/Tools.wlt:315,1-320,2"
 ]
 
-VerificationTest[
+skipIfGitHubActions @ VerificationTest[
     $wlContextResult = $wlContextTool[ <| "context" -> "How to create a list of prime numbers in Wolfram Language" |> ],
     _String? StringQ,
     SameTest -> MatchQ,
-    TestID   -> "WolframLanguageContext-BasicQuery@@Tests/Tools.wlt:322,1-327,2"
+    TestID   -> "WolframLanguageContext-BasicQuery@@Tests/Tools.wlt:322,23-327,2"
 ]
 
-VerificationTest[
+skipIfGitHubActions @ VerificationTest[
     StringLength[ $wlContextResult ] > 0,
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframLanguageContext-NonEmptyResult@@Tests/Tools.wlt:329,1-334,2"
+    TestID   -> "WolframLanguageContext-NonEmptyResult@@Tests/Tools.wlt:329,23-334,2"
 ]
 
-VerificationTest[
+skipIfGitHubActions @ VerificationTest[
     StringContainsQ[ $wlContextResult, "Prime" | "prime" | "Table" | "Range", IgnoreCase -> True ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframLanguageContext-RelevantContent@@Tests/Tools.wlt:336,1-341,2"
+    TestID   -> "WolframLanguageContext-RelevantContent@@Tests/Tools.wlt:336,23-341,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -354,18 +354,18 @@ VerificationTest[
     TestID   -> "WolframAlphaContext-GetTool@@Tests/Tools.wlt:350,1-355,2"
 ]
 
-VerificationTest[
+skipIfGitHubActions @ VerificationTest[
     $waContextResult = $waContextTool[ <| "context" -> "What is the distance from Earth to Mars" |> ],
     _String? StringQ,
     SameTest -> MatchQ,
-    TestID   -> "WolframAlphaContext-BasicQuery@@Tests/Tools.wlt:357,1-362,2"
+    TestID   -> "WolframAlphaContext-BasicQuery@@Tests/Tools.wlt:357,23-362,2"
 ]
 
-VerificationTest[
+skipIfGitHubActions @ VerificationTest[
     StringLength[ $waContextResult ] > 0,
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframAlphaContext-NonEmptyResult@@Tests/Tools.wlt:364,1-369,2"
+    TestID   -> "WolframAlphaContext-NonEmptyResult@@Tests/Tools.wlt:364,23-369,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -382,18 +382,18 @@ VerificationTest[
     TestID   -> "WolframContext-GetTool@@Tests/Tools.wlt:378,1-383,2"
 ]
 
-VerificationTest[
+skipIfGitHubActions @ VerificationTest[
     $wolframContextResult = $wolframContextTool[ <| "context" -> "How to compute derivatives symbolically" |> ],
     _String? StringQ,
     SameTest -> MatchQ,
-    TestID   -> "WolframContext-BasicQuery@@Tests/Tools.wlt:385,1-390,2"
+    TestID   -> "WolframContext-BasicQuery@@Tests/Tools.wlt:385,23-390,2"
 ]
 
-VerificationTest[
+skipIfGitHubActions @ VerificationTest[
     StringLength[ $wolframContextResult ] > 0,
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframContext-NonEmptyResult@@Tests/Tools.wlt:392,1-397,2"
+    TestID   -> "WolframContext-NonEmptyResult@@Tests/Tools.wlt:392,23-397,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
