@@ -204,15 +204,24 @@ inspectionSeverity // endDefinition;
 formatIssuesList // beginDefinition;
 
 formatIssuesList[ inspections_List, source_ ] :=
-    Module[ { formatted },
+    Module[ { cachedContent, formatted },
+        cachedContent = preReadSource @ source;
         formatted = MapIndexed[
-            Function[ { insp, idx }, formatInspection[ insp, First @ idx, source ] ],
+            Function[ { insp, idx }, formatInspection[ insp, First @ idx, source, cachedContent ] ],
             inspections
         ];
         StringJoin[ "## Issues\n\n", StringRiffle[ formatted, "\n\n---\n\n" ] ]
     ];
 
 formatIssuesList // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*preReadSource*)
+preReadSource // beginDefinition;
+preReadSource[ File[ path_String ] ] := Quiet @ ReadString @ path;
+preReadSource[ _ ] := None;
+preReadSource // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -247,13 +256,14 @@ formatFilesSections // endDefinition;
 formatFileSection // beginDefinition;
 
 formatFileSection[ file_String, inspections_List, totalInFile_Integer ] :=
-    Module[ { fileName, header, formatted },
+    Module[ { fileName, cachedContent, header, formatted },
         fileName = FileNameTake @ file;
+        cachedContent = Quiet @ ReadString @ file;
         header = StringJoin[
             "### ", fileName, " (", ToString @ totalInFile, " issue", If[ totalInFile === 1, "", "s" ], ")"
         ];
         formatted = MapIndexed[
-            Function[ { insp, idx }, formatInspectionForFile[ insp, First @ idx, file ] ],
+            Function[ { insp, idx }, formatInspectionForFile[ insp, First @ idx, file, cachedContent ] ],
             inspections
         ];
         StringJoin[ header, "\n\n", StringRiffle[ formatted, "\n\n" ] ]
@@ -266,8 +276,8 @@ formatFileSection // endDefinition;
 (*formatInspectionForFile*)
 formatInspectionForFile // beginDefinition;
 
-formatInspectionForFile[ inspection_ci`InspectionObject, index_Integer, file_String ] :=
-    formatInspection[ inspection, index, File @ file ];
+formatInspectionForFile[ inspection_ci`InspectionObject, index_Integer, file_String, cachedContent_: None ] :=
+    formatInspection[ inspection, index, File @ file, cachedContent ];
 
 formatInspectionForFile // endDefinition;
 
@@ -279,7 +289,8 @@ formatInspection // beginDefinition;
 formatInspection[
     ci`InspectionObject[ tag_String, description_String, severity_String, data_Association ],
     index_Integer,
-    source_
+    source_,
+    cachedContent_: None
 ] :=
     Module[ { confidence, location, locationStr, codeSnippet, codeActions, actionStr, displayTag },
         (* Extract confidence level *)
@@ -292,7 +303,7 @@ formatInspection[
         locationStr = formatLocation[ source, location ];
 
         (* Extract code snippet *)
-        codeSnippet = extractCodeSnippet[ source, location, $contextLines ];
+        codeSnippet = extractCodeSnippet[ source, location, $contextLines, cachedContent ];
 
         (* Extract and format CodeActions if present *)
         codeActions = Lookup[ data, cp`CodeActions, { } ];
@@ -315,7 +326,7 @@ formatInspection[
     ];
 
 (* Handle malformed InspectionObject *)
-formatInspection[ insp_ci`InspectionObject, index_Integer, _ ] :=
+formatInspection[ insp_ci`InspectionObject, index_Integer, _, _: None ] :=
     StringJoin[ "### Issue ", ToString @ index, ": Malformed inspection object" ];
 
 formatInspection // endDefinition;
@@ -366,7 +377,8 @@ extractCodeSnippet // beginDefinition;
 extractCodeSnippet[
     code_String,
     { { startLine_Integer, startCol_Integer }, { endLine_Integer, endCol_Integer } },
-    contextLines_Integer
+    contextLines_Integer,
+    _: None
 ] :=
     Module[ { lines, totalLines, firstLine, lastLine, snippetLines, numbered },
         lines = StringSplit[ code, "\n" ];
@@ -403,23 +415,24 @@ extractCodeSnippet[
         ]
     ];
 
-(* File with location *)
+(* File with location - use cached content if available *)
 extractCodeSnippet[
     File[ path_String ],
     location: { { startLine_Integer, _ }, { endLine_Integer, _ } },
-    contextLines_Integer
+    contextLines_Integer,
+    cachedContent_: None
 ] :=
     Module[ { content },
-        content = Quiet @ ReadString @ path;
+        content = If[ StringQ @ cachedContent, cachedContent, Quiet @ ReadString @ path ];
         If[ StringQ @ content,
-            extractCodeSnippet[ content, location, contextLines ],
+            extractCodeSnippet[ content, location, contextLines, None ],
             "**Code:** (Unable to read file)\n"
         ]
     ];
 
 (* Missing location *)
-extractCodeSnippet[ _, _Missing, _ ] := "";
-extractCodeSnippet[ _, _, _ ] := "";
+extractCodeSnippet[ _, _Missing, _, _: None ] := "";
+extractCodeSnippet[ _, _, _, _: None ] := "";
 
 extractCodeSnippet // endDefinition;
 
