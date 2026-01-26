@@ -22,7 +22,7 @@ $$holdingSymbol = Alternatives @@ Flatten @ { "System`" <> # & /@ $holdingSymbol
 $abstractRules := $abstractRules = <|
     CodeInspector`AbstractRules`$DefaultAbstractRules,
     cp`CallNode[ cp`LeafNode[ Symbol, "Throw", _ ], { _ }, _ ] -> scanSingleArgThrow,
-    cp`CallNode[ cp`LeafNode[ Symbol, "Return"|"System`Return", _ ], _, _ ] -> scanReturn,
+    cp`CallNode[ cp`LeafNode[ Symbol, "Return"|"System`Return", { _ } ], _, _ ] -> scanReturn,
     cp`LeafNode[ Symbol, _String? privateContextQ, _ ] -> scanPrivateContext,
     cp`LeafNode[ Symbol, _String? globalSymbolQ, _ ] -> scanGlobalSymbol
 |>;
