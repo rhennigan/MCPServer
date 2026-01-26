@@ -14,6 +14,18 @@ Needs[ "CodeParser`"    -> "cp`"   ];
 (*Config*)
 $contextLines = 1;  (* Number of lines of context before/after issue *)
 
+$suppressionHint = "
+---
+
+**Tip:** To suppress specific issues, wrap code with:
+```wl
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::{Tag}:: *)
+...
+(* :!CodeAnalysis::EndBlock:: *)
+```
+";
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*inspectionsToMarkdown*)
@@ -49,7 +61,8 @@ inspectionsToMarkdown[ inspections_List, source_, opts_Association ] := Enclose[
                 summary,
                 "\n\n",
                 issues,
-                truncationNotice
+                truncationNotice,
+                $suppressionHint
             ]
         ]
     ],
@@ -91,7 +104,7 @@ inspectionsToMarkdown[ resultsByFile_Association, dir_String, opts_Association ]
                 ],
                 ""
             ];
-            StringJoin[ header, fileSections, truncationNotice ]
+            StringJoin[ header, fileSections, truncationNotice, $suppressionHint ]
         ]
     ],
     throwInternalFailure
@@ -268,7 +281,7 @@ formatInspection[
     index_Integer,
     source_
 ] :=
-    Module[ { confidence, location, locationStr, codeSnippet, codeActions, actionStr },
+    Module[ { confidence, location, locationStr, codeSnippet, codeActions, actionStr, displayTag },
         (* Extract confidence level *)
         confidence = Lookup[ data, ConfidenceLevel, 1.0 ];
 
@@ -285,9 +298,15 @@ formatInspection[
         codeActions = Lookup[ data, "CodeActions", { } ];
         actionStr = formatCodeActions @ codeActions;
 
+        (* Format tag with argument if present *)
+        displayTag = If[ StringQ @ data[ "Argument" ],
+            tag <> "::" <> data[ "Argument" ],
+            tag
+        ];
+
         (* Build the markdown *)
         StringJoin[
-            "### Issue ", ToString @ index, ": ", tag, " (", severity, ", ", formatPercent @ confidence, ")\n\n",
+            "### Issue ", ToString @ index, ": ", displayTag, " (", severity, ", ", formatPercent @ confidence, ")\n\n",
             "**Location:** ", locationStr, "\n\n",
             "**Description:** ", description, "\n\n",
             codeSnippet,
