@@ -41,11 +41,10 @@ PacletObject[ <|
             "Language" -> "English"
         },
         { "Asset",
-            "Root"   -> "Assets",
             "Assets" -> {
-                { "SymbolPageTemplate", "Templates/SymbolPage.wl" },
-                { "TestReportScript"  , "TestReport.wls"          },
-                { "AgentsPrompt"      , "AGENTS.md"               }
+                { "SymbolPageTemplate", "Assets/Templates/SymbolPage.wl" },
+                { "TestReportScript"  , "Assets/TestReport.wls"          },
+                { "AgentsPrompt"      , "AGENTS.md"                      }
             }
         }
     }
