@@ -68,8 +68,8 @@ $defaultMCPTools[ "CodeInspector" ] := LLMTool @ <|
             "Required"    -> False
         |>,
         "confidenceLevel" -> <|
-            "Interpreter" -> "String",
-            "Help"        -> "Minimum confidence level (0.0 to 1.0). Default: \"0.75\". Issues below this confidence are excluded.",
+            "Interpreter" -> "Number",
+            "Help"        -> "Minimum confidence level (0.0 to 1.0). Default: 0.75. Issues below this confidence are excluded.",
             "Required"    -> False
         |>,
         "limit" -> <|
@@ -194,29 +194,18 @@ parseExclusions // endDefinition;
 (* ::Subsection::Closed:: *)
 (*parseConfidenceLevel*)
 parseConfidenceLevel // beginDefinition;
-
 parseConfidenceLevel[ _Missing ] := $defaultConfidenceLevel;
-
-parseConfidenceLevel[ str_String ] :=
-    Module[ { value },
-        value = Quiet @ ToExpression @ str;
-        If[ NumericQ @ value && 0 <= value <= 1,
-            N @ value,
-            $defaultConfidenceLevel
-        ]
-    ];
-
+parseConfidenceLevel[ value_? NumericQ ] /; 0 <= value <= 1 := N @ value;
+parseConfidenceLevel[ value_ ] := throwFailure[ "CodeInspectorInvalidConfidence", value ];
 parseConfidenceLevel // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*parseLimit*)
 parseLimit // beginDefinition;
-
 parseLimit[ _Missing ] := $defaultLimit;
 parseLimit[ n_Integer ] /; n > 0 := n;
 parseLimit[ _ ] := $defaultLimit;
-
 parseLimit // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
@@ -231,6 +220,9 @@ parseLimit // endDefinition;
 
 (* CodeAction handling *)
 << Wolfram`MCPServer`Tools`CodeInspector`CodeActions`;
+
+(* Extra inspection rules *)
+<< Wolfram`MCPServer`Tools`CodeInspector`Rules`;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
