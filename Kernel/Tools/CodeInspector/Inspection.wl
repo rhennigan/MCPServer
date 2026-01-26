@@ -16,6 +16,30 @@ $wlFilePatterns = { "*.wl", "*.m", "*.wls" };
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*codeInspect*)
+codeInspect // beginDefinition;
+
+codeInspect[ code: _String | File[ _String ], opts_Association ] := Enclose[
+    Module[ { abstractRules, concreteRules, aggregateRules },
+
+        abstractRules  = ConfirmBy[ $abstractRules , AssociationQ, "AbstractRules"  ];
+        concreteRules  = ConfirmBy[ $concreteRules , AssociationQ, "ConcreteRules"  ];
+        aggregateRules = ConfirmBy[ $aggregateRules, AssociationQ, "AggregateRules" ];
+
+        ci`CodeInspect[
+            code,
+            "AbstractRules"  -> abstractRules,
+            "ConcreteRules"  -> concreteRules,
+            "AggregateRules" -> aggregateRules
+        ]
+    ],
+    throwInternalFailure
+];
+
+codeInspect // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*runInspection*)
 runInspection // beginDefinition;
 
@@ -23,7 +47,7 @@ runInspection // beginDefinition;
 runInspection[ code_String, opts_Association ] := Enclose[
     Module[ { rawInspections, filtered },
         rawInspections = ConfirmMatch[
-            ci`CodeInspect @ code,
+            codeInspect[ code, opts ],
             { ___ci`InspectionObject },
             "CodeInspect"
         ];
@@ -37,7 +61,7 @@ runInspection[ code_String, opts_Association ] := Enclose[
 runInspection[ File[ path_String ], opts_Association ] := Enclose[
     Module[ { rawInspections, filtered },
         rawInspections = ConfirmMatch[
-            ci`CodeInspect @ File @ path,
+            codeInspect[ File @ path, opts ],
             { ___ci`InspectionObject },
             "CodeInspect"
         ];
@@ -95,7 +119,7 @@ inspectSingleFile // beginDefinition;
 inspectSingleFile[ file_String, opts_Association ] :=
     Module[ { rawInspections },
         rawInspections = Quiet[
-            ci`CodeInspect @ File @ file,
+            codeInspect[ File @ file, opts ],
             { CodeInspector::InternalUnhandled }
         ];
         (* Handle cases where CodeInspect fails *)
