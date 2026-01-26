@@ -78,6 +78,7 @@ $defaultMCPServers[ "WolframLanguage" ] := <|
             "ReadNotebook",
             "WriteNotebook",
             "SymbolDefinition",
+            "CodeInspector",
             "TestReport"
         },
         "MCPPrompts" -> { "WolframLanguageSearch", "Notebook" }
@@ -100,6 +101,7 @@ $defaultMCPServers[ "WolframPacletDevelopment" ] := <|
             "ReadNotebook",
             "WriteNotebook",
             "SymbolDefinition",
+            "CodeInspector",
             "TestReport",
             "CreateSymbolDoc",
             "EditSymbolDoc",
