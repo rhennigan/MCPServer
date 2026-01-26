@@ -137,15 +137,8 @@ nodeToString // beginDefinition;
 nodeToString[ cp`LeafNode[ _, text_String, _ ] ] := "";  (* Label already contains this info *)
 nodeToString[ HoldPattern[ LeafNode ][ _, text_String, _ ] ] := "";
 
-(* For other nodes, try to extract string representation *)
-nodeToString[ node_ ] :=
-    Module[ { str },
-        str = Quiet @ cp`ToSourceCharacterString @ node;
-        If[ StringQ @ str,
-            "",  (* Label already contains this info, avoid duplication *)
-            ""
-        ]
-    ];
+(* For other nodes, return empty string (label already contains the info) *)
+nodeToString[ node_ ] := "";
 
 nodeToString // endDefinition;
 
