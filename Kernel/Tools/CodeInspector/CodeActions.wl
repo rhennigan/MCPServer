@@ -41,10 +41,6 @@ formatSingleCodeAction // beginDefinition;
 formatSingleCodeAction[ cp`CodeAction[ label_String, command_, data_Association ] ] :=
     formatSingleCodeAction[ label, command, data ];
 
-(* Handle without CodeParser` context prefix *)
-formatSingleCodeAction[ HoldPattern[ cp`CodeAction ][ label_String, command_, data_Association ] ] :=
-    formatSingleCodeAction[ label, command, data ];
-
 (* Internal formatting function *)
 formatSingleCodeAction[ label_String, command_, data_Association ] :=
     Module[ { details },
@@ -134,7 +130,6 @@ nodeToString // beginDefinition;
 
 (* LeafNode contains the actual text representation *)
 nodeToString[ cp`LeafNode[ _, text_String, _ ] ] := "";  (* Label already contains this info *)
-nodeToString[ HoldPattern[ LeafNode ][ _, text_String, _ ] ] := "";
 
 (* For other nodes, return empty string (label already contains the info) *)
 nodeToString[ node_ ] := "";

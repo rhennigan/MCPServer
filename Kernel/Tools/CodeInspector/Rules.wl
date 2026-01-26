@@ -21,8 +21,8 @@ $$holdingSymbol = Alternatives @@ Flatten @ { "System`" <> # & /@ $holdingSymbol
 (*Abstract Rules*)
 $abstractRules := $abstractRules = <|
     CodeInspector`AbstractRules`$DefaultAbstractRules,
-    cp`CallNode[ cp`LeafNode[ Symbol, "Throw", _ ], { _ }, _ ] -> scanSingleArgThrow,
-    cp`CallNode[ cp`LeafNode[ Symbol, "Return"|"System`Return", { _ } ], _, _ ] -> scanReturn,
+    cp`CallNode[ cp`LeafNode[ Symbol, "Throw"|"System`Throw", _ ], { _ }, _ ] -> scanSingleArgThrow,
+    cp`CallNode[ cp`LeafNode[ Symbol, "Return"|"System`Return", _ ], { _ }, _ ] -> scanReturn,
     cp`LeafNode[ Symbol, _String? privateContextQ, _ ] -> scanPrivateContext,
     cp`LeafNode[ Symbol, _String? globalSymbolQ, _ ] -> scanGlobalSymbol
 |>;
@@ -60,7 +60,7 @@ scanSingleArgThrow[ pos_, ast_ ] := Catch[
     Replace[
         Fold[ walkASTForCatch, ast, pos ],
         {
-            cp`CallNode[ cp`LeafNode[ Symbol, "Throw", _ ], _, as_Association ] :>
+            cp`CallNode[ cp`LeafNode[ Symbol, "Throw"|"System`Throw", _ ], _, as_Association ] :>
                 ci`InspectionObject[
                     "NoSurroundingCatch",
                     "``Throw`` has no tag or surrounding ``Catch``",
@@ -80,7 +80,7 @@ scanSingleArgThrow // endDefinition;
 (*walkASTForCatch*)
 walkASTForCatch // beginDefinition;
 
-walkASTForCatch[ cp`CallNode[ cp`LeafNode[ Symbol, "Catch"|$$holdingSymbol, _ ], { _ }, _ ], _ ] :=
+walkASTForCatch[ cp`CallNode[ cp`LeafNode[ Symbol, "Catch"|"System`Catch"|$$holdingSymbol, _ ], { _ }, _ ], _ ] :=
     Throw[ { }, $tag ];
 
 walkASTForCatch[ ast_, pos_ ] :=
