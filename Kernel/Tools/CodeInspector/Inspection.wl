@@ -20,17 +20,26 @@ $wlFilePatterns = { "*.wl", "*.m", "*.wls" };
 codeInspect // beginDefinition;
 
 codeInspect[ code: _String | File[ _String ], opts_Association ] := Enclose[
-    Module[ { abstractRules, concreteRules, aggregateRules },
+    Module[ { abstractRules, concreteRules, aggregateRules, tagExclusions, severityExclusions, confidenceLevel },
 
         abstractRules  = ConfirmBy[ $abstractRules , AssociationQ, "AbstractRules"  ];
         concreteRules  = ConfirmBy[ $concreteRules , AssociationQ, "ConcreteRules"  ];
         aggregateRules = ConfirmBy[ $aggregateRules, AssociationQ, "AggregateRules" ];
 
+        tagExclusions      = ConfirmMatch[ opts[ "tagExclusions"      ], { ___String }, "TagExclusions"      ];
+        severityExclusions = ConfirmMatch[ opts[ "severityExclusions" ], { ___String }, "SeverityExclusions" ];
+        confidenceLevel    = ConfirmMatch[ opts[ "confidenceLevel"    ], _Real        , "ConfidenceLevel"    ];
+
+        tagExclusions = StringSplit[ #, "::" ] & /@ tagExclusions;
+
         ci`CodeInspect[
             code,
-            "AbstractRules"  -> abstractRules,
-            "ConcreteRules"  -> concreteRules,
-            "AggregateRules" -> aggregateRules
+            "AbstractRules"      -> abstractRules,
+            "ConcreteRules"      -> concreteRules,
+            "AggregateRules"     -> aggregateRules,
+            "TagExclusions"      -> tagExclusions,
+            "SeverityExclusions" -> severityExclusions,
+            "ConfidenceLevel"    -> confidenceLevel
         ]
     ],
     throwInternalFailure
@@ -43,31 +52,9 @@ codeInspect // endDefinition;
 (*runInspection*)
 runInspection // beginDefinition;
 
-(* Inspect a code string *)
-runInspection[ code_String, opts_Association ] := Enclose[
-    Module[ { rawInspections, filtered },
-        rawInspections = ConfirmMatch[
-            codeInspect[ code, opts ],
-            { ___ci`InspectionObject },
-            "CodeInspect"
-        ];
-        filtered = filterInspections[ rawInspections, opts ];
-        filtered
-    ],
-    throwInternalFailure
-];
-
-(* Inspect a single file *)
-runInspection[ File[ path_String ], opts_Association ] := Enclose[
-    Module[ { rawInspections, filtered },
-        rawInspections = ConfirmMatch[
-            codeInspect[ File @ path, opts ],
-            { ___ci`InspectionObject },
-            "CodeInspect"
-        ];
-        filtered = filterInspections[ rawInspections, opts ];
-        filtered
-    ],
+(* Inspect a code string or file *)
+runInspection[ code: _String | File[ _String ], opts_Association ] := Enclose[
+    ConfirmMatch[ codeInspect[ code, opts ], { ___ci`InspectionObject }, "CodeInspect" ],
     throwInternalFailure
 ];
 
@@ -124,56 +111,12 @@ inspectSingleFile[ file_String, opts_Association ] :=
         ];
         (* Handle cases where CodeInspect fails *)
         If[ MatchQ[ rawInspections, { ___ci`InspectionObject } ],
-            filterInspections[ rawInspections, opts ],
+            rawInspections,
             { } (* Return empty list if inspection fails for a file *)
         ]
     ];
 
 inspectSingleFile // endDefinition;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Section::Closed:: *)
-(*filterInspections*)
-filterInspections // beginDefinition;
-
-filterInspections[ inspections_List, opts_Association ] :=
-    Module[ { tagExclusions, severityExclusions, confidenceLevel },
-        tagExclusions      = Lookup[ opts, "tagExclusions", { } ];
-        severityExclusions = Lookup[ opts, "severityExclusions", { } ];
-        confidenceLevel    = Lookup[ opts, "confidenceLevel", 0.75 ];
-
-        Select[
-            inspections,
-            passesFilters[ #, tagExclusions, severityExclusions, confidenceLevel ] &
-        ]
-    ];
-
-filterInspections // endDefinition;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
-(*passesFilters*)
-passesFilters // beginDefinition;
-
-passesFilters[
-    ci`InspectionObject[ tag_String, description_, severity_String, data_Association ],
-    tagExclusions_List,
-    severityExclusions_List,
-    minConfidence_
-] :=
-    And[
-        (* Tag not in exclusions *)
-        ! MemberQ[ tagExclusions, tag ],
-        (* Severity not in exclusions *)
-        ! MemberQ[ severityExclusions, severity ],
-        (* Confidence level meets threshold *)
-        Lookup[ data, ConfidenceLevel, 1.0 ] >= minConfidence
-    ];
-
-(* Handle unexpected InspectionObject format gracefully *)
-passesFilters[ _ci`InspectionObject, _, _, _ ] := False;
-
-passesFilters // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
