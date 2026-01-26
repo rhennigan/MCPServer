@@ -16,7 +16,6 @@ Needs[ "Wolfram`MCPServer`Common`" ];
 (* ::Section::Closed:: *)
 (*TODO*)
 (*
-    - CodeInspector tool
     - BuildPaclet tool
     - ReloadPaclet tool
     - Log tool calls (and generate a notebook)
@@ -51,6 +50,9 @@ importResourceFunction[ importMarkdownString, "ImportMarkdownString" ];
 (* ::Section::Closed:: *)
 (*Load Subcontexts*)
 $subcontexts = {
+    (* Tools: CodeInspector *)
+    "Wolfram`MCPServer`Tools`CodeInspector`",
+
     (* Tools: WolframContext, WolframAlphaContext, WolframLanguageContext *)
     "Wolfram`MCPServer`Tools`Context`",
 

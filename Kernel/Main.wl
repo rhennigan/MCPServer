@@ -10,6 +10,7 @@ BeginPackage[ "Wolfram`MCPServer`" ];
 `$DefaultMCPTools;
 `$LastMCPServerFailure;
 `$LastMCPServerFailureText;
+`CodeInspectorToolFunction;
 `CreateMCPServer;
 `InstallMCPServer;
 `MCPServer;
@@ -80,6 +81,7 @@ $MCPServerProtectedNames = "Wolfram`MCPServer`" <> # & /@ {
     "$DefaultMCPTools",
     "$LastMCPServerFailure",
     "$LastMCPServerFailureText",
+    "CodeInspectorToolFunction",
     "CreateMCPServer",
     "InstallMCPServer",
     "MCPServer",

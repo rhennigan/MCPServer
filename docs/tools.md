@@ -78,6 +78,12 @@ $DefaultMCPTools = <|
 |------|-------------|--------|
 | `TestReport` | Runs Wolfram Language test files (.wlt) and returns a report | WolframLanguage, WolframPacletDevelopment |
 
+#### Code Analysis Tools
+
+| Tool | Description | Server |
+|------|-------------|--------|
+| `CodeInspector` | Inspects Wolfram Language code and returns a formatted report of issues | WolframLanguage, WolframPacletDevelopment |
+
 #### Documentation Tools
 
 | Tool | Description | Server |
@@ -390,6 +396,7 @@ $defaultMCPTools[ "WolframAlphaContext" ] := LLMTool @ <|
 - `Kernel/Tools/SymbolDefinition.wl` - Symbol definition lookup tool
 - `Kernel/Tools/Notebooks.wl` - ReadNotebook and WriteNotebook tools
 - `Kernel/Tools/TestReport.wl` - Test runner tool
+- `Kernel/Tools/CodeInspector/` - Code inspection tool
 - `Kernel/Tools/PacletDocumentation/` - Documentation editing tools
 - `Kernel/MCPServerObject.wl` - Tool validation and normalization
 - `Kernel/StartMCPServer.wl` - Protocol handling for `tools/list` and `tools/call`

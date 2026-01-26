@@ -12,7 +12,15 @@ MCPServer is a Wolfram Language package that implements a Model Context Protocol
 
 Always use the WolframLanguageContext tool when working with Wolfram Language code to ensure that you are aware of the latest documentation and other Wolfram resources.
 
-When you make changes to paclet source code, you should also write and run tests for the changes you made using the TestReport tool.
+When you make changes to paclet source code, you should also write and run tests for the changes you made using the TestReport tool and check your work with the CodeInspector tool.
+
+If you need to test changes in the WolframLanguageEvaluator tool, you'll first need to evaluate:
+```wl
+PacletDirectoryLoad[ "path/to/MCPServer" ];
+Get[ "Wolfram`MCPServer`" ]
+```
+
+Note: Using the TestReport tool is much more reliable for testing code changes.
 
 If you've previously built an MX file for the paclet, you should delete it before testing your changes. You can find it in `Kernel/64Bit/MCPServer.mx`.
 
@@ -47,6 +55,8 @@ You can write unit tests for private symbols, but you should suppress linting er
 ...
 (* :!CodeAnalysis::EndBlock:: *)
 ```
+
+If you are writing unit tests for low-level code that you expect to throw errors, you should wrap it in a `catchTop` block to ensure that the failure returns properly.
 
 ### Running Tests
 

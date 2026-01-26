@@ -12,6 +12,9 @@ Consolidated list of TODO/FIXME items from the codebase.
 
 ## MCP Protocol Support
 
+- [ ] Query client roots and set directory appropriately
+  - Source: `Kernel/StartMCPServer.wl`
+  - Spec: https://modelcontextprotocol.io/specification/2025-11-25/client/roots#protocol-messages
 - [ ] Support logging capability
   - Source: `Kernel/StartMCPServer.wl`
 - [ ] Support resources capability
@@ -50,6 +53,8 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/StartMCPServer.wl`
 - [ ] Implement `ReadableForm` in this paclet for better code formatting
   - Source: `Kernel/Tools/TestReport.wl`
+- [ ] Show relative paths in CodeInspector output when inspecting directories
+  - Source: `Kernel/Tools/CodeInspector/Formatting.wl`
 
 ## Prompts
 
@@ -71,8 +76,6 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/Common.wl`
 - [ ] Remove empty "Settings" section from bug reports (this paclet has no settings)
   - Source: `Kernel/Common.wl`
-- [ ] Convert internal errors into more useful text in MCP tool outputs
-  - Source: `Kernel/StartMCPServer.wl`
 
 ## Blocked / Dependencies
 

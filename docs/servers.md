@@ -69,6 +69,7 @@ This server provides comprehensive Wolfram Language development tools:
 | Tool | `ReadNotebook` | Read Wolfram notebooks (.nb) as markdown |
 | Tool | `WriteNotebook` | Convert markdown to Wolfram notebooks |
 | Tool | `SymbolDefinition` | Look up symbol definitions |
+| Tool | `CodeInspector` | Inspect Wolfram Language code for issues |
 | Tool | `TestReport` | Run Wolfram Language test files (.wlt) |
 | Prompt | `Search` | Wolfram Language documentation search |
 | Prompt | `Notebook` | Attach notebook contents to context |
@@ -92,6 +93,7 @@ This server extends `WolframLanguage` with paclet documentation tools:
 | Tool | `ReadNotebook` | Read Wolfram notebooks (.nb) as markdown |
 | Tool | `WriteNotebook` | Convert markdown to Wolfram notebooks |
 | Tool | `SymbolDefinition` | Look up symbol definitions |
+| Tool | `CodeInspector` | Inspect Wolfram Language code for issues |
 | Tool | `TestReport` | Run Wolfram Language test files (.wlt) |
 | Tool | `CreateSymbolDoc` | Create new symbol documentation pages |
 | Tool | `EditSymbolDoc` | Edit existing symbol documentation |
@@ -115,6 +117,7 @@ This server extends `WolframLanguage` with paclet documentation tools:
 | `ReadNotebook` | | | X | X |
 | `WriteNotebook` | | | X | X |
 | `SymbolDefinition` | | | X | X |
+| `CodeInspector` | | | X | X |
 | `TestReport` | | | X | X |
 | `CreateSymbolDoc` | | | | X |
 | `EditSymbolDoc` | | | | X |

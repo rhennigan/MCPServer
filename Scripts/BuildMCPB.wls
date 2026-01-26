@@ -92,6 +92,8 @@ cicd`ConsoleLog @ SequenceForm[ "Built MCPB package: ", ToString @ builtMCPB ];
 (*Export Environment Variables*)
 
 (* Export environment variables for GitHub Actions *)
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
 If[ StringQ @ Environment[ "GITHUB_ACTIONS" ],
     Module[ { setOutput, mcpbPath, mcpbFile, mcpbBuildDir },
         setOutput = Wolfram`PacletCICD`Private`setOutput;
