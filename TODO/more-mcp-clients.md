@@ -23,9 +23,7 @@ For each MCP client, we need to properly research how MCP servers are added to t
 ### [Windsurf](https://windsurf.com/)
 
 - [x] Research how MCP servers are added to Windsurf and write a detailed report in client-research/windsurf.md
-- [ ] Do one of the following:
-    - Implement support for `InstallMCPServer["Windsurf", ...]`
-    - Reject support for `InstallMCPServer["Windsurf", ...]` if not feasible
+- [x] Implement support for `InstallMCPServer["Windsurf", ...]` (see branch `feature/windsurf-client-support`)
 
 ### [Cline](https://cline.bot/)
 
