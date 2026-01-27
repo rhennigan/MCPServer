@@ -37,13 +37,6 @@ For each MCP client, we need to properly research how MCP servers are added to t
 - [x] Research how MCP servers are added to Zed and write a detailed report in `MCPServer/client-research/zed.md`
 - [x] Implement support for `InstallMCPServer["Zed", ...]`
 
-### [Goose](https://github.com/block/goose)
-
-- [x] Research how MCP servers are added to Goose and write a detailed report in `MCPServer/client-research/goose.md`
-- [ ] Do one of the following:
-    - Implement support for `InstallMCPServer["Goose", ...]`
-    - Reject support for `InstallMCPServer["Goose", ...]` if not feasible
-
 ### [Cherry Studio](https://github.com/CherryHQ/cherry-studio)
 
 - [ ] Research how MCP servers are added to Cherry Studio and write a detailed report in `MCPServer/client-research/cherry-studio.md`
@@ -58,3 +51,9 @@ For each MCP client, we need to properly research how MCP servers are added to t
 Requires a more complicated implementation due to the use of YAML files.
 
 - [x] Research how MCP servers are added to Continue and write a detailed report in `MCPServer/client-research/continue.md`
+
+### [Goose](https://github.com/block/goose)
+
+Requires a more complicated implementation due to the use of YAML files.
+
+- [x] Research how MCP servers are added to Goose and write a detailed report in `MCPServer/client-research/goose.md`
