@@ -39,10 +39,10 @@ For each MCP client, we need to properly research how MCP servers are added to t
 
 ### [Cherry Studio](https://github.com/CherryHQ/cherry-studio)
 
-- [ ] Research how MCP servers are added to Cherry Studio and write a detailed report in `MCPServer/client-research/cherry-studio.md`
-- [ ] Do one of the following:
-    - Implement support for `InstallMCPServer["CherryStudio", ...]`
-    - Reject support for `InstallMCPServer["CherryStudio", ...]` if not feasible
+Cherry Studio stores MCP configurations in Redux state with localStorage persistence, not in external JSON files. There is no config file path to write to, so `InstallMCPServer` cannot be implemented.
+
+- [x] Research how MCP servers are added to Cherry Studio and write a detailed report in `MCPServer/client-research/cherry-studio.md`
+- [x] Reject support for `InstallMCPServer["CherryStudio", ...]` - not feasible due to internal storage architecture
 
 ## On Hold
 
