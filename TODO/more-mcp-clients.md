@@ -34,7 +34,7 @@ For each MCP client, we need to properly research how MCP servers are added to t
 
 ### [Zed](https://zed.dev/)
 
-- [ ] Research how MCP servers are added to Zed and write a detailed report in `MCPServer/client-research/zed.md`
+- [x] Research how MCP servers are added to Zed and write a detailed report in `MCPServer/client-research/zed.md`
 - [ ] Do one of the following:
     - Implement support for `InstallMCPServer["Zed", ...]`
     - Reject support for `InstallMCPServer["Zed", ...]` if not feasible
