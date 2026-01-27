@@ -604,7 +604,7 @@ debugData[ as_Association? AssociationQ ] := <|
     KeyTake[ as, { "Name", "Version" } ],
     "ReleaseID"             -> $releaseID,
     "EvaluationEnvironment" -> $EvaluationEnvironment,
-    "FrontEndVersion"       -> $frontEndVersion,
+    "FrontEndVersion"       -> If[ TrueQ @ $Notebooks, $frontEndVersion, "None" ],
     "KernelVersion"         -> SystemInformation[ "Kernel", "Version" ],
     "SystemID"              -> $SystemID,
     "Notebooks"             -> $Notebooks,

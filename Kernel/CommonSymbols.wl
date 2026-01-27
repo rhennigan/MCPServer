@@ -4,7 +4,6 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `$catchTopTag;
 `$cloudNotebooks;
 `$debug;
-`$debugData;
 `$defaultMCPServer;
 `$imagePath;
 `$objectVersion;
