@@ -12,11 +12,13 @@ For each MCP client, we need to properly research how MCP servers are added to t
 
 1. Implement support for `InstallMCPServer` for the client in `MCPServer/Kernel/InstallMCPServer.wl`.
 
-2. When you've finished implementation, write appropriate unit tests and run them to ensure they pass.
+2. Do not add any new aliases to `toInstallName` unless specifically requested.
 
-3. When you've finished the tests, commit your changes with an appropriate commit message.
+3. When you've finished implementation, write appropriate unit tests and run them to ensure they pass.
 
-4. Update this file to mark the task as complete and wait for user input to continue.
+4. When you've finished the tests, commit your changes with an appropriate commit message.
+
+5. Update this file to mark the task as complete and wait for user input to continue.
 
 ## Clients
 
