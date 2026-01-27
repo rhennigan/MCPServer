@@ -34,7 +34,7 @@ For each MCP client, we need to properly research how MCP servers are added to t
 
 ### [Continue](https://www.continue.dev/)
 
-- [ ] Research how MCP servers are added to Continue and write a detailed report in `MCPServer/client-research/continue.md`
+- [x] Research how MCP servers are added to Continue and write a detailed report in `MCPServer/client-research/continue.md`
 - [ ] Do one of the following:
     - Implement support for `InstallMCPServer["Continue", ...]`
     - Reject support for `InstallMCPServer["Continue", ...]` if not feasible
