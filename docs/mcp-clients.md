@@ -15,16 +15,16 @@ The following clients have built-in support for automatic configuration via `Ins
 | Client | Canonical Name | Aliases | Config Format | Project Support |
 |--------|---------------|---------|---------------|-----------------|
 | Claude Desktop | `"ClaudeDesktop"` | `"Claude"` | JSON | No |
-| Claude Code | `"ClaudeCode"` | `"claude-code"` | JSON | Yes |
-| Cline | `"Cline"` | `"cline"`, `"ClaudeDev"`, `"claude-dev"`, `"RooCode"`, `"roo-code"` | JSON | No |
-| Copilot CLI | `"CopilotCLI"` | `"Copilot"`, `"copilot-cli"`, `"GitHubCopilotCLI"` | JSON | No |
+| Claude Code | `"ClaudeCode"` | — | JSON | Yes |
+| Cline | `"Cline"` | — | JSON | No |
+| Copilot CLI | `"CopilotCLI"` | `"Copilot"` | JSON | No |
 | Cursor | `"Cursor"` | — | JSON | No |
 | Gemini CLI | `"GeminiCLI"` | `"Gemini"` | JSON | No |
 | Antigravity | `"Antigravity"` | `"GoogleAntigravity"` | JSON | No |
-| OpenAI Codex | `"Codex"` | `"codex"`, `"OpenAICodex"` | TOML | No |
+| OpenAI Codex | `"Codex"` | `"OpenAICodex"` | TOML | No |
 | OpenCode | `"OpenCode"` | — | JSON | Yes |
-| Visual Studio Code | `"VisualStudioCode"` | `"VSCode"`, `"Code"` | JSON | Yes |
-| Windsurf | `"Windsurf"` | `"windsurf"`, `"Codeium"`, `"codeium"` | JSON | No |
+| Visual Studio Code | `"VisualStudioCode"` | `"VSCode"` | JSON | Yes |
+| Windsurf | `"Windsurf"` | `"Codeium"` | JSON | No |
 
 ## Usage
 
@@ -103,7 +103,7 @@ UninstallMCPServer[myServerObject]               (* Remove from all locations *)
 
 ### Cline
 
-Cline (formerly Claude Dev / Roo Code) stores its configuration in VS Code's extension global storage.
+Cline stores its configuration in VS Code's extension global storage.
 
 | OS | Config Location |
 |----|----------------|

@@ -82,7 +82,6 @@ Windsurf's MCP configuration is straightforward to implement because:
 | Field | Value |
 |-------|-------|
 | Canonical Name | `"Windsurf"` |
-| Aliases | `"windsurf"`, `"Codeium"`, `"codeium"` |
 | Config Format | JSON (standard `mcpServers`) |
 | Project Support | No |
 

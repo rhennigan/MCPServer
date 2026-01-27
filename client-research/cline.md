@@ -112,7 +112,6 @@ Despite the complications, implementation is recommended because:
 | Field | Value |
 |-------|-------|
 | Canonical Name | `"Cline"` |
-| Aliases | `"cline"`, `"ClaudeDev"`, `"claude-dev"`, `"RooCode"`, `"roo-code"` |
 | Config Format | JSON (standard `mcpServers` with additional fields) |
 | Project Support | No |
 

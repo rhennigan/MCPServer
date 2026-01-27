@@ -815,24 +815,12 @@ projectInstallLocation // endDefinition;
 (*toInstallName*)
 toInstallName // beginDefinition;
 toInstallName[ "Claude"            ] := "ClaudeDesktop";
-toInstallName[ "claude-code"       ] := "ClaudeCode";
 toInstallName[ "VSCode"            ] := "VisualStudioCode";
-toInstallName[ "Code"              ] := "VisualStudioCode";
 toInstallName[ "Gemini"            ] := "GeminiCLI";
 toInstallName[ "GoogleAntigravity" ] := "Antigravity";
-toInstallName[ "codex"             ] := "Codex";
 toInstallName[ "OpenAICodex"       ] := "Codex";
 toInstallName[ "Copilot"           ] := "CopilotCLI";
-toInstallName[ "copilot-cli"       ] := "CopilotCLI";
-toInstallName[ "GitHubCopilotCLI"  ] := "CopilotCLI";
-toInstallName[ "windsurf"          ] := "Windsurf";
 toInstallName[ "Codeium"           ] := "Windsurf";
-toInstallName[ "codeium"           ] := "Windsurf";
-toInstallName[ "cline"             ] := "Cline";
-toInstallName[ "ClaudeDev"         ] := "Cline";
-toInstallName[ "claude-dev"        ] := "Cline";
-toInstallName[ "RooCode"           ] := "Cline";
-toInstallName[ "roo-code"          ] := "Cline";
 toInstallName[ name_String         ] := name;
 toInstallName // endDefinition;
 
