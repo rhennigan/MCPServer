@@ -27,7 +27,7 @@ For each MCP client, we need to properly research how MCP servers are added to t
 
 ### [Cline](https://cline.bot/)
 
-- [ ] Research how MCP servers are added to Cline and write a detailed report in client-research/cline.md
+- [x] Research how MCP servers are added to Cline and write a detailed report in client-research/cline.md
 - [ ] Do one of the following:
     - Implement support for `InstallMCPServer["Cline", ...]`
     - Reject support for `InstallMCPServer["Cline", ...]` if not feasible
