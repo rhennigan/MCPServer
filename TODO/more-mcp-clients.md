@@ -32,13 +32,6 @@ For each MCP client, we need to properly research how MCP servers are added to t
 - [x] Research how MCP servers are added to Cline and write a detailed report in `MCPServer/client-research/cline.md`
 - [x] Implement support for `InstallMCPServer["Cline", ...]`
 
-### [Continue](https://www.continue.dev/)
-
-- [x] Research how MCP servers are added to Continue and write a detailed report in `MCPServer/client-research/continue.md`
-- [ ] Do one of the following:
-    - Implement support for `InstallMCPServer["Continue", ...]`
-    - Reject support for `InstallMCPServer["Continue", ...]` if not feasible
-
 ### [Zed](https://zed.dev/)
 
 - [ ] Research how MCP servers are added to Zed and write a detailed report in `MCPServer/client-research/zed.md`
@@ -59,3 +52,11 @@ For each MCP client, we need to properly research how MCP servers are added to t
 - [ ] Do one of the following:
     - Implement support for `InstallMCPServer["CherryStudio", ...]`
     - Reject support for `InstallMCPServer["CherryStudio", ...]` if not feasible
+
+## On Hold
+
+### [Continue](https://www.continue.dev/)
+
+Requires a more complicated implementation due to the use of YAML files.
+
+- [x] Research how MCP servers are added to Continue and write a detailed report in `MCPServer/client-research/continue.md`
