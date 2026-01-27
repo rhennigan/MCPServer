@@ -122,6 +122,8 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
             existing[ "mcp", name ] = ConfirmBy[ convertToOpenCodeFormat @ server, AssociationQ, "OpenCodeServer" ],
             "CopilotCLI",
             existing[ "mcpServers", name ] = ConfirmBy[ convertToCopilotCLIFormat @ server, AssociationQ, "CopilotCLIServer" ],
+            "Cline",
+            existing[ "mcpServers", name ] = ConfirmBy[ convertToClineFormat @ server, AssociationQ, "ClineServer" ],
             _,
             existing[ "mcpServers", name ] = server
         ];
@@ -366,6 +368,23 @@ convertToCopilotCLIFormat[ server_Association ] := Enclose[
 ];
 
 convertToCopilotCLIFormat // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*convertToClineFormat*)
+convertToClineFormat // beginDefinition;
+
+convertToClineFormat[ server_Association ] := Enclose[
+    Module[ { result },
+        result = ConfirmBy[ server, AssociationQ, "Server" ];
+        result[ "disabled" ] = False;
+        result[ "autoApprove" ] = { };
+        result
+    ],
+    throwInternalFailure
+];
+
+convertToClineFormat // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -744,6 +763,30 @@ installLocation[ "Windsurf", "Windows" ] :=
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*Cline*)
+installLocation[ "Cline", "MacOSX" ] :=
+    fileNameJoin[
+        $HomeDirectory,
+        "Library", "Application Support", "Code", "User", "globalStorage",
+        "saoudrizwan.claude-dev", "settings", "cline_mcp_settings.json"
+    ];
+
+installLocation[ "Cline", "Windows" ] :=
+    fileNameJoin[
+        $HomeDirectory,
+        "AppData", "Roaming", "Code", "User", "globalStorage",
+        "saoudrizwan.claude-dev", "settings", "cline_mcp_settings.json"
+    ];
+
+installLocation[ "Cline", "Unix" ] :=
+    fileNameJoin[
+        $HomeDirectory,
+        ".config", "Code", "User", "globalStorage",
+        "saoudrizwan.claude-dev", "settings", "cline_mcp_settings.json"
+    ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*Unknown*)
 installLocation[ name_String, os_String ] := throwFailure[ "UnknownInstallLocation", name, os ];
 installLocation // endDefinition;
@@ -785,6 +828,11 @@ toInstallName[ "GitHubCopilotCLI"  ] := "CopilotCLI";
 toInstallName[ "windsurf"          ] := "Windsurf";
 toInstallName[ "Codeium"           ] := "Windsurf";
 toInstallName[ "codeium"           ] := "Windsurf";
+toInstallName[ "cline"             ] := "Cline";
+toInstallName[ "ClaudeDev"         ] := "Cline";
+toInstallName[ "claude-dev"        ] := "Cline";
+toInstallName[ "RooCode"           ] := "Cline";
+toInstallName[ "roo-code"          ] := "Cline";
 toInstallName[ name_String         ] := name;
 toInstallName // endDefinition;
 
@@ -801,6 +849,7 @@ installDisplayName[ "Codex"            ] := "Codex CLI";
 installDisplayName[ "CopilotCLI"       ] := "Copilot CLI";
 installDisplayName[ "OpenCode"         ] := "OpenCode";
 installDisplayName[ "Windsurf"         ] := "Windsurf";
+installDisplayName[ "Cline"            ] := "Cline";
 installDisplayName[ name_String        ] := name;
 installDisplayName[ None               ] := None;
 installDisplayName // endDefinition;

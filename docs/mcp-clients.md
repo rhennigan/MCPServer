@@ -16,6 +16,7 @@ The following clients have built-in support for automatic configuration via `Ins
 |--------|---------------|---------|---------------|-----------------|
 | Claude Desktop | `"ClaudeDesktop"` | `"Claude"` | JSON | No |
 | Claude Code | `"ClaudeCode"` | `"claude-code"` | JSON | Yes |
+| Cline | `"Cline"` | `"cline"`, `"ClaudeDev"`, `"claude-dev"`, `"RooCode"`, `"roo-code"` | JSON | No |
 | Copilot CLI | `"CopilotCLI"` | `"Copilot"`, `"copilot-cli"`, `"GitHubCopilotCLI"` | JSON | No |
 | Cursor | `"Cursor"` | — | JSON | No |
 | Gemini CLI | `"GeminiCLI"` | `"Gemini"` | JSON | No |
@@ -99,6 +100,33 @@ UninstallMCPServer[myServerObject]               (* Remove from all locations *)
 | Project | `.mcp.json` (in project root) |
 
 **Format:** Same as Claude Desktop (`mcpServers` key).
+
+### Cline
+
+Cline (formerly Claude Dev / Roo Code) stores its configuration in VS Code's extension global storage.
+
+| OS | Config Location |
+|----|----------------|
+| macOS | `~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json` |
+| Windows | `%APPDATA%\Code\User\globalStorage\saoudrizwan.claude-dev\settings\cline_mcp_settings.json` |
+| Linux | `~/.config/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json` |
+
+**Format:**
+```json
+{
+    "mcpServers": {
+        "ServerName": {
+            "command": "...",
+            "args": ["..."],
+            "env": { ... },
+            "disabled": false,
+            "autoApprove": []
+        }
+    }
+}
+```
+
+Note: Cline uses the standard `mcpServers` format with additional `disabled` and `autoApprove` fields. `InstallMCPServer` automatically adds these defaults.
 
 ### Copilot CLI
 
