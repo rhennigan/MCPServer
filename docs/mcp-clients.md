@@ -14,15 +14,18 @@ The following clients have built-in support for automatic configuration via `Ins
 
 | Client | Canonical Name | Aliases | Config Format | Project Support |
 |--------|---------------|---------|---------------|-----------------|
+| Claude Code | `"ClaudeCode"` | — | JSON | Yes |
 | Claude Desktop | `"ClaudeDesktop"` | `"Claude"` | JSON | No |
-| Claude Code | `"ClaudeCode"` | `"claude-code"` | JSON | Yes |
-| Copilot CLI | `"CopilotCLI"` | `"Copilot"`, `"copilot-cli"`, `"GitHubCopilotCLI"` | JSON | No |
+| Cline | `"Cline"` | — | JSON | No |
+| Copilot CLI | `"CopilotCLI"` | `"Copilot"` | JSON | No |
 | Cursor | `"Cursor"` | — | JSON | No |
 | Gemini CLI | `"GeminiCLI"` | `"Gemini"` | JSON | No |
-| Antigravity | `"Antigravity"` | `"GoogleAntigravity"` | JSON | No |
-| OpenAI Codex | `"Codex"` | `"codex"`, `"OpenAICodex"` | TOML | No |
+| Google Antigravity | `"Antigravity"` | `"GoogleAntigravity"` | JSON | No |
+| OpenAI Codex | `"Codex"` | `"OpenAICodex"` | TOML | No |
 | OpenCode | `"OpenCode"` | — | JSON | Yes |
-| Visual Studio Code | `"VisualStudioCode"` | `"VSCode"`, `"Code"` | JSON | Yes |
+| Visual Studio Code | `"VisualStudioCode"` | `"VSCode"` | JSON | Yes |
+| Windsurf | `"Windsurf"` | `"Codeium"` | JSON | No |
+| Zed | `"Zed"` | — | JSON | Yes |
 
 ## Usage
 
@@ -98,6 +101,33 @@ UninstallMCPServer[myServerObject]               (* Remove from all locations *)
 | Project | `.mcp.json` (in project root) |
 
 **Format:** Same as Claude Desktop (`mcpServers` key).
+
+### Cline
+
+Cline stores its configuration in VS Code's extension global storage.
+
+| OS | Config Location |
+|----|----------------|
+| macOS | `~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json` |
+| Windows | `%APPDATA%\Code\User\globalStorage\saoudrizwan.claude-dev\settings\cline_mcp_settings.json` |
+| Linux | `~/.config/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json` |
+
+**Format:**
+```json
+{
+    "mcpServers": {
+        "ServerName": {
+            "command": "...",
+            "args": ["..."],
+            "env": { ... },
+            "disabled": false,
+            "autoApprove": []
+        }
+    }
+}
+```
+
+Note: Cline uses the standard `mcpServers` format with additional `disabled` and `autoApprove` fields. `InstallMCPServer` automatically adds these defaults.
 
 ### Copilot CLI
 
@@ -210,6 +240,38 @@ Note: OpenCode uses a different format where the command and args are combined i
 ```
 
 Note: VS Code nests servers under `mcp.servers` rather than `mcpServers`.
+
+### Windsurf
+
+| OS | Config Location |
+|----|----------------|
+| macOS/Linux | `~/.codeium/windsurf/mcp_config.json` |
+| Windows | `%USERPROFILE%\.codeium\windsurf\mcp_config.json` |
+
+**Format:** Same as Claude Desktop (`mcpServers` key).
+
+### Zed
+
+| Scope | Config Location |
+|-------|----------------|
+| Global (macOS/Linux) | `~/.config/zed/settings.json` |
+| Global (Windows) | `%APPDATA%\Zed\settings.json` |
+| Project | `.zed/settings.json` |
+
+**Format:**
+```json
+{
+    "context_servers": {
+        "ServerName": {
+            "command": "...",
+            "args": ["..."],
+            "env": { ... }
+        }
+    }
+}
+```
+
+Note: Zed uses `context_servers` instead of `mcpServers`. The inner server entry format is the same as Claude Desktop.
 
 ## Using Other MCP Clients
 

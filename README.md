@@ -102,15 +102,18 @@ MCPServer can be installed into the following MCP client applications:
 
 | Client | Name | Project Support |
 |--------|------|-----------------|
-| [Claude Desktop](https://claude.ai/download) | `"ClaudeDesktop"` | No |
 | [Claude Code](https://code.claude.com) | `"ClaudeCode"` | Yes |
+| [Claude Desktop](https://claude.ai/download) | `"ClaudeDesktop"` | No |
+| [Cline](https://cline.bot) | `"Cline"` | No |
 | [Copilot CLI](https://github.com/features/copilot/cli) | `"CopilotCLI"` | No |
 | [Cursor](https://www.cursor.com) | `"Cursor"` | No |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | `"GeminiCLI"` | No |
-| [Visual Studio Code](https://code.visualstudio.com) | `"VisualStudioCode"` | Yes |
-| [OpenCode](https://opencode.ai) | `"OpenCode"` | Yes |
+| [Google Antigravity](https://antigravity.google) | `"Antigravity"` | No |
 | [OpenAI Codex](https://openai.com/codex) | `"Codex"` | No |
-| [Antigravity](https://antigravity.google) | `"Antigravity"` | No |
+| [OpenCode](https://opencode.ai) | `"OpenCode"` | Yes |
+| [Visual Studio Code](https://code.visualstudio.com) | `"VisualStudioCode"` | Yes |
+| [Windsurf](https://codeium.com/windsurf) | `"Windsurf"` | No |
+| [Zed](https://zed.dev) | `"Zed"` | Yes |
 
 ### Project-Level Installation
 
