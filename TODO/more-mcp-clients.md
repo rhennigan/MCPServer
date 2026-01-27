@@ -39,7 +39,7 @@ For each MCP client, we need to properly research how MCP servers are added to t
 
 ### [Goose](https://github.com/block/goose)
 
-- [ ] Research how MCP servers are added to Goose and write a detailed report in `MCPServer/client-research/goose.md`
+- [x] Research how MCP servers are added to Goose and write a detailed report in `MCPServer/client-research/goose.md`
 - [ ] Do one of the following:
     - Implement support for `InstallMCPServer["Goose", ...]`
     - Reject support for `InstallMCPServer["Goose", ...]` if not feasible
