@@ -14,13 +14,13 @@ The following clients have built-in support for automatic configuration via `Ins
 
 | Client | Canonical Name | Aliases | Config Format | Project Support |
 |--------|---------------|---------|---------------|-----------------|
-| Claude Desktop | `"ClaudeDesktop"` | `"Claude"` | JSON | No |
 | Claude Code | `"ClaudeCode"` | — | JSON | Yes |
+| Claude Desktop | `"ClaudeDesktop"` | `"Claude"` | JSON | No |
 | Cline | `"Cline"` | — | JSON | No |
 | Copilot CLI | `"CopilotCLI"` | `"Copilot"` | JSON | No |
 | Cursor | `"Cursor"` | — | JSON | No |
 | Gemini CLI | `"GeminiCLI"` | `"Gemini"` | JSON | No |
-| Antigravity | `"Antigravity"` | `"GoogleAntigravity"` | JSON | No |
+| Google Antigravity | `"Antigravity"` | `"GoogleAntigravity"` | JSON | No |
 | OpenAI Codex | `"Codex"` | `"OpenAICodex"` | TOML | No |
 | OpenCode | `"OpenCode"` | — | JSON | Yes |
 | Visual Studio Code | `"VisualStudioCode"` | `"VSCode"` | JSON | Yes |
