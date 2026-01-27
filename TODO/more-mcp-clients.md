@@ -2,13 +2,21 @@
 
 For each MCP client, we need to properly research how MCP servers are added to the client and then decide if we can implement support for `InstallMCPServer` or if we need to reject it. If it's not feasible to implement a client, add text to the relevant section below to explain why.
 
+## Research Instructions
+
+1. For each MCP client, research how MCP servers are added to the client and write a detailed report in client-research/client-name.md.
+
+2. Commit research results to the `feature/more-mcp-clients` branch with an appropriate commit message and wait for user input to continue.
+
 ## Implementation Instructions
 
 1. When beginning work on a client, first check out the `feature/more-mcp-clients` branch as a starting point and create a dedicated branch from there e.g. `feature/windsurf-client-support`.
 
 2. When you've finished implementation, write appropriate unit tests and run them to ensure they pass.
 
-3. When you've finished the tests, commit your changes to the dedicated branch with an appropriate commit message and wait for user input to continue.
+3. When you've finished the tests, commit your changes to the dedicated branch with an appropriate commit message.
+
+4. Switch back to the `feature/more-mcp-clients` branch and update this file to mark the task as complete and wait for user input to continue.
 
 ## Clients
 
