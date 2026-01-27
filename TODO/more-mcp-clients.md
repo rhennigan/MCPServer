@@ -1,6 +1,10 @@
 # More MCP Clients
 
-For each MCP client, we need to properly research how MCP servers are added to the client and then decide if we can implement support for `InstallMCPServer` or if we need to reject it. When implementing support, it should be done on a branch dedicated to that particular MCP client, e.g. `feature/windsurf-client-support`. If it's not feasible to implement, add text to the relevant section below to explain why.
+For each MCP client, we need to properly research how MCP servers are added to the client and then decide if we can implement support for `InstallMCPServer` or if we need to reject it.
+
+When implementing support, it should be done on a branch dedicated to that particular MCP client, e.g. `feature/windsurf-client-support`. When creating the dedicated branch, first check out the `feature/more-mcp-clients` branch as a starting point and create it from there.
+
+If it's not feasible to implement a client, add text to the relevant section below to explain why.
 
 ## [Windsurf](https://windsurf.com/)
 
