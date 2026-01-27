@@ -23,6 +23,7 @@ The following clients have built-in support for automatic configuration via `Ins
 | OpenAI Codex | `"Codex"` | `"codex"`, `"OpenAICodex"` | TOML | No |
 | OpenCode | `"OpenCode"` | — | JSON | Yes |
 | Visual Studio Code | `"VisualStudioCode"` | `"VSCode"`, `"Code"` | JSON | Yes |
+| Windsurf | `"Windsurf"` | `"windsurf"`, `"Codeium"`, `"codeium"` | JSON | No |
 
 ## Usage
 
@@ -210,6 +211,15 @@ Note: OpenCode uses a different format where the command and args are combined i
 ```
 
 Note: VS Code nests servers under `mcp.servers` rather than `mcpServers`.
+
+### Windsurf
+
+| OS | Config Location |
+|----|----------------|
+| macOS/Linux | `~/.codeium/windsurf/mcp_config.json` |
+| Windows | `%USERPROFILE%\.codeium\windsurf\mcp_config.json` |
+
+**Format:** Same as Claude Desktop (`mcpServers` key).
 
 ## Using Other MCP Clients
 

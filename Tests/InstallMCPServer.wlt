@@ -821,4 +821,122 @@ VerificationTest[
     TestID   -> "ConvertToCopilotCLIFormat-MinimalConfig@@Tests/InstallMCPServer.wlt:815,1-822,2"
 ]
 
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Windsurf Support*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Install Location for Windsurf*)
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Windsurf", "Windows" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-Windsurf-Windows@@Tests/InstallMCPServer.wlt:831,1-836,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Windsurf", "MacOSX" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-Windsurf-MacOSX@@Tests/InstallMCPServer.wlt:838,1-843,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Windsurf", "Unix" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-Windsurf-Unix@@Tests/InstallMCPServer.wlt:845,1-850,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Name Normalization*)
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "windsurf" ],
+    "Windsurf",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-windsurf@@Tests/InstallMCPServer.wlt:855,1-860,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "Codeium" ],
+    "Windsurf",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-Codeium@@Tests/InstallMCPServer.wlt:862,1-867,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "codeium" ],
+    "Windsurf",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-codeium@@Tests/InstallMCPServer.wlt:869,1-874,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "Windsurf" ],
+    "Windsurf",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-Windsurf@@Tests/InstallMCPServer.wlt:876,1-881,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installDisplayName[ "Windsurf" ],
+    "Windsurf",
+    SameTest -> Equal,
+    TestID   -> "InstallDisplayName-Windsurf@@Tests/InstallMCPServer.wlt:883,1-888,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Windsurf Install and Uninstall*)
+VerificationTest[
+    windsurfConfigFile = testConfigFile[];
+    installResult = InstallMCPServer[ windsurfConfigFile, "WolframLanguage", "VerifyLLMKit" -> False ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-Windsurf-Basic@@Tests/InstallMCPServer.wlt:893,1-899,2"
+]
+
+VerificationTest[
+    FileExistsQ[ windsurfConfigFile ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Windsurf-FileExists@@Tests/InstallMCPServer.wlt:901,1-906,2"
+]
+
+VerificationTest[
+    Module[ { content },
+        content = Import[ windsurfConfigFile, "RawJSON" ];
+        KeyExistsQ[ content, "mcpServers" ] && KeyExistsQ[ content[ "mcpServers" ], "WolframLanguage" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Windsurf-VerifyContent@@Tests/InstallMCPServer.wlt:908,1-916,2"
+]
+
+VerificationTest[
+    uninstallResult = UninstallMCPServer[ windsurfConfigFile, "WolframLanguage" ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "UninstallMCPServer-Windsurf-Basic@@Tests/InstallMCPServer.wlt:918,1-923,2"
+]
+
+VerificationTest[
+    Module[ { content },
+        content = Import[ windsurfConfigFile, "RawJSON" ];
+        KeyExistsQ[ content, "mcpServers" ] && ! KeyExistsQ[ content[ "mcpServers" ], "WolframLanguage" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "UninstallMCPServer-Windsurf-VerifyRemoval@@Tests/InstallMCPServer.wlt:925,1-933,2"
+]
+
+VerificationTest[
+    cleanupTestFiles[ windsurfConfigFile ],
+    { Null },
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-Windsurf-Cleanup@@Tests/InstallMCPServer.wlt:935,1-940,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)
