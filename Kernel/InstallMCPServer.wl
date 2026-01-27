@@ -735,6 +735,15 @@ installLocation[ "VisualStudioCode", "Linux" ] :=
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*Windsurf*)
+installLocation[ "Windsurf", "MacOSX" | "Unix" ] :=
+    fileNameJoin[ $HomeDirectory, ".codeium", "windsurf", "mcp_config.json" ];
+
+installLocation[ "Windsurf", "Windows" ] :=
+    fileNameJoin[ $HomeDirectory, ".codeium", "windsurf", "mcp_config.json" ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*Unknown*)
 installLocation[ name_String, os_String ] := throwFailure[ "UnknownInstallLocation", name, os ];
 installLocation // endDefinition;
@@ -773,6 +782,9 @@ toInstallName[ "OpenAICodex"       ] := "Codex";
 toInstallName[ "Copilot"           ] := "CopilotCLI";
 toInstallName[ "copilot-cli"       ] := "CopilotCLI";
 toInstallName[ "GitHubCopilotCLI"  ] := "CopilotCLI";
+toInstallName[ "windsurf"          ] := "Windsurf";
+toInstallName[ "Codeium"           ] := "Windsurf";
+toInstallName[ "codeium"           ] := "Windsurf";
 toInstallName[ name_String         ] := name;
 toInstallName // endDefinition;
 
@@ -788,6 +800,7 @@ installDisplayName[ "Antigravity"      ] := "Antigravity";
 installDisplayName[ "Codex"            ] := "Codex CLI";
 installDisplayName[ "CopilotCLI"       ] := "Copilot CLI";
 installDisplayName[ "OpenCode"         ] := "OpenCode";
+installDisplayName[ "Windsurf"         ] := "Windsurf";
 installDisplayName[ name_String        ] := name;
 installDisplayName[ None               ] := None;
 installDisplayName // endDefinition;
