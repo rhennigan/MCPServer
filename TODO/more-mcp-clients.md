@@ -4,19 +4,19 @@ For each MCP client, we need to properly research how MCP servers are added to t
 
 ## Research Instructions
 
-1. For each MCP client, research how MCP servers are added to the client and write a detailed report in client-research/client-name.md.
+1. For each MCP client, research how MCP servers are added to the client and write a detailed report in `client-research/client-name.md`.
 
-2. Commit research results to the `feature/more-mcp-clients` branch with an appropriate commit message and wait for user input to continue.
+2. Commit research results with an appropriate commit message and wait for user input to continue.
 
 ## Implementation Instructions
 
-1. When beginning work on a client, first check out the `feature/more-mcp-clients` branch as a starting point and create a dedicated branch from there e.g. `feature/windsurf-client-support`.
+1. Implement support for `InstallMCPServer` for the client in `Kernel/InstallMCPServer.wl`.
 
 2. When you've finished implementation, write appropriate unit tests and run them to ensure they pass.
 
-3. When you've finished the tests, commit your changes to the dedicated branch with an appropriate commit message.
+3. When you've finished the tests, commit your changes with an appropriate commit message.
 
-4. Switch back to the `feature/more-mcp-clients` branch and update this file to mark the task as complete and wait for user input to continue.
+4. Update this file to mark the task as complete and wait for user input to continue.
 
 ## Clients
 
