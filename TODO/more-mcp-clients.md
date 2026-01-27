@@ -24,24 +24,24 @@ For each MCP client, we need to properly research how MCP servers are added to t
 
 ### [Windsurf](https://windsurf.com/)
 
-- [x] Research how MCP servers are added to Windsurf and write a detailed report in `MCPServer/client-research/windsurf.md`
+- [x] Research how MCP servers are added to Windsurf and write a detailed report in [windsurf.md](../client-research/windsurf.md)
 - [x] Implement support for `InstallMCPServer["Windsurf", ...]`
 
 ### [Cline](https://cline.bot/)
 
-- [x] Research how MCP servers are added to Cline and write a detailed report in `MCPServer/client-research/cline.md`
+- [x] Research how MCP servers are added to Cline and write a detailed report in [cline.md](../client-research/cline.md)
 - [x] Implement support for `InstallMCPServer["Cline", ...]`
 
 ### [Zed](https://zed.dev/)
 
-- [x] Research how MCP servers are added to Zed and write a detailed report in `MCPServer/client-research/zed.md`
+- [x] Research how MCP servers are added to Zed and write a detailed report in [zed.md](../client-research/zed.md)
 - [x] Implement support for `InstallMCPServer["Zed", ...]`
 
 ### [Cherry Studio](https://github.com/CherryHQ/cherry-studio)
 
 Cherry Studio stores MCP configurations in Redux state with localStorage persistence, not in external JSON files. There is no config file path to write to, so `InstallMCPServer` cannot be implemented.
 
-- [x] Research how MCP servers are added to Cherry Studio and write a detailed report in `MCPServer/client-research/cherry-studio.md`
+- [x] Research how MCP servers are added to Cherry Studio and write a detailed report in [cherry-studio.md](../client-research/cherry-studio.md)
 - [x] Reject support for `InstallMCPServer["CherryStudio", ...]` - not feasible due to internal storage architecture
 
 ## On Hold
@@ -50,10 +50,10 @@ Cherry Studio stores MCP configurations in Redux state with localStorage persist
 
 Requires a more complicated implementation due to the use of YAML files.
 
-- [x] Research how MCP servers are added to Continue and write a detailed report in `MCPServer/client-research/continue.md`
+- [x] Research how MCP servers are added to Continue and write a detailed report in [continue.md](../client-research/continue.md)
 
 ### [Goose](https://github.com/block/goose)
 
 Requires a more complicated implementation due to the use of YAML files.
 
-- [x] Research how MCP servers are added to Goose and write a detailed report in `MCPServer/client-research/goose.md`
+- [x] Research how MCP servers are added to Goose and write a detailed report in [goose.md](../client-research/goose.md)
