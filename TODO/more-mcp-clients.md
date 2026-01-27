@@ -4,13 +4,13 @@ For each MCP client, we need to properly research how MCP servers are added to t
 
 ## Research Instructions
 
-1. For each MCP client, research how MCP servers are added to the client and write a detailed report in `client-research/client-name.md`.
+1. For each MCP client, research how MCP servers are added to the client and write a detailed report in `MCPServer/client-research/client-name.md`.
 
 2. Commit research results with an appropriate commit message and wait for user input to continue.
 
 ## Implementation Instructions
 
-1. Implement support for `InstallMCPServer` for the client in `Kernel/InstallMCPServer.wl`.
+1. Implement support for `InstallMCPServer` for the client in `MCPServer/Kernel/InstallMCPServer.wl`.
 
 2. When you've finished implementation, write appropriate unit tests and run them to ensure they pass.
 
@@ -22,40 +22,40 @@ For each MCP client, we need to properly research how MCP servers are added to t
 
 ### [Windsurf](https://windsurf.com/)
 
-- [x] Research how MCP servers are added to Windsurf and write a detailed report in client-research/windsurf.md
-- [x] Implement support for `InstallMCPServer["Windsurf", ...]` (see branch `feature/windsurf-client-support`)
+- [x] Research how MCP servers are added to Windsurf and write a detailed report in `MCPServer/client-research/windsurf.md`
+- [x] Implement support for `InstallMCPServer["Windsurf", ...]`
 
 ### [Cline](https://cline.bot/)
 
-- [x] Research how MCP servers are added to Cline and write a detailed report in client-research/cline.md
+- [x] Research how MCP servers are added to Cline and write a detailed report in `MCPServer/client-research/cline.md`
 - [ ] Do one of the following:
     - Implement support for `InstallMCPServer["Cline", ...]`
     - Reject support for `InstallMCPServer["Cline", ...]` if not feasible
 
 ### [Continue](https://www.continue.dev/)
 
-- [ ] Research how MCP servers are added to Continue and write a detailed report in client-research/continue.md
+- [ ] Research how MCP servers are added to Continue and write a detailed report in `MCPServer/client-research/continue.md`
 - [ ] Do one of the following:
     - Implement support for `InstallMCPServer["Continue", ...]`
     - Reject support for `InstallMCPServer["Continue", ...]` if not feasible
 
 ### [Zed](https://zed.dev/)
 
-- [ ] Research how MCP servers are added to Zed and write a detailed report in client-research/zed.md
+- [ ] Research how MCP servers are added to Zed and write a detailed report in `MCPServer/client-research/zed.md`
 - [ ] Do one of the following:
     - Implement support for `InstallMCPServer["Zed", ...]`
     - Reject support for `InstallMCPServer["Zed", ...]` if not feasible
 
 ### [Goose](https://github.com/block/goose)
 
-- [ ] Research how MCP servers are added to Goose and write a detailed report in client-research/goose.md
+- [ ] Research how MCP servers are added to Goose and write a detailed report in `MCPServer/client-research/goose.md`
 - [ ] Do one of the following:
     - Implement support for `InstallMCPServer["Goose", ...]`
     - Reject support for `InstallMCPServer["Goose", ...]` if not feasible
 
 ### [Cherry Studio](https://github.com/CherryHQ/cherry-studio)
 
-- [ ] Research how MCP servers are added to Cherry Studio and write a detailed report in client-research/cherry-studio.md
+- [ ] Research how MCP servers are added to Cherry Studio and write a detailed report in `MCPServer/client-research/cherry-studio.md`
 - [ ] Do one of the following:
-    - Implement support for `InstallMCPServer["Cherry Studio", ...]`
-    - Reject support for `InstallMCPServer["Cherry Studio", ...]` if not feasible
+    - Implement support for `InstallMCPServer["CherryStudio", ...]`
+    - Reject support for `InstallMCPServer["CherryStudio", ...]` if not feasible
