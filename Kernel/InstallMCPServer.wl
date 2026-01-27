@@ -124,6 +124,8 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
             existing[ "mcpServers", name ] = ConfirmBy[ convertToCopilotCLIFormat @ server, AssociationQ, "CopilotCLIServer" ],
             "Cline",
             existing[ "mcpServers", name ] = ConfirmBy[ convertToClineFormat @ server, AssociationQ, "ClineServer" ],
+            "Zed",
+            existing[ "context_servers", name ] = server,
             _,
             existing[ "mcpServers", name ] = server
         ];
@@ -500,6 +502,8 @@ readExistingMCPConfig[ file_ ] := Enclose[
                 Throw @ <| "mcp" -> <| "servers" -> <| |> |> |>,
                 "OpenCode",
                 Throw @ <| "mcp" -> <| |> |>,
+                "Zed",
+                Throw @ <| "context_servers" -> <| |> |>,
                 _,
                 Throw @ <| "mcpServers" -> <| |> |>
             ]
@@ -517,6 +521,10 @@ readExistingMCPConfig[ file_ ] := Enclose[
             (* Handle OpenCode format *)
             "OpenCode",
             If[ ! AssociationQ @ data[ "mcp" ], data[ "mcp" ] = <| |> ];
+            data,
+            (* Handle Zed format *)
+            "Zed",
+            If[ ! AssociationQ @ data[ "context_servers" ], data[ "context_servers" ] = <| |> ];
             data,
             (* Handle standard format *)
             _,
@@ -633,6 +641,11 @@ uninstallMCPServer[ target0_File, obj_MCPServerObject ] := Enclose[
             If[ ! AssociationQ @ existing[ "mcp" ], Throw @ Missing[ "NotInstalled", target ] ];
             If[ ! KeyExistsQ[ existing[ "mcp" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
             KeyDropFrom[ existing[ "mcp" ], name ],
+            (* Handle Zed format *)
+            "Zed",
+            If[ ! AssociationQ @ existing[ "context_servers" ], Throw @ Missing[ "NotInstalled", target ] ];
+            If[ ! KeyExistsQ[ existing[ "context_servers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
+            KeyDropFrom[ existing[ "context_servers" ], name ],
             (* Handle standard format *)
             _,
             If[ ! AssociationQ @ existing[ "mcpServers" ], Throw @ Missing[ "NotInstalled", target ] ];
@@ -787,6 +800,18 @@ installLocation[ "Cline", "Unix" ] :=
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*Zed*)
+installLocation[ "Zed", "MacOSX" ] :=
+    fileNameJoin[ $HomeDirectory, ".config", "zed", "settings.json" ];
+
+installLocation[ "Zed", "Windows" ] :=
+    fileNameJoin[ $HomeDirectory, "AppData", "Roaming", "Zed", "settings.json" ];
+
+installLocation[ "Zed", "Unix" ] :=
+    fileNameJoin[ $HomeDirectory, ".config", "zed", "settings.json" ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*Unknown*)
 installLocation[ name_String, os_String ] := throwFailure[ "UnknownInstallLocation", name, os ];
 installLocation // endDefinition;
@@ -804,6 +829,9 @@ projectInstallLocation[ "OpenCode", dir_ ] :=
 
 projectInstallLocation[ "VisualStudioCode", dir_ ] :=
     fileNameJoin[ dir, ".vscode", "settings.json" ];
+
+projectInstallLocation[ "Zed", dir_ ] :=
+    fileNameJoin[ dir, ".zed", "settings.json" ];
 
 projectInstallLocation[ name_, dir_ ] :=
     throwFailure[ "UnknownProjectInstallLocation", name ];
@@ -838,6 +866,7 @@ installDisplayName[ "CopilotCLI"       ] := "Copilot CLI";
 installDisplayName[ "OpenCode"         ] := "OpenCode";
 installDisplayName[ "Windsurf"         ] := "Windsurf";
 installDisplayName[ "Cline"            ] := "Cline";
+installDisplayName[ "Zed"              ] := "Zed";
 installDisplayName[ name_String        ] := name;
 installDisplayName[ None               ] := None;
 installDisplayName // endDefinition;

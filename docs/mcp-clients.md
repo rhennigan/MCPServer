@@ -25,6 +25,7 @@ The following clients have built-in support for automatic configuration via `Ins
 | OpenCode | `"OpenCode"` | — | JSON | Yes |
 | Visual Studio Code | `"VisualStudioCode"` | `"VSCode"` | JSON | Yes |
 | Windsurf | `"Windsurf"` | `"Codeium"` | JSON | No |
+| Zed | `"Zed"` | — | JSON | Yes |
 
 ## Usage
 
@@ -248,6 +249,29 @@ Note: VS Code nests servers under `mcp.servers` rather than `mcpServers`.
 | Windows | `%USERPROFILE%\.codeium\windsurf\mcp_config.json` |
 
 **Format:** Same as Claude Desktop (`mcpServers` key).
+
+### Zed
+
+| Scope | Config Location |
+|-------|----------------|
+| Global (macOS/Linux) | `~/.config/zed/settings.json` |
+| Global (Windows) | `%APPDATA%\Zed\settings.json` |
+| Project | `.zed/settings.json` |
+
+**Format:**
+```json
+{
+    "context_servers": {
+        "ServerName": {
+            "command": "...",
+            "args": ["..."],
+            "env": { ... }
+        }
+    }
+}
+```
+
+Note: Zed uses `context_servers` instead of `mcpServers`. The inner server entry format is the same as Claude Desktop.
 
 ## Using Other MCP Clients
 

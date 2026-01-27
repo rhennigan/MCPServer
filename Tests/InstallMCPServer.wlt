@@ -1046,4 +1046,162 @@ VerificationTest[
     TestID   -> "InstallMCPServer-Windsurf-Cleanup@@Tests/InstallMCPServer.wlt:1042,1-1047,2"
 ]
 
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Zed Support*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Install Location for Zed*)
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Zed", "Windows" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-Zed-Windows@@Tests/InstallMCPServer.wlt:1056,1-1061,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Zed", "MacOSX" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-Zed-MacOSX@@Tests/InstallMCPServer.wlt:1063,1-1068,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Zed", "Unix" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-Zed-Unix@@Tests/InstallMCPServer.wlt:1070,1-1075,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Name Normalization*)
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "Zed" ],
+    "Zed",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-Zed@@Tests/InstallMCPServer.wlt:1080,1-1085,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`installDisplayName[ "Zed" ],
+    "Zed",
+    SameTest -> Equal,
+    TestID   -> "InstallDisplayName-Zed@@Tests/InstallMCPServer.wlt:1087,1-1092,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Project Install Location*)
+VerificationTest[
+    Module[ { path, result },
+        path = FileNameJoin @ { $TemporaryDirectory, "testproject" };
+        result = Wolfram`MCPServer`InstallMCPServer`Private`projectInstallLocation[ "Zed", path ];
+        FileNameTake[ First @ result, -2 ]
+    ],
+    FileNameJoin @ { ".zed", "settings.json" },
+    SameTest -> Equal,
+    TestID   -> "ProjectInstallLocation-Zed@@Tests/InstallMCPServer.wlt:1097,1-1106,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Zed Install and Uninstall*)
+VerificationTest[
+    zedConfigFile = testConfigFile[];
+    Block[ { Wolfram`MCPServer`InstallMCPServer`Private`$installName = "Zed" },
+        installResult = InstallMCPServer[ zedConfigFile, "WolframLanguage", "VerifyLLMKit" -> False ]
+    ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-Zed-Basic@@Tests/InstallMCPServer.wlt:1111,1-1119,2"
+]
+
+VerificationTest[
+    FileExistsQ[ zedConfigFile ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Zed-FileExists@@Tests/InstallMCPServer.wlt:1121,1-1126,2"
+]
+
+VerificationTest[
+    Module[ { content },
+        content = Import[ zedConfigFile, "RawJSON" ];
+        KeyExistsQ[ content, "context_servers" ] && KeyExistsQ[ content[ "context_servers" ], "WolframLanguage" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Zed-VerifyContent@@Tests/InstallMCPServer.wlt:1128,1-1136,2"
+]
+
+VerificationTest[
+    Module[ { content, server },
+        content = Import[ zedConfigFile, "RawJSON" ];
+        server = content[ "context_servers", "WolframLanguage" ];
+        KeyExistsQ[ server, "command" ] && KeyExistsQ[ server, "args" ] && KeyExistsQ[ server, "env" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Zed-VerifyServerFields@@Tests/InstallMCPServer.wlt:1138,1-1147,2"
+]
+
+VerificationTest[
+    Block[ { Wolfram`MCPServer`InstallMCPServer`Private`$installName = "Zed" },
+        uninstallResult = UninstallMCPServer[ zedConfigFile, "WolframLanguage" ]
+    ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "UninstallMCPServer-Zed-Basic@@Tests/InstallMCPServer.wlt:1149,1-1156,2"
+]
+
+VerificationTest[
+    Module[ { content },
+        content = Import[ zedConfigFile, "RawJSON" ];
+        KeyExistsQ[ content, "context_servers" ] && ! KeyExistsQ[ content[ "context_servers" ], "WolframLanguage" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "UninstallMCPServer-Zed-VerifyRemoval@@Tests/InstallMCPServer.wlt:1158,1-1166,2"
+]
+
+VerificationTest[
+    cleanupTestFiles[ zedConfigFile ],
+    { Null },
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-Zed-Cleanup@@Tests/InstallMCPServer.wlt:1168,1-1173,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Zed Preserves Existing Config*)
+VerificationTest[
+    zedConfigFile = testConfigFile[];
+    Export[ zedConfigFile, <| "theme" -> "One Dark", "context_servers" -> <| |> |>, "JSON" ];
+    Block[ { Wolfram`MCPServer`InstallMCPServer`Private`$installName = "Zed" },
+        installResult = InstallMCPServer[ zedConfigFile, "WolframLanguage", "VerifyLLMKit" -> False ]
+    ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-Zed-PreserveExisting@@Tests/InstallMCPServer.wlt:1178,1-1187,2"
+]
+
+VerificationTest[
+    Module[ { content },
+        content = Import[ zedConfigFile, "RawJSON" ];
+        KeyExistsQ[ content, "theme" ] && content[ "theme" ] === "One Dark" &&
+        KeyExistsQ[ content[ "context_servers" ], "WolframLanguage" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Zed-VerifyPreserved@@Tests/InstallMCPServer.wlt:1189,1-1198,2"
+]
+
+VerificationTest[
+    cleanupTestFiles[ zedConfigFile ],
+    { Null },
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-Zed-PreserveExisting-Cleanup@@Tests/InstallMCPServer.wlt:1200,1-1205,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)
