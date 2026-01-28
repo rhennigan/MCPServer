@@ -199,9 +199,9 @@ validateSymbolName // endDefinition;
 (*symbolExistsQ*)
 symbolExistsQ // beginDefinition;
 
-(* Names works for both qualified and unqualified symbol names,
+(* NameQ works for both qualified and unqualified symbol names,
    using $ContextPath for unqualified names *)
-symbolExistsQ[ name_String ] := Names[ name ] =!= {};
+symbolExistsQ[ name_String ] := NameQ[ name ];
 
 symbolExistsQ // endDefinition;
 

@@ -150,6 +150,15 @@ VerificationTest[
     TestID   -> "ExistsNonexistent@@Tests/SymbolDefinition.wlt:146,1-151,2"
 ]
 
+(* Performance test: symbolExistsQ should be fast *)
+VerificationTest[
+    (* This should complete in under 0.01 seconds if using NameQ *)
+    First @ AbsoluteTiming[ Wolfram`MCPServer`Tools`SymbolDefinition`Private`symbolExistsQ[ "System`Plus" ] ] < 0.01,
+    True,
+    SameTest -> SameQ,
+    TestID   -> "ExistsPerformance"
+]
+
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*splitSymbolName*)
