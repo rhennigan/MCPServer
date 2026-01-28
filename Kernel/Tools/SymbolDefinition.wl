@@ -199,9 +199,10 @@ validateSymbolName // endDefinition;
 (*symbolExistsQ*)
 symbolExistsQ // beginDefinition;
 
-(* NameQ works for both qualified and unqualified symbol names,
-   using $ContextPath for unqualified names *)
-symbolExistsQ[ name_String ] := NameQ[ name ];
+(* First validate that the name is a valid symbol name (not a pattern with metacharacters).
+   Then use NameQ to check if any symbols match (for both qualified and unqualified names,
+   using $ContextPath for unqualified names). *)
+symbolExistsQ[ name_String ] := Internal`SymbolNameQ[ name, True ] && NameQ[ name ];
 
 symbolExistsQ // endDefinition;
 

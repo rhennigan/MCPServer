@@ -150,6 +150,28 @@ VerificationTest[
     TestID   -> "ExistsNonexistent@@Tests/SymbolDefinition.wlt:146,1-151,2"
 ]
 
+(* Test that metacharacters are not treated as patterns *)
+VerificationTest[
+    Wolfram`MCPServer`Tools`SymbolDefinition`Private`symbolExistsQ[ "*" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "ExistsWildcardStar"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Tools`SymbolDefinition`Private`symbolExistsQ[ "?" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "ExistsWildcardQuestion"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Tools`SymbolDefinition`Private`symbolExistsQ[ "Test*" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "ExistsPartialWildcard"
+]
+
 (* Performance test: symbolExistsQ using NameQ should be faster than or equal to Names *)
 VerificationTest[
     Module[ { nameQTime, namesTime },
