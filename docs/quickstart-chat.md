@@ -1,4 +1,4 @@
-# Quick Start: Wolfram MCP Server for Chat Clients
+# Quick Start for Chat Clients
 
 This guide walks you through adding Wolfram computational capabilities to chat clients like Claude Desktop. By the end, your AI assistant will be able to evaluate Wolfram Language code, answer computational questions via Wolfram Alpha, and search Wolfram documentation.
 
