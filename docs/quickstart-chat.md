@@ -8,7 +8,7 @@ For general-purpose chat, use the **Wolfram** server (the default). It combines 
 
 | Tool | Description |
 |------|-------------|
-| `WolframContext` | Semantic search across Wolfram documentation and Wolfram Alpha |
+| `WolframContext` | Semantic search across Wolfram resources (documentation, Wolfram Alpha, repositories, and more) |
 | `WolframLanguageEvaluator` | Execute Wolfram Language code |
 | `WolframAlpha` | Natural language queries to Wolfram Alpha |
 
@@ -57,7 +57,7 @@ The Wolfram server provides three tools that the AI uses automatically based on 
 
 | Tool | What It Does | When the AI Uses It |
 |------|-------------|---------------------|
-| **WolframContext** | Searches Wolfram documentation and Wolfram Alpha for relevant information | When it needs to look up functions, syntax, or factual data before responding |
+| **WolframContext** | Searches Wolfram resources (documentation, Wolfram Alpha, repositories, and more) | When it needs to look up functions, syntax, or factual data before responding |
 | **WolframLanguageEvaluator** | Runs Wolfram Language code and returns results | When a computation, visualization, or data processing task is needed |
 | **WolframAlpha** | Sends natural language queries to Wolfram Alpha | When answering factual, mathematical, or scientific questions in natural language |
 

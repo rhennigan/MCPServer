@@ -4,17 +4,14 @@ This guide walks you through setting up the Wolfram MCP Server with AI coding to
 
 ## Recommended Server
 
-For coding tools, use the **WolframLanguage** server. It provides a comprehensive set of development tools:
+For coding tools, use the **WolframLanguage** server. It gives the AI the ability to:
 
-| Tool | Description |
-|------|-------------|
-| `WolframLanguageContext` | Semantic search across Wolfram Language documentation |
-| `WolframLanguageEvaluator` | Execute Wolfram Language code |
-| `ReadNotebook` | Read Wolfram notebooks (.nb) as markdown |
-| `WriteNotebook` | Convert markdown to Wolfram notebooks |
-| `SymbolDefinition` | Look up symbol definitions in readable format |
-| `CodeInspector` | Inspect code for issues and return a formatted report |
-| `TestReport` | Run Wolfram Language test files (.wlt) |
+- **Search Wolfram resources** including documentation, function repository, data repository, and more
+- **Execute code** to test implementations and verify behavior
+- **Read and write notebooks** for working with `.nb` files as markdown
+- **Look up symbol definitions** to understand existing code
+- **Inspect code** for potential issues and style problems
+- **Run tests** to validate changes against your test suite
 
 ## Installation
 
@@ -106,7 +103,7 @@ After installing, restart your coding tool and confirm the Wolfram tools are ava
 
 > "What Wolfram Language tools do you have access to?"
 
-The AI should list the seven tools from the table above.
+The AI should list tools like `WolframLanguageEvaluator`, `WolframLanguageContext`, `TestReport`, etc.
 
 ## Configuring AI Guidance with AGENTS.md
 
@@ -128,6 +125,20 @@ With a well-written `AGENTS.md`, the AI will follow your conventions from the st
 2. **Project layout** - Directory structure, key files, entry points
 3. **Code style** - Naming conventions, patterns, error handling approach
 4. **Testing** - How to run tests, where test files live, test format
+
+### Available Tools
+
+The WolframLanguage server provides these tools that you can reference in your AGENTS.md:
+
+| Tool | Description |
+|------|-------------|
+| `WolframLanguageContext` | Semantic search across Wolfram resources (documentation, function repository, data repository, neural net repository, and more) |
+| `WolframLanguageEvaluator` | Execute Wolfram Language code |
+| `ReadNotebook` | Read Wolfram notebooks (.nb) as markdown |
+| `WriteNotebook` | Convert markdown to Wolfram notebooks |
+| `SymbolDefinition` | Look up symbol definitions in readable format |
+| `CodeInspector` | Inspect code for issues and return a formatted report |
+| `TestReport` | Run Wolfram Language test files (.wlt) |
 
 ### AGENTS.md Template
 
