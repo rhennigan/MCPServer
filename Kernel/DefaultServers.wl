@@ -19,7 +19,7 @@ $defaultMCPServer = "Wolfram";
 (*$DefaultMCPServers*)
 $DefaultMCPServers := WithCleanup[
     Unprotect @ $DefaultMCPServers,
-    $DefaultMCPServers = MCPServerObject /@ AssociationMap[ Apply @ Rule, $defaultMCPServers ],
+    $DefaultMCPServers = MCPServerObject /@ KeySort @ AssociationMap[ Apply @ Rule, $defaultMCPServers ],
     Protect @ $DefaultMCPServers
 ];
 
