@@ -2,16 +2,6 @@
 
 This guide walks you through adding Wolfram computational capabilities to chat clients like Claude Desktop. By the end, your AI assistant will be able to evaluate Wolfram Language code, answer computational questions via Wolfram Alpha, and search Wolfram documentation.
 
-## Prerequisites
-
-- **Wolfram Language 14.2+** (Mathematica or Wolfram Engine)
-- **MCPServer paclet** installed:
-  ```wl
-  PacletInstall["Wolfram/MCPServer"]
-  ```
-- **A chat client** (Claude Desktop or another MCP-compatible client)
-- **LLMKit subscription** (required for documentation search tools; see [LLMKit](https://www.wolfram.com/llmkit/))
-
 ## Recommended Server
 
 For general-purpose chat, use the **Wolfram** server (the default). It combines code execution with natural language computation:

@@ -2,16 +2,6 @@
 
 This guide walks you through setting up the Wolfram MCP Server with AI coding tools like Claude Code, Cursor, VS Code, and others. By the end, your AI coding assistant will be able to evaluate Wolfram Language code, search documentation, read and write notebooks, run tests, and inspect code.
 
-## Prerequisites
-
-- **Wolfram Language 14.2+** (Mathematica or Wolfram Engine)
-- **MCPServer paclet** installed:
-  ```wl
-  PacletInstall["Wolfram/MCPServer"]
-  ```
-- **An AI coding tool** (Claude Code, Cursor, VS Code, Cline, Windsurf, etc.)
-- **LLMKit subscription** (required for documentation search tools; see [LLMKit](https://www.wolfram.com/llmkit/))
-
 ## Recommended Server
 
 For coding tools, use the **WolframLanguage** server. It provides a comprehensive set of development tools:
