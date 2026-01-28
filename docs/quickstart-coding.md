@@ -31,48 +31,18 @@ InstallMCPServer["ClaudeCode", "WolframLanguage"]
 InstallMCPServer[{"ClaudeCode", "/path/to/project"}, "WolframLanguage"]
 ```
 
-This creates a `.mcp.json` file in the project directory.
+Verify the installation from the command line:
 
-### Cursor
-
-```wl
-InstallMCPServer["Cursor", "WolframLanguage"]
+```shell
+claude mcp get WolframLanguage
 ```
 
-Config location: `~/.cursor/mcp.json`
-
-### Visual Studio Code
-
-**Global installation:**
-
-```wl
-InstallMCPServer["VisualStudioCode", "WolframLanguage"]
-```
-
-**Project-level installation:**
-
-```wl
-InstallMCPServer[{"VisualStudioCode", "/path/to/project"}, "WolframLanguage"]
-```
-
-This adds configuration to `.vscode/settings.json` in the project directory.
+The output should indicate that the server is connected.
 
 ### Cline
 
 ```wl
 InstallMCPServer["Cline", "WolframLanguage"]
-```
-
-### Windsurf
-
-```wl
-InstallMCPServer["Windsurf", "WolframLanguage"]
-```
-
-### Gemini CLI
-
-```wl
-InstallMCPServer["GeminiCLI", "WolframLanguage"]
 ```
 
 ### Copilot CLI
@@ -81,10 +51,76 @@ InstallMCPServer["GeminiCLI", "WolframLanguage"]
 InstallMCPServer["CopilotCLI", "WolframLanguage"]
 ```
 
+### Cursor
+
+```wl
+InstallMCPServer["Cursor", "WolframLanguage"]
+```
+
+To verify the installation:
+
+- Navigate to Cursor settings
+- Select the "Tools & MCP" tab
+- Verify that "WolframLanguage" is listed under "Installed MCP Servers"
+
+### Gemini CLI
+
+```wl
+InstallMCPServer["GeminiCLI", "WolframLanguage"]
+```
+
+### Google Antigravity
+
+```wl
+InstallMCPServer["Antigravity", "WolframLanguage"]
+```
+
 ### OpenAI Codex
 
 ```wl
 InstallMCPServer["Codex", "WolframLanguage"]
+```
+
+### OpenCode
+
+**Global installation** (available in all projects):
+
+```wl
+InstallMCPServer["OpenCode", "WolframLanguage"]
+```
+
+**Project-level installation** (available only in a specific project):
+
+```wl
+InstallMCPServer[{"OpenCode", "/path/to/project"}, "WolframLanguage"]
+```
+
+### Visual Studio Code
+
+**Global installation** (available in all projects):
+
+```wl
+InstallMCPServer["VisualStudioCode", "WolframLanguage"]
+```
+
+**Project-level installation** (available only in a specific project):
+
+```wl
+InstallMCPServer[{"VisualStudioCode", "/path/to/project"}, "WolframLanguage"]
+```
+
+This adds configuration to `.vscode/settings.json` in the project directory.
+
+### Windsurf
+
+```wl
+InstallMCPServer["Windsurf", "WolframLanguage"]
+```
+
+### Zed
+
+```wl
+InstallMCPServer["Zed", "WolframLanguage"]
 ```
 
 ### Other Clients
@@ -161,8 +197,8 @@ and check your work with the CodeInspector tool.
 
 ## Project Structure
 
-- `Source/` - Main source files
-  - `MainPackage.wl` - Entry point
+- `Kernel/` - Main source files
+  - `MyPaclet.wl` - Entry point
   - `Utilities.wl` - Helper functions
 - `Tests/` - Test files (.wlt)
 - `Documentation/` - Notebooks and docs
@@ -180,7 +216,6 @@ and check your work with the CodeInspector tool.
       ]
   ];
   ```
-- Wrap definitions with `BeginPackage`/`EndPackage`
 
 ## Writing Tests
 
@@ -208,7 +243,7 @@ Adjust the template to match your actual project structure, conventions, and req
 
 ### Test-Driven Development
 
-AI coding tools work best with a test-driven workflow:
+AI coding tools work well with a test-driven workflow:
 
 1. **Write tests first** describing the expected behavior
 2. **Ask the AI to implement** the function to pass the tests
@@ -225,7 +260,7 @@ For non-trivial tasks, ask the AI to plan before implementing:
 
 This lets the AI explore the codebase, understand existing patterns, and propose an approach for your review before making changes.
 
-### Avoiding Context Rot in Large Tasks
+### Avoiding "Context Rot" in Large Tasks
 
 AI coding tools have finite context windows. For tasks spanning multiple sessions or involving many files, context can degrade. Use these strategies to maintain coherence:
 
@@ -300,9 +335,9 @@ This gives the AI the full specification and current state without relying on co
 
 ### Tools not appearing
 
-- Restart your coding tool after installation
-- Verify the configuration file exists at the expected location (see [mcp-clients.md](mcp-clients.md))
-- Check that `wolframscript` or `wolfram` is on your PATH
+- Fully restart your coding tool after installation (closing the window often just minimizes it to the system tray)
+- Manually inspect the configuration file returned by `InstallMCPServer` to ensure the server is configured correctly
+- Check your client's documentation for location of log files and check for errors
 
 ### Timeouts or slow responses
 
@@ -310,20 +345,10 @@ This gives the AI the full specification and current state without relying on co
 - Subsequent calls reuse the kernel and are faster
 - If timeouts persist, check that Wolfram Language starts correctly by running `wolframscript -code "Print[1+1]"` in your terminal
 
-### WolframLanguageContext not working
+### WolframLanguageContext not working as expected
 
-The `WolframLanguageContext` tool requires an [LLMKit subscription](https://www.wolfram.com/llmkit/). Without it, documentation search will fail. Code execution (`WolframLanguageEvaluator`) and other tools work without LLMKit.
+The `WolframLanguageContext` tool requires an [LLMKit subscription](https://www.wolfram.com/llmkit/) for best results. Without it, documentation search will be less accurate. Code execution (`WolframLanguageEvaluator`) and other tools work without LLMKit.
 
-### Configuration errors
+### Server is using the wrong version of Wolfram Language
 
-Generate the configuration manually and compare:
-
-```wl
-MCPServerObject["WolframLanguage"]["JSONConfiguration"]
-```
-
-## Next Steps
-
-- [Predefined Servers](servers.md) - Learn about all available server configurations
-- [MCP Tools](tools.md) - Detailed documentation on each tool
-- [MCP Clients](mcp-clients.md) - Full list of supported clients and configuration details
+The installed MCP server will use the same version of Wolfram Language as the session it was installed from. If you want to use a different version of Wolfram Language, you need to install the MCP server in a session of that version or manually edit the configuration file to point to a different Wolfram kernel.

@@ -16,7 +16,7 @@ For general-purpose chat, use the **Wolfram** server (the default). It combines 
 
 ### Claude Desktop
 
-Open a Wolfram Language session (Mathematica or `wolframscript`) and run:
+Open a Wolfram Language session and run:
 
 ```wl
 InstallMCPServer["ClaudeDesktop"]
@@ -31,7 +31,7 @@ This installs the default Wolfram server into Claude Desktop's configuration fil
 | macOS | `~/Library/Application Support/Claude/claude_desktop_config.json` |
 | Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
 
-After installation, **restart Claude Desktop** to load the new tools.
+After installation, **fully restart Claude Desktop** to load the new tools.
 
 ### Other Chat Clients
 
@@ -41,7 +41,7 @@ For other MCP-compatible chat clients, generate the raw JSON configuration:
 MCPServerObject["Wolfram"]["JSONConfiguration"]
 ```
 
-Then adapt this to your client's configuration format. See [mcp-clients.md](mcp-clients.md) for details on supported clients.
+Then adapt this to your client's configuration format.
 
 ### Verifying the Installation
 
@@ -108,9 +108,9 @@ Persistent instructions are custom text that your chat client sends to the AI at
 **Claude Desktop:**
 1. Open Claude Desktop
 2. Go to Settings (gear icon)
-3. Select the "Profile" tab
-4. Enter your instructions in the "Custom instructions" field
-5. Save
+3. Select the "General" tab
+4. Enter your instructions in the text field under the "Profile" section
+5. Save changes
 
 Other chat clients may have similar settings. Consult your client's documentation.
 
@@ -188,32 +188,22 @@ p-values) when appropriate.
 
 ### Tools not appearing in chat
 
-- Restart your chat client after installing
-- Verify the configuration file exists at the expected path (see [Installation](#installation))
-- Check that `wolframscript` or `wolfram` is accessible from your terminal
+- Fully restart your chat client after installing (closing the window often just minimizes it to the system tray)
+- Manually inspect the configuration file returned by `InstallMCPServer` to ensure the server is configured correctly
+- Check your client's documentation for location of log files and check for errors
 
 ### Slow first response
 
 The first tool call in a session starts a Wolfram Language kernel. This initial startup is slow but subsequent calls reuse the running kernel and are faster.
 
-### WolframContext not working
+### WolframContext not working as expected
 
-The `WolframContext` tool requires an [LLMKit subscription](https://www.wolfram.com/llmkit/). Without it, documentation search will fail. The `WolframLanguageEvaluator` and `WolframAlpha` tools work without LLMKit.
+The `WolframContext` tool requires an [LLMKit subscription](https://www.wolfram.com/llmkit/) for full functionality. Without it, Wolfram Alpha results will not be included and the documentation search will be less accurate. The `WolframLanguageEvaluator` and `WolframAlpha` tools work without LLMKit.
 
 ### Computation timeouts
 
 By default, evaluations have a 60-second time limit. For long-running computations, ask the AI to increase the timeout or break the computation into smaller steps.
 
-### Configuration errors
+### Server is using the wrong version of Wolfram Language
 
-Generate the expected configuration and compare it to your file:
-
-```wl
-MCPServerObject["Wolfram"]["JSONConfiguration"]
-```
-
-## Next Steps
-
-- [Predefined Servers](servers.md) - Explore all server configurations, including the WolframAlpha-only server
-- [MCP Tools](tools.md) - Detailed documentation on each tool
-- [MCP Clients](mcp-clients.md) - Full list of supported clients
+The installed MCP server will use the same version of Wolfram Language as the session it was installed from. If you want to use a different version of Wolfram Language, you need to install the MCP server in a session of that version or manually edit the configuration file to point to a different Wolfram kernel.
