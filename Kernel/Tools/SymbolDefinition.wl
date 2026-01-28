@@ -40,6 +40,7 @@ $defaultMCPTools[ "SymbolDefinition" ] := LLMTool @ <|
     "DisplayName" -> "Symbol Definition",
     "Description" -> $symbolDefinitionToolDescription,
     "Function"    -> getSymbolDefinition,
+    "Options"     -> { },
     "Parameters"  -> {
         "symbols" -> <|
             "Interpreter" -> "String",
