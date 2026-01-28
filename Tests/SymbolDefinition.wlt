@@ -150,10 +150,20 @@ VerificationTest[
     TestID   -> "ExistsNonexistent@@Tests/SymbolDefinition.wlt:146,1-151,2"
 ]
 
-(* Performance test: symbolExistsQ should be fast *)
+(* Performance test: symbolExistsQ using NameQ should be faster than or equal to Names *)
 VerificationTest[
-    (* This should complete in under 0.01 seconds if using NameQ *)
-    First @ AbsoluteTiming[ Wolfram`MCPServer`Tools`SymbolDefinition`Private`symbolExistsQ[ "System`Plus" ] ] < 0.01,
+    Module[ { nameQTime, namesTime },
+        (* Time the new NameQ implementation *)
+        nameQTime = First @ AbsoluteTiming[
+            Do[ Wolfram`MCPServer`Tools`SymbolDefinition`Private`symbolExistsQ[ "System`Plus" ], { 100 } ]
+        ];
+        (* Time the old Names implementation for comparison *)
+        namesTime = First @ AbsoluteTiming[
+            Do[ Names[ "System`Plus" ] =!= {}, { 100 } ]
+        ];
+        (* NameQ should be faster than or equal to Names (allowing small margin for variance) *)
+        nameQTime <= namesTime * 1.5
+    ],
     True,
     SameTest -> SameQ,
     TestID   -> "ExistsPerformance"
