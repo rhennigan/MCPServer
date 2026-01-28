@@ -1205,3 +1205,101 @@ VerificationTest[
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*$SupportedMCPClients*)
+VerificationTest[
+    $SupportedMCPClients,
+    _Association? AssociationQ,
+    SameTest -> MatchQ,
+    TestID   -> "SupportedMCPClients-ReturnsAssociation@@Tests/InstallMCPServer.wlt:1212,1-1217,2"
+]
+
+VerificationTest[
+    Length @ $SupportedMCPClients,
+    12,
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-Has12Clients@@Tests/InstallMCPServer.wlt:1219,1-1224,2"
+]
+
+VerificationTest[
+    Keys @ $SupportedMCPClients,
+    { "Antigravity", "ClaudeCode", "ClaudeDesktop", "Cline", "Codex", "CopilotCLI", "Cursor", "GeminiCLI", "OpenCode", "VisualStudioCode", "Windsurf", "Zed" },
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-KeysSorted@@Tests/InstallMCPServer.wlt:1226,1-1231,2"
+]
+
+VerificationTest[
+    AllTrue[
+        Values @ $SupportedMCPClients,
+        Function[ meta,
+            KeyExistsQ[ meta, "Name" ] &&
+            KeyExistsQ[ meta, "DisplayName" ] &&
+            KeyExistsQ[ meta, "Aliases" ] &&
+            KeyExistsQ[ meta, "ConfigFormat" ] &&
+            KeyExistsQ[ meta, "ProjectSupport" ] &&
+            KeyExistsQ[ meta, "ConfigKey" ] &&
+            KeyExistsQ[ meta, "URL" ]
+        ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-AllHaveRequiredKeys@@Tests/InstallMCPServer.wlt:1233,1-1249,2"
+]
+
+VerificationTest[
+    $SupportedMCPClients[ "ClaudeDesktop", "DisplayName" ],
+    "Claude Desktop",
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-ClaudeDesktopDisplayName@@Tests/InstallMCPServer.wlt:1251,1-1256,2"
+]
+
+VerificationTest[
+    $SupportedMCPClients[ "ClaudeDesktop", "Aliases" ],
+    { "Claude" },
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-ClaudeDesktopAliases@@Tests/InstallMCPServer.wlt:1258,1-1263,2"
+]
+
+VerificationTest[
+    $SupportedMCPClients[ "Codex", "ConfigFormat" ],
+    "TOML",
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-CodexConfigFormat@@Tests/InstallMCPServer.wlt:1265,1-1270,2"
+]
+
+VerificationTest[
+    $SupportedMCPClients[ "ClaudeCode", "ProjectSupport" ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-ClaudeCodeProjectSupport@@Tests/InstallMCPServer.wlt:1272,1-1277,2"
+]
+
+VerificationTest[
+    $SupportedMCPClients[ "Zed", "ConfigKey" ],
+    "context_servers",
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-ZedConfigKey@@Tests/InstallMCPServer.wlt:1279,1-1284,2"
+]
+
+VerificationTest[
+    $SupportedMCPClients[ "VisualStudioCode", "ConfigKey" ],
+    "mcp.servers",
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-VSCodeConfigKey@@Tests/InstallMCPServer.wlt:1286,1-1291,2"
+]
+
+VerificationTest[
+    $SupportedMCPClients[ "OpenCode", "ConfigKey" ],
+    "mcp",
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-OpenCodeConfigKey@@Tests/InstallMCPServer.wlt:1293,1-1298,2"
+]
+
+VerificationTest[
+    AllTrue[ Values @ $SupportedMCPClients, StringQ[ #[ "URL" ] ] && StringStartsQ[ #[ "URL" ], "https://" ] & ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-AllHaveValidURLs@@Tests/InstallMCPServer.wlt:1300,1-1305,2"
+]

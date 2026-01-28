@@ -26,6 +26,7 @@ PacletObject[ <|
                 "Wolfram`MCPServer`$MCPServerContexts",
                 "Wolfram`MCPServer`$MCPServerProtectedNames",
                 "Wolfram`MCPServer`$MCPServerSymbolNames",
+                "Wolfram`MCPServer`$SupportedMCPClients",
                 "Wolfram`MCPServer`CreateMCPServer",
                 "Wolfram`MCPServer`InstallMCPServer",
                 "Wolfram`MCPServer`MCPServer",
