@@ -1,0 +1,353 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* Created By: SaveReadableNotebook *)
+(* https://resources.wolframcloud.com/FunctionRepository/resources/SaveReadableNotebook *)
+
+Notebook[
+ {
+  Cell[
+   "MCP Server Functions",
+   "GuideTitle",
+   CellID -> 2019362013
+  ],
+  Cell[
+   CellGroupData[
+    {
+     Cell["", "GuideFunctionsSection", CellID -> 1495198650],
+     Cell[
+      TextData[
+       {
+        Cell[
+         BoxData[
+          ButtonBox[
+           "CreateMCPServer",
+           BaseStyle -> "Link",
+           ButtonData -> "paclet:Wolfram/MCPServer/ref/CreateMCPServer"
+          ]
+         ],
+         "InlineGuideFunction",
+         TaggingRules -> {"PageType" -> "Function"},
+         CellTags -> "c40ac8e4-27e1-4161-a8df-4d4f38357a23"
+        ],
+        " \[LongDash] create an MCP server"
+       }
+      ],
+      "GuideText",
+      CellID -> 529166846
+     ],
+     Cell[
+      TextData[
+       {
+        Cell[
+         BoxData[
+          ButtonBox[
+           "InstallMCPServer",
+           BaseStyle -> "Link",
+           ButtonData -> "paclet:Wolfram/MCPServer/ref/InstallMCPServer"
+          ]
+         ],
+         "InlineGuideFunction",
+         TaggingRules -> {"PageType" -> "Function"},
+         CellTags -> "c5c6736a-1ff4-4e4e-8fcf-2d9846cbae62"
+        ],
+        " \[LongDash] install an MCP server for an application"
+       }
+      ],
+      "GuideText",
+      CellID -> 1636090187
+     ],
+     Cell[
+      TextData[
+       {
+        Cell[
+         BoxData[
+          ButtonBox[
+           "MCPServerObject",
+           BaseStyle -> "Link",
+           ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObject"
+          ]
+         ],
+         "InlineGuideFunction",
+         TaggingRules -> {"PageType" -> "Function"},
+         CellTags -> "c40ac8e4-27e1-4161-a8df-4d4f38357a23"
+        ],
+        " \[LongDash] retrieve an MCP server or query its properties"
+       }
+      ],
+      "GuideText",
+      CellID -> 324931666
+     ],
+     Cell[
+      TextData[
+       {
+        Cell[
+         BoxData[
+          ButtonBox[
+           "MCPServerObjectQ",
+           BaseStyle -> "Link",
+           ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObjectQ"
+          ]
+         ],
+         "InlineGuideFunction",
+         TaggingRules -> {"PageType" -> "Function"},
+         CellTags -> "c5c6736a-1ff4-4e4e-8fcf-2d9846cbae62"
+        ],
+        " \[LongDash] test whether an expression represents a valid ",
+        Cell[
+         BoxData[
+          ButtonBox[
+           "MCPServer",
+           BaseStyle -> "Link",
+           ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServer"
+          ]
+         ],
+         "InlineFormula"
+        ],
+        " object"
+       }
+      ],
+      "GuideText",
+      CellID -> 657507832
+     ],
+     Cell[
+      TextData[
+       {
+        Cell[
+         BoxData[
+          ButtonBox[
+           "MCPServerObjects",
+           BaseStyle -> "Link",
+           ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObjects"
+          ]
+         ],
+         "InlineGuideFunction",
+         TaggingRules -> {"PageType" -> "Function"},
+         CellTags -> "c40ac8e4-27e1-4161-a8df-4d4f38357a23"
+        ],
+        " \[LongDash] get all local custom MCP severs"
+       }
+      ],
+      "GuideText",
+      CellID -> 1745987263
+     ],
+     Cell[
+      TextData[
+       {
+        Cell[
+         BoxData[
+          ButtonBox[
+           "UninstallMCPServer",
+           BaseStyle -> "Link",
+           ButtonData -> "paclet:Wolfram/MCPServer/ref/UninstallMCPServer"
+          ]
+         ],
+         "InlineGuideFunction",
+         TaggingRules -> {"PageType" -> "Function"},
+         CellTags -> "c5c6736a-1ff4-4e4e-8fcf-2d9846cbae62"
+        ],
+        " \[LongDash] uninstall one or more MCP servers"
+       }
+      ],
+      "GuideText",
+      CellID -> 2131132462
+     ],
+     Cell[
+      CellGroupData[
+       {
+        Cell["\t", "GuideDelimiter", CellID -> 1089912839],
+        Cell[
+         TextData[
+          {
+           Cell[
+            BoxData[
+             TagBox[FrameBox["\"XXXX\""], "FunctionPlaceholder"]
+            ],
+            "InlineGuideFunction",
+            TaggingRules -> {"PageType" -> "Function"}
+           ],
+           Cell[
+            BoxData[
+             RowBox[
+              {
+               Cell[
+                TextData[
+                 StyleBox[" \[FilledVerySmallSquare] ", "InlineSeparator"]
+                ]
+               ],
+               DynamicModuleBox[
+                {
+                 nbobj$$ = 
+                  NotebookObject[
+                   "d11a924e-e7aa-4a1b-85dc-3f1babcb9589",
+                   "6dadd425-c771-429c-b072-066849818e55"
+                  ],
+                 cellobj$$ = 
+                  CellObject[
+                   "ed08bb7d-67e3-4520-8e76-e20072c9850d",
+                   "810aa1d4-1d4f-45b6-ac26-d0741cecdb54"
+                  ]
+                },
+                TemplateBox[
+                 {
+                  GraphicsBox[
+                   {
+                    {
+                     Thickness[0.06],
+                     StrokeForm[Hue[0.4167, 0.406, 0.502]],
+                     CircleBox[{0, 0}]
+                    },
+                    {
+                     Thickness[0.06],
+                     StrokeForm[Hue[0.4167, 0.406, 0.502]],
+                     LineBox[{{0, 0.62}, {0, -0.62}}]
+                    },
+                    {
+                     Thickness[0.06],
+                     StrokeForm[Hue[0.4167, 0.406, 0.502]],
+                     LineBox[{{-0.62, 0}, {0.62, 0}}]
+                    }
+                   },
+                   ImagePadding -> {{1.0, 1.0}, {2.4, 1.0}},
+                   ImageSize -> 16,
+                   PlotRange -> {{-1.06, 1.06}, {-1.06, 1.06}},
+                   BaselinePosition -> Center -> Center
+                  ],
+                  nbobj$$,
+                  cellobj$$
+                 },
+                 "InlineListingAddButton"
+                ],
+                Initialization :>
+                 (nbobj$$ = EvaluationNotebook[];
+                 cellobj$$ = EvaluationCell[])
+               ]
+              }
+             ]
+            ],
+            "InlineListingAddButton"
+           ]
+          }
+         ],
+         "InlineGuideFunctionListing",
+         CellID -> 1508867155
+        ]
+       },
+       Open
+      ]
+     ]
+    },
+    Open
+   ]
+  ],
+  Cell[
+   CellGroupData[
+    {
+     Cell[
+      "Tech Notes",
+      "GuideTutorialsSection",
+      CellID -> 1714668150
+     ],
+     Cell["XXXX", "GuideTutorial", CellID -> 2041052775],
+     Cell["XXXX", "GuideTutorial", CellID -> 1659337307]
+    },
+    Open
+   ]
+  ],
+  Cell[
+   CellGroupData[
+    {
+     Cell[
+      "Related Guides",
+      "GuideMoreAboutSection",
+      CellID -> 529106766
+     ],
+     Cell["XXXX", "GuideMoreAbout", CellID -> 1074687243],
+     Cell["XXXX", "GuideMoreAbout", CellID -> 1534125349]
+    },
+    Open
+   ]
+  ],
+  Cell[
+   "Related Links",
+   "GuideRelatedLinksSection",
+   CellID -> 2058793340
+  ],
+  Cell[
+   CellGroupData[
+    {
+     Cell["Metadata", "MetadataSection", CellID -> 1443075654],
+     Cell[
+      TextData[
+       {
+        "New in: ",
+        Cell["XX", "HistoryData", CellTags -> "New"],
+        " | Modified in: ",
+        Cell[" ", "HistoryData", CellTags -> "Modified"],
+        " | Obsolete in: ",
+        Cell[" ", "HistoryData", CellTags -> "Obsolete"]
+       }
+      ],
+      "History",
+      CellID -> 701839037
+     ],
+     Cell[
+      CellGroupData[
+       {
+        Cell[
+         "Categorization",
+         "CategorizationSection",
+         CellID -> 62382359
+        ],
+        Cell[
+         "Guide",
+         "Categorization",
+         CellLabel -> "Entity Type",
+         CellID -> 111420630
+        ],
+        Cell[
+         "Wolfram/MCPServer",
+         "Categorization",
+         CellLabel -> "Paclet Name",
+         CellID -> 1016685141
+        ],
+        Cell[
+         "Wolfram`MCPServer`",
+         "Categorization",
+         CellLabel -> "Context",
+         CellID -> 1039187332
+        ],
+        Cell[
+         "Wolfram/MCPServer/guide/MCPServerFunctions",
+         "Categorization",
+         CellLabel -> "URI",
+         CellID -> 593436018
+        ]
+       },
+       Open
+      ]
+     ],
+     Cell[
+      CellGroupData[
+       {
+        Cell["Keywords", "KeywordsSection", CellID -> 1081461048],
+        Cell["MCP server", "Keywords", CellID -> 859638275]
+       },
+       Open
+      ]
+     ]
+    },
+    Open
+   ]
+  ]
+ },
+ TaggingRules -> <|"Paclet" -> "Wolfram/MCPServer"|>,
+ StyleDefinitions ->
+  FrontEnd`FileName[
+   {"Wolfram"},
+   "GuidePageStylesExt.nb",
+   CharacterEncoding -> "UTF-8"
+  ]
+]
