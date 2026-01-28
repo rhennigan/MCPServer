@@ -316,24 +316,43 @@ This gives the AI a concrete specification to work against and provides automati
 
 For non-trivial tasks, ask the AI to plan before implementing:
 
-> "I need to add a function that parses CSV files into Associations. Plan the implementation before writing code."
+> "I need to add a function that parses CSV files into Associations according to a given schema. Plan the implementation before writing code and ask me clarifying questions as needed."
 
 This lets the AI explore the codebase, understand existing patterns, and propose an approach for your review before making changes.
 
+**Note:** Many applications support a built-in "planning mode" that switches it into a mode that is optimized for this type of work. If your application supports this, you should use it to plan the implementation before writing code.
+
 ### Avoiding "Context Rot" in Large Tasks
 
-AI coding tools have finite context windows. For implementing large or complex features, context accumulation can degrade performance. Many applications have features to mitigate this, such as context compression, subagents, or task management features. However, these strategies also often involve using AI to make decisions about what information in the context is important. Mistakes in these decisions continuously compound, leading to worse and worse performance over time. For best results, you may want to consider taking a more manual approach to context management. Here we'll cover one such approach.
+AI coding tools have finite context windows. When implementing large features, accumulated context can degrade performance as the conversation grows. Many tools offer mitigation strategies—context compression, subagents, task management—but these rely on AI deciding what information matters. Mistakes compound over time, leading to progressively worse results.
 
-Here's the basic strategy:
+For complex features spanning multiple sessions, a manual approach to context management often works better. Here we'll describe an example workflow that's a variation of the currently popular ["Ralph" loop](https://ghuntley.com/ralph/). The core idea: instead of continuing one long conversation, start fresh sessions with carefully curated context.
 
-- Create a detailed specifications document for the feature you're implementing
-- Break down the specification into a list of tasks that need to be completed to implement the feature
-- Maintain a running log that summarizes the progress of the feature implementation
-- Iteratively use these three items as initial context asking the AI to take on *one* task at a time
+**When to use this approach:**
+- Features requiring more than 3-4 implementation sessions
+- Work that's likely to span multiple hours (or days)
+- Tasks where maintaining accuracy is critical
+
+**When it's overkill:**
+- Single-session features
+- Quick bug fixes or refactors
+- Exploratory prototyping
+
+#### The Workflow
+
+Organize your feature work using three documents:
+
+```
+Specs/FeatureName.md      # What to build (requirements, API, edge cases)
+TODO/FeatureName.md       # Tasks to complete (checklist)
+Progress/FeatureName.md   # What's been done (session summaries)
+```
+
+Each session, you provide these three files as context along with instructions to complete one task. After completing a task, the AI updates the progress log and task list, then you start a fresh session for the next task.
 
 #### Create a Specifications Document
 
-Before starting a large task, write a detailed spec:
+Before starting, write a detailed spec:
 
 ````markdown
 # Feature: CSV Import with Schema Validation
@@ -360,15 +379,20 @@ CSVImportValidated[file, schema] (* returns {<|...|>, ...} or Failure *)
 - Type mismatches return Failure["TypeError", ...]
 ````
 
-AI assistants can help you draft this spec—ask them to propose an API design or identify edge cases you might have missed. However, iterate on the document until every detail is correct. This spec becomes the source of truth for all implementation work that follows, so inaccuracies here will propagate into the code. Time spent getting the spec right pays dividends during implementation.
+AI assistants can help draft this spec—ask them to propose an API design or identify edge cases you might have missed. However, iterate until every detail is correct. This spec becomes the source of truth for all implementation work, so inaccuracies here will propagate into the code.
+
+**Tips for good specs:**
+- Be explicit about return types and error conditions
+- Include concrete examples for non-obvious behavior
+- Document assumptions and constraints
 
 #### Generate a Task List
 
-In a new session, ask the AI to generate a task list in another file based on the spec. For example:
+In a new session, ask the AI to generate a task list based on the spec:
 
-> "Analyze @Specs/CSVImportValidated.md and determine how to break it down into tasks. Create a file called TODO/CSVImportValidated.md with a list of these tasks with checkboxes for completion."
+> "Analyze @Specs/CSVImportValidated.md and break it down into implementation tasks. Create TODO/CSVImportValidated.md with a checklist."
 
-The goal is to have a file that looks something like this:
+Aim for tasks that can each be completed in a single focused session:
 
 ````markdown
 # TODO: CSVImportValidated
@@ -386,12 +410,11 @@ The goal is to have a file that looks something like this:
 
 #### Write Progress Reports
 
-At the end of each session, ask the AI to append a progress report to a running log. For example:
+At the end of each session, have the AI append a progress report:
 
-> Append a progress report to Progress/CSVImportValidated.md as a new '## Session N' section, concisely summarizing what we accomplished along with anything you've learned that might be useful for others resuming this task.
+> "Append a progress report to Progress/CSVImportValidated.md as a new '## Session N' section summarizing what was accomplished and anything useful for resuming this task."
 
-As you iterate, the file will be filled out with information about the current state of the feature implementation. This is important to minimize the amount of work the AI needs to do to resume the task from where it left off.
-For example, after the first session, the file might look like this:
+This log captures institutional knowledge that would otherwise be lost between sessions. After the first session:
 
 ````markdown
 # Progress: CSVImportValidated
@@ -416,42 +439,45 @@ Things learned:
 
 #### Iteratively Implement Tasks
 
-Now you can use the same prompt to iterate over the tasks in the task list. For example, interactively perform one iteration of the task list using Claude Code:
+For each session, provide the three context files with instructions to complete one task. Save this as a reusable prompt file (e.g., `prompts/implement-task.md`):
 
-```shell
-claude "## Task List
+````markdown
+## Context
 
 @TODO/CSVImportValidated.md
-
-## Full Specification
-
 @Specs/CSVImportValidated.md
-
-## Progress
-
 @Progress/CSVImportValidated.md
 
-## Your Current Task
+## Instructions
 
-- Choose the next task from the task list that is not yet complete
-- Carefully study the specification to understand the requirements for the current task
-- Implement the task
-- Append a progress report to Progress/CSVImportValidated.md as a new '## Session N' section, concisely summarizing what we accomplished along with anything you've learned that might be useful for others resuming this task
-- If the task is complete, update the task list in TODO/CSVImportValidated.md to mark it as complete and commit your changes with an appropriate commit message
-- Wait for user input to continue
+1. Choose the next incomplete task from the task list
+2. Study the specification requirements for that task
+3. Implement the task
+4. Append a progress report to Progress/CSVImportValidated.md
+5. Mark the task complete in TODO/CSVImportValidated.md
+6. Commit your changes
+7. Stop and wait for user input
 
-IMPORTANT: Only complete *one* task at a time. Do not attempt to complete multiple tasks at once."
+IMPORTANT: Complete only ONE task per session.
+````
+
+Then start each session with:
+
+```shell
+claude "$(cat prompts/implement-task.md)"
 ```
 
-**Note:** In Claude Code, the `@path/to/file` syntax is a way to insert the contents of the file at the specified location in the prompt. Other AI coding applications typically use a similar syntax. If they don't have this feature, you can always just ask the AI to read the files as part of the prompt.
+> **Note:** The `@path/to/file` syntax inserts file contents into the prompt. Most AI coding tools support similar syntax. If yours doesn't, ask the AI to read the files as its first action.
 
-After the AI completes the task, rather than continuing the same conversation and accumulating context, you start a new session using the same prompt to resume work on the next task.
+#### Best Practices
 
-For best results, you should be monitoring changes to the progress report as well as any source files that are modified. When necessary, you should step in and manually edit the progress file to ensure that it contains good context for the next session.
+**Start fresh sessions:** After completing a task, start a new session with the same prompt rather than continuing. This prevents context accumulation.
 
-This approach ensures that the AI is only working with high-quality context that is relevant to the current task whenever it resumes.
+**Monitor and edit:** Review changes to the progress file. When necessary, manually edit it to ensure good context for the next session—the AI may miss important details or include irrelevant information.
 
-You can even automate this as a loop if you write some code that checks if the task list is complete and stops the loop when it is.
+**Stay involved:** This approach works best when you're actively reviewing changes, not running unattended. Your judgment about what context matters is what prevents "context rot."
+
+**Automation:** You can script this as a loop that runs until all tasks are checked off, but monitor the results carefully.
 
 ## Security Considerations
 
