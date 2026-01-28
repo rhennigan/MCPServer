@@ -1,4 +1,4 @@
-# Quick Start: Wolfram MCP Server for AI Coding Applications
+# Quick Start for AI Coding Applications
 
 This guide walks you through setting up the Wolfram MCP Server with AI coding applications like Claude Code, Cursor, Visual Studio Code, and others. By the end, your AI coding assistant will be able to evaluate Wolfram Language code, search documentation, read and write notebooks, run tests, and inspect code.
 
@@ -322,7 +322,14 @@ This lets the AI explore the codebase, understand existing patterns, and propose
 
 ### Avoiding "Context Rot" in Large Tasks
 
-AI coding tools have finite context windows. For tasks spanning multiple sessions or involving many files, context can degrade. Use these strategies to maintain coherence:
+AI coding tools have finite context windows. For implementing large or complex features, context accumulation can degrade performance. Many applications have features to mitigate this, such as context compression, subagents, or task management features. However, these strategies also often involve using AI to make decisions about what information in the context is important. Mistakes in these decisions continuously compound, leading to worse and worse performance over time. For best results, you may want to consider taking a more manual approach to context management. Here we'll cover one such approach.
+
+Here's the basic strategy:
+
+- Create a detailed specifications document for the feature you're implementing
+- Break down the specification into a list of tasks that need to be completed to implement the feature
+- Maintain a running log that summarizes the progress of the feature implementation
+- Iteratively use these three items as initial context asking the AI to take on *one* task at a time
 
 #### Create a Specifications Document
 
@@ -339,7 +346,7 @@ Before starting a large task, write a detailed spec:
 
 ## API Design
 ```wl
-CSVImport[file, schema] (* returns {<|...|>, ...} or Failure *)
+CSVImportValidated[file, schema] (* returns {<|...|>, ...} or Failure *)
 ```
 
 ## Schema Format
@@ -353,43 +360,98 @@ CSVImport[file, schema] (* returns {<|...|>, ...} or Failure *)
 - Type mismatches return Failure["TypeError", ...]
 ````
 
-Reference this file when starting work:
+AI assistants can help you draft this spec—ask them to propose an API design or identify edge cases you might have missed. However, iterate on the document until every detail is correct. This spec becomes the source of truth for all implementation work that follows, so inaccuracies here will propagate into the code. Time spent getting the spec right pays dividends during implementation.
 
-> "Read the spec in docs/csv-import-spec.md and implement the CSVImport function."
+#### Generate a Task List
+
+In a new session, ask the AI to generate a task list in another file based on the spec. For example:
+
+> "Analyze @Specs/CSVImportValidated.md and determine how to break it down into tasks. Create a file called TODO/CSVImportValidated.md with a list of these tasks with checkboxes for completion."
+
+The goal is to have a file that looks something like this:
+
+````markdown
+# TODO: CSVImportValidated
+
+- [ ] Implement CSVImportValidated with basic parsing
+- [ ] Add schema validation for String, Integer, Real types
+- [ ] Write 12 tests, all passing
+- [ ] Add support for DateObject columns
+- [ ] Handle quoted strings with commas
+- [ ] Add Options for delimiter and header row
+- [ ] Verify all tests pass
+- [ ] Update documentation
+- [ ] Perform final review
+````
 
 #### Write Progress Reports
 
-At the end of each session, ask the AI to write a progress report:
+At the end of each session, ask the AI to append a progress report to a running log. For example:
 
-> "Write a progress report summarizing what we accomplished, what's left to do, and any decisions made. Save it to docs/progress/csv-import.md."
+> Append a progress report to Progress/CSVImportValidated.md as a new '## Session N' section, concisely summarizing what we accomplished along with anything you've learned that might be useful for others resuming this task.
 
-This produces a file like:
+As you iterate, the file will be filled out with information about the current state of the feature implementation. This is important to minimize the amount of work the AI needs to do to resume the task from where it left off.
+For example, after the first session, the file might look like this:
 
 ````markdown
-# Progress: CSV Import
+# Progress: CSVImportValidated
 
-## Completed
-- Implemented CSVImport with basic parsing
-- Added schema validation for String, Integer, Real types
-- Wrote 12 tests, all passing
+## Session 1
 
-## Remaining
-- Add support for DateObject columns
-- Handle quoted strings with commas
-- Add Options for delimiter and header row
+Task: Implement CSVImportValidated with basic parsing
+Status: Completed
 
-## Decisions
-- Using ReadList for parsing (faster than Import for large files)
-- Schema is required, no auto-detection
+Work completed:
+
+- Created Kernel/CSVImportValidated.wl with basic parsing implementation
+- CSVImportValidated currently returns a list of associations with no validation yet
+...
+
+Things learned:
+
+- `FileFormatQ["path/to/file.csv", "CSV"]` can check if a file is a valid CSV file without fully importing it
+...
+
 ````
 
-#### Resume with Context
+#### Iteratively Implement Tasks
 
-At the start of the next session, load both documents:
+Now you can use the same prompt to iterate over the tasks in the task list. For example, interactively perform one iteration of the task list using Claude Code:
 
-> "Read docs/csv-import-spec.md and docs/progress/csv-import.md, then continue implementing the CSV import feature."
+```shell
+claude "## Task List
 
-This gives the AI the full specification and current state without relying on conversation history.
+@TODO/CSVImportValidated.md
+
+## Full Specification
+
+@Specs/CSVImportValidated.md
+
+## Progress
+
+@Progress/CSVImportValidated.md
+
+## Your Current Task
+
+- Choose the next task from the task list that is not yet complete
+- Carefully study the specification to understand the requirements for the current task
+- Implement the task
+- Append a progress report to Progress/CSVImportValidated.md as a new '## Session N' section, concisely summarizing what we accomplished along with anything you've learned that might be useful for others resuming this task
+- If the task is complete, update the task list in TODO/CSVImportValidated.md to mark it as complete and commit your changes with an appropriate commit message
+- Wait for user input to continue
+
+IMPORTANT: Only complete *one* task at a time. Do not attempt to complete multiple tasks at once."
+```
+
+**Note:** In Claude Code, the `@path/to/file` syntax is a way to insert the contents of the file at the specified location in the prompt. Other AI coding applications typically use a similar syntax. If they don't have this feature, you can always just ask the AI to read the files as part of the prompt.
+
+After the AI completes the task, rather than continuing the same conversation and accumulating context, you start a new session using the same prompt to resume work on the next task.
+
+For best results, you should be monitoring changes to the progress report as well as any source files that are modified. When necessary, you should step in and manually edit the progress file to ensure that it contains good context for the next session.
+
+This approach ensures that the AI is only working with high-quality context that is relevant to the current task whenever it resumes.
+
+You can even automate this as a loop if you write some code that checks if the task list is complete and stops the loop when it is.
 
 ## Security Considerations
 
