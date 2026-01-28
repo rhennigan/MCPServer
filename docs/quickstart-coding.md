@@ -4,7 +4,7 @@ This guide walks you through setting up the Wolfram MCP Server with AI coding ap
 
 ## Recommended Server
 
-For coding applications, use the **WolframLanguage** server. It gives the AI the ability to:
+For Wolfram Language development, it's recommended to use the **WolframLanguage** server. It gives the AI the ability to:
 
 - **Search Wolfram resources** including documentation, function repository, data repository, and more
 - **Execute code** to test implementations and verify behavior
@@ -176,9 +176,9 @@ MCPServerObject["WolframLanguage"]["JSONConfiguration"]
 
 See [mcp-clients.md](mcp-clients.md) for a full list of supported clients, configuration file locations, and format details.
 
-### Verifying the Installation
+#### Verifying the Installation
 
-After installing, restart your coding tool and confirm the Wolfram tools are available. In most applications, you can ask:
+After installing, restart your coding tool and confirm the Wolfram tools are available. Most applications have a way to list configured MCP servers and their status. If you're unsure, you can always just ask the AI:
 
 > "What Wolfram Language tools do you have access to?"
 
@@ -374,23 +374,50 @@ At the start of the next session, load both documents:
 
 This gives the AI the full specification and current state without relying on conversation history.
 
+## Security Considerations
+
+The **WolframLanguageEvaluator** and **TestReport** tools execute arbitrary Wolfram Language code. This means they can perform any action that a Wolfram kernel can perform, including:
+
+- Reading, writing, and deleting files
+- Making network requests
+- Running system commands
+- Accessing environment variables
+
+Most AI coding applications support **approval-based permissions** that prompt you before the AI executes potentially dangerous tools. You should configure your application to require approval for these tools:
+
+| Tool | Risk | Recommendation |
+|------|------|----------------|
+| `WolframLanguageEvaluator` | Executes arbitrary code | Require approval |
+| `TestReport` | Runs test files (which execute code) | Require approval |
+| `WriteNotebook` | Writes notebook files | Require approval |
+| `CodeInspector` | Read-only, but reads file contents | Auto-approve or require approval* |
+| `ReadNotebook` | Read-only, but reads file contents | Auto-approve or require approval* |
+| `WolframLanguageContext` | Read-only documentation search | Auto-approve is safe |
+| `SymbolDefinition` | Read-only symbol lookup | Auto-approve is safe |
+
+*`CodeInspector` and `ReadNotebook` read file contents that are sent to your LLM provider. If your project contains sensitive information you wouldn't want included in LLM context, consider requiring approval for these tools as well. Note that these tools are designed for Wolfram Language files and notebooks respectively, so they will likely fail on other file types.
+
+### Prompt Injection Considerations
+
+If your AI coding application has access to tools that fetch content from the web or other untrusted sources, be aware of prompt injection risks. Malicious content could instruct the AI to use other tools in unintended ways.
+
+For example, `SymbolDefinition` is generally safe, but if the AI previously used `WolframLanguageEvaluator` to connect to a service (storing API keys in memory), a prompt injection attack could potentially instruct the AI to use `SymbolDefinition` to extract those values.
+
+As a general rule: if you auto-approve any tools that read untrusted external content, consider requiring approval for all other tools that could expose sensitive information.
+
+Consult your AI coding application's documentation for how to configure tool permissions.
+
 ## Troubleshooting
 
-### Tools not appearing
+### Server not connecting
 
-- Fully restart your coding tool after installation (closing the window often just minimizes it to the system tray)
+- Fully restart your coding application after installation (closing the window often just minimizes it to the system tray)
 - Manually inspect the configuration file returned by `InstallMCPServer` to ensure the server is configured correctly
-- Check your client's documentation for location of log files and check for errors
-
-### Timeouts or slow responses
-
-- The first tool call in a session starts a Wolfram kernel, which can be slow
-- Subsequent calls reuse the kernel and are faster
-- If timeouts persist, check that Wolfram Language starts correctly by running `wolframscript -code "Print[1+1]"` in your terminal
+- Check your client's documentation for location of log files or other diagnostic information to check for errors
 
 ### WolframLanguageContext not working as expected
 
-The `WolframLanguageContext` tool requires an [LLMKit subscription](https://www.wolfram.com/llmkit/) for best results. Without it, documentation search will be less accurate. Code execution (`WolframLanguageEvaluator`) and other tools work without LLMKit.
+The `WolframLanguageContext` tool requires an [LLM Kit subscription](https://www.wolfram.com/notebook-assistant-llm-kit/) for best results. Without it, documentation search will be less accurate. Code execution (`WolframLanguageEvaluator`) and other tools work without LLM Kit.
 
 ### Server is using the wrong version of Wolfram Language
 

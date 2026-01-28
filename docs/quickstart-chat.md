@@ -198,7 +198,7 @@ The first tool call in a session starts a Wolfram Language kernel. This initial 
 
 ### WolframContext not working as expected
 
-The `WolframContext` tool requires an [LLMKit subscription](https://www.wolfram.com/llmkit/) for full functionality. Without it, Wolfram Alpha results will not be included and the documentation search will be less accurate. The `WolframLanguageEvaluator` and `WolframAlpha` tools work without LLMKit.
+The `WolframContext` tool requires an [LLM Kit subscription](https://www.wolfram.com/notebook-assistant-llm-kit/) for full functionality. Without it, Wolfram Alpha results will not be included and the documentation search will be less accurate. The `WolframLanguageEvaluator` and `WolframAlpha` tools work without LLM Kit.
 
 ### Computation timeouts
 
