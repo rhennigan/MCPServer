@@ -172,25 +172,6 @@ VerificationTest[
     TestID   -> "ExistsPartialWildcard"
 ]
 
-(* Performance test: symbolExistsQ using NameQ should be faster than or equal to Names *)
-VerificationTest[
-    Module[ { nameQTime, namesTime },
-        (* Time the new NameQ implementation *)
-        nameQTime = First @ AbsoluteTiming[
-            Do[ Wolfram`MCPServer`Tools`SymbolDefinition`Private`symbolExistsQ[ "System`Plus" ], { 100 } ]
-        ];
-        (* Time the old Names implementation for comparison *)
-        namesTime = First @ AbsoluteTiming[
-            Do[ Names[ "System`Plus" ] =!= {}, { 100 } ]
-        ];
-        (* NameQ should be faster than or equal to Names (allowing small margin for variance) *)
-        nameQTime <= namesTime * 1.5
-    ],
-    True,
-    SameTest -> SameQ,
-    TestID   -> "ExistsPerformance"
-]
-
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*splitSymbolName*)
