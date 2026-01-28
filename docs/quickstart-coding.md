@@ -282,6 +282,23 @@ that the AI should follow.
 
 Adjust the template to match your actual project structure, conventions, and requirements.
 
+**Example:** To see a real-world `AGENTS.md` file, view the one used during development of this paclet:
+```wl
+Import[PacletObject["Wolfram/MCPServer"]["AssetLocation", "AGENTS.md"], "Text"]
+```
+
+### Keeping AGENTS.md Up to Date
+
+Your `AGENTS.md` is a living document that should evolve with your project. Update it when you:
+- Add new files, directories, or architectural components
+- Establish new coding patterns or conventions
+- Discover edge cases or gotchas the AI should know about
+- Change testing strategies or workflows
+
+A few minutes spent updating `AGENTS.md` after significant changes saves time in future sessions by preventing the AI from making outdated assumptions.
+
+> **Tip:** AI coding assistants can help you write and update your `AGENTS.md` file—just ask! However, always review AI-suggested changes carefully to ensure they accurately reflect your project's conventions and requirements.
+
 ## Best Practices for AI-Assisted Development
 
 ### Test-Driven Development
