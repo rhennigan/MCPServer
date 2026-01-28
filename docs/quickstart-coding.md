@@ -1,10 +1,10 @@
-# Quick Start: Wolfram MCP Server for AI Coding Tools
+# Quick Start: Wolfram MCP Server for AI Coding Applications
 
-This guide walks you through setting up the Wolfram MCP Server with AI coding tools like Claude Code, Cursor, VS Code, and others. By the end, your AI coding assistant will be able to evaluate Wolfram Language code, search documentation, read and write notebooks, run tests, and inspect code.
+This guide walks you through setting up the Wolfram MCP Server with AI coding applications like Claude Code, Cursor, Visual Studio Code, and others. By the end, your AI coding assistant will be able to evaluate Wolfram Language code, search documentation, read and write notebooks, run tests, and inspect code.
 
 ## Recommended Server
 
-For coding tools, use the **WolframLanguage** server. It gives the AI the ability to:
+For coding applications, use the **WolframLanguage** server. It gives the AI the ability to:
 
 - **Search Wolfram resources** including documentation, function repository, data repository, and more
 - **Execute code** to test implementations and verify behavior
@@ -15,17 +15,19 @@ For coding tools, use the **WolframLanguage** server. It gives the AI the abilit
 
 ## Installation
 
-All installation methods use the `InstallMCPServer` function. Open a Wolfram Language session and run the appropriate command for your tool.
+All installation methods use the `InstallMCPServer` function. Open a Wolfram Language session and run the appropriate command for your application.
 
 ### Claude Code
 
-**Global installation** (available in all projects):
+Choose whether to install the server globally or project-level. Global installation is available in all projects, while project-level installation is available only in a specific project directory.
+
+Global installation:
 
 ```wl
 InstallMCPServer["ClaudeCode", "WolframLanguage"]
 ```
 
-**Project-level installation** (available only in a specific project):
+Project-level installation:
 
 ```wl
 InstallMCPServer[{"ClaudeCode", "/path/to/project"}, "WolframLanguage"]
@@ -37,7 +39,7 @@ Verify the installation from the command line:
 claude mcp get WolframLanguage
 ```
 
-The output should indicate that the server is connected.
+The output should indicate that the "WolframLanguage" server is connected.
 
 ### Cline
 
@@ -50,6 +52,14 @@ InstallMCPServer["Cline", "WolframLanguage"]
 ```wl
 InstallMCPServer["CopilotCLI", "WolframLanguage"]
 ```
+
+To verify the installation from the command line:
+
+```shell
+copilot -i "/mcp show"
+```
+
+The output should indicate that the "WolframLanguage" server is configured.
 
 ### Cursor
 
@@ -69,11 +79,26 @@ To verify the installation:
 InstallMCPServer["GeminiCLI", "WolframLanguage"]
 ```
 
+To verify the installation from the command line:
+
+```shell
+gemini -i "/mcp"
+```
+
+The output should indicate that the "WolframLanguage" server is configured.
+
 ### Google Antigravity
 
 ```wl
 InstallMCPServer["Antigravity", "WolframLanguage"]
 ```
+
+To verify the installation:
+
+- In the editor view, click the "..." menu at the top right of the "Agent" panel
+- Select "MCP Servers"
+- Click "Manage MCP Servers" at the top right of the panel
+- Verify that "WolframLanguage" is listed under "Installed MCP Servers"
 
 ### OpenAI Codex
 
@@ -81,35 +106,53 @@ InstallMCPServer["Antigravity", "WolframLanguage"]
 InstallMCPServer["Codex", "WolframLanguage"]
 ```
 
+To verify the installation from the command line:
+
+```shell
+codex mcp get WolframLanguage
+```
+
+The output should indicate that the "WolframLanguage" server is enabled.
+
 ### OpenCode
 
-**Global installation** (available in all projects):
+Choose whether to install the server globally or project-level. Global installation is available in all projects, while project-level installation is available only in a specific project directory.
+
+Global installation:
 
 ```wl
 InstallMCPServer["OpenCode", "WolframLanguage"]
 ```
 
-**Project-level installation** (available only in a specific project):
+Project-level installation:
 
 ```wl
 InstallMCPServer[{"OpenCode", "/path/to/project"}, "WolframLanguage"]
 ```
 
+To verify the installation from the command line:
+
+```shell
+opencode mcp list
+```
+
+The output should indicate that the "WolframLanguage" server is connected.
+
 ### Visual Studio Code
 
-**Global installation** (available in all projects):
+Choose whether to install the server globally or project-level. Global installation is available in all projects, while project-level installation is available only in a specific project directory.
+
+Global installation:
 
 ```wl
 InstallMCPServer["VisualStudioCode", "WolframLanguage"]
 ```
 
-**Project-level installation** (available only in a specific project):
+Project-level installation:
 
 ```wl
 InstallMCPServer[{"VisualStudioCode", "/path/to/project"}, "WolframLanguage"]
 ```
-
-This adds configuration to `.vscode/settings.json` in the project directory.
 
 ### Windsurf
 
@@ -135,7 +178,7 @@ See [mcp-clients.md](mcp-clients.md) for a full list of supported clients, confi
 
 ### Verifying the Installation
 
-After installing, restart your coding tool and confirm the Wolfram tools are available. In most tools, you can ask:
+After installing, restart your coding tool and confirm the Wolfram tools are available. In most applications, you can ask:
 
 > "What Wolfram Language tools do you have access to?"
 
