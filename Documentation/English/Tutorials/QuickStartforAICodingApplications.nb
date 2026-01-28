@@ -226,7 +226,7 @@ Notebook[
             CellID -> 58055741
            ]
           },
-          Closed
+          Open
          ]
         ],
         Cell[
@@ -248,7 +248,7 @@ Notebook[
             CellID -> 44390945
            ]
           },
-          Closed
+          Open
          ]
         ],
         Cell[
@@ -293,7 +293,7 @@ Notebook[
             CellID -> 243159260
            ]
           },
-          Closed
+          Open
          ]
         ],
         Cell[
@@ -335,7 +335,7 @@ Notebook[
             CellID -> 106649718
            ]
           },
-          Closed
+          Open
          ]
         ],
         Cell[
@@ -380,7 +380,7 @@ Notebook[
             CellID -> 238422330
            ]
           },
-          Closed
+          Open
          ]
         ],
         Cell[
@@ -427,7 +427,7 @@ Notebook[
             CellID -> 395951229
            ]
           },
-          Closed
+          Open
          ]
         ],
         Cell[
@@ -472,7 +472,7 @@ Notebook[
             CellID -> 725136532
            ]
           },
-          Closed
+          Open
          ]
         ],
         Cell[
@@ -572,7 +572,7 @@ Notebook[
             CellID -> 145828150
            ]
           },
-          Closed
+          Open
          ]
         ],
         Cell[
@@ -657,7 +657,7 @@ Notebook[
             ]
            ]
           },
-          Closed
+          Open
          ]
         ],
         Cell[
@@ -679,7 +679,7 @@ Notebook[
             CellID -> 382155078
            ]
           },
-          Closed
+          Open
          ]
         ],
         Cell[
@@ -701,7 +701,7 @@ Notebook[
             CellID -> 657386784
            ]
           },
-          Closed
+          Open
          ]
         ],
         Cell[
@@ -811,7 +811,7 @@ Notebook[
             ]
            ]
           },
-          Closed
+          Open
          ]
         ]
        },

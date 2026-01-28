@@ -202,6 +202,18 @@ Notebook[
          "InlineSeeAlsoFunction",
          TaggingRules -> {"PageType" -> "Function"}
         ],
+        StyleBox[" \[FilledVerySmallSquare] ", "InlineSeparator"],
+        Cell[
+         BoxData[
+          ButtonBox[
+           "$DefaultMCPTools",
+           BaseStyle -> "Link",
+           ButtonData -> "paclet:Wolfram/MCPServer/ref/$DefaultMCPTools"
+          ]
+         ],
+         "InlineSeeAlsoFunction",
+         TaggingRules -> {"PageType" -> "Function"}
+        ],
         Cell[
          BoxData[
           RowBox[
@@ -215,13 +227,13 @@ Notebook[
              {
               nbobj$$ = 
                NotebookObject[
-                "03e75b7c-8adc-6d4f-9dd6-2efe90add320",
-                "03e7a0aa-72fd-aa41-8d8b-fc5a5023ae08"
+                "67183c05-026c-ea46-bb26-0b5d964f5921",
+                "c084e5dd-fd54-bf4e-9ef2-52866f6d8835"
                ],
               cellobj$$ = 
                CellObject[
-                "9ec67b14-10cf-0541-9575-a8283117d397",
-                "81473496-27bb-7340-9c34-cf69916fe762"
+                "a51d9c9e-8d4d-cd48-b004-36492e66a4bb",
+                "6b8e6ab4-2c2c-eb4e-849a-51e6f701f865"
                ]
              },
              TemplateBox[
@@ -2634,14 +2646,1272 @@ Notebook[
       ]
      ],
      Cell[
-      BoxData[
-       InterpretationBox[
-        Cell["Applications", "ExampleSection"],
-        $Line = 0;
-       ]
-      ],
-      "ExampleSection",
-      CellID -> 274984704
+      CellGroupData[
+       {
+        Cell[
+         BoxData[
+          InterpretationBox[
+           Cell["Applications", "ExampleSection"],
+           $Line = 0;
+          ]
+         ],
+         "ExampleSection",
+         CellID -> 274984704
+        ],
+        Cell[
+         "Create a custom MCP server using some of the available predefined tools:",
+         "ExampleText",
+         CellID -> 53086891
+        ],
+        Cell[
+         CellGroupData[
+          {
+           Cell[
+            BoxData[RowBox[{"Keys", "[", "$DefaultMCPTools", "]"}]],
+            "Input",
+            CellLabel -> "In[1]:=",
+            CellID -> 70047733
+           ],
+           Cell[
+            BoxData[
+             RowBox[
+              {
+               "{",
+               RowBox[
+                {
+                 "\"CodeInspector\"",
+                 ",",
+                 "\"CreateSymbolDoc\"",
+                 ",",
+                 "\"EditSymbolDoc\"",
+                 ",",
+                 "\"EditSymbolDocExamples\"",
+                 ",",
+                 "\"ReadNotebook\"",
+                 ",",
+                 "\"SymbolDefinition\"",
+                 ",",
+                 "\"TestReport\"",
+                 ",",
+                 "\"WolframAlpha\"",
+                 ",",
+                 "\"WolframAlphaContext\"",
+                 ",",
+                 "\"WolframContext\"",
+                 ",",
+                 "\"WolframLanguageContext\"",
+                 ",",
+                 "\"WolframLanguageEvaluator\"",
+                 ",",
+                 "\"WriteNotebook\""
+                }
+               ],
+               "}"
+              }
+             ]
+            ],
+            "Output",
+            CellLabel -> "Out[1]=",
+            CellID -> 25382385
+           ]
+          },
+          Open
+         ]
+        ],
+        Cell[
+         CellGroupData[
+          {
+           Cell[
+            BoxData[
+             RowBox[
+              {
+               "server",
+               "=",
+               RowBox[
+                {
+                 "CreateMCPServer",
+                 "[",
+                 RowBox[
+                  {
+                   "\"WolframNotebooks\"",
+                   ",",
+                   RowBox[
+                    {
+                     "<|",
+                     RowBox[
+                      {
+                       "\"Tools\"",
+                       "->",
+                       RowBox[
+                        {
+                         "{",
+                         RowBox[{"\"ReadNotebook\"", ",", "\"WriteNotebook\""}],
+                         "}"
+                        }
+                       ]
+                      }
+                     ],
+                     "|>"
+                    }
+                   ]
+                  }
+                 ],
+                 "]"
+                }
+               ]
+              }
+             ]
+            ],
+            "Input",
+            CellLabel -> "In[2]:=",
+            CellID -> 100929038
+           ],
+           Cell[
+            BoxData[
+             InterpretationBox[
+              RowBox[
+               {
+                TagBox["MCPServerObject", "SummaryHead"],
+                "[",
+                DynamicModuleBox[
+                 {Typeset`open$$ = False, Typeset`embedState$$ = "Ready"},
+                 TemplateBox[
+                  {
+                   PaneSelectorBox[
+                    {
+                     False ->
+                      GridBox[
+                       {
+                        {
+                         PaneBox[
+                          ButtonBox[
+                           DynamicBox[
+                            FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxOpener"]
+                           ],
+                           ButtonFunction :> (Typeset`open$$ = True),
+                           Appearance -> None,
+                           BaseStyle -> { },
+                           Evaluator -> Automatic,
+                           Method -> "Preemptive"
+                          ],
+                          Alignment -> {Center, Center},
+                          ImageSize ->
+                           Dynamic[
+                            {
+                             Automatic,
+                             Times[
+                              3.5,
+                              Times[
+                               CurrentValue["FontCapHeight"],
+                               AbsoluteCurrentValue[Magnification]^(-1)
+                              ]
+                             ]
+                            }
+                           ]
+                         ],
+                         GraphicsBox[
+                          {
+                           Thickness[0.005979],
+                           StyleBox[
+                            {
+                             JoinedCurveBox[
+                              {{{0, 2, 0}, {1, 3, 3}, {1, 3, 3}, {0, 1, 0}}},
+                              {
+                               {
+                                {25.0, 97.147},
+                                {92.882, 165.03},
+                                {102.25, 174.4},
+                                {117.45, 174.4},
+                                {126.82, 165.03},
+                                {136.2, 155.66},
+                                {136.2, 140.46},
+                                {126.82, 131.09},
+                                {75.558, 79.823}
+                               }
+                              },
+                              CurveClosed -> {0}
+                             ]
+                            },
+                            {
+                             CapForm["Round"],
+                             JoinForm[{"Miter", 1.0}],
+                             Thickness[0.071749]
+                            },
+                            StripOnInput -> False
+                           ],
+                           StyleBox[
+                            {
+                             JoinedCurveBox[
+                              {
+                               {
+                                {0, 2, 0},
+                                {1, 3, 3},
+                                {0, 1, 0},
+                                {1, 3, 3},
+                                {0, 1, 0},
+                                {1, 3, 3},
+                                {0, 1, 0}
+                               }
+                              },
+                              {
+                               {
+                                {76.265, 80.53},
+                                {126.82, 131.09},
+                                {136.2, 140.46},
+                                {151.39, 140.46},
+                                {160.76, 131.09},
+                                {161.12, 130.73},
+                                {170.49, 121.36},
+                                {170.49, 106.17},
+                                {161.12, 96.794},
+                                {99.725, 35.4},
+                                {96.601, 32.276},
+                                {96.601, 27.211},
+                                {99.725, 24.087},
+                                {112.33, 11.48}
+                               }
+                              },
+                              CurveClosed -> {0}
+                             ]
+                            },
+                            {
+                             CapForm["Round"],
+                             JoinForm[{"Miter", 1.0}],
+                             Thickness[0.071749]
+                            },
+                            StripOnInput -> False
+                           ],
+                           StyleBox[
+                            {
+                             JoinedCurveBox[
+                              {{{0, 2, 0}, {1, 3, 3}, {1, 3, 3}, {0, 1, 0}}},
+                              {
+                               {
+                                {109.85, 148.06},
+                                {59.648, 97.854},
+                                {50.276, 88.482},
+                                {50.276, 73.286},
+                                {59.648, 63.913},
+                                {69.021, 54.541},
+                                {84.217, 54.541},
+                                {93.589, 63.913},
+                                {143.79, 114.12}
+                               }
+                              },
+                              CurveClosed -> {0}
+                             ]
+                            },
+                            {
+                             CapForm["Round"],
+                             JoinForm[{"Miter", 1.0}],
+                             Thickness[0.071749]
+                            },
+                            StripOnInput -> False
+                           ]
+                          },
+                          ImageSize -> 24
+                         ],
+                         GridBox[
+                          {
+                           {
+                            RowBox[
+                             {
+                              TagBox["\"Name: \"", "SummaryItemAnnotation"],
+                              "\[InvisibleSpace]",
+                              TagBox["\"WolframNotebooks\"", "SummaryItem"]
+                             }
+                            ]
+                           },
+                           {
+                            RowBox[
+                             {
+                              TagBox["\"Transport: \"", "SummaryItemAnnotation"],
+                              "\[InvisibleSpace]",
+                              TagBox["\"StandardInputOutput\"", "SummaryItem"]
+                             }
+                            ]
+                           }
+                          },
+                          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Automatic}}},
+                          AutoDelete -> False,
+                          GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+                          GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+                          BaseStyle -> {
+                           ShowStringCharacters -> False,
+                           NumberMarks -> False,
+                           PrintPrecision -> 3,
+                           ShowSyntaxStyles -> False
+                          }
+                         ]
+                        }
+                       },
+                       GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}},
+                       AutoDelete -> False,
+                       GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+                       BaselinePosition -> {1, 1}
+                      ],
+                     True ->
+                      GridBox[
+                       {
+                        {
+                         PaneBox[
+                          ButtonBox[
+                           DynamicBox[
+                            FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxCloser"]
+                           ],
+                           ButtonFunction :> (Typeset`open$$ = False),
+                           Appearance -> None,
+                           BaseStyle -> { },
+                           Evaluator -> Automatic,
+                           Method -> "Preemptive"
+                          ],
+                          Alignment -> {Center, Center},
+                          ImageSize ->
+                           Dynamic[
+                            {
+                             Automatic,
+                             Times[
+                              3.5,
+                              Times[
+                               CurrentValue["FontCapHeight"],
+                               AbsoluteCurrentValue[Magnification]^(-1)
+                              ]
+                             ]
+                            }
+                           ]
+                         ],
+                         GraphicsBox[
+                          {
+                           Thickness[0.005979],
+                           StyleBox[
+                            {
+                             JoinedCurveBox[
+                              {{{0, 2, 0}, {1, 3, 3}, {1, 3, 3}, {0, 1, 0}}},
+                              {
+                               {
+                                {25.0, 97.147},
+                                {92.882, 165.03},
+                                {102.25, 174.4},
+                                {117.45, 174.4},
+                                {126.82, 165.03},
+                                {136.2, 155.66},
+                                {136.2, 140.46},
+                                {126.82, 131.09},
+                                {75.558, 79.823}
+                               }
+                              },
+                              CurveClosed -> {0}
+                             ]
+                            },
+                            {
+                             CapForm["Round"],
+                             JoinForm[{"Miter", 1.0}],
+                             Thickness[0.071749]
+                            },
+                            StripOnInput -> False
+                           ],
+                           StyleBox[
+                            {
+                             JoinedCurveBox[
+                              {
+                               {
+                                {0, 2, 0},
+                                {1, 3, 3},
+                                {0, 1, 0},
+                                {1, 3, 3},
+                                {0, 1, 0},
+                                {1, 3, 3},
+                                {0, 1, 0}
+                               }
+                              },
+                              {
+                               {
+                                {76.265, 80.53},
+                                {126.82, 131.09},
+                                {136.2, 140.46},
+                                {151.39, 140.46},
+                                {160.76, 131.09},
+                                {161.12, 130.73},
+                                {170.49, 121.36},
+                                {170.49, 106.17},
+                                {161.12, 96.794},
+                                {99.725, 35.4},
+                                {96.601, 32.276},
+                                {96.601, 27.211},
+                                {99.725, 24.087},
+                                {112.33, 11.48}
+                               }
+                              },
+                              CurveClosed -> {0}
+                             ]
+                            },
+                            {
+                             CapForm["Round"],
+                             JoinForm[{"Miter", 1.0}],
+                             Thickness[0.071749]
+                            },
+                            StripOnInput -> False
+                           ],
+                           StyleBox[
+                            {
+                             JoinedCurveBox[
+                              {{{0, 2, 0}, {1, 3, 3}, {1, 3, 3}, {0, 1, 0}}},
+                              {
+                               {
+                                {109.85, 148.06},
+                                {59.648, 97.854},
+                                {50.276, 88.482},
+                                {50.276, 73.286},
+                                {59.648, 63.913},
+                                {69.021, 54.541},
+                                {84.217, 54.541},
+                                {93.589, 63.913},
+                                {143.79, 114.12}
+                               }
+                              },
+                              CurveClosed -> {0}
+                             ]
+                            },
+                            {
+                             CapForm["Round"],
+                             JoinForm[{"Miter", 1.0}],
+                             Thickness[0.071749]
+                            },
+                            StripOnInput -> False
+                           ]
+                          },
+                          ImageSize -> 24
+                         ],
+                         GridBox[
+                          {
+                           {
+                            RowBox[
+                             {
+                              TagBox["\"Name: \"", "SummaryItemAnnotation"],
+                              "\[InvisibleSpace]",
+                              TagBox["\"WolframNotebooks\"", "SummaryItem"]
+                             }
+                            ]
+                           },
+                           {
+                            RowBox[
+                             {
+                              TagBox["\"Transport: \"", "SummaryItemAnnotation"],
+                              "\[InvisibleSpace]",
+                              TagBox["\"StandardInputOutput\"", "SummaryItem"]
+                             }
+                            ]
+                           },
+                           {
+                            RowBox[
+                             {
+                              TagBox["\"JSON Configuration: \"", "SummaryItemAnnotation"],
+                              "\[InvisibleSpace]",
+                              TagBox[
+                               TagBox[
+                                DynamicModuleBox[
+                                 {boxObj, cellObj},
+                                 TagBox[
+                                  TagBox[
+                                   ButtonBox[
+                                    TagBox[
+                                     "\"{\[Ellipsis]}\"",
+                                     BoxForm`Undeploy,
+                                     DefaultBaseStyle -> {Deployed -> False}
+                                    ],
+                                    ButtonFunction :> {
+                                     CopyToClipboard[
+                                      "{\n\t\"mcpServers\":{\n\t\t\"WolframNotebooks\":{\n\t\t\t\"type\":\"stdio\",\n\t\t\t\"command\":\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\14.3\\\\wolfram.exe\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/MCPServer\\\",\\\"Wolfram`MCPServer`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframNotebooks\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                     ],
+                                     NotebookDelete[cellObj],
+                                     FrontEndExecute[
+                                      FrontEnd`AttachCell[
+                                       boxObj,
+                                       Cell[
+                                        BoxData[TemplateBox[{"Copied"}, "ClickToCopyTooltip"]]
+                                       ],
+                                       {1, {Center, Bottom}},
+                                       {Center, Top},
+                                       "ClosingActions" -> {"ParentChanged", "MouseExit"}
+                                      ]
+                                     ]
+                                    },
+                                    Evaluator -> Automatic,
+                                    Appearance -> {
+                                     "Default" -> None,
+                                     "Hover" ->
+                                      FrontEnd`FileName[
+                                       {"Typeset", "ClickToCopy"},
+                                       "Hover.9.png"
+                                      ],
+                                     "Pressed" ->
+                                      FrontEnd`FileName[
+                                       {"Typeset", "ClickToCopy"},
+                                       "Pressed.9.png"
+                                      ]
+                                    },
+                                    BaseStyle -> { },
+                                    DefaultBaseStyle -> { },
+                                    BaselinePosition -> Baseline,
+                                    FrameMargins -> 2,
+                                    Method -> "Preemptive"
+                                   ],
+                                   EventHandlerTag[
+                                    {
+                                     "MouseEntered" :>
+                                      (cellObj = 
+                                       MathLink`CallFrontEnd[
+                                        FrontEnd`AttachCell[
+                                         boxObj,
+                                         Cell[BoxData[TemplateBox[{"Copy"}, "ClickToCopyTooltip"]]],
+                                         {1, {Center, Bottom}},
+                                         {Center, Top},
+                                         "ClosingActions" -> {"ParentChanged"}
+                                        ]
+                                       ]),
+                                     "MouseExited" :> NotebookDelete[cellObj],
+                                     PassEventsDown -> True,
+                                     Method -> "Preemptive",
+                                     PassEventsUp -> True
+                                    }
+                                   ]
+                                  ],
+                                  MouseAppearanceTag["LinkHand"]
+                                 ],
+                                 Initialization :> (boxObj = EvaluationBox[]),
+                                 DynamicModuleValues :> { },
+                                 UnsavedVariables :> {boxObj, cellObj},
+                                 BaseStyle -> {Editable -> False}
+                                ],
+                                Deploy,
+                                DefaultBaseStyle -> "Deploy"
+                               ],
+                               "SummaryItem"
+                              ]
+                             }
+                            ]
+                           },
+                           {
+                            RowBox[
+                             {
+                              TagBox["\"Tool Names: \"", "SummaryItemAnnotation"],
+                              "\[InvisibleSpace]",
+                              TagBox[
+                               TagBox[
+                                GridBox[
+                                 {{"\"ReadNotebook\"", "\"WriteNotebook\"", "", "", ""}},
+                                 GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+                                 AutoDelete -> False,
+                                 GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}
+                                ],
+                                "Grid"
+                               ],
+                               "SummaryItem"
+                              ]
+                             }
+                            ]
+                           },
+                           {
+                            RowBox[
+                             {
+                              TagBox["\"Location: \"", "SummaryItemAnnotation"],
+                              "\[InvisibleSpace]",
+                              TagBox[
+                               RowBox[
+                                {
+                                 "File",
+                                 "[",
+                                 TemplateBox[
+                                  {
+                                   "\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\ApplicationData\\\\Wolfram\\\\MCPServer\\\\Servers\\\\WolframNotebooks\""
+                                  },
+                                  "FileArgument"
+                                 ],
+                                 "]"
+                                }
+                               ],
+                               "SummaryItem"
+                              ]
+                             }
+                            ]
+                           }
+                          },
+                          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Automatic}}},
+                          AutoDelete -> False,
+                          GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+                          GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+                          BaseStyle -> {
+                           ShowStringCharacters -> False,
+                           NumberMarks -> False,
+                           PrintPrecision -> 3,
+                           ShowSyntaxStyles -> False
+                          }
+                         ]
+                        }
+                       },
+                       GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}},
+                       AutoDelete -> False,
+                       GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+                       BaselinePosition -> {1, 1}
+                      ]
+                    },
+                    Dynamic[Typeset`open$$],
+                    ImageSize -> Automatic
+                   ]
+                  },
+                  "SummaryPanel"
+                 ],
+                 DynamicModuleValues :> { }
+                ],
+                "]"
+               }
+              ],
+              Wolfram`MCPServer`MCPServerObject[
+               <|
+                "LLMEvaluator" -> Association["Tools" -> {"ReadNotebook", "WriteNotebook"}],
+                "Name" -> "WolframNotebooks",
+                "ObjectVersion" -> 1,
+                "ServerVersion" -> "1.0.0",
+                "Transport" -> "StandardInputOutput",
+                "Location" ->
+                 File[
+                  "C:\\Users\\rhennigan\\AppData\\Roaming\\Wolfram\\ApplicationData\\Wolfram\\MCPServer\\Servers\\WolframNotebooks"
+                 ]
+               |>
+              ],
+              Editable -> False,
+              SelectWithContents -> True,
+              Selectable -> False
+             ]
+            ],
+            "Output",
+            CellLabel -> "Out[2]=",
+            CellID -> 107587775
+           ]
+          },
+          Open
+         ]
+        ],
+        Cell[
+         CellGroupData[
+          {
+           Cell[
+            BoxData[RowBox[{"server", "[", "\"Tools\"", "]"}]],
+            "Input",
+            CellLabel -> "In[3]:=",
+            CellID -> 797461729
+           ],
+           Cell[
+            BoxData[
+             RowBox[
+              {
+               "{",
+               RowBox[
+                {
+                 InterpretationBox[
+                  RowBox[
+                   {
+                    TagBox["LLMTool", "SummaryHead"],
+                    "[",
+                    DynamicModuleBox[
+                     {Typeset`open$$ = False, Typeset`embedState$$ = "Ready"},
+                     TemplateBox[
+                      {
+                       PaneSelectorBox[
+                        {
+                         False ->
+                          GridBox[
+                           {
+                            {
+                             PaneBox[
+                              ButtonBox[
+                               DynamicBox[
+                                FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxOpener"]
+                               ],
+                               ButtonFunction :> (Typeset`open$$ = True),
+                               Appearance -> None,
+                               BaseStyle -> { },
+                               Evaluator -> Automatic,
+                               Method -> "Preemptive"
+                              ],
+                              Alignment -> {Center, Center},
+                              ImageSize ->
+                               Dynamic[
+                                {
+                                 Automatic,
+                                 Times[
+                                  3.5,
+                                  Times[
+                                   CurrentValue["FontCapHeight"],
+                                   AbsoluteCurrentValue[Magnification]^(-1)
+                                  ]
+                                 ]
+                                }
+                               ]
+                             ],
+                             GridBox[
+                              {
+                               {
+                                RowBox[
+                                 {
+                                  TagBox["\"Name: \"", "SummaryItemAnnotation"],
+                                  "\[InvisibleSpace]",
+                                  TagBox["\"ReadNotebook\"", "SummaryItem"]
+                                 }
+                                ]
+                               },
+                               {
+                                RowBox[
+                                 {
+                                  TagBox["\"Description: \"", "SummaryItemAnnotation"],
+                                  "\[InvisibleSpace]",
+                                  TagBox[
+                                   "\"Reads the contents of a Wolfram notebook (.nb) as markdown text.\"",
+                                   "SummaryItem"
+                                  ]
+                                 }
+                                ]
+                               }
+                              },
+                              GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Automatic}}},
+                              AutoDelete -> False,
+                              GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+                              GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+                              BaseStyle -> {
+                               ShowStringCharacters -> False,
+                               NumberMarks -> False,
+                               PrintPrecision -> 3,
+                               ShowSyntaxStyles -> False
+                              }
+                             ]
+                            }
+                           },
+                           GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}},
+                           AutoDelete -> False,
+                           GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+                           BaselinePosition -> {1, 1}
+                          ],
+                         True ->
+                          GridBox[
+                           {
+                            {
+                             PaneBox[
+                              ButtonBox[
+                               DynamicBox[
+                                FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxCloser"]
+                               ],
+                               ButtonFunction :> (Typeset`open$$ = False),
+                               Appearance -> None,
+                               BaseStyle -> { },
+                               Evaluator -> Automatic,
+                               Method -> "Preemptive"
+                              ],
+                              Alignment -> {Center, Center},
+                              ImageSize ->
+                               Dynamic[
+                                {
+                                 Automatic,
+                                 Times[
+                                  3.5,
+                                  Times[
+                                   CurrentValue["FontCapHeight"],
+                                   AbsoluteCurrentValue[Magnification]^(-1)
+                                  ]
+                                 ]
+                                }
+                               ]
+                             ],
+                             GridBox[
+                              {
+                               {
+                                RowBox[
+                                 {
+                                  TagBox["\"Name: \"", "SummaryItemAnnotation"],
+                                  "\[InvisibleSpace]",
+                                  TagBox["\"ReadNotebook\"", "SummaryItem"]
+                                 }
+                                ]
+                               },
+                               {
+                                RowBox[
+                                 {
+                                  TagBox["\"Description: \"", "SummaryItemAnnotation"],
+                                  "\[InvisibleSpace]",
+                                  TagBox[
+                                   "\"Reads the contents of a Wolfram notebook (.nb) as markdown text.\"",
+                                   "SummaryItem"
+                                  ]
+                                 }
+                                ]
+                               },
+                               {
+                                RowBox[
+                                 {
+                                  TagBox["\"Function: \"", "SummaryItemAnnotation"],
+                                  "\[InvisibleSpace]",
+                                  TagBox[
+                                   "Wolfram`MCPServer`Tools`Notebooks`Private`readNotebook",
+                                   "SummaryItem"
+                                  ]
+                                 }
+                                ]
+                               },
+                               {
+                                RowBox[
+                                 {
+                                  TagBox["\"Parameters: \"", "SummaryItemAnnotation"],
+                                  "\[InvisibleSpace]",
+                                  TagBox[
+                                   TagBox[
+                                    GridBox[
+                                     {
+                                      {
+                                       TagBox[
+                                        TooltipBox[
+                                         "\"notebook\"",
+                                         "\"\\\"Help\\\" description sent to the LLM: \\\"The Wolfram notebook to read, specified as a file path or a NotebookObject[...]\\\"\"",
+                                         TooltipStyle -> "TextStyling"
+                                        ],
+                                        Function[
+                                         Annotation[
+                                          #1,
+                                          "\"Help\" description sent to the LLM: \"The Wolfram notebook to read, specified as a file path or a NotebookObject[...]\"",
+                                          "Tooltip"
+                                         ]
+                                        ]
+                                       ],
+                                       TagBox[
+                                        TooltipBox[
+                                         TemplateBox[
+                                          {
+                                           "\"String\"",
+                                           RowBox[{"Interpreter", "[", "\"String\"", "]"}]
+                                          },
+                                          "ClickToCopy2"
+                                         ],
+                                         "\"parameter interpreter\"",
+                                         TooltipStyle -> "TextStyling"
+                                        ],
+                                        Annotation[#1, "parameter interpreter", "Tooltip"] &
+                                       ],
+                                       "\"\""
+                                      }
+                                     },
+                                     GridBoxAlignment -> {"Columns" -> {{Left}}},
+                                     AutoDelete -> False,
+                                     GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+                                     BaselinePosition -> {{1, 1}, Axis},
+                                     BaseStyle -> {ButtonBoxOptions -> {ImageSize -> Automatic}}
+                                    ],
+                                    "Grid"
+                                   ],
+                                   "SummaryItem"
+                                  ]
+                                 }
+                                ]
+                               }
+                              },
+                              GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Automatic}}},
+                              AutoDelete -> False,
+                              GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+                              GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+                              BaseStyle -> {
+                               ShowStringCharacters -> False,
+                               NumberMarks -> False,
+                               PrintPrecision -> 3,
+                               ShowSyntaxStyles -> False
+                              }
+                             ]
+                            }
+                           },
+                           GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}},
+                           AutoDelete -> False,
+                           GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+                           BaselinePosition -> {1, 1}
+                          ]
+                        },
+                        Dynamic[Typeset`open$$],
+                        ImageSize -> Automatic
+                       ]
+                      },
+                      "SummaryPanel"
+                     ],
+                     DynamicModuleValues :> { }
+                    ],
+                    "]"
+                   }
+                  ],
+                  LLMTool[
+                   <|
+                    "Name" -> "ReadNotebook",
+                    "DisplayName" -> "Read Notebook",
+                    "Description" -> "Reads the contents of a Wolfram notebook (.nb) as markdown text.",
+                    "Function" -> Wolfram`MCPServer`Tools`Notebooks`Private`readNotebook,
+                    "Options" -> { },
+                    "Parameters" -> {
+                     "notebook" -> <|
+                      "Interpreter" -> "String",
+                      "Help" -> "The Wolfram notebook to read, specified as a file path or a NotebookObject[...]",
+                      "Required" -> True
+                     |>
+                    },
+                    "LLMPacletVersion" -> "2.2.6"
+                   |>
+                  ],
+                  Editable -> False,
+                  SelectWithContents -> True,
+                  Selectable -> False
+                 ],
+                 ",",
+                 InterpretationBox[
+                  RowBox[
+                   {
+                    TagBox["LLMTool", "SummaryHead"],
+                    "[",
+                    DynamicModuleBox[
+                     {Typeset`open$$ = False, Typeset`embedState$$ = "Ready"},
+                     TemplateBox[
+                      {
+                       PaneSelectorBox[
+                        {
+                         False ->
+                          GridBox[
+                           {
+                            {
+                             PaneBox[
+                              ButtonBox[
+                               DynamicBox[
+                                FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxOpener"]
+                               ],
+                               ButtonFunction :> (Typeset`open$$ = True),
+                               Appearance -> None,
+                               BaseStyle -> { },
+                               Evaluator -> Automatic,
+                               Method -> "Preemptive"
+                              ],
+                              Alignment -> {Center, Center},
+                              ImageSize ->
+                               Dynamic[
+                                {
+                                 Automatic,
+                                 Times[
+                                  3.5,
+                                  Times[
+                                   CurrentValue["FontCapHeight"],
+                                   AbsoluteCurrentValue[Magnification]^(-1)
+                                  ]
+                                 ]
+                                }
+                               ]
+                             ],
+                             GridBox[
+                              {
+                               {
+                                RowBox[
+                                 {
+                                  TagBox["\"Name: \"", "SummaryItemAnnotation"],
+                                  "\[InvisibleSpace]",
+                                  TagBox["\"WriteNotebook\"", "SummaryItem"]
+                                 }
+                                ]
+                               },
+                               {
+                                RowBox[
+                                 {
+                                  TagBox["\"Description: \"", "SummaryItemAnnotation"],
+                                  "\[InvisibleSpace]",
+                                  TagBox[
+                                   "\"Converts markdown text to a Wolfram notebook and saves it to a file.\"",
+                                   "SummaryItem"
+                                  ]
+                                 }
+                                ]
+                               }
+                              },
+                              GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Automatic}}},
+                              AutoDelete -> False,
+                              GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+                              GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+                              BaseStyle -> {
+                               ShowStringCharacters -> False,
+                               NumberMarks -> False,
+                               PrintPrecision -> 3,
+                               ShowSyntaxStyles -> False
+                              }
+                             ]
+                            }
+                           },
+                           GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}},
+                           AutoDelete -> False,
+                           GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+                           BaselinePosition -> {1, 1}
+                          ],
+                         True ->
+                          GridBox[
+                           {
+                            {
+                             PaneBox[
+                              ButtonBox[
+                               DynamicBox[
+                                FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxCloser"]
+                               ],
+                               ButtonFunction :> (Typeset`open$$ = False),
+                               Appearance -> None,
+                               BaseStyle -> { },
+                               Evaluator -> Automatic,
+                               Method -> "Preemptive"
+                              ],
+                              Alignment -> {Center, Center},
+                              ImageSize ->
+                               Dynamic[
+                                {
+                                 Automatic,
+                                 Times[
+                                  3.5,
+                                  Times[
+                                   CurrentValue["FontCapHeight"],
+                                   AbsoluteCurrentValue[Magnification]^(-1)
+                                  ]
+                                 ]
+                                }
+                               ]
+                             ],
+                             GridBox[
+                              {
+                               {
+                                RowBox[
+                                 {
+                                  TagBox["\"Name: \"", "SummaryItemAnnotation"],
+                                  "\[InvisibleSpace]",
+                                  TagBox["\"WriteNotebook\"", "SummaryItem"]
+                                 }
+                                ]
+                               },
+                               {
+                                RowBox[
+                                 {
+                                  TagBox["\"Description: \"", "SummaryItemAnnotation"],
+                                  "\[InvisibleSpace]",
+                                  TagBox[
+                                   "\"Converts markdown text to a Wolfram notebook and saves it to a file.\"",
+                                   "SummaryItem"
+                                  ]
+                                 }
+                                ]
+                               },
+                               {
+                                RowBox[
+                                 {
+                                  TagBox["\"Function: \"", "SummaryItemAnnotation"],
+                                  "\[InvisibleSpace]",
+                                  TagBox[
+                                   "Wolfram`MCPServer`Tools`Notebooks`Private`writeNotebook",
+                                   "SummaryItem"
+                                  ]
+                                 }
+                                ]
+                               },
+                               {
+                                RowBox[
+                                 {
+                                  TagBox["\"Parameters: \"", "SummaryItemAnnotation"],
+                                  "\[InvisibleSpace]",
+                                  TagBox[
+                                   TagBox[
+                                    GridBox[
+                                     {
+                                      {
+                                       TagBox[
+                                        TooltipBox[
+                                         "\"file\"",
+                                         "\"\\\"Help\\\" description sent to the LLM: \\\"The file to write the notebook to (must end in .nb).\\\"\"",
+                                         TooltipStyle -> "TextStyling"
+                                        ],
+                                        Function[
+                                         Annotation[
+                                          #1,
+                                          "\"Help\" description sent to the LLM: \"The file to write the notebook to (must end in .nb).\"",
+                                          "Tooltip"
+                                         ]
+                                        ]
+                                       ],
+                                       TagBox[
+                                        TooltipBox[
+                                         TemplateBox[
+                                          {
+                                           "\"String\"",
+                                           RowBox[{"Interpreter", "[", "\"String\"", "]"}]
+                                          },
+                                          "ClickToCopy2"
+                                         ],
+                                         "\"parameter interpreter\"",
+                                         TooltipStyle -> "TextStyling"
+                                        ],
+                                        Annotation[#1, "parameter interpreter", "Tooltip"] &
+                                       ],
+                                       "\"\""
+                                      },
+                                      {
+                                       TagBox[
+                                        TooltipBox[
+                                         "\"overwrite\"",
+                                         "\"\\\"Help\\\" description sent to the LLM: \\\"Whether to overwrite an existing file (default is False).\\\"\"",
+                                         TooltipStyle -> "TextStyling"
+                                        ],
+                                        Function[
+                                         Annotation[
+                                          #1,
+                                          "\"Help\" description sent to the LLM: \"Whether to overwrite an existing file (default is False).\"",
+                                          "Tooltip"
+                                         ]
+                                        ]
+                                       ],
+                                       TagBox[
+                                        TooltipBox[
+                                         TemplateBox[
+                                          {
+                                           "\"Boolean\"",
+                                           RowBox[{"Interpreter", "[", "\"Boolean\"", "]"}]
+                                          },
+                                          "ClickToCopy2"
+                                         ],
+                                         "\"parameter interpreter\"",
+                                         TooltipStyle -> "TextStyling"
+                                        ],
+                                        Annotation[#1, "parameter interpreter", "Tooltip"] &
+                                       ],
+                                       "\"(optional)\""
+                                      },
+                                      {
+                                       TagBox[
+                                        TooltipBox[
+                                         "\"markdown\"",
+                                         "\"\\\"Help\\\" description sent to the LLM: \\\"The markdown text to write to a notebook.\\\"\"",
+                                         TooltipStyle -> "TextStyling"
+                                        ],
+                                        Function[
+                                         Annotation[
+                                          #1,
+                                          "\"Help\" description sent to the LLM: \"The markdown text to write to a notebook.\"",
+                                          "Tooltip"
+                                         ]
+                                        ]
+                                       ],
+                                       TagBox[
+                                        TooltipBox[
+                                         TemplateBox[
+                                          {
+                                           "\"String\"",
+                                           RowBox[{"Interpreter", "[", "\"String\"", "]"}]
+                                          },
+                                          "ClickToCopy2"
+                                         ],
+                                         "\"parameter interpreter\"",
+                                         TooltipStyle -> "TextStyling"
+                                        ],
+                                        Annotation[#1, "parameter interpreter", "Tooltip"] &
+                                       ],
+                                       "\"\""
+                                      }
+                                     },
+                                     GridBoxAlignment -> {"Columns" -> {{Left}}},
+                                     AutoDelete -> False,
+                                     GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+                                     BaselinePosition -> {{1, 1}, Axis},
+                                     BaseStyle -> {ButtonBoxOptions -> {ImageSize -> Automatic}}
+                                    ],
+                                    "Grid"
+                                   ],
+                                   "SummaryItem"
+                                  ]
+                                 }
+                                ]
+                               }
+                              },
+                              GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Automatic}}},
+                              AutoDelete -> False,
+                              GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+                              GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+                              BaseStyle -> {
+                               ShowStringCharacters -> False,
+                               NumberMarks -> False,
+                               PrintPrecision -> 3,
+                               ShowSyntaxStyles -> False
+                              }
+                             ]
+                            }
+                           },
+                           GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}},
+                           AutoDelete -> False,
+                           GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+                           BaselinePosition -> {1, 1}
+                          ]
+                        },
+                        Dynamic[Typeset`open$$],
+                        ImageSize -> Automatic
+                       ]
+                      },
+                      "SummaryPanel"
+                     ],
+                     DynamicModuleValues :> { }
+                    ],
+                    "]"
+                   }
+                  ],
+                  LLMTool[
+                   <|
+                    "Name" -> "WriteNotebook",
+                    "DisplayName" -> "Write Notebook",
+                    "Description" -> "Converts markdown text to a Wolfram notebook and saves it to a file.",
+                    "Function" -> Wolfram`MCPServer`Tools`Notebooks`Private`writeNotebook,
+                    "Options" -> { },
+                    "Parameters" -> {
+                     "file" -> <|
+                      "Interpreter" -> "String",
+                      "Help" -> "The file to write the notebook to (must end in .nb).",
+                      "Required" -> True
+                     |>,
+                     "overwrite" -> <|
+                      "Interpreter" -> "Boolean",
+                      "Help" -> "Whether to overwrite an existing file (default is False).",
+                      "Required" -> False
+                     |>,
+                     "markdown" -> <|
+                      "Interpreter" -> "String",
+                      "Help" -> "The markdown text to write to a notebook.",
+                      "Required" -> True
+                     |>
+                    },
+                    "LLMPacletVersion" -> "2.2.6"
+                   |>
+                  ],
+                  Editable -> False,
+                  SelectWithContents -> True,
+                  Selectable -> False
+                 ]
+                }
+               ],
+               "}"
+              }
+             ]
+            ],
+            "Output",
+            CellLabel -> "Out[3]=",
+            CellID -> 113244717
+           ]
+          },
+          Open
+         ]
+        ],
+        Cell[
+         BoxData[RowBox[{"DeleteObject", "[", "server", "]"}]],
+         "Input",
+         CellLabel -> "In[4]:=",
+         CellID -> 812631286
+        ]
+       },
+       Open
+      ]
      ],
      Cell[
       BoxData[
