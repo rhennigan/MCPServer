@@ -27,7 +27,7 @@ This is the default server when no server name is specified. It provides:
 
 | Component | Name | Description |
 |-----------|------|-------------|
-| Tool | `WolframContext` | Semantic search across Wolfram documentation and Wolfram Alpha |
+| Tool | `WolframContext` | Semantic search across Wolfram resources (documentation, Wolfram Alpha, repositories, and more) |
 | Tool | `WolframLanguageEvaluator` | Execute Wolfram Language code |
 | Tool | `WolframAlpha` | Natural language queries to Wolfram Alpha |
 | Prompt | `Search` | Combined documentation and Wolfram Alpha search |
@@ -64,7 +64,7 @@ This server provides comprehensive Wolfram Language development tools:
 
 | Component | Name | Description |
 |-----------|------|-------------|
-| Tool | `WolframLanguageContext` | Semantic search for Wolfram Language documentation |
+| Tool | `WolframLanguageContext` | Semantic search across Wolfram Language resources (documentation, repositories, and more) |
 | Tool | `WolframLanguageEvaluator` | Execute Wolfram Language code |
 | Tool | `ReadNotebook` | Read Wolfram notebooks (.nb) as markdown |
 | Tool | `WriteNotebook` | Convert markdown to Wolfram notebooks |
@@ -88,7 +88,7 @@ This server extends `WolframLanguage` with paclet documentation tools:
 
 | Component | Name | Description |
 |-----------|------|-------------|
-| Tool | `WolframLanguageContext` | Semantic search for Wolfram Language documentation |
+| Tool | `WolframLanguageContext` | Semantic search across Wolfram Language resources (documentation, repositories, and more) |
 | Tool | `WolframLanguageEvaluator` | Execute Wolfram Language code |
 | Tool | `ReadNotebook` | Read Wolfram notebooks (.nb) as markdown |
 | Tool | `WriteNotebook` | Convert markdown to Wolfram notebooks |

@@ -32,7 +32,7 @@ Needs[ "Wolfram`MCPServer`Common`" ];
 (*Default Tools*)
 $DefaultMCPTools := WithCleanup[
     Unprotect @ $DefaultMCPTools,
-    $DefaultMCPTools = AssociationMap[ Apply @ Rule, $defaultMCPTools ],
+    $DefaultMCPTools = KeySort @ AssociationMap[ Apply @ Rule, $defaultMCPTools ],
     Protect @ $DefaultMCPTools
 ];
 

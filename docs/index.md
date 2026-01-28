@@ -2,7 +2,12 @@
 
 This is the developer documentation for contributing to MCPServer. For user documentation, see the [MCPServer paclet documentation](https://paclets.com/Wolfram/MCPServer).
 
-## Quick Start
+## User Guides
+
+- **[Quick Start: AI Coding Tools](quickstart-coding.md)** - Set up the Wolfram MCP Server with Claude Code, Cursor, VS Code, and other coding tools
+- **[Quick Start: Chat Clients](quickstart-chat.md)** - Add Wolfram computational capabilities to Claude Desktop and other chat clients
+
+## Developer Quick Start
 
 - **[Getting Started](getting-started.md)** - Set up your development environment and learn the workflow
 
