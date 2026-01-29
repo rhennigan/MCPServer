@@ -12,6 +12,7 @@
         "noinit",
         "noprompt",
         "opencode",
+        "pacletreadonly",
         "patt",
         "reranking",
         "shdw",

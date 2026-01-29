@@ -16,7 +16,7 @@
 #     -e MCP_SERVER_NAME=Wolfram \
 #     ghcr.io/rhennigan/mcpserver:latest
 
-FROM wolframresearch/wolframengine:14.2
+FROM wolframresearch/wolframengine:14.3
 
 LABEL org.opencontainers.image.title="Wolfram MCP Server"
 LABEL org.opencontainers.image.description="Model Context Protocol server for Wolfram Language"
@@ -52,5 +52,8 @@ ENV MCP_SERVER_NAME="Wolfram"
 # Wolfram system configuration
 ENV WOLFRAM_SYSTEM_ID="Linux-x86-64"
 
+# Disable automatic paclet updates
+ENV WOLFRAMINIT="-pacletreadonly"
+
 # Entry point - MCP servers communicate via stdin/stdout
-ENTRYPOINT ["wolframscript", "-f", "/opt/MCPServer/Scripts/StartMCPServer.wls"]
+CMD ["wolframscript", "-f", "/opt/MCPServer/Scripts/StartMCPServer.wls"]

@@ -89,4 +89,4 @@ jobs:
         echo "Image pulled successfully"
         # Basic sanity check: verify that the container can start.
         # Note: Full runtime test requires Wolfram Engine license.
-        docker run --rm "$IMAGE_TAG" true
+        docker run --rm --env WOLFRAMSCRIPT_ENTITLEMENTID "$IMAGE_TAG" wolframscript -code '$Version'
