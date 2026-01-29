@@ -53,9 +53,9 @@ $DefaultMCPTools = <|
 
 | Tool | Description | Server |
 |------|-------------|--------|
-| `WolframContext` | Semantic search for combined Wolfram documentation and Wolfram Alpha results | Wolfram |
+| `WolframContext` | Semantic search across Wolfram resources (documentation, Wolfram Alpha, repositories, and more) | Wolfram |
 | `WolframAlphaContext` | Semantic search for Wolfram Alpha results | WolframAlpha |
-| `WolframLanguageContext` | Semantic search for Wolfram Language documentation | WolframLanguage, WolframPacletDevelopment |
+| `WolframLanguageContext` | Semantic search across Wolfram Language resources (documentation, function repository, data repository, neural net repository, and more) | WolframLanguage, WolframPacletDevelopment |
 
 #### Code Execution Tools
 

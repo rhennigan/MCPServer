@@ -13,6 +13,132 @@ $installName = None;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*$SupportedMCPClients*)
+$SupportedMCPClients := WithCleanup[
+    Unprotect @ $SupportedMCPClients,
+    $SupportedMCPClients = KeySort @ AssociationMap[ clientMetadata, Keys @ $supportedMCPClients ],
+    Protect @ $SupportedMCPClients
+];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*$supportedMCPClients*)
+$supportedMCPClients = <|
+    "ClaudeDesktop" -> <|
+        "DisplayName"    -> "Claude Desktop",
+        "Aliases"        -> { "Claude" },
+        "ConfigFormat"   -> "JSON",
+        "ProjectSupport" -> False,
+        "ConfigKey"      -> "mcpServers",
+        "URL"            -> "https://claude.ai/download"
+    |>,
+    "ClaudeCode" -> <|
+        "DisplayName"    -> "Claude Code",
+        "Aliases"        -> { },
+        "ConfigFormat"   -> "JSON",
+        "ProjectSupport" -> True,
+        "ConfigKey"      -> "mcpServers",
+        "URL"            -> "https://code.claude.com"
+    |>,
+    "Cursor" -> <|
+        "DisplayName"    -> "Cursor",
+        "Aliases"        -> { },
+        "ConfigFormat"   -> "JSON",
+        "ProjectSupport" -> False,
+        "ConfigKey"      -> "mcpServers",
+        "URL"            -> "https://www.cursor.com"
+    |>,
+    "GeminiCLI" -> <|
+        "DisplayName"    -> "Gemini CLI",
+        "Aliases"        -> { "Gemini" },
+        "ConfigFormat"   -> "JSON",
+        "ProjectSupport" -> False,
+        "ConfigKey"      -> "mcpServers",
+        "URL"            -> "https://github.com/google-gemini/gemini-cli"
+    |>,
+    "Antigravity" -> <|
+        "DisplayName"    -> "Antigravity",
+        "Aliases"        -> { "GoogleAntigravity" },
+        "ConfigFormat"   -> "JSON",
+        "ProjectSupport" -> False,
+        "ConfigKey"      -> "mcpServers",
+        "URL"            -> "https://antigravity.google"
+    |>,
+    "Codex" -> <|
+        "DisplayName"    -> "Codex CLI",
+        "Aliases"        -> { "OpenAICodex" },
+        "ConfigFormat"   -> "TOML",
+        "ProjectSupport" -> False,
+        "ConfigKey"      -> "mcp_servers",
+        "URL"            -> "https://openai.com/codex"
+    |>,
+    "CopilotCLI" -> <|
+        "DisplayName"    -> "Copilot CLI",
+        "Aliases"        -> { "Copilot" },
+        "ConfigFormat"   -> "JSON",
+        "ProjectSupport" -> False,
+        "ConfigKey"      -> "mcpServers",
+        "URL"            -> "https://github.com/features/copilot/cli"
+    |>,
+    "OpenCode" -> <|
+        "DisplayName"    -> "OpenCode",
+        "Aliases"        -> { },
+        "ConfigFormat"   -> "JSON",
+        "ProjectSupport" -> True,
+        "ConfigKey"      -> "mcp",
+        "URL"            -> "https://opencode.ai"
+    |>,
+    "VisualStudioCode" -> <|
+        "DisplayName"    -> "Visual Studio Code",
+        "Aliases"        -> { "VSCode" },
+        "ConfigFormat"   -> "JSON",
+        "ProjectSupport" -> True,
+        "ConfigKey"      -> "mcp.servers",
+        "URL"            -> "https://code.visualstudio.com"
+    |>,
+    "Windsurf" -> <|
+        "DisplayName"    -> "Windsurf",
+        "Aliases"        -> { "Codeium" },
+        "ConfigFormat"   -> "JSON",
+        "ProjectSupport" -> False,
+        "ConfigKey"      -> "mcpServers",
+        "URL"            -> "https://codeium.com/windsurf"
+    |>,
+    "Cline" -> <|
+        "DisplayName"    -> "Cline",
+        "Aliases"        -> { },
+        "ConfigFormat"   -> "JSON",
+        "ProjectSupport" -> False,
+        "ConfigKey"      -> "mcpServers",
+        "URL"            -> "https://cline.bot"
+    |>,
+    "Zed" -> <|
+        "DisplayName"    -> "Zed",
+        "Aliases"        -> { },
+        "ConfigFormat"   -> "JSON",
+        "ProjectSupport" -> True,
+        "ConfigKey"      -> "context_servers",
+        "URL"            -> "https://zed.dev"
+    |>
+|>;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*clientMetadata*)
+clientMetadata // beginDefinition;
+clientMetadata[ name_String ] := KeySort @ <| "Name" -> name, $supportedMCPClients @ name |>;
+clientMetadata // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*$aliasToCanonicalName*)
+$aliasToCanonicalName := $aliasToCanonicalName = Association @ Flatten @ KeyValueMap[
+    Function[ { name, meta }, Thread[ meta[ "Aliases" ] -> name ] ],
+    $supportedMCPClients
+];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*InstallMCPServer*)
 InstallMCPServer // beginDefinition;
 
@@ -842,40 +968,23 @@ projectInstallLocation // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*toInstallName*)
 toInstallName // beginDefinition;
-toInstallName[ "Claude"            ] := "ClaudeDesktop";
-toInstallName[ "VSCode"            ] := "VisualStudioCode";
-toInstallName[ "Gemini"            ] := "GeminiCLI";
-toInstallName[ "GoogleAntigravity" ] := "Antigravity";
-toInstallName[ "OpenAICodex"       ] := "Codex";
-toInstallName[ "Copilot"           ] := "CopilotCLI";
-toInstallName[ "Codeium"           ] := "Windsurf";
-toInstallName[ name_String         ] := name;
+toInstallName[ name_String ] := Lookup[ $aliasToCanonicalName, name, name ];
 toInstallName // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
 (*installDisplayName*)
 installDisplayName // beginDefinition;
-installDisplayName[ "ClaudeDesktop"    ] := "Claude Desktop";
-installDisplayName[ "ClaudeCode"       ] := "Claude Code";
-installDisplayName[ "VisualStudioCode" ] := "Visual Studio Code";
-installDisplayName[ "GeminiCLI"        ] := "Gemini CLI";
-installDisplayName[ "Antigravity"      ] := "Antigravity";
-installDisplayName[ "Codex"            ] := "Codex CLI";
-installDisplayName[ "CopilotCLI"       ] := "Copilot CLI";
-installDisplayName[ "OpenCode"         ] := "OpenCode";
-installDisplayName[ "Windsurf"         ] := "Windsurf";
-installDisplayName[ "Cline"            ] := "Cline";
-installDisplayName[ "Zed"              ] := "Zed";
-installDisplayName[ name_String        ] := name;
-installDisplayName[ None               ] := None;
+installDisplayName[ name_String ] := Lookup[ $supportedMCPClients, name, <| |> ][ "DisplayName" ] // Replace[ _Missing -> name ];
+installDisplayName[ None ] := None;
 installDisplayName // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Package Footer*)
 addToMXInitialization[
-    Null
+    $SupportedMCPClients;
+    $aliasToCanonicalName
 ];
 
 End[ ];
