@@ -1,0 +1,23 @@
+name: Copilot Setup Steps
+
+on: workflow_dispatch
+
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Pre-pull MCP Server Docker image
+        run: |
+          echo "Pulling MCP Server Docker image..."
+          docker pull ghcr.io/rhennigan/mcpserver:main
+          echo "Docker image pulled successfully"
+
+      - name: Verify Docker image
+        run: |
+          echo "Verifying Docker image is available..."
+          docker images ghcr.io/rhennigan/mcpserver:main
