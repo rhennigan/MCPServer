@@ -50,7 +50,7 @@ Use a free [Wolfram Engine Developer License](https://www.wolfram.com/developer-
      ghcr.io/rhennigan/mcpserver:latest
    ```
 
-**Note:** The license expires periodically and will auto-renew, but you'll need to copy the updated credentials.
+**Note:** The license expires periodically and will auto-renew automatically when the Wolfram kernel starts and the container has internet connectivity. Ensure that the `./Licensing` directory is kept persistent and mounted on every run so that the renewed license is preserved across container restarts.
 
 ## Server Configurations
 
