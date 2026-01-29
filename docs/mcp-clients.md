@@ -151,6 +151,49 @@ Note: Cline uses the standard `mcpServers` format with additional `disabled` and
 
 Note: Copilot CLI requires the `tools` field to specify which tools to enable. `InstallMCPServer` automatically adds `"tools": ["*"]` to enable all tools.
 
+### GitHub Copilot (Repository Settings)
+
+GitHub Copilot can be configured to use MCP servers at the repository level through GitHub repository settings. This is different from the Copilot CLI.
+
+**Configuration Location:** GitHub repository settings → Copilot → MCP servers
+
+**Format:** The configuration is added through the GitHub UI or can be specified in repository configuration files. Example configuration:
+
+```json
+{
+    "mcpServers": {
+        "wolfram": {
+            "type": "stdio",
+            "command": "docker",
+            "args": [
+                "run", "-i", "--rm",
+                "-v", ".:/workspace",
+                "-e", "WOLFRAMSCRIPT_ENTITLEMENTID=$COPILOT_MCP_WOLFRAMSCRIPT_ENTITLEMENTID",
+                "-e", "MCP_SERVER_NAME=WolframLanguage",
+                "ghcr.io/rhennigan/mcpserver:main"
+            ],
+            "tools": ["*"]
+        }
+    }
+}
+```
+
+**Important Notes:**
+- GitHub Copilot in repositories runs on GitHub's infrastructure, not locally
+- Docker is commonly used to ensure consistent execution across GitHub's runners
+- Environment variables can be passed using repository secrets (prefix with `$COPILOT_MCP_`)
+- The MCP server startup time is critical - if it takes too long, Copilot will timeout
+
+**Performance Optimization:**
+To avoid startup timeouts when using GitHub Copilot with Docker-based MCP servers, this repository includes a workflow (`.github/workflows/copilot-setup-steps.yml`) that:
+1. Pre-pulls the Docker image on GitHub's runners
+2. Pre-installs required Wolfram paclets (Wolfram/Chatbook)
+3. Warms up the Wolfram Engine to ensure faster startup
+
+The workflow runs automatically on pushes to main and release branches, and can be manually triggered from the Actions tab. This optimization significantly reduces the time it takes for the MCP server to respond to Copilot's initialization request.
+
+For more details, see the [Docker documentation](docker.md#github-copilot).
+
 ### Cursor
 
 | Scope | Config Location |

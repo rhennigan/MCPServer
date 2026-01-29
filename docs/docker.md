@@ -113,6 +113,36 @@ Add to your project's `.mcp.json` or global `~/.claude.json`:
 }
 ```
 
+### GitHub Copilot
+
+For GitHub Copilot integration in a repository, add to your repository settings (`.github/copilot-instructions.md` or via GitHub UI):
+
+```json
+{
+  "mcpServers": {
+    "wolfram": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-v", ".:/workspace",
+        "-e", "WOLFRAMSCRIPT_ENTITLEMENTID=$COPILOT_MCP_WOLFRAMSCRIPT_ENTITLEMENTID",
+        "-e", "MCP_SERVER_NAME=WolframLanguage",
+        "ghcr.io/rhennigan/mcpserver:main"
+      ],
+      "tools": ["*"]
+    }
+  }
+}
+```
+
+**Important:** To avoid startup timeouts, this repository includes a GitHub Actions workflow (`.github/workflows/copilot-setup-steps.yml`) that:
+1. Pre-pulls the Docker image on GitHub's runners
+2. Pre-installs required Wolfram paclets (like Wolfram/Chatbook)
+3. Warms up the Wolfram Engine to ensure faster startup times
+
+The workflow runs automatically on pushes to main and release branches, and can also be triggered manually. This ensures that when GitHub Copilot starts the MCP server, it can respond within the timeout window.
+
 ### With Node-Locked License
 
 For clients using node-locked licensing, include the volume mount:
@@ -179,6 +209,12 @@ This usually indicates a licensing issue. Verify:
 ### Slow startup
 
 The first kernel startup takes several seconds. This is normal for Wolfram Engine. Pre-building MX files can improve this.
+
+For GitHub Copilot specifically, if you experience timeout issues:
+1. Ensure the `.github/workflows/copilot-setup-steps.yml` workflow has run successfully
+2. The workflow pre-warms the environment by pulling the Docker image and installing required paclets
+3. Check the Actions tab in your repository to verify the workflow completed
+4. You can manually trigger the workflow from the Actions tab if needed
 
 ### Container exits immediately
 
