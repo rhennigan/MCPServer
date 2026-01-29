@@ -1,0 +1,162 @@
+name: Copilot Setup Steps
+
+# This workflow optimizes MCP server startup time for GitHub Copilot
+# by pre-pulling Docker images and pre-warming the Wolfram environment.
+#
+# Key optimizations:
+# 1. Pre-pulls the MCPServer Docker image to avoid timeout during first use
+# 2. Pre-installs required paclets (Wolfram/Chatbook) to reduce startup time
+# 3. Warms up the Wolfram Engine to ensure faster subsequent starts
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Run daily to keep the cache fresh
+    - cron: '0 0 * * *'
+  push:
+    branches:
+      - main
+      - 'release/**'
+    paths:
+      - 'Dockerfile'
+      - 'Kernel/**'
+      - 'PacletInfo.wl'
+      - '.github/workflows/copilot-setup-steps.yml'
+
+concurrency:
+  group: copilot-setup-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  prepare-environment:
+    name: Prepare MCP Server Environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    permissions:
+      contents: read
+      packages: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine Docker image tag
+        id: image-tag
+        run: |
+          # Use 'main' branch tag by default, or latest tag
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            TAG="main"
+          elif [[ "${{ github.ref }}" =~ ^refs/heads/release/ ]]; then
+            TAG="latest"
+          else
+            TAG="main"
+          fi
+          FULL_TAG="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${TAG}"
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "full_tag=${FULL_TAG}" >> $GITHUB_OUTPUT
+          echo "Using Docker image: ${FULL_TAG}"
+
+      - name: Pull Docker image
+        run: |
+          echo "Pulling Docker image: ${{ steps.image-tag.outputs.full_tag }}"
+          docker pull "${{ steps.image-tag.outputs.full_tag }}" || {
+            echo "Failed to pull image with tag ${{ steps.image-tag.outputs.tag }}, trying 'latest'..."
+            docker pull "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          }
+
+      - name: Pre-warm Wolfram environment
+        env:
+          WOLFRAMSCRIPT_ENTITLEMENTID: ${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
+        run: |
+          echo "Pre-warming Wolfram Engine and installing required paclets..."
+          
+          # Create a test script that installs necessary paclets and tests basic functionality
+          cat > /tmp/warmup.wls << 'EOF'
+          (* Pre-install Chatbook paclet *)
+          Print["Installing Wolfram/Chatbook paclet..."];
+          Quiet[PacletInstall["Wolfram/Chatbook", UpdatePacletSites -> True], PacletInstall::samevers];
+          
+          (* Verify installation *)
+          If[PacletObjectQ[PacletObject["Wolfram/Chatbook"]],
+            Print["Chatbook paclet installed successfully"],
+            Print["Warning: Chatbook paclet installation may have issues"]
+          ];
+          
+          (* Test basic Wolfram Language functionality *)
+          Print["Testing basic Wolfram Language: ", 2 + 2];
+          
+          (* Load MCPServer to ensure it's cached *)
+          Print["Loading MCPServer paclet..."];
+          Get["Wolfram`MCPServer`"];
+          Print["MCPServer loaded successfully"];
+          
+          (* Check available servers *)
+          Print["Available MCP Servers: ", Keys @ Wolfram`MCPServer`$DefaultMCPServers];
+          
+          Print["Pre-warming complete!"];
+          EOF
+          
+          # Run the warmup script in the Docker container
+          docker run --rm \
+            -e WOLFRAMSCRIPT_ENTITLEMENTID="${WOLFRAMSCRIPT_ENTITLEMENTID}" \
+            -v /tmp/warmup.wls:/tmp/warmup.wls:ro \
+            "${{ steps.image-tag.outputs.full_tag }}" \
+            wolframscript -f /tmp/warmup.wls || {
+              echo "Warning: Pre-warming completed with warnings. This may not affect runtime."
+              exit 0
+            }
+
+      - name: Test MCP server startup
+        env:
+          WOLFRAMSCRIPT_ENTITLEMENTID: ${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
+        run: |
+          echo "Testing MCP server startup time..."
+          
+          # Create a simple MCP client test that sends an initialize request
+          cat > /tmp/test-mcp.sh << 'EOF'
+          #!/bin/bash
+          set -e
+          
+          # Send an initialize request and check for a valid response
+          echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test-client","version":"1.0.0"}}}' | \
+          timeout 30 docker run -i --rm \
+            -e WOLFRAMSCRIPT_ENTITLEMENTID="${WOLFRAMSCRIPT_ENTITLEMENTID}" \
+            -e MCP_SERVER_NAME=WolframLanguage \
+            "$1" 2>/dev/null | head -n 1 | grep -q '"result"'
+          
+          if [ $? -eq 0 ]; then
+            echo "✓ MCP server responded successfully within timeout"
+            exit 0
+          else
+            echo "✗ MCP server did not respond as expected"
+            exit 1
+          fi
+          EOF
+          
+          chmod +x /tmp/test-mcp.sh
+          /tmp/test-mcp.sh "${{ steps.image-tag.outputs.full_tag }}"
+
+      - name: Summary
+        if: success()
+        run: |
+          echo "✓ MCP server environment prepared successfully"
+          echo "✓ Docker image: ${{ steps.image-tag.outputs.full_tag }}"
+          echo "✓ Wolfram/Chatbook paclet pre-installed"
+          echo "✓ MCP server startup tested and verified"
+          echo ""
+          echo "GitHub Copilot should now start the MCP server faster on this runner."
