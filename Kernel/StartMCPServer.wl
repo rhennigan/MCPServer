@@ -230,7 +230,7 @@ processRequest[ ] :=
     Catch @ Enclose @ Module[ { stdin, message, method, id, req, response },
         stdin = InputString[ "" ];
         If[ stdin === "Quit", Exit[ 0 ] ];
-        If[ ! StringQ @ stdin || stdin === "", Throw @ EndOfFile ];
+        If[ ! StringQ @ stdin || StringTrim @ stdin === "", Throw @ EndOfFile ];
         message = ConfirmBy[ Developer`ReadRawJSONString @ stdin, AssociationQ ];
         writeLog[ "Request" -> message ];
         method = Lookup[ message, "method", None ];
