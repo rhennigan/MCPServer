@@ -1,0 +1,91 @@
+name: Docker
+
+on:
+  workflow_dispatch:
+    inputs:
+      push:
+        description: 'Push image to registry'
+        required: false
+        default: true
+        type: boolean
+  push:
+    branches: [release/paclet]
+    paths:
+      - 'Dockerfile'
+      - 'Kernel/**'
+      - 'Scripts/StartMCPServer.wls'
+      - 'Scripts/Common.wl'
+      - 'PacletInfo.wl'
+      - '.github/workflows/Docker.yml'
+
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+
+  Build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Container Registry
+      if: github.event_name != 'pull_request'
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract version from PacletInfo.wl
+      id: version
+      run: |
+        VERSION=$(grep -oP '"Version"\s*->\s*"\K[^"]+' PacletInfo.wl)
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Extracted version: $VERSION"
+
+    - name: Extract metadata for Docker
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=raw,value=latest,enable=${{ github.ref == 'refs/heads/release/paclet' }}
+          type=raw,value=${{ steps.version.outputs.version }}
+          type=sha,prefix=
+          type=ref,event=branch
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: ${{ github.event_name != 'pull_request' && (github.event_name == 'push' || github.event.inputs.push) }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Test Docker image
+      run: |
+        echo "Testing Docker image from registry..."
+        IMAGE_TAG="$(echo "${{ steps.meta.outputs.tags }}" | head -n 1)"
+        echo "Using image tag: $IMAGE_TAG"
+        docker pull "$IMAGE_TAG"
+        echo "Image pulled successfully"
+        # Basic sanity check: verify that the container can start.
+        # Note: Full runtime test requires Wolfram Engine license.
+        docker run --rm "$IMAGE_TAG" true
