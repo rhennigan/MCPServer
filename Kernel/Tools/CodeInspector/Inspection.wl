@@ -22,6 +22,10 @@ codeInspect // beginDefinition;
 codeInspect[ code: _String | File[ _String ], opts_Association ] := Enclose[
     Module[ { abstractRules, concreteRules, aggregateRules, tagExclusions, severityExclusions, confidenceLevel },
 
+        (* We need to make sure CodeInspector is loaded at runtime, since we might be running from an MX build *)
+        Needs[ "CodeInspector`" -> None ];
+        Needs[ "CodeParser`"    -> None ];
+
         abstractRules  = ConfirmBy[ $abstractRules , AssociationQ, "AbstractRules"  ];
         concreteRules  = ConfirmBy[ $concreteRules , AssociationQ, "ConcreteRules"  ];
         aggregateRules = ConfirmBy[ $aggregateRules, AssociationQ, "AggregateRules" ];
