@@ -170,7 +170,7 @@ GitHub Copilot can be configured to use MCP servers at the repository level thro
                 "-v", ".:/workspace",
                 "-e", "WOLFRAMSCRIPT_ENTITLEMENTID=$COPILOT_MCP_WOLFRAMSCRIPT_ENTITLEMENTID",
                 "-e", "MCP_SERVER_NAME=WolframLanguage",
-                "ghcr.io/rhennigan/mcpserver:main"
+                "ghcr.io/rhennigan/mcpserver:latest"
             ],
             "tools": ["*"]
         }
@@ -185,12 +185,11 @@ GitHub Copilot can be configured to use MCP servers at the repository level thro
 - The MCP server startup time is critical - if it takes too long, Copilot will timeout
 
 **Performance Optimization:**
-To avoid startup timeouts when using GitHub Copilot with Docker-based MCP servers, this repository includes a workflow (`.github/workflows/copilot-setup-steps.yml`) that:
-1. Pre-pulls the Docker image on GitHub's runners
-2. Pre-installs required Wolfram paclets (Wolfram/Chatbook)
-3. Warms up the Wolfram Engine to ensure faster startup
+To avoid startup timeouts when using GitHub Copilot with Docker-based MCP servers, this repository includes a workflow (`.github/workflows/copilot-setup-steps.yml`) that pre-pulls and caches the Docker image on GitHub's runners. This is the primary optimization that helps reduce startup time.
 
-The workflow runs automatically on pushes to main and release branches, and can be manually triggered from the Actions tab. This optimization significantly reduces the time it takes for the MCP server to respond to Copilot's initialization request.
+The workflow runs automatically on pushes to main and release branches, and can be manually triggered from the Actions tab. By having the Docker image already cached, the time to pull the image (which can be 30-60 seconds) is eliminated, allowing the MCP server to start and respond to Copilot's initialization request within the timeout window.
+
+Note: Each Copilot invocation starts a fresh ephemeral Docker container, so optimizations like pre-installing paclets don't carry over between runs. The image cache is the key optimization.
 
 For more details, see the [Docker documentation](docker.md#github-copilot).
 

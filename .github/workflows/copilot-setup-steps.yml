@@ -1,12 +1,14 @@
 name: Copilot Setup Steps
 
 # This workflow optimizes MCP server startup time for GitHub Copilot
-# by pre-pulling Docker images and pre-warming the Wolfram environment.
+# by pre-pulling and caching the Docker image on GitHub's runners.
 #
-# Key optimizations:
-# 1. Pre-pulls the MCPServer Docker image to avoid timeout during first use
-# 2. Pre-installs required paclets (Wolfram/Chatbook) to reduce startup time
-# 3. Warms up the Wolfram Engine to ensure faster subsequent starts
+# Key optimization:
+# - Pre-pulls the MCPServer Docker image to avoid timeout during first use
+#
+# Note: The workflow verifies the MCP server can start and respond within
+# acceptable timeframes. The main benefit is having the Docker image cached
+# on GitHub's runners so it doesn't need to be pulled when Copilot starts.
 
 on:
   workflow_dispatch:
@@ -58,14 +60,8 @@ jobs:
       - name: Determine Docker image tag
         id: image-tag
         run: |
-          # Use 'main' branch tag by default, or latest tag
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            TAG="main"
-          elif [[ "${{ github.ref }}" =~ ^refs/heads/release/ ]]; then
-            TAG="latest"
-          else
-            TAG="main"
-          fi
+          # Use 'latest' tag which is built by the Docker.yml workflow
+          TAG="latest"
           FULL_TAG="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${TAG}"
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
           echo "full_tag=${FULL_TAG}" >> $GITHUB_OUTPUT
@@ -74,54 +70,24 @@ jobs:
       - name: Pull Docker image
         run: |
           echo "Pulling Docker image: ${{ steps.image-tag.outputs.full_tag }}"
-          docker pull "${{ steps.image-tag.outputs.full_tag }}" || {
-            echo "Failed to pull image with tag ${{ steps.image-tag.outputs.tag }}, trying 'latest'..."
-            docker pull "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
-          }
+          docker pull "${{ steps.image-tag.outputs.full_tag }}"
 
-      - name: Pre-warm Wolfram environment
+      - name: Verify Docker image
         env:
           WOLFRAMSCRIPT_ENTITLEMENTID: ${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
         run: |
-          echo "Pre-warming Wolfram Engine and installing required paclets..."
+          echo "Verifying Docker image functionality..."
           
-          # Create a test script that installs necessary paclets and tests basic functionality
-          cat > /tmp/warmup.wls << 'EOF'
-          (* Pre-install Chatbook paclet *)
-          Print["Installing Wolfram/Chatbook paclet..."];
-          Quiet[PacletInstall["Wolfram/Chatbook", UpdatePacletSites -> True], PacletInstall::samevers];
-          
-          (* Verify installation *)
-          If[PacletObjectQ[PacletObject["Wolfram/Chatbook"]],
-            Print["Chatbook paclet installed successfully"],
-            Print["Warning: Chatbook paclet installation may have issues"]
-          ];
-          
-          (* Test basic Wolfram Language functionality *)
-          Print["Testing basic Wolfram Language: ", 2 + 2];
-          
-          (* Load MCPServer to ensure it's cached *)
-          Print["Loading MCPServer paclet..."];
-          Get["Wolfram`MCPServer`"];
-          Print["MCPServer loaded successfully"];
-          
-          (* Check available servers *)
-          Print["Available MCP Servers: ", Keys @ Wolfram`MCPServer`$DefaultMCPServers];
-          
-          Print["Pre-warming complete!"];
-          EOF
-          
-          # Run the warmup script in the Docker container
+          # Test that the container can start and respond
           docker run --rm \
             -e WOLFRAMSCRIPT_ENTITLEMENTID="${WOLFRAMSCRIPT_ENTITLEMENTID}" \
-            -v /tmp/warmup.wls:/tmp/warmup.wls:ro \
             "${{ steps.image-tag.outputs.full_tag }}" \
-            wolframscript -f /tmp/warmup.wls || {
-              echo "Warning: Pre-warming completed with warnings. This may not affect runtime."
+            wolframscript -code 'Print["Container is functional: ", $Version]' || {
+              echo "Warning: Container verification completed with warnings."
               exit 0
             }
 
-      - name: Test MCP server startup
+      - name: Test MCP server startup time
         env:
           WOLFRAMSCRIPT_ENTITLEMENTID: ${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
         run: |
@@ -130,33 +96,41 @@ jobs:
           # Create a simple MCP client test that sends an initialize request
           cat > /tmp/test-mcp.sh << 'EOF'
           #!/bin/bash
-          set -e
           
           # Send an initialize request and check for a valid response
-          echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test-client","version":"1.0.0"}}}' | \
+          # Capture the exit status immediately before any other commands
+          RESULT=$(echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test-client","version":"1.0.0"}}}' | \
           timeout 30 docker run -i --rm \
             -e WOLFRAMSCRIPT_ENTITLEMENTID="${WOLFRAMSCRIPT_ENTITLEMENTID}" \
             -e MCP_SERVER_NAME=WolframLanguage \
-            "$1" 2>/dev/null | head -n 1 | grep -q '"result"'
+            "$1" 2>/dev/null | head -n 1)
           
-          if [ $? -eq 0 ]; then
+          if echo "$RESULT" | grep -q '"result"'; then
             echo "✓ MCP server responded successfully within timeout"
             exit 0
           else
             echo "✗ MCP server did not respond as expected"
+            echo "Response: $RESULT"
             exit 1
           fi
           EOF
           
           chmod +x /tmp/test-mcp.sh
+          
+          # Measure startup time
+          echo "Measuring startup time..."
+          START_TIME=$(date +%s)
           /tmp/test-mcp.sh "${{ steps.image-tag.outputs.full_tag }}"
+          END_TIME=$(date +%s)
+          ELAPSED=$((END_TIME - START_TIME))
+          echo "✓ Startup completed in ${ELAPSED} seconds"
 
       - name: Summary
         if: success()
         run: |
           echo "✓ MCP server environment prepared successfully"
           echo "✓ Docker image: ${{ steps.image-tag.outputs.full_tag }}"
-          echo "✓ Wolfram/Chatbook paclet pre-installed"
+          echo "✓ Docker image cached on runner"
           echo "✓ MCP server startup tested and verified"
           echo ""
-          echo "GitHub Copilot should now start the MCP server faster on this runner."
+          echo "GitHub Copilot should now start the MCP server faster by using the cached Docker image."

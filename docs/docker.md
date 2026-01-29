@@ -128,7 +128,7 @@ For GitHub Copilot integration in a repository, add to your repository settings 
         "-v", ".:/workspace",
         "-e", "WOLFRAMSCRIPT_ENTITLEMENTID=$COPILOT_MCP_WOLFRAMSCRIPT_ENTITLEMENTID",
         "-e", "MCP_SERVER_NAME=WolframLanguage",
-        "ghcr.io/rhennigan/mcpserver:main"
+        "ghcr.io/rhennigan/mcpserver:latest"
       ],
       "tools": ["*"]
     }
@@ -136,12 +136,7 @@ For GitHub Copilot integration in a repository, add to your repository settings 
 }
 ```
 
-**Important:** To avoid startup timeouts, this repository includes a GitHub Actions workflow (`.github/workflows/copilot-setup-steps.yml`) that:
-1. Pre-pulls the Docker image on GitHub's runners
-2. Pre-installs required Wolfram paclets (like Wolfram/Chatbook)
-3. Warms up the Wolfram Engine to ensure faster startup times
-
-The workflow runs automatically on pushes to main and release branches, and can also be triggered manually. This ensures that when GitHub Copilot starts the MCP server, it can respond within the timeout window.
+**Important:** To avoid startup timeouts, this repository includes a GitHub Actions workflow (`.github/workflows/copilot-setup-steps.yml`) that pre-pulls the Docker image on GitHub's runners. The workflow runs automatically on pushes to main and release branches, and can also be triggered manually. This ensures that when GitHub Copilot starts the MCP server, the Docker image is already cached and doesn't need to be downloaded, significantly reducing startup time.
 
 ### With Node-Locked License
 
@@ -212,9 +207,11 @@ The first kernel startup takes several seconds. This is normal for Wolfram Engin
 
 For GitHub Copilot specifically, if you experience timeout issues:
 1. Ensure the `.github/workflows/copilot-setup-steps.yml` workflow has run successfully
-2. The workflow pre-warms the environment by pulling the Docker image and installing required paclets
+2. The workflow pre-caches the Docker image on GitHub's runners, avoiding the need to pull it when Copilot starts
 3. Check the Actions tab in your repository to verify the workflow completed
 4. You can manually trigger the workflow from the Actions tab if needed
+
+Note: Each Copilot invocation starts a fresh Docker container, so the main optimization is having the image cached rather than installed paclets.
 
 ### Container exits immediately
 
