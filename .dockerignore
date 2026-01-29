@@ -1,0 +1,48 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# GitHub
+.github
+
+# Documentation (not needed at runtime)
+Documentation/
+docs/
+
+# Tests (not needed at runtime)
+Tests/
+
+# Build artifacts
+build/
+*.paclet
+
+# MX files (will be built fresh or we include pre-built ones)
+Kernel/64Bit/
+
+# Development files
+.claude*
+.vscode/
+*.md
+!AGENTS.md
+
+# Scripts not needed at runtime
+Scripts/BuildPaclet.wls
+Scripts/BuildMX.wls
+Scripts/BuildMCPB.wls
+Scripts/TestPaclet.wls
+Scripts/SubmitPaclet.wls
+Scripts/IncrementPacletVersion.wls
+Scripts/FormatFiles.wls
+Scripts/GenerateTestIDs.wls
+
+# Temporary files
+*.log
+*.tmp
+*~
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
