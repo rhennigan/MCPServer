@@ -75,7 +75,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: .
-        push: ${{ github.event_name != 'pull_request' && (github.event.inputs.push != 'false') }}
+        push: ${{ github.event_name != 'pull_request' && (github.event_name == 'push' || github.event.inputs.push) }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
