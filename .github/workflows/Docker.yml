@@ -83,7 +83,11 @@ jobs:
 
     - name: Test Docker image
       run: |
-        echo "Testing Docker image build..."
-        docker build -t mcpserver-test .
-        echo "Image built successfully"
-        # Note: Full runtime test requires Wolfram Engine license
+        echo "Testing Docker image from registry..."
+        IMAGE_TAG="$(echo "${{ steps.meta.outputs.tags }}" | head -n 1)"
+        echo "Using image tag: $IMAGE_TAG"
+        docker pull "$IMAGE_TAG"
+        echo "Image pulled successfully"
+        # Basic sanity check: verify that the container can start.
+        # Note: Full runtime test requires Wolfram Engine license.
+        docker run --rm "$IMAGE_TAG" true
