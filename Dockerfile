@@ -55,5 +55,13 @@ ENV WOLFRAM_SYSTEM_ID="Linux-x86-64"
 # Disable automatic paclet updates
 ENV WOLFRAMINIT="-pacletreadonly"
 
+# Create empty workspace directory for user operations
+USER root
+RUN mkdir /workspace && chmod 777 /workspace
+USER wolframengine
+
+# Set working directory to /workspace for runtime
+WORKDIR /workspace
+
 # Entry point - MCP servers communicate via stdin/stdout
 CMD ["wolframscript", "-f", "/opt/MCPServer/Scripts/StartMCPServer.wls"]
