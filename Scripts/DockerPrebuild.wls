@@ -34,7 +34,7 @@ If[ ! MatchQ[ paclets, { __PacletObject } ],
 (* ::Section::Closed:: *)
 (*Install Vector Databases and Related Resources*)
 << Wolfram`Chatbook`;
-installed = InstallVectorDatabases[ ];
+installed = Wolfram`Chatbook`InstallVectorDatabases[ ];
 
 If[ ! MatchQ[ installed, _Success ],
     Print[ "[ERROR] Failed to install vector databases: ", ToString[ installed, InputForm ] ];
@@ -42,7 +42,7 @@ If[ ! MatchQ[ installed, _Success ],
 ];
 
 (* Performs a search using the vector databases, installing any additional dependencies in the process: *)
-uris = RelatedDocumentation[ "Test prompt, please ignore" ];
+uris = Wolfram`Chatbook`RelatedDocumentation[ "Test prompt, please ignore" ];
 If[ ! MatchQ[ uris, { __URL } ],
     Print[ "[ERROR] Failed to get related documentation: ", ToString[ uris, InputForm ] ];
     Exit[ 1 ]
