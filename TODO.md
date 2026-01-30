@@ -29,8 +29,6 @@ Consolidated list of TODO/FIXME items from the codebase.
 
 ### New Tools
 
-- [ ] Implement `CodeInspector` tool
-  - Source: `Kernel/Tools/Tools.wl`
 - [ ] Implement `BuildPaclet` tool
   - Source: `Kernel/Tools/Tools.wl`
 - [ ] Implement `ReloadPaclet` tool
@@ -83,6 +81,13 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/Common.wl`
 - [ ] Remove empty "Settings" section from bug reports (this paclet has no settings)
   - Source: `Kernel/Common.wl`
+
+## Connect to External MCP Servers (Major Feature)
+
+This is effectively what the paclet currently does, but we'll run it in reverse. Instead of `LLMConfiguration[...]` -> MCP server, we'll have a way to connect to an external MCP server and give a valid `LLMConfiguration`.
+
+- [ ] Support connecting to local MCP servers
+- [ ] Support connecting to remote MCP servers
 
 ## Blocked / Dependencies
 
