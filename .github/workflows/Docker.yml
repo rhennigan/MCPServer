@@ -70,6 +70,7 @@ jobs:
           type=raw,value=${{ steps.version.outputs.version }}
           type=sha,prefix=
           type=ref,event=branch
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
@@ -79,6 +80,8 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
+        secrets: |
+          WOLFRAMSCRIPT_ENTITLEMENTID=${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
 
     - name: Test Docker image
       run: |

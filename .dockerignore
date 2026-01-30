@@ -28,7 +28,6 @@ Kernel/64Bit/
 
 # Scripts not needed at runtime
 Scripts/BuildPaclet.wls
-Scripts/BuildMX.wls
 Scripts/BuildMCPB.wls
 Scripts/TestPaclet.wls
 Scripts/SubmitPaclet.wls

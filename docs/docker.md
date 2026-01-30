@@ -205,25 +205,30 @@ You can combine multiple volume mounts (licensing + workspace):
 
 ## Building Locally
 
-To build the image locally:
+Building the Docker image requires a Wolfram Engine entitlement ID to pre-install dependencies during the build. The entitlement ID is passed securely via BuildKit secrets and is **not** stored in the final image.
 
 ```bash
 git clone https://github.com/rhennigan/MCPServer.git
 cd MCPServer
-docker build -t mcpserver:local .
+
+# Set your entitlement ID
+export WOLFRAMSCRIPT_ENTITLEMENTID=O-XXXX-XXXXXXXXXXXXX
+
+# Build with BuildKit secret
+docker build \
+  --secret id=WOLFRAMSCRIPT_ENTITLEMENTID,env=WOLFRAMSCRIPT_ENTITLEMENTID \
+  -t mcpserver:local .
 ```
 
-### With Pre-built MX Files
-
-For faster startup, build the MX files first:
-
+**Note:** BuildKit is required (Docker 18.09+). If you encounter issues, ensure BuildKit is enabled:
 ```bash
-# Build MX files (requires local Wolfram Engine)
-wolframscript -f Scripts/BuildMX.wls
-
-# Build Docker image including MX files
-docker build -t mcpserver:local .
+export DOCKER_BUILDKIT=1
 ```
+
+The build process automatically:
+- Installs required paclets (Chatbook, LLMFunctions, SemanticSearch)
+- Installs vector databases for documentation search
+- Builds MX files for faster startup
 
 ## Development Mode
 
@@ -273,10 +278,13 @@ docker run -i --rm \
 
 ## Architecture
 
-The Docker image is built on `wolframresearch/wolframengine:14.2` and includes:
+The Docker image is built on `wolframresearch/wolframengine:14.3` and includes:
 
-- Wolfram Engine 14.2
+- Wolfram Engine 14.3
 - MCPServer paclet (Kernel/, Scripts/)
+- Pre-built MX files for faster startup
+- Pre-installed dependencies (Chatbook, LLMFunctions, SemanticSearch paclets)
+- Pre-installed vector databases for documentation search
 - Startup script configured for MCP protocol
 
 The server communicates via JSON-RPC over stdin/stdout, which is the standard transport for MCP subprocess servers.

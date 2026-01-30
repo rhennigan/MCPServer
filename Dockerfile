@@ -26,20 +26,35 @@ LABEL org.opencontainers.image.licenses="MIT"
 # Set working directory
 WORKDIR /opt/MCPServer
 
+# Copy and run prebuild script to install dependencies
+# This must happen before setting -pacletreadonly
+# Uses BuildKit secret mount to avoid storing the entitlement ID in any layer
+COPY Scripts/DockerPrebuild.wls Scripts/
+RUN --mount=type=secret,id=WOLFRAMSCRIPT_ENTITLEMENTID,env=WOLFRAMSCRIPT_ENTITLEMENTID \
+    wolframscript -f Scripts/DockerPrebuild.wls
+
 # Copy paclet files (order matters for layer caching)
 # Copy metadata first (changes less frequently)
 COPY PacletInfo.wl .
 
 # Copy kernel implementation
-COPY Kernel/ Kernel/
+COPY --chown=wolframengine:wolframengine Kernel/ Kernel/
 
 # Copy startup scripts
 COPY Scripts/Common.wl Scripts/
 COPY Scripts/StartMCPServer.wls Scripts/
+COPY Scripts/BuildMX.wls Scripts/
 
 # Copy assets needed at runtime
 COPY Assets/ Assets/
 COPY AGENTS.md .
+
+# Create empty Documentation directory (required by PacletExtensionFiles during MX build)
+RUN mkdir -p Documentation/English
+
+# Build MX file for faster startup
+RUN --mount=type=secret,id=WOLFRAMSCRIPT_ENTITLEMENTID,env=WOLFRAMSCRIPT_ENTITLEMENTID \
+    wolframscript -f Scripts/BuildMX.wls
 
 # Environment variables
 # MCP_SERVER_NAME: Which server configuration to use
