@@ -1,5 +1,7 @@
 {
     "cSpell.words": [
+        "BUILDKIT",
+        "buildx",
         "CICD",
         "dpkg",
         "ENTITLEMENTID",
@@ -7,6 +9,7 @@
         "llmkit",
         "LOCALBASE",
         "MCPB",
+        "mcpserver",
         "Multicolumn",
         "newclient",
         "noinit",
@@ -14,6 +17,7 @@
         "opencode",
         "pacletreadonly",
         "patt",
+        "prebuild",
         "reranking",
         "shdw",
         "Stylesheet",

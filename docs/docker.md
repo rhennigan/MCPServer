@@ -71,6 +71,36 @@ docker run -i --rm \
   ghcr.io/rhennigan/mcpserver:latest
 ```
 
+## Mounting a Workspace Directory
+
+The container starts in an empty `/workspace` directory. You can mount a host directory here to give the MCP server access to your files:
+
+```bash
+docker run -i --rm \
+  -v /path/to/your/project:/workspace \
+  -e WOLFRAMSCRIPT_ENTITLEMENTID=your-id \
+  ghcr.io/rhennigan/mcpserver:latest
+```
+
+This allows the server to read and write files in your project directory. For example, mounting your current directory:
+
+```bash
+docker run -i --rm \
+  -v $(pwd):/workspace \
+  -e WOLFRAMSCRIPT_ENTITLEMENTID=your-id \
+  ghcr.io/rhennigan/mcpserver:latest
+```
+
+On Windows (PowerShell):
+```powershell
+docker run -i --rm `
+  -v ${PWD}:/workspace `
+  -e WOLFRAMSCRIPT_ENTITLEMENTID=your-id `
+  ghcr.io/rhennigan/mcpserver:latest
+```
+
+**Security Note:** The container will have full read/write access to the mounted directory. Only mount directories you trust the MCP server to access.
+
 ## MCP Client Configuration
 
 ### Claude Desktop
@@ -113,9 +143,30 @@ Add to your project's `.mcp.json` or global `~/.claude.json`:
 }
 ```
 
+### With Workspace Mount
+
+To give the MCP server access to your project files, mount a directory to `/workspace`:
+
+```json
+{
+  "mcpServers": {
+    "wolfram": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-v", "/path/to/your/project:/workspace",
+        "-e", "WOLFRAMSCRIPT_ENTITLEMENTID=your-entitlement-id",
+        "-e", "MCP_SERVER_NAME=Wolfram",
+        "ghcr.io/rhennigan/mcpserver:latest"
+      ]
+    }
+  }
+}
+```
+
 ### With Node-Locked License
 
-For clients using node-locked licensing, include the volume mount:
+For clients using node-locked licensing, include the licensing volume mount:
 
 ```json
 {
@@ -133,27 +184,51 @@ For clients using node-locked licensing, include the volume mount:
 }
 ```
 
+You can combine multiple volume mounts (licensing + workspace):
+
+```json
+{
+  "mcpServers": {
+    "wolfram": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-v", "/path/to/Licensing:/root/.WolframEngine/Licensing",
+        "-v", "/path/to/your/project:/workspace",
+        "-e", "MCP_SERVER_NAME=Wolfram",
+        "ghcr.io/rhennigan/mcpserver:latest"
+      ]
+    }
+  }
+}
+```
+
 ## Building Locally
 
-To build the image locally:
+Building the Docker image requires a Wolfram Engine entitlement ID to pre-install dependencies during the build. The entitlement ID is passed securely via BuildKit secrets and is **not** stored in the final image.
 
 ```bash
 git clone https://github.com/rhennigan/MCPServer.git
 cd MCPServer
-docker build -t mcpserver:local .
+
+# Set your entitlement ID
+export WOLFRAMSCRIPT_ENTITLEMENTID=O-XXXX-XXXXXXXXXXXXX
+
+# Build with BuildKit secret
+docker build \
+  --secret id=WOLFRAMSCRIPT_ENTITLEMENTID,env=WOLFRAMSCRIPT_ENTITLEMENTID \
+  -t mcpserver:local .
 ```
 
-### With Pre-built MX Files
-
-For faster startup, build the MX files first:
-
+**Note:** BuildKit is required (Docker 18.09+). If you encounter issues, ensure BuildKit is enabled:
 ```bash
-# Build MX files (requires local Wolfram Engine)
-wolframscript -f Scripts/BuildMX.wls
-
-# Build Docker image including MX files
-docker build -t mcpserver:local .
+export DOCKER_BUILDKIT=1
 ```
+
+The build process automatically:
+- Installs required paclets (Chatbook, LLMFunctions, SemanticSearch)
+- Installs vector databases for documentation search
+- Builds MX files for faster startup
 
 ## Development Mode
 
@@ -203,10 +278,13 @@ docker run -i --rm \
 
 ## Architecture
 
-The Docker image is built on `wolframresearch/wolframengine:14.2` and includes:
+The Docker image is built on `wolframresearch/wolframengine:14.3` and includes:
 
-- Wolfram Engine 14.2
+- Wolfram Engine 14.3
 - MCPServer paclet (Kernel/, Scripts/)
+- Pre-built MX files for faster startup
+- Pre-installed dependencies (Chatbook, LLMFunctions, SemanticSearch paclets)
+- Pre-installed vector databases for documentation search
 - Startup script configured for MCP protocol
 
 The server communicates via JSON-RPC over stdin/stdout, which is the standard transport for MCP subprocess servers.
