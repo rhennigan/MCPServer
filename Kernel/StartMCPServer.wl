@@ -437,7 +437,7 @@ superQuiet[ eval_ ] :=
         },
         (* We use a veto handler to prevent print output from being written to stdout/stderr.
            We do this instead of redefining Print as a local symbol in Block because we need to let the
-           the WL evaluator tool capture and include print outputs in the tool call response. *)
+           WL evaluator tool capture and include print outputs in the tool call response. *)
         Internal`HandlerBlock[ { "Wolfram.System.Print.Veto", False & }, eval ]
     ];
 
