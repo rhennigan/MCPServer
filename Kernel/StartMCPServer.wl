@@ -139,6 +139,7 @@ preinstallVectorDatabases // endDefinition;
 (* Test messages:
 
 ```
+{"method":"initialize","params":{"clientInfo":{"name":"test-client"},"protocolVersion":"2024-11-05"},"jsonrpc":"2.0","id":0}
 {"method":"tools/list","params":{},"jsonrpc":"2.0","id":1}
 {"method":"tools/call","params":{"name":"WolframContext","arguments":{"context":"What's the 123456789th prime?"}},"jsonrpc":"2.0","id":2}
 ```
@@ -367,13 +368,23 @@ formatPromptError // endDefinition;
 evaluateTool // beginDefinition;
 
 evaluateTool[ msg_, req_ ] := Enclose[
-    Catch @ Module[ { params, toolName, args, result, string },
+    Catch @ Module[ { params, toolName, args, tool, result, string },
         Quiet @ TaskRemove @ $warmupTask; (* We're in a tool call, so it no longer makes sense to warm up tools *)
         writeLog[ "ToolCall" -> msg ];
         params = ConfirmBy[ Lookup[ msg, "params", <| |> ], AssociationQ ];
         toolName = ConfirmBy[ Lookup[ params, "name" ], StringQ ];
         args = Lookup[ params, "arguments", <| |> ];
-        result = stealthCatchTop @ $llmTools[ toolName ][ args ];
+
+        (* Check if the tool exists before calling it *)
+        tool = Lookup[ $llmTools, toolName, Missing[ "UnknownTool", toolName ] ];
+        If[ MissingQ @ tool,
+            Throw @ <|
+                "content" -> { <| "type" -> "text", "text" -> "[Error] Unknown tool: " <> toolName |> },
+                "isError" -> True
+            |>
+        ];
+
+        result = stealthCatchTop @ tool @ args;
         If[ StringQ @ result[ "String" ], result = result[ "String" ] ];
         (* TODO: return multimodal content here when appropriate *)
         (* TODO: convert internal errors to more useful text *)
