@@ -4,6 +4,7 @@ BeginPackage[ "Wolfram`MCPServerTests`MCPServerTestUtilities`" ];
 
 `$MCPTestProcess;
 `$MCPRequestID;
+`$MCPTestSourceDirectory;
 `GetMCPCommandLine;
 `GetMCPEnvironment;
 `StartMCPTestServer;
@@ -21,6 +22,9 @@ $MCPRequestID = 0;
 $MCPTestProcess = None;
 $defaultTimeout = 60; (* seconds *)
 
+(* Source directory - should be set by the test file before calling StartMCPTestServer *)
+$MCPTestSourceDirectory = None;
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*GetMCPCommandLine*)
@@ -28,53 +32,26 @@ GetMCPCommandLine // ClearAll;
 
 GetMCPCommandLine[ ] := GetMCPCommandLine @ $OperatingSystem;
 
-GetMCPCommandLine[ os_String ] := Module[ { wolframCmd, baseArgs, licenseArgs },
-    wolframCmd = getWolframCommand @ os;
-    baseArgs = {
-        "-run",
-        "PacletSymbol[\"Wolfram/MCPServer\",\"Wolfram`MCPServer`StartMCPServer\"][]",
-        "-noinit",
-        "-noprompt"
-    };
-    licenseArgs = extractLicenseArgs @ $CommandLine;
-    Flatten @ { wolframCmd, baseArgs, licenseArgs }
-];
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
-(*getWolframCommand*)
-getWolframCommand // ClearAll;
-getWolframCommand[ "Windows" ] := FileNameJoin @ { $InstallationDirectory, "wolfram.exe" };
-getWolframCommand[ "MacOSX"  ] := FileNameJoin @ { $InstallationDirectory, "MacOS", "wolfram" };
-getWolframCommand[ "Unix"    ] := FileNameJoin @ { $InstallationDirectory, "Executables", "wolfram" };
-getWolframCommand[ os_String ] := $Failed;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
-(*extractLicenseArgs*)
-extractLicenseArgs // ClearAll;
-
-extractLicenseArgs[ commandLine_List ] := Module[ { pwfile, entitlement },
-    pwfile = extractArg[ commandLine, "-pwfile" ];
-    entitlement = extractArg[ commandLine, "-entitlement" ];
-    Flatten @ {
-        If[ StringQ @ pwfile, { "-pwfile", pwfile }, { } ],
-        If[ StringQ @ entitlement, { "-entitlement", entitlement }, { } ]
+GetMCPCommandLine[ os_String ] := Module[ { wolframScriptCmd },
+    wolframScriptCmd = getWolframScriptCommand @ os;
+    (* Use wolframscript with -code for non-development mode *)
+    {
+        wolframScriptCmd,
+        "-code",
+        "Needs[\"Wolfram`MCPServer`\"]; Wolfram`MCPServer`StartMCPServer[]"
     }
 ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*extractArg*)
-extractArg // ClearAll;
+(*getWolframScriptCommand*)
+(* Use wolframscript instead of wolfram for proper license handling in subprocesses *)
+getWolframScriptCommand // ClearAll;
+getWolframScriptCommand[ "Windows" ] := FileNameJoin @ { $InstallationDirectory, "wolframscript.exe" };
+getWolframScriptCommand[ "MacOSX"  ] := FileNameJoin @ { $InstallationDirectory, "MacOS", "wolframscript" };
+getWolframScriptCommand[ "Unix"    ] := FileNameJoin @ { $InstallationDirectory, "Executables", "wolframscript" };
+getWolframScriptCommand[ os_String ] := $Failed;
 
-extractArg[ commandLine_List, argName_String ] := Module[ { pos },
-    pos = Position[ commandLine, argName ];
-    If[ Length @ pos > 0 && pos[[ 1, 1 ]] < Length @ commandLine,
-        commandLine[[ pos[[ 1, 1 ]] + 1 ]],
-        Missing[ "NotFound" ]
-    ]
-];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -124,8 +101,12 @@ StartMCPTestServer[ opts: OptionsPattern[ ] ] := Catch @ Module[
         GetMCPCommandLine[ ]
     ];
 
+    If[ FailureQ @ cmd,
+        Throw @ cmd
+    ];
+
     If[ ! ListQ @ cmd || ! AllTrue[ cmd, StringQ ],
-        Throw @ $Failed
+        Throw @ Failure[ "InvalidCommand", <| "Message" -> "Failed to construct valid command", "Command" -> cmd |> ]
     ];
 
     process = StartProcess[
@@ -134,7 +115,15 @@ StartMCPTestServer[ opts: OptionsPattern[ ] ] := Catch @ Module[
     ];
 
     If[ ProcessStatus @ process =!= "Running",
-        Throw @ $Failed
+        Throw @ Failure[ "ProcessNotRunning", <| "Message" -> "Server process failed to start", "ProcessStatus" -> ProcessStatus @ process |> ]
+    ];
+
+    (* Give the server time to initialize before accepting requests *)
+    Pause[ 1.0 ];
+
+    (* Verify the process is still running after startup *)
+    If[ ProcessStatus @ process =!= "Running",
+        Throw @ Failure[ "ProcessCrashed", <| "Message" -> "Server process crashed during startup" |> ]
     ];
 
     $MCPTestProcess = process;
@@ -148,18 +137,27 @@ StartMCPTestServer[ opts: OptionsPattern[ ] ] := Catch @ Module[
 (*getDevelopmentModeCommand*)
 getDevelopmentModeCommand // ClearAll;
 
-getDevelopmentModeCommand[ ] := Catch @ Module[ { sourceDir, script, wolframCmd, licenseArgs },
-    sourceDir = DirectoryName[ $InputFileName, 2 ];
+getDevelopmentModeCommand[ ] := Catch @ Module[ { sourceDir, script, wolframScriptCmd },
+
+    If[ ! StringQ @ $MCPTestSourceDirectory,
+        Throw @ Failure[ "MCPTestSourceDirectoryNotSet", <|
+            "Message" -> "$MCPTestSourceDirectory must be set before calling StartMCPTestServer"
+        |> ]
+    ];
+
+    sourceDir = $MCPTestSourceDirectory;
     script = FileNameJoin @ { sourceDir, "Scripts", "StartMCPServer.wls" };
 
     If[ ! FileExistsQ @ script,
-        Throw @ $Failed
+        Throw @ Failure[ "ScriptNotFound", <|
+            "Message" -> "StartMCPServer.wls script not found at " <> script
+        |> ]
     ];
 
-    wolframCmd = getWolframCommand @ $OperatingSystem;
-    licenseArgs = extractLicenseArgs @ $CommandLine;
+    wolframScriptCmd = getWolframScriptCommand @ $OperatingSystem;
 
-    Flatten @ { wolframCmd, "-script", script, "-noinit", "-noprompt", licenseArgs }
+    (* Use wolframscript -f for proper license handling in subprocesses *)
+    { wolframScriptCmd, "-f", script }
 ];
 
 (* ::**************************************************************************************************************:: *)
@@ -237,9 +235,17 @@ SendMCPRequest[ method_String, params_Association, opts: OptionsPattern[ ] ] := 
 (*readJSONResponse*)
 readJSONResponse // ClearAll;
 
-readJSONResponse[ process_ProcessObject ] := Catch @ Module[ { line, parsed },
+readJSONResponse[ process_ProcessObject ] := Catch @ Module[ { line, parsed, attempts },
+    attempts = 0;
     (* Read lines until we get a valid JSON response *)
-    While[ True,
+    While[ attempts < 1000, (* Prevent infinite loops *)
+        attempts++;
+
+        (* Check if process is still running *)
+        If[ ProcessStatus @ process === "Finished",
+            Throw @ Failure[ "ProcessTerminated", <| "Message" -> "Server process terminated unexpectedly" |> ]
+        ];
+
         line = ReadLine @ process;
         If[ line === EndOfFile,
             Throw @ EndOfFile
@@ -250,7 +256,8 @@ readJSONResponse[ process_ProcessObject ] := Catch @ Module[ { line, parsed },
                 Throw @ parsed
             ]
         ]
-    ]
+    ];
+    Throw @ Failure[ "ReadTimeout", <| "Message" -> "Failed to read JSON response after 1000 attempts" |> ]
 ];
 
 (* ::**************************************************************************************************************:: *)

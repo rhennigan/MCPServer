@@ -7,6 +7,7 @@ BeginPackage[ "Wolfram`MCPServerTests`" ];
 `$TestDefinitionsLoaded = True;
 `conditionalTest;
 `skipIfGitHubActions;
+`skipIfScript;
 
 Begin[ "`Private`" ];
 
@@ -47,6 +48,12 @@ conditionalTest[ condition_, test: VerificationTest[ ___, TestID -> id_String, _
 (* ::Subsubsection::Closed:: *)
 (*skipIfGitHubActions*)
 skipIfGitHubActions = conditionalTest @ Not @ StringQ @ Environment[ "GITHUB_ACTIONS" ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*skipIfScript*)
+(* Skip tests when running as a wolframscript (subprocess I/O doesn't work reliably in that context) *)
+skipIfScript = conditionalTest @ Not @ MatchQ[ $ScriptCommandLine, { __String } ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
