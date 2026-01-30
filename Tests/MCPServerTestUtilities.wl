@@ -255,7 +255,10 @@ readJSONResponse[ process_ProcessObject ] := Catch @ Module[ { line, parsed, att
             If[ AssociationQ @ parsed,
                 Throw @ parsed
             ]
-        ]
+        ];
+
+        (* Add small delay to prevent excessive CPU usage during polling *)
+        Pause[ 0.01 ]
     ];
     Throw @ Failure[ "ReadTimeout", <| "Message" -> "Failed to read JSON response after 1000 attempts" |> ]
 ];
