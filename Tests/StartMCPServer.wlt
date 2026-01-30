@@ -29,15 +29,15 @@ VerificationTest[
 (*WolframLanguage Server Tests*)
 
 (* Note: These integration tests spawn a subprocess to run the MCP server and communicate via JSON-RPC.
-   They work reliably when run from a notebook via TestReport["Tests/StartMCPServer.wlt"], but subprocess
-   stdin/stdout handling behaves differently when run via wolframscript on Windows/CI environments.
+   They work reliably when run from the TestReport MCP tool or a notebook via TestReport["Tests/StartMCPServer.wlt"],
+   but subprocess stdin/stdout handling behaves differently when run via wolframscript on Windows/CI environments.
    The skipIfScript wrapper skips these tests when running as a script while allowing notebook testing. *)
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Server Lifecycle*)
 skipIfScript @ VerificationTest[
-    $process = Wolfram`MCPServerTests`MCPServerTestUtilities`StartMCPTestServer[ "ServerName" -> "WolframLanguage" ],
+    $process = StartMCPTestServer[ "ServerName" -> "WolframLanguage" ],
     _ProcessObject,
     SameTest -> MatchQ,
     TestID   -> "WolframLanguage-ServerStarts@@Tests/StartMCPServer.wlt:39,16-44,2"
@@ -54,7 +54,7 @@ skipIfScript @ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Initialize Protocol*)
 skipIfScript @ VerificationTest[
-    $initResponse = Wolfram`MCPServerTests`MCPServerTestUtilities`MCPInitialize[ "ClientName" -> "test-client" ],
+    $initResponse = MCPInitialize[ "ClientName" -> "test-client" ],
     KeyValuePattern[ "result" -> _Association ],
     SameTest -> MatchQ,
     TestID   -> "WolframLanguage-Initialize@@Tests/StartMCPServer.wlt:56,16-61,2"
@@ -92,7 +92,7 @@ skipIfScript @ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Ping*)
 skipIfScript @ VerificationTest[
-    $pingResponse = Wolfram`MCPServerTests`MCPServerTestUtilities`SendMCPRequest[ "ping" ],
+    $pingResponse = SendMCPRequest[ "ping" ],
     KeyValuePattern[ "result" -> <| |> ],
     SameTest -> MatchQ,
     TestID   -> "WolframLanguage-Ping@@Tests/StartMCPServer.wlt:94,16-99,2"
@@ -102,7 +102,7 @@ skipIfScript @ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Tools Protocol*)
 skipIfScript @ VerificationTest[
-    $toolsResponse = Wolfram`MCPServerTests`MCPServerTestUtilities`SendMCPRequest[ "tools/list" ],
+    $toolsResponse = SendMCPRequest[ "tools/list" ],
     KeyValuePattern[ "result" -> KeyValuePattern[ "tools" -> { __Association } ] ],
     SameTest -> MatchQ,
     TestID   -> "WolframLanguage-ToolsList@@Tests/StartMCPServer.wlt:104,16-109,2"
@@ -124,7 +124,7 @@ skipIfScript @ VerificationTest[
 ]
 
 skipIfScript @ VerificationTest[
-    $evalResponse = Wolfram`MCPServerTests`MCPServerTestUtilities`SendMCPRequest[
+    $evalResponse = SendMCPRequest[
         "tools/call",
         <| "name" -> "WolframLanguageEvaluator", "arguments" -> <| "code" -> "1+1" |> |>
     ],
@@ -141,7 +141,7 @@ skipIfScript @ VerificationTest[
 ]
 
 skipIfScript @ VerificationTest[
-    $evalResponse2 = Wolfram`MCPServerTests`MCPServerTestUtilities`SendMCPRequest[
+    $evalResponse2 = SendMCPRequest[
         "tools/call",
         <| "name" -> "WolframLanguageEvaluator", "arguments" -> <| "code" -> "Prime[100]" |> |>
     ],
@@ -161,7 +161,7 @@ skipIfScript @ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Prompts Protocol*)
 skipIfScript @ VerificationTest[
-    $promptsResponse = Wolfram`MCPServerTests`MCPServerTestUtilities`SendMCPRequest[ "prompts/list" ],
+    $promptsResponse = SendMCPRequest[ "prompts/list" ],
     KeyValuePattern[ "result" -> KeyValuePattern[ "prompts" -> _List ] ],
     SameTest -> MatchQ,
     TestID   -> "WolframLanguage-PromptsList@@Tests/StartMCPServer.wlt:163,16-168,2"
@@ -171,7 +171,7 @@ skipIfScript @ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Error Handling*)
 skipIfScript @ VerificationTest[
-    $unknownMethodResponse = Wolfram`MCPServerTests`MCPServerTestUtilities`SendMCPRequest[ "unknown/method" ],
+    $unknownMethodResponse = SendMCPRequest[ "unknown/method" ],
     KeyValuePattern[ "error" -> KeyValuePattern[ "code" -> -32601 ] ],
     SameTest -> MatchQ,
     TestID   -> "WolframLanguage-UnknownMethod@@Tests/StartMCPServer.wlt:173,16-178,2"
@@ -181,7 +181,7 @@ skipIfScript @ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Regression: Non-existent Tool Returns Error*)
 skipIfScript @ VerificationTest[
-    $nonExistentToolResponse = Wolfram`MCPServerTests`MCPServerTestUtilities`SendMCPRequest[
+    $nonExistentToolResponse = SendMCPRequest[
         "tools/call",
         <| "name" -> "DoesNotExist", "arguments" -> <| |> |>
     ],
@@ -194,7 +194,7 @@ skipIfScript @ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Regression: Print Output Captured*)
 skipIfScript @ VerificationTest[
-    $printResponse = Wolfram`MCPServerTests`MCPServerTestUtilities`SendMCPRequest[
+    $printResponse = SendMCPRequest[
         "tools/call",
         <| "name" -> "WolframLanguageEvaluator", "arguments" -> <| "code" -> "Print[\"TestOutput123\"]; 42" |> |>
     ],
@@ -214,7 +214,7 @@ skipIfScript @ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Server Cleanup*)
 skipIfScript @ VerificationTest[
-    Wolfram`MCPServerTests`MCPServerTestUtilities`StopMCPTestServer[ ],
+    StopMCPTestServer[ ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "WolframLanguage-ServerStopped@@Tests/StartMCPServer.wlt:216,16-221,2"
@@ -228,7 +228,7 @@ skipIfScript @ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Server Lifecycle*)
 skipIfScript @ VerificationTest[
-    $processWolfram = Wolfram`MCPServerTests`MCPServerTestUtilities`StartMCPTestServer[ "ServerName" -> "Wolfram" ],
+    $processWolfram = StartMCPTestServer[ "ServerName" -> "Wolfram" ],
     _ProcessObject,
     SameTest -> MatchQ,
     TestID   -> "Wolfram-ServerStarts@@Tests/StartMCPServer.wlt:230,16-235,2"
@@ -245,7 +245,7 @@ skipIfScript @ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Initialize*)
 skipIfScript @ VerificationTest[
-    $initWolfram = Wolfram`MCPServerTests`MCPServerTestUtilities`MCPInitialize[ ],
+    $initWolfram = MCPInitialize[ ],
     KeyValuePattern[ "result" -> KeyValuePattern[ "protocolVersion" -> "2024-11-05" ] ],
     SameTest -> MatchQ,
     TestID   -> "Wolfram-Initialize@@Tests/StartMCPServer.wlt:247,16-252,2"
@@ -262,7 +262,7 @@ skipIfScript @ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Tools List*)
 skipIfScript @ VerificationTest[
-    $toolsWolfram = Wolfram`MCPServerTests`MCPServerTestUtilities`SendMCPRequest[ "tools/list" ],
+    $toolsWolfram = SendMCPRequest[ "tools/list" ],
     KeyValuePattern[ "result" -> KeyValuePattern[ "tools" -> { __Association } ] ],
     SameTest -> MatchQ,
     TestID   -> "Wolfram-ToolsList@@Tests/StartMCPServer.wlt:264,16-269,2"
@@ -272,7 +272,7 @@ skipIfScript @ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Server Cleanup*)
 skipIfScript @ VerificationTest[
-    Wolfram`MCPServerTests`MCPServerTestUtilities`StopMCPTestServer[ ],
+    StopMCPTestServer[ ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "Wolfram-ServerStopped@@Tests/StartMCPServer.wlt:274,16-279,2"
