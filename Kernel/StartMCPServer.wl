@@ -423,23 +423,32 @@ toPrintableASCII // endDefinition;
 (* ::Subsection::Closed:: *)
 (*superQuiet*)
 (* Nothing can be written to stdout while running as an MCP server, so we aggressively suppress output. *)
-(* TODO: add message handler to log messages to a file *)
 superQuiet // beginDefinition;
 superQuiet // Attributes = { HoldFirst };
-(* :!CodeAnalysis::BeginBlock:: *)
-(* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
+
 superQuiet[ eval_ ] :=
     Block[
         {
+            (* Prevent progress reporting from writing excessive updates to stdout/stderr: *)
             $ProgressReporting = False,
-            Print              = Null &,
-            PrintTemporary     = Null &,
-            $Messages          = Streams[ "stderr" ]
+            (* Redirect both $Output and $Messages to stderr to keep stdout clean for MCP: *)
+            $Messages = Streams[ "stderr" ],
+            $Output   = Streams[ "stderr" ]
         },
-        eval
+        (* We use a veto handler to prevent print output from being written to stdout/stderr.
+           We do this instead of redefining Print as a local symbol in Block because we need to let the
+           the WL evaluator tool capture and include print outputs in the tool call response. *)
+        Internal`HandlerBlock[ { "Wolfram.System.Print.Veto", False & }, eval ]
     ];
-(* :!CodeAnalysis::EndBlock:: *)
+
 superQuiet // endDefinition;
+
+(* TODO:
+  - We should OpenWrite a log file in `FileNameJoin @ { $UserBaseDirectory, "Logs", "MCPServer", "Output", file }`
+  - We should redirect both $Output and $Messages to the log file
+  - Also catch and redirect explicit Write/WriteString/BinaryWrite calls that try to write to stdout/stderr?
+  - We need actual tests of the running MCP server via StartProcess/WriteString/ReadString
+*)
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
