@@ -95,6 +95,19 @@ VerificationTest[
     TestID   -> "MCPServerObject-GetJSONConfiguration@@Tests/MCPServerObject.wlt:91,1-96,2"
 ]
 
+VerificationTest[
+    json = obj["JSONConfiguration"];
+    parsed = Developer`ReadRawJSONString[json];
+    env = parsed["mcpServers", name, "env"];
+    If[ $OperatingSystem === "Windows",
+        AllTrue[{"MCP_SERVER_NAME", "WOLFRAM_BASE", "WOLFRAM_USERBASE", "APPDATA"}, KeyExistsQ[env, #] &],
+        AllTrue[{"MCP_SERVER_NAME", "WOLFRAM_BASE", "WOLFRAM_USERBASE"}, KeyExistsQ[env, #] &]
+    ],
+    True,
+    SameTest -> MatchQ,
+    TestID   -> "MCPServerObject-JSONConfigurationHasEnvironmentVariables"
+]
+
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Multiple Properties*)

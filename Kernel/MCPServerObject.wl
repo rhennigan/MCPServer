@@ -440,8 +440,7 @@ makeJSONConfiguration // beginDefinition;
 makeJSONConfiguration[ data_Association ] := Enclose[
     Module[ { name, env, cmd, config, full },
         name = ConfirmBy[ data[ "Name" ], StringQ, "Name" ];
-        (* FIXME: this does not include all environment variables that are needed (see `defaultEnvironment` in `InstallMCPServer.wl`) *)
-        env = <| "MCP_SERVER_NAME" -> name |>;
+        env = <| "MCP_SERVER_NAME" -> name, ConfirmBy[ defaultEnvironment[ ], AssociationQ, "Environment" ] |>;
         cmd = ConfirmBy[ getWolframCommand[ ], StringQ, "WolframCommand" ];
         config = <| "type" -> "stdio", "command" -> cmd, "args" -> $defaultCommandLineArguments, "env" -> env |>;
         full = <| "mcpServers" -> <| name -> config |> |>;
