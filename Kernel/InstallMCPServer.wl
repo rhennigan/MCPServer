@@ -554,7 +554,7 @@ convertToCodexFormat // endDefinition;
 defaultEnvironment // beginDefinition;
 
 defaultEnvironment[ ] := Enclose[
-    Module[ { env, keys, usable },
+    Module[ { env, keys, usable, fallback },
 
         env = KeyMap[
             ToUpperCase,
@@ -571,7 +571,10 @@ defaultEnvironment[ ] := Enclose[
 
         usable = ConfirmBy[ KeyTake[ env, keys ], AssociationQ, "Usable" ];
 
-        defaultEnvironment[ ] = usable
+        fallback = ConfirmBy[ $fallbackEnvironment, AssociationQ, "Fallback" ];
+        ConfirmAssert[ AllTrue[ fallback, StringQ ], "FallbackCheck" ];
+
+        defaultEnvironment[ ] = ConfirmBy[ <| fallback, usable |>, AssociationQ, "Result" ]
     ],
     throwInternalFailure
 ];
@@ -581,6 +584,12 @@ defaultEnvironment // endDefinition;
 
 $defaultEnvironmentKeys = { "WOLFRAM_BASE", "WOLFRAM_USERBASE", "WOLFRAM_LOCALBASE" };
 $windowsEnvironmentKeys = Append[ $defaultEnvironmentKeys, "APPDATA" ];
+
+$fallbackEnvironment := <|
+    "WOLFRAM_BASE"      -> $BaseDirectory,
+    "WOLFRAM_LOCALBASE" -> ExpandFileName @ LocalObject @ $LocalBase,
+    "WOLFRAM_USERBASE"  -> $UserBaseDirectory
+|>;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
