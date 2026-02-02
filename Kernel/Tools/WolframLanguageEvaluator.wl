@@ -305,14 +305,16 @@ initializePacletInLocalKernel[ ] := Enclose[
     Module[ { pacletDir, result },
         pacletDir = ConfirmMatch[ $thisPaclet[ "Location" ], _? DirectoryQ, "PacletDir" ];
 
-        result = cb`WolframLanguageToolEvaluate[
-            HoldComplete @ WithCleanup[
-                PacletDirectoryLoad @ pacletDir;
-                Block[ { $ContextPath }, Get[ "Wolfram`MCPServer`" ] ],
-                $Line--
-            ],
-            "Result",
-            "Method" -> "Local"
+        result = With[ { dir = pacletDir },
+            cb`WolframLanguageToolEvaluate[
+                HoldComplete @ WithCleanup[
+                    PacletDirectoryLoad @ dir;
+                    Block[ { $ContextPath }, Get[ "Wolfram`MCPServer`" ] ],
+                    $Line--
+                ],
+                "Result",
+                "Method" -> "Local"
+            ]
         ];
 
         initializePacletInLocalKernel[ ] = ConfirmMatch[ ReleaseHold @ result, Null, "Result" ]
