@@ -306,6 +306,23 @@ getPrompt // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*consolidateTextContent*)
+
+(* Consolidates content arrays into a single text object for client compatibility.
+   Extracts all text items and merges them. Non-text items (images) are dropped
+   since many MCP clients don't support multimodal prompt responses. *)
+consolidateTextContent // beginDefinition;
+
+consolidateTextContent[ content: { __Association } ] :=
+    Module[ { textItems },
+        textItems = Select[ content, MatchQ[ #, KeyValuePattern[ "type" -> "text" ] ] & ];
+        <| "type" -> "text", "text" -> StringJoin @ Lookup[ textItems, "text", "" ] |>
+    ];
+
+consolidateTextContent // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*makePromptContent*)
 makePromptContent // beginDefinition;
 
@@ -313,11 +330,14 @@ makePromptContent // beginDefinition;
 makePromptContent[ KeyValuePattern[ { "Type" -> "Function", "Content" -> func_ } ], arguments_ ] :=
     makePromptContent[ catchPromptFunction[ func, arguments ], arguments ];
 
-(* Handle multimodal content - list of content items (pass through) *)
-makePromptContent[ content: { __Association }, arguments_ ] := content;
+(* Handle multimodal content - list of content items *)
+(* Consolidate text-only arrays into a single text object for client compatibility *)
+makePromptContent[ content: { __Association }, arguments_ ] :=
+    consolidateTextContent @ content;
 
 (* Handle structured content with "Content" key containing multimodal content *)
-makePromptContent[ KeyValuePattern[ "Content" -> content: { __Association } ], arguments_ ] := content;
+makePromptContent[ KeyValuePattern[ "Content" -> content: { __Association } ], arguments_ ] :=
+    consolidateTextContent @ content;
 
 (* Handle Text type with Content *)
 makePromptContent[ KeyValuePattern[ "Content" -> content_ ], arguments_ ] :=

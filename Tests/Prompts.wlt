@@ -435,6 +435,73 @@ VerificationTest[
 ]
 
 (* ::Section:: *)
+(* consolidateTextContent *)
+
+(* Text-only arrays should be consolidated into a single text object *)
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`consolidateTextContent[
+        {
+            <| "type" -> "text", "text" -> "Hello " |>,
+            <| "type" -> "text", "text" -> "World!" |>
+        }
+    ],
+    <| "type" -> "text", "text" -> "Hello World!" |>,
+    SameTest -> SameQ,
+    TestID   -> "ConsolidateTextContent-TextOnly@@Tests/Prompts.wlt:441,1-451,2"
+]
+
+(* Single text item should be consolidated to object *)
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`consolidateTextContent[
+        { <| "type" -> "text", "text" -> "Single" |> }
+    ],
+    <| "type" -> "text", "text" -> "Single" |>,
+    SameTest -> SameQ,
+    TestID   -> "ConsolidateTextContent-SingleText@@Tests/Prompts.wlt:454,1-461,2"
+]
+
+(* Arrays with non-text items (images) should have text extracted, images dropped *)
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`consolidateTextContent[
+        {
+            <| "type" -> "text", "text" -> "Description: " |>,
+            <| "type" -> "image", "data" -> "base64data", "mimeType" -> "image/png" |>
+        }
+    ],
+    <| "type" -> "text", "text" -> "Description: " |>,
+    SameTest -> SameQ,
+    TestID   -> "ConsolidateTextContent-WithImage@@Tests/Prompts.wlt:464,1-474,2"
+]
+
+(* makePromptContent should use consolidateTextContent for arrays *)
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+        {
+            <| "type" -> "text", "text" -> "Part 1 " |>,
+            <| "type" -> "text", "text" -> "Part 2" |>
+        },
+        <| |>
+    ],
+    <| "type" -> "text", "text" -> "Part 1 Part 2" |>,
+    SameTest -> SameQ,
+    TestID   -> "MakePromptContent-ConsolidatesTextArray@@Tests/Prompts.wlt:477,1-488,2"
+]
+
+(* makePromptContent with Content key containing array *)
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+        <| "Content" -> {
+            <| "type" -> "text", "text" -> "A" |>,
+            <| "type" -> "text", "text" -> "B" |>
+        } |>,
+        <| |>
+    ],
+    <| "type" -> "text", "text" -> "AB" |>,
+    SameTest -> SameQ,
+    TestID   -> "MakePromptContent-ContentKeyConsolidatesText@@Tests/Prompts.wlt:491,1-502,2"
+]
+
+(* ::Section:: *)
 (* makePromptData (Phase 3) *)
 
 VerificationTest[
@@ -443,7 +510,7 @@ VerificationTest[
     } ],
     { <| "name" -> "Test", "description" -> "A test prompt" |> },
     SameTest -> SameQ,
-    TestID   -> "MakePromptData-CapitalizedKeys@@Tests/Prompts.wlt:440,1-447,2"
+    TestID   -> "MakePromptData-CapitalizedKeys@@Tests/Prompts.wlt:507,1-514,2"
 ]
 
 VerificationTest[
@@ -452,7 +519,7 @@ VerificationTest[
     } ],
     { <| "name" -> "Test", "description" -> "A test prompt" |> },
     SameTest -> SameQ,
-    TestID   -> "MakePromptData-LowercaseKeys@@Tests/Prompts.wlt:449,1-456,2"
+    TestID   -> "MakePromptData-LowercaseKeys@@Tests/Prompts.wlt:516,1-523,2"
 ]
 
 VerificationTest[
@@ -475,7 +542,7 @@ VerificationTest[
         |>
     },
     SameTest -> SameQ,
-    TestID   -> "MakePromptData-WithArguments@@Tests/Prompts.wlt:458,1-479,2"
+    TestID   -> "MakePromptData-WithArguments@@Tests/Prompts.wlt:525,1-546,2"
 ]
 
 VerificationTest[
@@ -484,7 +551,7 @@ VerificationTest[
     } ],
     { <| "name" -> "NoArgs", "description" -> "" |> },
     SameTest -> SameQ,
-    TestID   -> "MakePromptData-NoArguments@@Tests/Prompts.wlt:481,1-488,2"
+    TestID   -> "MakePromptData-NoArguments@@Tests/Prompts.wlt:548,1-555,2"
 ]
 
 (* ::Section:: *)
@@ -496,7 +563,7 @@ VerificationTest[
     } ],
     { <| "name" -> "query", "description" -> "The search query", "required" -> True |> },
     SameTest -> SameQ,
-    TestID   -> "NormalizeArguments-CapitalizedKeys@@Tests/Prompts.wlt:493,1-500,2"
+    TestID   -> "NormalizeArguments-CapitalizedKeys@@Tests/Prompts.wlt:560,1-567,2"
 ]
 
 VerificationTest[
@@ -505,7 +572,7 @@ VerificationTest[
     } ],
     { <| "name" -> "query", "description" -> "The search query", "required" -> True |> },
     SameTest -> SameQ,
-    TestID   -> "NormalizeArguments-LowercaseKeys@@Tests/Prompts.wlt:502,1-509,2"
+    TestID   -> "NormalizeArguments-LowercaseKeys@@Tests/Prompts.wlt:569,1-576,2"
 ]
 
 VerificationTest[
@@ -518,14 +585,14 @@ VerificationTest[
         <| "name" -> "arg2", "description" -> "", "required" -> False |>
     },
     SameTest -> SameQ,
-    TestID   -> "NormalizeArguments-MultipleWithDefaults@@Tests/Prompts.wlt:511,1-522,2"
+    TestID   -> "NormalizeArguments-MultipleWithDefaults@@Tests/Prompts.wlt:578,1-589,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`StartMCPServer`Private`normalizeArguments[ { } ],
     { },
     SameTest -> SameQ,
-    TestID   -> "NormalizeArguments-Empty@@Tests/Prompts.wlt:524,1-529,2"
+    TestID   -> "NormalizeArguments-Empty@@Tests/Prompts.wlt:591,1-596,2"
 ]
 
 (* ::Section:: *)
@@ -537,7 +604,7 @@ VerificationTest[
     ],
     <| "name" -> "query", "description" -> "The query", "required" -> True |>,
     SameTest -> SameQ,
-    TestID   -> "NormalizeArgument-AllFields@@Tests/Prompts.wlt:534,1-541,2"
+    TestID   -> "NormalizeArgument-AllFields@@Tests/Prompts.wlt:601,1-608,2"
 ]
 
 VerificationTest[
@@ -546,7 +613,7 @@ VerificationTest[
     ],
     <| "name" -> "query", "description" -> "", "required" -> False |>,
     SameTest -> SameQ,
-    TestID   -> "NormalizeArgument-DefaultValues@@Tests/Prompts.wlt:543,1-550,2"
+    TestID   -> "NormalizeArgument-DefaultValues@@Tests/Prompts.wlt:610,1-617,2"
 ]
 
 VerificationTest[
@@ -555,7 +622,7 @@ VerificationTest[
     ],
     <| "name" -> "query", "description" -> "Lowercase keys", "required" -> True |>,
     SameTest -> SameQ,
-    TestID   -> "NormalizeArgument-LowercaseKeys@@Tests/Prompts.wlt:552,1-559,2"
+    TestID   -> "NormalizeArgument-LowercaseKeys@@Tests/Prompts.wlt:619,1-626,2"
 ]
 
 (* ::Section:: *)
@@ -565,28 +632,28 @@ VerificationTest[
     $DefaultMCPServers[ "Wolfram" ][ "MCPPrompts" ],
     { "WolframSearch" },
     SameTest -> SameQ,
-    TestID   -> "ServerConfig-WolframHasMCPPrompts@@Tests/Prompts.wlt:564,1-569,2"
+    TestID   -> "ServerConfig-WolframHasMCPPrompts@@Tests/Prompts.wlt:631,1-636,2"
 ]
 
 VerificationTest[
     $DefaultMCPServers[ "WolframAlpha" ][ "MCPPrompts" ],
     { "WolframAlphaSearch" },
     SameTest -> SameQ,
-    TestID   -> "ServerConfig-WolframAlphaHasMCPPrompts@@Tests/Prompts.wlt:571,1-576,2"
+    TestID   -> "ServerConfig-WolframAlphaHasMCPPrompts@@Tests/Prompts.wlt:638,1-643,2"
 ]
 
 VerificationTest[
     $DefaultMCPServers[ "WolframLanguage" ][ "MCPPrompts" ],
     { "WolframLanguageSearch", "Notebook" },
     SameTest -> SameQ,
-    TestID   -> "ServerConfig-WolframLanguageHasMCPPrompts@@Tests/Prompts.wlt:578,1-583,2"
+    TestID   -> "ServerConfig-WolframLanguageHasMCPPrompts@@Tests/Prompts.wlt:645,1-650,2"
 ]
 
 VerificationTest[
     $DefaultMCPServers[ "WolframPacletDevelopment" ][ "MCPPrompts" ],
     { "WolframLanguageSearch", "Notebook" },
     SameTest -> SameQ,
-    TestID   -> "ServerConfig-WolframPacletDevelopmentHasMCPPrompts@@Tests/Prompts.wlt:585,1-590,2"
+    TestID   -> "ServerConfig-WolframPacletDevelopmentHasMCPPrompts@@Tests/Prompts.wlt:652,1-657,2"
 ]
 
 (* ::Subsection:: *)
@@ -596,28 +663,28 @@ VerificationTest[
     MCPServerObject[ "Wolfram" ][ "PromptData" ],
     { KeyValuePattern[ "Name" -> "Search" ] },
     SameTest -> MatchQ,
-    TestID   -> "ServerPromptData-Wolfram@@Tests/Prompts.wlt:595,1-600,2"
+    TestID   -> "ServerPromptData-Wolfram@@Tests/Prompts.wlt:662,1-667,2"
 ]
 
 VerificationTest[
     MCPServerObject[ "WolframAlpha" ][ "PromptData" ],
     { KeyValuePattern[ "Name" -> "Search" ] },
     SameTest -> MatchQ,
-    TestID   -> "ServerPromptData-WolframAlpha@@Tests/Prompts.wlt:602,1-607,2"
+    TestID   -> "ServerPromptData-WolframAlpha@@Tests/Prompts.wlt:669,1-674,2"
 ]
 
 VerificationTest[
     MCPServerObject[ "WolframLanguage" ][ "PromptData" ],
     { KeyValuePattern[ "Name" -> "Search" ], KeyValuePattern[ "Name" -> "Notebook" ] },
     SameTest -> MatchQ,
-    TestID   -> "ServerPromptData-WolframLanguage@@Tests/Prompts.wlt:609,1-614,2"
+    TestID   -> "ServerPromptData-WolframLanguage@@Tests/Prompts.wlt:676,1-681,2"
 ]
 
 VerificationTest[
     MCPServerObject[ "WolframPacletDevelopment" ][ "PromptData" ],
     { KeyValuePattern[ "Name" -> "Search" ], KeyValuePattern[ "Name" -> "Notebook" ] },
     SameTest -> MatchQ,
-    TestID   -> "ServerPromptData-WolframPacletDevelopment@@Tests/Prompts.wlt:616,1-621,2"
+    TestID   -> "ServerPromptData-WolframPacletDevelopment@@Tests/Prompts.wlt:683,1-688,2"
 ]
 
 (* ::Subsection:: *)
@@ -635,7 +702,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ServerPromptData-AllHaveFunctionType@@Tests/Prompts.wlt:626,1-639,2"
+    TestID   -> "ServerPromptData-AllHaveFunctionType@@Tests/Prompts.wlt:693,1-706,2"
 ]
 
 (* ::Subsection:: *)
@@ -648,7 +715,7 @@ VerificationTest[
     ],
     { "Notebook", "Search" },
     SameTest -> SameQ,
-    TestID   -> "ServerPromptData-PromptNames@@Tests/Prompts.wlt:644,1-652,2"
+    TestID   -> "ServerPromptData-PromptNames@@Tests/Prompts.wlt:711,1-719,2"
 ]
 
 (* ::Section:: *)
@@ -664,7 +731,7 @@ VerificationTest[
     ],
     "Success: test",
     SameTest -> SameQ,
-    TestID   -> "CatchPromptFunction-Success@@Tests/Prompts.wlt:660,1-668,2"
+    TestID   -> "CatchPromptFunction-Success@@Tests/Prompts.wlt:727,1-735,2"
 ]
 
 VerificationTest[
@@ -674,7 +741,7 @@ VerificationTest[
     ],
     "[Error] Something went wrong",
     SameTest -> SameQ,
-    TestID   -> "CatchPromptFunction-ReturnsFailure@@Tests/Prompts.wlt:670,1-678,2"
+    TestID   -> "CatchPromptFunction-ReturnsFailure@@Tests/Prompts.wlt:737,1-745,2"
 ]
 
 VerificationTest[
@@ -684,7 +751,7 @@ VerificationTest[
     ],
     _String,
     SameTest -> MatchQ,
-    TestID   -> "CatchPromptFunction-ThrowsFailure@@Tests/Prompts.wlt:680,1-688,2"
+    TestID   -> "CatchPromptFunction-ThrowsFailure@@Tests/Prompts.wlt:747,1-755,2"
 ]
 
 (* ::Subsection:: *)
@@ -696,7 +763,7 @@ VerificationTest[
     ],
     "[Error] Test message",
     SameTest -> SameQ,
-    TestID   -> "FormatPromptError-WithMessage@@Tests/Prompts.wlt:693,1-700,2"
+    TestID   -> "FormatPromptError-WithMessage@@Tests/Prompts.wlt:760,1-767,2"
 ]
 
 VerificationTest[
@@ -708,14 +775,14 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "FormatPromptError-NoMessage@@Tests/Prompts.wlt:702,1-712,2"
+    TestID   -> "FormatPromptError-NoMessage@@Tests/Prompts.wlt:769,1-779,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`StartMCPServer`Private`formatPromptError[ "not a failure" ],
     "[Error] Failed to generate prompt content.",
     SameTest -> SameQ,
-    TestID   -> "FormatPromptError-NonFailure@@Tests/Prompts.wlt:714,1-719,2"
+    TestID   -> "FormatPromptError-NonFailure@@Tests/Prompts.wlt:781,1-786,2"
 ]
 
 (* ::Subsection:: *)
@@ -728,7 +795,7 @@ VerificationTest[
     ],
     <| "type" -> "text", "text" -> "[Error] Function failed" |>,
     SameTest -> SameQ,
-    TestID   -> "MakePromptContent-FunctionReturnsFailure@@Tests/Prompts.wlt:724,1-732,2"
+    TestID   -> "MakePromptContent-FunctionReturnsFailure@@Tests/Prompts.wlt:791,1-799,2"
 ]
 
 VerificationTest[
@@ -738,7 +805,7 @@ VerificationTest[
     ][ "text" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "MakePromptContent-FunctionThrowsFailure@@Tests/Prompts.wlt:734,1-742,2"
+    TestID   -> "MakePromptContent-FunctionThrowsFailure@@Tests/Prompts.wlt:801,1-809,2"
 ]
 
 (* ::Section:: *)
@@ -751,14 +818,14 @@ VerificationTest[
     Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[ "test query", "some results" ],
     "<search-query>test query</search-query>\n<search-results>\nsome results\n</search-results>\nUse the above search results to answer the user's query below.\n<user-query>test query</user-query>",
     SameTest -> SameQ,
-    TestID   -> "FormatSearchPrompt-BasicOutput@@Tests/Prompts.wlt:750,1-755,2"
+    TestID   -> "FormatSearchPrompt-BasicOutput@@Tests/Prompts.wlt:817,1-822,2"
 ]
 
 VerificationTest[
     StringQ @ Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[ "query", "results" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "FormatSearchPrompt-ReturnsString@@Tests/Prompts.wlt:757,1-762,2"
+    TestID   -> "FormatSearchPrompt-ReturnsString@@Tests/Prompts.wlt:824,1-829,2"
 ]
 
 VerificationTest[
@@ -768,7 +835,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "FormatSearchPrompt-ContainsSearchQueryTag@@Tests/Prompts.wlt:764,1-772,2"
+    TestID   -> "FormatSearchPrompt-ContainsSearchQueryTag@@Tests/Prompts.wlt:831,1-839,2"
 ]
 
 VerificationTest[
@@ -778,7 +845,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "FormatSearchPrompt-ContainsSearchResultsTag@@Tests/Prompts.wlt:774,1-782,2"
+    TestID   -> "FormatSearchPrompt-ContainsSearchResultsTag@@Tests/Prompts.wlt:841,1-849,2"
 ]
 
 VerificationTest[
@@ -788,7 +855,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "FormatSearchPrompt-ContainsUserQueryTag@@Tests/Prompts.wlt:784,1-792,2"
+    TestID   -> "FormatSearchPrompt-ContainsUserQueryTag@@Tests/Prompts.wlt:851,1-859,2"
 ]
 
 VerificationTest[
@@ -798,7 +865,7 @@ VerificationTest[
     ],
     2,
     SameTest -> SameQ,
-    TestID   -> "FormatSearchPrompt-QueryAppearsInBothTags@@Tests/Prompts.wlt:794,1-802,2"
+    TestID   -> "FormatSearchPrompt-QueryAppearsInBothTags@@Tests/Prompts.wlt:861,1-869,2"
 ]
 
 VerificationTest[
@@ -808,7 +875,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "FormatSearchPrompt-ContainsInstructionalText@@Tests/Prompts.wlt:804,1-812,2"
+    TestID   -> "FormatSearchPrompt-ContainsInstructionalText@@Tests/Prompts.wlt:871,1-879,2"
 ]
 
 (* ::Subsection:: *)
@@ -820,7 +887,7 @@ skipIfGitHubActions @ VerificationTest[
     $wolframSearchPromptOutput = $DefaultMCPPrompts[ "WolframSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
     _String | { KeyValuePattern[ "type" -> "text" ], ___ },
     SameTest -> MatchQ,
-    TestID   -> "WolframSearch-ReturnsValidOutput@@Tests/Prompts.wlt:819,23-824,2"
+    TestID   -> "WolframSearch-ReturnsValidOutput@@Tests/Prompts.wlt:886,23-891,2"
 ]
 
 skipIfGitHubActions @ VerificationTest[
@@ -833,14 +900,14 @@ skipIfGitHubActions @ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframSearch-UsesNewFormat@@Tests/Prompts.wlt:826,23-837,2"
+    TestID   -> "WolframSearch-UsesNewFormat@@Tests/Prompts.wlt:893,23-904,2"
 ]
 
 skipIfGitHubActions @ VerificationTest[
     $wlSearchPromptOutput = $DefaultMCPPrompts[ "WolframLanguageSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
     _String | { KeyValuePattern[ "type" -> "text" ], ___ },
     SameTest -> MatchQ,
-    TestID   -> "WolframLanguageSearch-ReturnsValidOutput@@Tests/Prompts.wlt:839,23-844,2"
+    TestID   -> "WolframLanguageSearch-ReturnsValidOutput@@Tests/Prompts.wlt:906,23-911,2"
 ]
 
 skipIfGitHubActions @ VerificationTest[
@@ -853,14 +920,14 @@ skipIfGitHubActions @ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframLanguageSearch-UsesNewFormat@@Tests/Prompts.wlt:846,23-857,2"
+    TestID   -> "WolframLanguageSearch-UsesNewFormat@@Tests/Prompts.wlt:913,23-924,2"
 ]
 
 skipIfGitHubActions @ VerificationTest[
     $waSearchPromptOutput = $DefaultMCPPrompts[ "WolframAlphaSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
     _String | { KeyValuePattern[ "type" -> "text" ], ___ },
     SameTest -> MatchQ,
-    TestID   -> "WolframAlphaSearch-ReturnsValidOutput@@Tests/Prompts.wlt:859,23-864,2"
+    TestID   -> "WolframAlphaSearch-ReturnsValidOutput@@Tests/Prompts.wlt:926,23-931,2"
 ]
 
 skipIfGitHubActions @ VerificationTest[
@@ -873,7 +940,7 @@ skipIfGitHubActions @ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframAlphaSearch-UsesNewFormat@@Tests/Prompts.wlt:866,23-877,2"
+    TestID   -> "WolframAlphaSearch-UsesNewFormat@@Tests/Prompts.wlt:933,23-944,2"
 ]
 
 (* ::Subsection:: *)
@@ -883,14 +950,14 @@ VerificationTest[
     Wolfram`MCPServer`Prompts`Notebook`Private`formatNotebookPrompt[ "/path/to/file.nb", "# Heading\n\nContent" ],
     "<notebook-path>/path/to/file.nb</notebook-path>\n<notebook-content>\n# Heading\n\nContent\n</notebook-content>",
     SameTest -> SameQ,
-    TestID   -> "FormatNotebookPrompt-BasicOutput@@Tests/Prompts.wlt:882,1-887,2"
+    TestID   -> "FormatNotebookPrompt-BasicOutput@@Tests/Prompts.wlt:949,1-954,2"
 ]
 
 VerificationTest[
     StringQ @ Wolfram`MCPServer`Prompts`Notebook`Private`formatNotebookPrompt[ "/path/to/file.nb", "content" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "FormatNotebookPrompt-ReturnsString@@Tests/Prompts.wlt:889,1-894,2"
+    TestID   -> "FormatNotebookPrompt-ReturnsString@@Tests/Prompts.wlt:956,1-961,2"
 ]
 
 VerificationTest[
@@ -900,7 +967,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "FormatNotebookPrompt-ContainsPathTag@@Tests/Prompts.wlt:896,1-904,2"
+    TestID   -> "FormatNotebookPrompt-ContainsPathTag@@Tests/Prompts.wlt:963,1-971,2"
 ]
 
 VerificationTest[
@@ -910,7 +977,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "FormatNotebookPrompt-ContainsContentTag@@Tests/Prompts.wlt:906,1-914,2"
+    TestID   -> "FormatNotebookPrompt-ContainsContentTag@@Tests/Prompts.wlt:973,1-981,2"
 ]
 
 (* ::Subsection:: *)
@@ -923,7 +990,7 @@ VerificationTest[
     ],
     { <| "type" -> "text", "text" -> "hello" |>, <| "type" -> "image", "data" -> "abc", "mimeType" -> "image/png" |> },
     SameTest -> SameQ,
-    TestID   -> "MakePromptContent-ContentArray@@Tests/Prompts.wlt:919,1-927,2"
+    TestID   -> "MakePromptContent-ContentArray@@Tests/Prompts.wlt:986,1-994,2"
 ]
 
 VerificationTest[
@@ -933,7 +1000,7 @@ VerificationTest[
     ],
     { <| "type" -> "text", "text" -> "hello" |> },
     SameTest -> SameQ,
-    TestID   -> "MakePromptContent-StructuredContent@@Tests/Prompts.wlt:929,1-937,2"
+    TestID   -> "MakePromptContent-StructuredContent@@Tests/Prompts.wlt:996,1-1004,2"
 ]
 
 VerificationTest[
@@ -949,7 +1016,7 @@ VerificationTest[
         KeyValuePattern[ { "type" -> "image", "data" -> "base64data" } ]
     },
     SameTest -> MatchQ,
-    TestID   -> "FormatSearchPrompt-MultimodalContent@@Tests/Prompts.wlt:939,1-953,2"
+    TestID   -> "FormatSearchPrompt-MultimodalContent@@Tests/Prompts.wlt:1006,1-1020,2"
 ]
 
 VerificationTest[
@@ -961,7 +1028,7 @@ VerificationTest[
     ],
     { KeyValuePattern[ { "type" -> "text", "text" -> _? (StringContainsQ[ "my query" ]) } ] },
     SameTest -> MatchQ,
-    TestID   -> "FormatSearchPrompt-MultimodalTextOnly@@Tests/Prompts.wlt:955,1-965,2"
+    TestID   -> "FormatSearchPrompt-MultimodalTextOnly@@Tests/Prompts.wlt:1022,1-1032,2"
 ]
 
 VerificationTest[
@@ -975,7 +1042,7 @@ VerificationTest[
     ],
     3,
     SameTest -> SameQ,
-    TestID   -> "FormatSearchPrompt-MultimodalMultipleImages@@Tests/Prompts.wlt:967,1-979,2"
+    TestID   -> "FormatSearchPrompt-MultimodalMultipleImages@@Tests/Prompts.wlt:1034,1-1046,2"
 ]
 
 (* ::Subsection:: *)
@@ -988,7 +1055,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "NotebookPrompt-NonexistentFile@@Tests/Prompts.wlt:984,1-992,2"
+    TestID   -> "NotebookPrompt-NonexistentFile@@Tests/Prompts.wlt:1051,1-1059,2"
 ]
 
 VerificationTest[
@@ -998,7 +1065,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "NotebookPrompt-InvalidExtension@@Tests/Prompts.wlt:994,1-1002,2"
+    TestID   -> "NotebookPrompt-InvalidExtension@@Tests/Prompts.wlt:1061,1-1069,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
