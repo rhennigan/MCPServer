@@ -3,8 +3,9 @@
 BeginPackage[ "Wolfram`MCPServer`StartMCPServer`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
+Needs[ "Wolfram`MCPServer`"          ];
+Needs[ "Wolfram`MCPServer`Common`"   ];
+Needs[ "Wolfram`MCPServer`Graphics`" ];
 
 Needs[ "Wolfram`Chatbook`" -> "cb`" ];
 
@@ -364,11 +365,61 @@ formatPromptError // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*graphicsToImageContent*)
+graphicsToImageContent // beginDefinition;
+
+graphicsToImageContent[ g_ ] := Enclose[
+    Module[ { png, base64 },
+        png = ConfirmBy[ Quiet @ ExportByteArray[ g, "PNG" ], ByteArrayQ, "PNG" ];
+        base64 = ConfirmBy[ BaseEncode @ png, StringQ, "Base64" ];
+        <| "type" -> "image", "data" -> base64, "mimeType" -> "image/png" |>
+    ],
+    $Failed &  (* Return $Failed on failure *)
+];
+
+graphicsToImageContent // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*extractImageContent*)
+extractImageContent // beginDefinition;
+
+extractImageContent[ g_? graphicsQ ] :=
+    With[ { img = graphicsToImageContent @ g },
+        If[ AssociationQ @ img, { img }, { } ]
+    ];
+
+extractImageContent[ list_List ] := Flatten[ extractImageContent /@ list, 1 ];
+extractImageContent[ as_Association ] := extractImageContent @ Values @ as;
+extractImageContent[ _Failure ] := { };
+extractImageContent[ _String  ] := { };
+extractImageContent[ _        ] := { };
+
+extractImageContent // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*resultToContent*)
+resultToContent // beginDefinition;
+
+resultToContent[ result_ ] := Enclose[
+    Module[ { textContent, imageContents },
+        textContent = <| "type" -> "text", "text" -> ConfirmBy[ safeString @ result, StringQ ] |>;
+        imageContents = ConfirmMatch[ extractImageContent @ result, { ___Association } ];
+        Flatten @ { textContent, imageContents }
+    ],
+    throwInternalFailure
+];
+
+resultToContent // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*evaluateTool*)
 evaluateTool // beginDefinition;
 
 evaluateTool[ msg_, req_ ] := Enclose[
-    Catch @ Module[ { params, toolName, args, tool, result, string },
+    Catch @ Module[ { params, toolName, args, tool, result, content },
         Quiet @ TaskRemove @ $warmupTask; (* We're in a tool call, so it no longer makes sense to warm up tools *)
         writeLog[ "ToolCall" -> msg ];
         params = ConfirmBy[ Lookup[ msg, "params", <| |> ], AssociationQ ];
@@ -385,14 +436,22 @@ evaluateTool[ msg_, req_ ] := Enclose[
         ];
 
         result = stealthCatchTop @ tool @ args;
-        If[ StringQ @ result[ "String" ], result = result[ "String" ] ];
-        (* TODO: return multimodal content here when appropriate *)
-        (* TODO: convert internal errors to more useful text *)
-        string = ConfirmBy[ safeString @ result, StringQ, "String" ];
-        <|
-            "content" -> { <| "type" -> "text", "text" -> string |> },
-            "isError" -> FailureQ @ result
-        |>
+
+        content = Which[
+            (* Structured result with Content key (from WolframLanguageEvaluator) *)
+            AssociationQ @ result && KeyExistsQ[ result, "Content" ],
+                result[ "Content" ],
+
+            (* Legacy: result has String key *)
+            StringQ @ result[ "String" ],
+                resultToContent @ result[ "String" ],
+
+            (* Default: auto-detect graphics *)
+            True,
+                resultToContent @ result
+        ];
+
+        <| "content" -> ConfirmMatch[ content, { __Association } ], "isError" -> FailureQ @ result |>
     ],
     throwInternalFailure
 ];
