@@ -67,6 +67,9 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `graphicsQ;
 `graphicsToImageContent;
 
+(* WolframAlpha image extraction: *)
+`extractWolframAlphaImages;
+
 (* Internal failure formatting: *)
 `$internalFailureLogPath;
 `extractFailureTag;

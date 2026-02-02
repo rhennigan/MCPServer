@@ -381,6 +381,68 @@ graphicsToImageContent // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*extractWolframAlphaImages*)
+
+(* Pattern for WolframAlpha image URLs in markdown *)
+(* Matches: public6.wolframalpha.com, www6.wolframalpha.com, etc. *)
+$$waImageURLPattern = Shortest[
+    "![" ~~ Except[ "]" ]... ~~ "](" ~~
+    url: ("https://" ~~ __ ~~ "wolframalpha.com/files/" ~~ __ ~~ (".gif" | ".png" | ".jpg" | ".jpeg")) ~~
+    ")"
+];
+
+extractWolframAlphaImages // beginDefinition;
+
+extractWolframAlphaImages[ str_String ] := Enclose[
+    Catch @ Module[ { parts, hasImages, contentItems },
+
+        (* Split string into text segments and URLs *)
+        parts = StringSplit[ str, $$waImageURLPattern :> url ];
+
+        (* If no images found, return plain text *)
+        If[ Length @ parts === 1 && StringQ @ First @ parts,
+            Throw @ str  (* Return plain string for backward compatibility *)
+        ];
+
+        hasImages = False;
+        contentItems = Flatten @ Map[
+            Function[ item,
+                If[ StringQ @ item && ! StringStartsQ[ item, "https://" ],
+                    (* Text segment: create text content *)
+                    If[ StringLength @ item > 0,
+                        { <| "type" -> "text", "text" -> item |> },
+                        { }
+                    ],
+                    (* URL: import image and create both text + image content *)
+                    hasImages = True;
+                    Module[ { img, imageContent },
+                        img = Quiet @ Import[ item, "Image" ];
+                        imageContent = If[ ImageQ @ img, graphicsToImageContent @ img, $Failed ];
+                        Flatten @ {
+                            (* Always include the markdown link as text *)
+                            <| "type" -> "text", "text" -> "![Image](" <> item <> ")" |>,
+                            (* Add base64 image if import succeeded *)
+                            If[ AssociationQ @ imageContent, imageContent, Nothing ]
+                        }
+                    ]
+                ]
+            ],
+            parts
+        ];
+
+        (* If we successfully extracted images, return structured content *)
+        If[ TrueQ @ hasImages && MatchQ[ contentItems, { __Association } ],
+            <| "Content" -> contentItems |>,
+            str  (* Fallback to plain string *)
+        ]
+    ],
+    str &  (* On any error, return original string *)
+];
+
+extractWolframAlphaImages // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*extractImageContent*)
 extractImageContent // beginDefinition;
 
