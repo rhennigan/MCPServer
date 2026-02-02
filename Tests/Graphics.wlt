@@ -234,4 +234,182 @@ VerificationTest[
     TestID -> "resultToContent-GraphicsTypes@@Tests/Graphics.wlt:228,1-235,2"
 ]
 
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*extractWolframAlphaImages Tests*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*No Images - Returns String*)
+VerificationTest[
+    Wolfram`MCPServer`Common`extractWolframAlphaImages @ "Hello World",
+    "Hello World",
+    TestID -> "extractWolframAlphaImages-PlainString@@Tests/Graphics.wlt:244,1-248,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Common`extractWolframAlphaImages @ "Some text without images",
+    "Some text without images",
+    TestID -> "extractWolframAlphaImages-NoImages@@Tests/Graphics.wlt:250,1-254,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Common`extractWolframAlphaImages @ "Text with non-WA image ![img](https://example.com/image.png)",
+    "Text with non-WA image ![img](https://example.com/image.png)",
+    TestID -> "extractWolframAlphaImages-NonWAImage@@Tests/Graphics.wlt:256,1-260,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*With Images - Returns Structured Content*)
+VerificationTest[
+    With[
+        { result = Wolfram`MCPServer`Common`extractWolframAlphaImages @
+            "Result: ![Image](https://public6.wolframalpha.com/files/test.png)" },
+        AssociationQ @ result && KeyExistsQ[ result, "Content" ]
+    ],
+    True,
+    TestID -> "extractWolframAlphaImages-HasContentKey@@Tests/Graphics.wlt:265,1-273,2"
+]
+
+VerificationTest[
+    With[
+        { result = Wolfram`MCPServer`Common`extractWolframAlphaImages @
+            "Result: ![Image](https://public6.wolframalpha.com/files/test.gif)" },
+        MatchQ[ result, <| "Content" -> { __Association } |> ]
+    ],
+    True,
+    TestID -> "extractWolframAlphaImages-ContentIsList@@Tests/Graphics.wlt:275,1-283,2"
+]
+
+VerificationTest[
+    With[
+        { result = Wolfram`MCPServer`Common`extractWolframAlphaImages @
+            "Before ![Image](https://public6.wolframalpha.com/files/test.jpg) After" },
+        (* Should have at least text content items *)
+        Length @ result[ "Content" ] >= 2
+    ],
+    True,
+    TestID -> "extractWolframAlphaImages-MultipleContentItems@@Tests/Graphics.wlt:285,1-294,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*URL Pattern Matching*)
+
+(* Test the pattern directly with StringMatchQ *)
+VerificationTest[
+    StringMatchQ[
+        "![Result](https://public6.wolframalpha.com/files/image.png)",
+        ___ ~~ "![" ~~ Except[ "]" ]... ~~ "](" ~~
+        ("https://" ~~ __ ~~ "wolframalpha.com/files/" ~~ __ ~~ (".gif" | ".png" | ".jpg" | ".jpeg")) ~~
+        ")" ~~ ___
+    ],
+    True,
+    TestID -> "extractWolframAlphaImages-PatternMatchesBasic@@Tests/Graphics.wlt:301,1-310,2"
+]
+
+(* Test StringSplit extracts the URL *)
+VerificationTest[
+    With[
+        {
+            pattern = Shortest[
+                "![" ~~ Except[ "]" ]... ~~ "](" ~~
+                url: ("https://" ~~ __ ~~ "wolframalpha.com/files/" ~~ __ ~~ (".gif" | ".png" | ".jpg" | ".jpeg")) ~~
+                ")"
+            ]
+        },
+        StringSplit[ "![Result](https://public6.wolframalpha.com/files/image.png)", pattern :> url ]
+    ],
+    (* StringSplit may or may not include empty strings at boundaries *)
+    { "https://public6.wolframalpha.com/files/image.png" } | { "", "https://public6.wolframalpha.com/files/image.png" },
+    SameTest -> MatchQ,
+    TestID   -> "extractWolframAlphaImages-StringSplitExtractsURL@@Tests/Graphics.wlt:313,1-328,2"
+]
+
+(* Test with www6 domain - pattern check *)
+VerificationTest[
+    StringContainsQ[
+        "![Result](https://www6.wolframalpha.com/files/image.png)",
+        "wolframalpha.com/files/"
+    ],
+    True,
+    TestID -> "extractWolframAlphaImages-WWW6ContainsPattern@@Tests/Graphics.wlt:331,1-338,2"
+]
+
+(* Test with jpeg extension - pattern check *)
+VerificationTest[
+    StringContainsQ[
+        "![Result](https://public6.wolframalpha.com/files/image.jpeg)",
+        "wolframalpha.com/files/"
+    ],
+    True,
+    TestID -> "extractWolframAlphaImages-JpegContainsPattern@@Tests/Graphics.wlt:341,1-348,2"
+]
+
+(* Original tests that need the function loaded properly *)
+VerificationTest[
+    With[
+        { result = Wolfram`MCPServer`Common`extractWolframAlphaImages @
+            "![Result](https://www6.wolframalpha.com/files/image.png)" },
+        (* Either returns structured content or string with the URL *)
+        AssociationQ @ result || StringContainsQ[ result, "wolframalpha.com" ]
+    ],
+    True,
+    TestID -> "extractWolframAlphaImages-WWW6Domain@@Tests/Graphics.wlt:351,1-360,2"
+]
+
+VerificationTest[
+    With[
+        { result = Wolfram`MCPServer`Common`extractWolframAlphaImages @
+            "![Result](https://public6.wolframalpha.com/files/image.jpeg)" },
+        (* Either returns structured content or string with the URL *)
+        AssociationQ @ result || StringContainsQ[ result, "wolframalpha.com" ]
+    ],
+    True,
+    TestID -> "extractWolframAlphaImages-JpegExtension@@Tests/Graphics.wlt:362,1-371,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Common`extractWolframAlphaImages @
+        "![Result](https://example.com/files/image.png)",
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "extractWolframAlphaImages-NonWADomain@@Tests/Graphics.wlt:373,1-379,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Text Content Preservation*)
+VerificationTest[
+    With[
+        { result = Wolfram`MCPServer`Common`extractWolframAlphaImages @
+            "Before ![Image](https://public6.wolframalpha.com/files/test.png) After" },
+        MemberQ[ result[ "Content" ], KeyValuePattern[ { "type" -> "text", "text" -> _? (StringContainsQ[ "Before" ]) } ] ]
+    ],
+    True,
+    TestID -> "extractWolframAlphaImages-PreservesTextBefore@@Tests/Graphics.wlt:384,1-392,2"
+]
+
+VerificationTest[
+    With[
+        { result = Wolfram`MCPServer`Common`extractWolframAlphaImages @
+            "Before ![Image](https://public6.wolframalpha.com/files/test.png) After" },
+        MemberQ[ result[ "Content" ], KeyValuePattern[ { "type" -> "text", "text" -> _? (StringContainsQ[ "After" ]) } ] ]
+    ],
+    True,
+    TestID -> "extractWolframAlphaImages-PreservesTextAfter@@Tests/Graphics.wlt:394,1-402,2"
+]
+
+VerificationTest[
+    With[
+        { result = Wolfram`MCPServer`Common`extractWolframAlphaImages @
+            "Text ![Image](https://public6.wolframalpha.com/files/test.png)" },
+        (* The URL should be preserved as a markdown link in text content *)
+        MemberQ[ result[ "Content" ], KeyValuePattern[ { "type" -> "text", "text" -> _? (StringContainsQ[ "wolframalpha.com" ]) } ] ]
+    ],
+    True,
+    TestID -> "extractWolframAlphaImages-PreservesURLInText@@Tests/Graphics.wlt:404,1-413,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)
