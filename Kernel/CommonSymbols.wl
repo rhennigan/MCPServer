@@ -29,6 +29,7 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `fileNameJoin;
 `fileQ;
 `getLLMKitInfo;
+`defaultEnvironment;
 `getWolframCommand;
 `importResourceFunction;
 `initializeVectorDatabases;
