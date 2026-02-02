@@ -313,6 +313,12 @@ makePromptContent // beginDefinition;
 makePromptContent[ KeyValuePattern[ { "Type" -> "Function", "Content" -> func_ } ], arguments_ ] :=
     makePromptContent[ catchPromptFunction[ func, arguments ], arguments ];
 
+(* Handle multimodal content - list of content items (pass through) *)
+makePromptContent[ content: { __Association }, arguments_ ] := content;
+
+(* Handle structured content with "Content" key containing multimodal content *)
+makePromptContent[ KeyValuePattern[ "Content" -> content: { __Association } ], arguments_ ] := content;
+
 (* Handle Text type with Content *)
 makePromptContent[ KeyValuePattern[ "Content" -> content_ ], arguments_ ] :=
     makePromptContent[ content, arguments ];

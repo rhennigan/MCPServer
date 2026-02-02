@@ -817,33 +817,63 @@ VerificationTest[
 (* Skip these in GitHub Actions due to an issue with wolframscript hanging when checking the license server during
    tests that potentially spend a long time downloading files. *)
 skipIfGitHubActions @ VerificationTest[
-    StringContainsQ[
-        $DefaultMCPPrompts[ "WolframSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
-        "<search-query>test query</search-query>"
-    ],
-    True,
-    SameTest -> SameQ,
-    TestID   -> "WolframSearch-UsesNewFormat@@Tests/Prompts.wlt:819,23-827,2"
+    $wolframSearchPromptOutput = $DefaultMCPPrompts[ "WolframSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
+    _String | { KeyValuePattern[ "type" -> "text" ], ___ },
+    SameTest -> MatchQ,
+    TestID   -> "WolframSearch-ReturnsValidOutput@@Tests/Prompts.wlt:819,23-824,2"
 ]
 
 skipIfGitHubActions @ VerificationTest[
-    StringContainsQ[
-        $DefaultMCPPrompts[ "WolframLanguageSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
-        "<search-query>test query</search-query>"
+    With[ { output = $wolframSearchPromptOutput },
+        If[ StringQ @ output,
+            StringContainsQ[ output, "<search-query>test query</search-query>" ],
+            (* Multimodal: check first text content item *)
+            StringContainsQ[ First[ output ][ "text" ], "<search-query>test query</search-query>" ]
+        ]
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframLanguageSearch-UsesNewFormat@@Tests/Prompts.wlt:829,23-837,2"
+    TestID   -> "WolframSearch-UsesNewFormat@@Tests/Prompts.wlt:826,23-837,2"
 ]
 
 skipIfGitHubActions @ VerificationTest[
-    StringContainsQ[
-        $DefaultMCPPrompts[ "WolframAlphaSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
-        "<search-query>test query</search-query>"
+    $wlSearchPromptOutput = $DefaultMCPPrompts[ "WolframLanguageSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
+    _String | { KeyValuePattern[ "type" -> "text" ], ___ },
+    SameTest -> MatchQ,
+    TestID   -> "WolframLanguageSearch-ReturnsValidOutput@@Tests/Prompts.wlt:839,23-844,2"
+]
+
+skipIfGitHubActions @ VerificationTest[
+    With[ { output = $wlSearchPromptOutput },
+        If[ StringQ @ output,
+            StringContainsQ[ output, "<search-query>test query</search-query>" ],
+            (* Multimodal: check first text content item *)
+            StringContainsQ[ First[ output ][ "text" ], "<search-query>test query</search-query>" ]
+        ]
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframAlphaSearch-UsesNewFormat@@Tests/Prompts.wlt:839,23-847,2"
+    TestID   -> "WolframLanguageSearch-UsesNewFormat@@Tests/Prompts.wlt:846,23-857,2"
+]
+
+skipIfGitHubActions @ VerificationTest[
+    $waSearchPromptOutput = $DefaultMCPPrompts[ "WolframAlphaSearch" ][ "Content" ][ <| "query" -> "test query" |> ],
+    _String | { KeyValuePattern[ "type" -> "text" ], ___ },
+    SameTest -> MatchQ,
+    TestID   -> "WolframAlphaSearch-ReturnsValidOutput@@Tests/Prompts.wlt:859,23-864,2"
+]
+
+skipIfGitHubActions @ VerificationTest[
+    With[ { output = $waSearchPromptOutput },
+        If[ StringQ @ output,
+            StringContainsQ[ output, "<search-query>test query</search-query>" ],
+            (* Multimodal: check first text content item *)
+            StringContainsQ[ First[ output ][ "text" ], "<search-query>test query</search-query>" ]
+        ]
+    ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "WolframAlphaSearch-UsesNewFormat@@Tests/Prompts.wlt:866,23-877,2"
 ]
 
 (* ::Subsection:: *)
@@ -853,14 +883,14 @@ VerificationTest[
     Wolfram`MCPServer`Prompts`Notebook`Private`formatNotebookPrompt[ "/path/to/file.nb", "# Heading\n\nContent" ],
     "<notebook-path>/path/to/file.nb</notebook-path>\n<notebook-content>\n# Heading\n\nContent\n</notebook-content>",
     SameTest -> SameQ,
-    TestID   -> "FormatNotebookPrompt-BasicOutput@@Tests/Prompts.wlt:852,1-857,2"
+    TestID   -> "FormatNotebookPrompt-BasicOutput@@Tests/Prompts.wlt:882,1-887,2"
 ]
 
 VerificationTest[
     StringQ @ Wolfram`MCPServer`Prompts`Notebook`Private`formatNotebookPrompt[ "/path/to/file.nb", "content" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "FormatNotebookPrompt-ReturnsString@@Tests/Prompts.wlt:859,1-864,2"
+    TestID   -> "FormatNotebookPrompt-ReturnsString@@Tests/Prompts.wlt:889,1-894,2"
 ]
 
 VerificationTest[
@@ -870,7 +900,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "FormatNotebookPrompt-ContainsPathTag@@Tests/Prompts.wlt:866,1-874,2"
+    TestID   -> "FormatNotebookPrompt-ContainsPathTag@@Tests/Prompts.wlt:896,1-904,2"
 ]
 
 VerificationTest[
@@ -880,7 +910,72 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "FormatNotebookPrompt-ContainsContentTag@@Tests/Prompts.wlt:876,1-884,2"
+    TestID   -> "FormatNotebookPrompt-ContainsContentTag@@Tests/Prompts.wlt:906,1-914,2"
+]
+
+(* ::Subsection:: *)
+(* Multimodal Content Support *)
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+        { <| "type" -> "text", "text" -> "hello" |>, <| "type" -> "image", "data" -> "abc", "mimeType" -> "image/png" |> },
+        <| |>
+    ],
+    { <| "type" -> "text", "text" -> "hello" |>, <| "type" -> "image", "data" -> "abc", "mimeType" -> "image/png" |> },
+    SameTest -> SameQ,
+    TestID   -> "MakePromptContent-ContentArray@@Tests/Prompts.wlt:919,1-927,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+        <| "Content" -> { <| "type" -> "text", "text" -> "hello" |> } |>,
+        <| |>
+    ],
+    { <| "type" -> "text", "text" -> "hello" |> },
+    SameTest -> SameQ,
+    TestID   -> "MakePromptContent-StructuredContent@@Tests/Prompts.wlt:929,1-937,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[
+        "test query",
+        <| "Content" -> {
+            <| "type" -> "text", "text" -> "some results" |>,
+            <| "type" -> "image", "data" -> "base64data", "mimeType" -> "image/png" |>
+        } |>
+    ],
+    {
+        KeyValuePattern[ { "type" -> "text", "text" -> _? (StringContainsQ[ "test query" ]) } ],
+        KeyValuePattern[ { "type" -> "image", "data" -> "base64data" } ]
+    },
+    SameTest -> MatchQ,
+    TestID   -> "FormatSearchPrompt-MultimodalContent@@Tests/Prompts.wlt:939,1-953,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[
+        "my query",
+        <| "Content" -> {
+            <| "type" -> "text", "text" -> "text results" |>
+        } |>
+    ],
+    { KeyValuePattern[ { "type" -> "text", "text" -> _? (StringContainsQ[ "my query" ]) } ] },
+    SameTest -> MatchQ,
+    TestID   -> "FormatSearchPrompt-MultimodalTextOnly@@Tests/Prompts.wlt:955,1-965,2"
+]
+
+VerificationTest[
+    Length @ Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[
+        "query",
+        <| "Content" -> {
+            <| "type" -> "text", "text" -> "results" |>,
+            <| "type" -> "image", "data" -> "img1", "mimeType" -> "image/png" |>,
+            <| "type" -> "image", "data" -> "img2", "mimeType" -> "image/png" |>
+        } |>
+    ],
+    3,
+    SameTest -> SameQ,
+    TestID   -> "FormatSearchPrompt-MultimodalMultipleImages@@Tests/Prompts.wlt:967,1-979,2"
 ]
 
 (* ::Subsection:: *)
@@ -893,7 +988,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "NotebookPrompt-NonexistentFile@@Tests/Prompts.wlt:889,1-897,2"
+    TestID   -> "NotebookPrompt-NonexistentFile@@Tests/Prompts.wlt:984,1-992,2"
 ]
 
 VerificationTest[
@@ -903,7 +998,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "NotebookPrompt-InvalidExtension@@Tests/Prompts.wlt:899,1-907,2"
+    TestID   -> "NotebookPrompt-InvalidExtension@@Tests/Prompts.wlt:994,1-1002,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
