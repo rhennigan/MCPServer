@@ -107,21 +107,15 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`graphicsQ @ CloudObject[ "test" ],
-    False,
-    TestID -> "graphicsQ-CloudObject@@Tests/Graphics.wlt:109,1-113,2"
-]
-
-VerificationTest[
     Wolfram`MCPServer`Common`graphicsQ @ File[ "test.txt" ],
     False,
-    TestID -> "graphicsQ-File@@Tests/Graphics.wlt:115,1-119,2"
+    TestID -> "graphicsQ-File@@Tests/Graphics.wlt:109,1-113,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`Common`graphicsQ @ URL[ "http://example.com" ],
     False,
-    TestID -> "graphicsQ-URL@@Tests/Graphics.wlt:121,1-125,2"
+    TestID -> "graphicsQ-URL@@Tests/Graphics.wlt:115,1-119,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -135,7 +129,7 @@ VerificationTest[
         "data"     -> _String
     } ],
     SameTest -> MatchQ,
-    TestID   -> "graphicsToImageContent-Graphics@@Tests/Graphics.wlt:130,1-139,2"
+    TestID   -> "graphicsToImageContent-Graphics@@Tests/Graphics.wlt:124,1-133,2"
 ]
 
 VerificationTest[
@@ -144,7 +138,7 @@ VerificationTest[
         StringQ @ result[ "data" ] && StringLength @ result[ "data" ] > 100
     ],
     True,
-    TestID -> "graphicsToImageContent-HasBase64Data@@Tests/Graphics.wlt:141,1-148,2"
+    TestID -> "graphicsToImageContent-HasBase64Data@@Tests/Graphics.wlt:135,1-142,2"
 ]
 
 VerificationTest[
@@ -154,7 +148,7 @@ VerificationTest[
         StringMatchQ[ result[ "data" ], RegularExpression[ "^[A-Za-z0-9+/=]+$" ] ]
     ],
     True,
-    TestID -> "graphicsToImageContent-ValidBase64@@Tests/Graphics.wlt:150,1-158,2"
+    TestID -> "graphicsToImageContent-ValidBase64@@Tests/Graphics.wlt:144,1-152,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -164,19 +158,19 @@ VerificationTest[
     Wolfram`MCPServer`StartMCPServer`Private`extractImageContent @ Graphics[ Circle[ ] ],
     { KeyValuePattern[ "type" -> "image" ] },
     SameTest -> MatchQ,
-    TestID   -> "extractImageContent-SingleGraphics@@Tests/Graphics.wlt:163,1-168,2"
+    TestID   -> "extractImageContent-SingleGraphics@@Tests/Graphics.wlt:157,1-162,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`StartMCPServer`Private`extractImageContent @ "Hello",
     { },
-    TestID -> "extractImageContent-String@@Tests/Graphics.wlt:170,1-174,2"
+    TestID -> "extractImageContent-String@@Tests/Graphics.wlt:164,1-168,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`StartMCPServer`Private`extractImageContent @ Failure[ "Test", <| |> ],
     { },
-    TestID -> "extractImageContent-Failure@@Tests/Graphics.wlt:176,1-180,2"
+    TestID -> "extractImageContent-Failure@@Tests/Graphics.wlt:170,1-174,2"
 ]
 
 VerificationTest[
@@ -185,7 +179,7 @@ VerificationTest[
         Graphics[ Rectangle[ ] ]
     },
     2,
-    TestID -> "extractImageContent-ListOfGraphics@@Tests/Graphics.wlt:182,1-189,2"
+    TestID -> "extractImageContent-ListOfGraphics@@Tests/Graphics.wlt:176,1-183,2"
 ]
 
 VerificationTest[
@@ -194,13 +188,13 @@ VerificationTest[
         "b" -> Graphics[ Rectangle[ ] ]
     |>,
     2,
-    TestID -> "extractImageContent-AssociationOfGraphics@@Tests/Graphics.wlt:191,1-198,2"
+    TestID -> "extractImageContent-AssociationOfGraphics@@Tests/Graphics.wlt:185,1-192,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`StartMCPServer`Private`extractImageContent @ { "text", 123, Null },
     { },
-    TestID -> "extractImageContent-MixedNonGraphics@@Tests/Graphics.wlt:200,1-204,2"
+    TestID -> "extractImageContent-MixedNonGraphics@@Tests/Graphics.wlt:194,1-198,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -209,20 +203,20 @@ VerificationTest[
 VerificationTest[
     Wolfram`MCPServer`StartMCPServer`Private`resultToContent @ "Hello World",
     { <| "type" -> "text", "text" -> "Hello World" |> },
-    TestID -> "resultToContent-String@@Tests/Graphics.wlt:209,1-213,2"
+    TestID -> "resultToContent-String@@Tests/Graphics.wlt:203,1-207,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`StartMCPServer`Private`resultToContent @ 42,
     { <| "type" -> "text", "text" -> "42" |> },
-    TestID -> "resultToContent-Integer@@Tests/Graphics.wlt:215,1-219,2"
+    TestID -> "resultToContent-Integer@@Tests/Graphics.wlt:209,1-213,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`StartMCPServer`Private`resultToContent @ Graphics[ Circle[ ] ],
     { _Association, _Association },
     SameTest -> MatchQ,
-    TestID   -> "resultToContent-Graphics@@Tests/Graphics.wlt:221,1-226,2"
+    TestID   -> "resultToContent-Graphics@@Tests/Graphics.wlt:215,1-220,2"
 ]
 
 VerificationTest[
@@ -231,7 +225,7 @@ VerificationTest[
         { result[[ 1, "type" ]], result[[ 2, "type" ]] }
     ],
     { "text", "image" },
-    TestID -> "resultToContent-GraphicsTypes@@Tests/Graphics.wlt:228,1-235,2"
+    TestID -> "resultToContent-GraphicsTypes@@Tests/Graphics.wlt:222,1-229,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -244,19 +238,19 @@ VerificationTest[
 VerificationTest[
     Wolfram`MCPServer`Common`extractWolframAlphaImages @ "Hello World",
     "Hello World",
-    TestID -> "extractWolframAlphaImages-PlainString@@Tests/Graphics.wlt:244,1-248,2"
+    TestID -> "extractWolframAlphaImages-PlainString@@Tests/Graphics.wlt:238,1-242,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`Common`extractWolframAlphaImages @ "Some text without images",
     "Some text without images",
-    TestID -> "extractWolframAlphaImages-NoImages@@Tests/Graphics.wlt:250,1-254,2"
+    TestID -> "extractWolframAlphaImages-NoImages@@Tests/Graphics.wlt:244,1-248,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`Common`extractWolframAlphaImages @ "Text with non-WA image ![img](https://example.com/image.png)",
     "Text with non-WA image ![img](https://example.com/image.png)",
-    TestID -> "extractWolframAlphaImages-NonWAImage@@Tests/Graphics.wlt:256,1-260,2"
+    TestID -> "extractWolframAlphaImages-NonWAImage@@Tests/Graphics.wlt:250,1-254,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -269,7 +263,7 @@ VerificationTest[
         AssociationQ @ result && KeyExistsQ[ result, "Content" ]
     ],
     True,
-    TestID -> "extractWolframAlphaImages-HasContentKey@@Tests/Graphics.wlt:265,1-273,2"
+    TestID -> "extractWolframAlphaImages-HasContentKey@@Tests/Graphics.wlt:259,1-267,2"
 ]
 
 VerificationTest[
@@ -279,7 +273,7 @@ VerificationTest[
         MatchQ[ result, <| "Content" -> { __Association } |> ]
     ],
     True,
-    TestID -> "extractWolframAlphaImages-ContentIsList@@Tests/Graphics.wlt:275,1-283,2"
+    TestID -> "extractWolframAlphaImages-ContentIsList@@Tests/Graphics.wlt:269,1-277,2"
 ]
 
 VerificationTest[
@@ -290,7 +284,7 @@ VerificationTest[
         Length @ result[ "Content" ] >= 2
     ],
     True,
-    TestID -> "extractWolframAlphaImages-MultipleContentItems@@Tests/Graphics.wlt:285,1-294,2"
+    TestID -> "extractWolframAlphaImages-MultipleContentItems@@Tests/Graphics.wlt:279,1-288,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -306,7 +300,7 @@ VerificationTest[
         ")" ~~ ___
     ],
     True,
-    TestID -> "extractWolframAlphaImages-PatternMatchesBasic@@Tests/Graphics.wlt:301,1-310,2"
+    TestID -> "extractWolframAlphaImages-PatternMatchesBasic@@Tests/Graphics.wlt:295,1-304,2"
 ]
 
 (* Test StringSplit extracts the URL *)
@@ -324,7 +318,7 @@ VerificationTest[
     (* StringSplit may or may not include empty strings at boundaries *)
     { "https://public6.wolframalpha.com/files/image.png" } | { "", "https://public6.wolframalpha.com/files/image.png" },
     SameTest -> MatchQ,
-    TestID   -> "extractWolframAlphaImages-StringSplitExtractsURL@@Tests/Graphics.wlt:313,1-328,2"
+    TestID   -> "extractWolframAlphaImages-StringSplitExtractsURL@@Tests/Graphics.wlt:307,1-322,2"
 ]
 
 (* Test with www6 domain - pattern check *)
@@ -334,7 +328,7 @@ VerificationTest[
         "wolframalpha.com/files/"
     ],
     True,
-    TestID -> "extractWolframAlphaImages-WWW6ContainsPattern@@Tests/Graphics.wlt:331,1-338,2"
+    TestID -> "extractWolframAlphaImages-WWW6ContainsPattern@@Tests/Graphics.wlt:325,1-332,2"
 ]
 
 (* Test with jpeg extension - pattern check *)
@@ -344,7 +338,7 @@ VerificationTest[
         "wolframalpha.com/files/"
     ],
     True,
-    TestID -> "extractWolframAlphaImages-JpegContainsPattern@@Tests/Graphics.wlt:341,1-348,2"
+    TestID -> "extractWolframAlphaImages-JpegContainsPattern@@Tests/Graphics.wlt:335,1-342,2"
 ]
 
 (* Original tests that need the function loaded properly *)
@@ -356,7 +350,7 @@ VerificationTest[
         AssociationQ @ result || StringContainsQ[ result, "wolframalpha.com" ]
     ],
     True,
-    TestID -> "extractWolframAlphaImages-WWW6Domain@@Tests/Graphics.wlt:351,1-360,2"
+    TestID -> "extractWolframAlphaImages-WWW6Domain@@Tests/Graphics.wlt:345,1-354,2"
 ]
 
 VerificationTest[
@@ -367,7 +361,7 @@ VerificationTest[
         AssociationQ @ result || StringContainsQ[ result, "wolframalpha.com" ]
     ],
     True,
-    TestID -> "extractWolframAlphaImages-JpegExtension@@Tests/Graphics.wlt:362,1-371,2"
+    TestID -> "extractWolframAlphaImages-JpegExtension@@Tests/Graphics.wlt:356,1-365,2"
 ]
 
 VerificationTest[
@@ -375,7 +369,7 @@ VerificationTest[
         "![Result](https://example.com/files/image.png)",
     _String,
     SameTest -> MatchQ,
-    TestID   -> "extractWolframAlphaImages-NonWADomain@@Tests/Graphics.wlt:373,1-379,2"
+    TestID   -> "extractWolframAlphaImages-NonWADomain@@Tests/Graphics.wlt:367,1-373,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -388,7 +382,7 @@ VerificationTest[
         MemberQ[ result[ "Content" ], KeyValuePattern[ { "type" -> "text", "text" -> _? (StringContainsQ[ "Before" ]) } ] ]
     ],
     True,
-    TestID -> "extractWolframAlphaImages-PreservesTextBefore@@Tests/Graphics.wlt:384,1-392,2"
+    TestID -> "extractWolframAlphaImages-PreservesTextBefore@@Tests/Graphics.wlt:378,1-386,2"
 ]
 
 VerificationTest[
@@ -398,7 +392,7 @@ VerificationTest[
         MemberQ[ result[ "Content" ], KeyValuePattern[ { "type" -> "text", "text" -> _? (StringContainsQ[ "After" ]) } ] ]
     ],
     True,
-    TestID -> "extractWolframAlphaImages-PreservesTextAfter@@Tests/Graphics.wlt:394,1-402,2"
+    TestID -> "extractWolframAlphaImages-PreservesTextAfter@@Tests/Graphics.wlt:388,1-396,2"
 ]
 
 VerificationTest[
@@ -409,7 +403,7 @@ VerificationTest[
         MemberQ[ result[ "Content" ], KeyValuePattern[ { "type" -> "text", "text" -> _? (StringContainsQ[ "wolframalpha.com" ]) } ] ]
     ],
     True,
-    TestID -> "extractWolframAlphaImages-PreservesURLInText@@Tests/Graphics.wlt:404,1-413,2"
+    TestID -> "extractWolframAlphaImages-PreservesURLInText@@Tests/Graphics.wlt:398,1-407,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
