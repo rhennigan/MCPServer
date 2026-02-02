@@ -983,24 +983,26 @@ VerificationTest[
 (* ::Subsection:: *)
 (* Multimodal Content Support *)
 
+(* Multimodal content arrays are consolidated to single text object, images dropped *)
 VerificationTest[
     Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
         { <| "type" -> "text", "text" -> "hello" |>, <| "type" -> "image", "data" -> "abc", "mimeType" -> "image/png" |> },
         <| |>
     ],
-    { <| "type" -> "text", "text" -> "hello" |>, <| "type" -> "image", "data" -> "abc", "mimeType" -> "image/png" |> },
+    <| "type" -> "text", "text" -> "hello" |>,
     SameTest -> SameQ,
-    TestID   -> "MakePromptContent-ContentArray@@Tests/Prompts.wlt:986,1-994,2"
+    TestID   -> "MakePromptContent-ContentArray@@Tests/Prompts.wlt:987,1-995,2"
 ]
 
+(* Structured content with Content key is also consolidated *)
 VerificationTest[
     Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
         <| "Content" -> { <| "type" -> "text", "text" -> "hello" |> } |>,
         <| |>
     ],
-    { <| "type" -> "text", "text" -> "hello" |> },
+    <| "type" -> "text", "text" -> "hello" |>,
     SameTest -> SameQ,
-    TestID   -> "MakePromptContent-StructuredContent@@Tests/Prompts.wlt:996,1-1004,2"
+    TestID   -> "MakePromptContent-StructuredContent@@Tests/Prompts.wlt:998,1-1006,2"
 ]
 
 VerificationTest[
@@ -1016,7 +1018,7 @@ VerificationTest[
         KeyValuePattern[ { "type" -> "image", "data" -> "base64data" } ]
     },
     SameTest -> MatchQ,
-    TestID   -> "FormatSearchPrompt-MultimodalContent@@Tests/Prompts.wlt:1006,1-1020,2"
+    TestID   -> "FormatSearchPrompt-MultimodalContent@@Tests/Prompts.wlt:1008,1-1022,2"
 ]
 
 VerificationTest[
@@ -1028,7 +1030,7 @@ VerificationTest[
     ],
     { KeyValuePattern[ { "type" -> "text", "text" -> _? (StringContainsQ[ "my query" ]) } ] },
     SameTest -> MatchQ,
-    TestID   -> "FormatSearchPrompt-MultimodalTextOnly@@Tests/Prompts.wlt:1022,1-1032,2"
+    TestID   -> "FormatSearchPrompt-MultimodalTextOnly@@Tests/Prompts.wlt:1024,1-1034,2"
 ]
 
 VerificationTest[
@@ -1042,7 +1044,7 @@ VerificationTest[
     ],
     3,
     SameTest -> SameQ,
-    TestID   -> "FormatSearchPrompt-MultimodalMultipleImages@@Tests/Prompts.wlt:1034,1-1046,2"
+    TestID   -> "FormatSearchPrompt-MultimodalMultipleImages@@Tests/Prompts.wlt:1036,1-1048,2"
 ]
 
 (* ::Subsection:: *)
@@ -1055,7 +1057,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "NotebookPrompt-NonexistentFile@@Tests/Prompts.wlt:1051,1-1059,2"
+    TestID   -> "NotebookPrompt-NonexistentFile@@Tests/Prompts.wlt:1053,1-1061,2"
 ]
 
 VerificationTest[
@@ -1065,7 +1067,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "NotebookPrompt-InvalidExtension@@Tests/Prompts.wlt:1061,1-1069,2"
+    TestID   -> "NotebookPrompt-InvalidExtension@@Tests/Prompts.wlt:1063,1-1071,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
