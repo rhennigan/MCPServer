@@ -9,9 +9,10 @@ Needs[ "Wolfram`MCPServer`Common`" ];
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Configuration*)
-$rootPath    := FileNameJoin @ { $UserBaseDirectory, "ApplicationData", "Wolfram", "MCPServer" };
-$storagePath := FileNameJoin @ { $rootPath, "Servers" };
-$imagePath   := FileNameJoin @ { $rootPath, "Images"  };
+$rootPath            := FileNameJoin @ { $UserBaseDirectory, "ApplicationData", "Wolfram", "MCPServer" };
+$storagePath         := FileNameJoin @ { $rootPath, "Servers" };
+$imagePath           := FileNameJoin @ { $rootPath, "Images"  };
+$outputLogDirectory  := FileNameJoin @ { $UserBaseDirectory, "Logs", "MCPServer", "Output" };
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -71,6 +72,24 @@ mcpServerLogFile[ obj_MCPServerObject? MCPServerObjectQ ] :=
     ];
 
 mcpServerLogFile // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*outputLogFile*)
+outputLogFile // beginDefinition;
+
+outputLogFile[ obj_MCPServerObject? MCPServerObjectQ ] := Enclose[
+    Module[ { serverName, timestamp, uniqueID, fileName },
+        serverName = ConfirmBy[ obj[ "Name" ], StringQ, "ServerName" ];
+        timestamp = DateString[ { "Year", "-", "Month", "-", "Day", "_", "Hour", "-", "Minute", "-", "Second" } ];
+        uniqueID = IntegerString[ Hash[ CreateUUID[ ], "MD5" ], 36, 8 ];
+        fileName = StringJoin[ URLEncode @ serverName, "_", timestamp, "_", uniqueID, ".log" ];
+        ConfirmBy[ ensureFilePath @ fileNameJoin[ $outputLogDirectory, fileName ], fileQ, "Result" ]
+    ],
+    throwInternalFailure
+];
+
+outputLogFile // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

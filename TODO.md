@@ -67,10 +67,10 @@ Consolidated list of TODO/FIXME items from the codebase.
 
 ## Logging & Diagnostics
 
-- [ ] Create MCP server output log file at `$UserBaseDirectory/Logs/MCPServer/Output/`
+- [x] Create MCP server output log file at `$UserBaseDirectory/Logs/MCPServer/Output/`
   - Source: `Kernel/StartMCPServer.wl`
   - Redirect `$Output` and `$Messages` to the log file
-  - Catch and redirect explicit `Write`/`WriteString`/`BinaryWrite` calls to stdout/stderr
+  - Note: Intercepting explicit `Write`/`WriteString`/`BinaryWrite` calls deferred to future work
 - [ ] Include information about the current MCP server in bug reports
   - Source: `Kernel/Common.wl`
 
