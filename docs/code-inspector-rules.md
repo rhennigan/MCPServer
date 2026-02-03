@@ -14,7 +14,7 @@ There are three types of rules:
 | **Aggregate Rules** | Analyze relationships between multiple nodes in the AST | `$aggregateRules` | — |
 | **Concrete Rules** | Pattern match on the concrete syntax tree (includes whitespace/comments) | `$concreteRules` | — |
 
-> Custom rules are defined in the "Custom Variable" column. For abstract rules, `$abstractRules` combines the defaults from `CodeInspector`AbstractRules`$DefaultAbstractRules` with custom rules.
+> Custom rules are defined in the "Custom Variable" column. For abstract rules, `$abstractRules` combines the defaults from ``CodeInspector`AbstractRules`$DefaultAbstractRules`` with custom rules.
 
 ## Rule Structure
 
