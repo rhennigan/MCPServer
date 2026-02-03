@@ -77,4 +77,9 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `generateUniqueFailureFileName;
 `cleanupOldFailureLogs;
 
+(* Output logging: *)
+`$outputLogDirectory;
+`outputLogFile;
+`cleanupOldOutputLogs;
+
 EndPackage[ ];

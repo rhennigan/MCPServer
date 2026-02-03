@@ -858,6 +858,27 @@ cleanupOldFailureLogs // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*cleanupOldOutputLogs*)
+cleanupOldOutputLogs // beginDefinition;
+
+cleanupOldOutputLogs[ ] := cleanupOldOutputLogs[ 50 ];
+
+cleanupOldOutputLogs[ maxFiles_Integer ] :=
+    Catch @ Module[ { dir, files, toDelete },
+        dir = $outputLogDirectory;
+        If[ ! DirectoryQ @ dir, Throw @ Null ];
+        files = FileNames[ "*.log", dir ];
+        If[ Length @ files <= maxFiles, Throw @ Null ];
+        (* Sort by modification time, newest first *)
+        files = SortBy[ files, -FileDate[ #, "Modification" ] & ];
+        toDelete = Drop[ files, maxFiles ];
+        Quiet @ DeleteFile /@ toDelete;
+    ];
+
+cleanupOldOutputLogs // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*formatInternalFailureForMCP*)
 formatInternalFailureForMCP // beginDefinition;
 

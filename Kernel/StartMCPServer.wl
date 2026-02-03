@@ -12,9 +12,10 @@ Needs[ "Wolfram`Chatbook`" -> "cb`" ];
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Configuration*)
-$protocolVersion = "2024-11-05";
-$toolWarmupDelay = 5; (* seconds *)
-$clientName      = None;
+$protocolVersion    = "2024-11-05";
+$toolWarmupDelay    = 5; (* seconds *)
+$clientName         = None;
+$currentMCPServer   = None;
 
 $logTimeStamp := DateString[
     {
@@ -56,7 +57,8 @@ startMCPServer[ obj_ ] /; $Notebooks :=
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
 startMCPServer[ obj_MCPServerObject ] := Enclose[
-    superQuiet @ Module[ { logFile, llmTools, toolList, promptList, promptLookup, init, response },
+    Block[ { $currentMCPServer = obj },
+        superQuiet @ Module[ { logFile, llmTools, toolList, promptList, promptLookup, init, response },
 
         SetOptions[ First @ Streams[ "stdout" ], CharacterEncoding -> "UTF-8" ];
         SetOptions[ First @ Streams[ "stderr" ], CharacterEncoding -> "UTF-8" ];
@@ -106,6 +108,7 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
                 ]
             ]
         ]
+    ]
     ],
     throwInternalFailure
 ];
@@ -585,28 +588,43 @@ superQuiet // beginDefinition;
 superQuiet // Attributes = { HoldFirst };
 
 superQuiet[ eval_ ] :=
-    Block[
-        {
-            (* Prevent progress reporting from writing excessive updates to stdout/stderr: *)
-            $ProgressReporting = False,
-            (* Redirect both $Output and $Messages to stderr to keep stdout clean for MCP: *)
-            $Messages = Streams[ "stderr" ],
-            $Output   = Streams[ "stderr" ]
-        },
-        (* We use a veto handler to prevent print output from being written to stdout/stderr.
-           We do this instead of redefining Print as a local symbol in Block because we need to let the
-           WL evaluator tool capture and include print outputs in the tool call response. *)
-        Internal`HandlerBlock[ { "Wolfram.System.Print.Veto", False & }, eval ]
+    Module[ { logFile, logStream },
+        logFile = Quiet @ outputLogFile @ $currentMCPServer;
+        logStream = If[ fileQ @ logFile,
+            Quiet @ OpenWrite[ First @ logFile, CharacterEncoding -> "UTF-8" ],
+            $Failed
+        ];
+
+        If[ MatchQ[ logStream, OutputStream[ _, _ ] ],
+            (* Success: redirect to log file *)
+            cleanupOldOutputLogs[ ];
+            WithCleanup[
+                Block[
+                    {
+                        $ProgressReporting = False,
+                        $Messages = { logStream },
+                        $Output   = { logStream }
+                    },
+                    (* We use a veto handler to prevent print output from being written to stdout/stderr.
+                       We do this instead of redefining Print as a local symbol in Block because we need to let the
+                       WL evaluator tool capture and include print outputs in the tool call response. *)
+                    Internal`HandlerBlock[ { "Wolfram.System.Print.Veto", False & }, eval ]
+                ],
+                Quiet @ Close @ logStream
+            ],
+            (* Fallback: redirect to stderr as before *)
+            Block[
+                {
+                    $ProgressReporting = False,
+                    $Messages = Streams[ "stderr" ],
+                    $Output   = Streams[ "stderr" ]
+                },
+                Internal`HandlerBlock[ { "Wolfram.System.Print.Veto", False & }, eval ]
+            ]
+        ]
     ];
 
 superQuiet // endDefinition;
-
-(* TODO:
-  - We should OpenWrite a log file in `FileNameJoin @ { $UserBaseDirectory, "Logs", "MCPServer", "Output", file }`
-  - We should redirect both $Output and $Messages to the log file
-  - Also catch and redirect explicit Write/WriteString/BinaryWrite calls that try to write to stdout/stderr?
-  - We need actual tests of the running MCP server via StartProcess/WriteString/ReadString
-*)
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
