@@ -1475,13 +1475,169 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Custom Rules - NegatedDateObject*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*scanNegatedDateObject - Basic Detection*)
+VerificationTest[
+    $negatedDateResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> "SortBy[files, -FileDate[#1] &]",
+        "file"               -> Missing[ "KeyAbsent" ],
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0,
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "NegatedDateObject-FileDate-ReturnsString@@Tests/CodeInspectorTool.wlt:1483,1-1495,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $negatedDateResult, "NegatedDateObject" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "NegatedDateObject-FileDate-HasTag@@Tests/CodeInspectorTool.wlt:1497,1-1502,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $negatedDateResult, "Negating a ``DateObject`` does not produce a meaningful result" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "NegatedDateObject-FileDate-HasDescription@@Tests/CodeInspectorTool.wlt:1504,1-1509,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $negatedDateResult, "(Error" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "NegatedDateObject-FileDate-IsError@@Tests/CodeInspectorTool.wlt:1511,1-1516,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*scanNegatedDateObject - Now and Today*)
+VerificationTest[
+    $negatedNowResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> "x = -Now",
+        "file"               -> Missing[ "KeyAbsent" ],
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0,
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "NegatedDateObject-Now-ReturnsString@@Tests/CodeInspectorTool.wlt:1521,1-1533,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $negatedNowResult, "NegatedDateObject" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "NegatedDateObject-Now-HasTag@@Tests/CodeInspectorTool.wlt:1535,1-1540,2"
+]
+
+VerificationTest[
+    $negatedTodayResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> "y = -Today",
+        "file"               -> Missing[ "KeyAbsent" ],
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0,
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "NegatedDateObject-Today-ReturnsString@@Tests/CodeInspectorTool.wlt:1542,1-1554,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $negatedTodayResult, "NegatedDateObject" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "NegatedDateObject-Today-HasTag@@Tests/CodeInspectorTool.wlt:1556,1-1561,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*scanNegatedDateObject - Other Date Functions*)
+VerificationTest[
+    $negatedDateObjectResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> "z = -DateObject[]",
+        "file"               -> Missing[ "KeyAbsent" ],
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0,
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "NegatedDateObject-DateObject-ReturnsString@@Tests/CodeInspectorTool.wlt:1566,1-1578,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $negatedDateObjectResult, "NegatedDateObject" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "NegatedDateObject-DateObject-HasTag@@Tests/CodeInspectorTool.wlt:1580,1-1585,2"
+]
+
+VerificationTest[
+    $negatedRandomDateResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> "w = -RandomDate[]",
+        "file"               -> Missing[ "KeyAbsent" ],
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0,
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "NegatedDateObject-RandomDate-ReturnsString@@Tests/CodeInspectorTool.wlt:1587,1-1599,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $negatedRandomDateResult, "NegatedDateObject" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "NegatedDateObject-RandomDate-HasTag@@Tests/CodeInspectorTool.wlt:1601,1-1606,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*scanNegatedDateObject - Multiple Negations*)
+VerificationTest[
+    $multipleNegatedResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> "x = -Now; y = -Today; z = -Tomorrow; w = -Yesterday",
+        "file"               -> Missing[ "KeyAbsent" ],
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0,
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "NegatedDateObject-Multiple-ReturnsString@@Tests/CodeInspectorTool.wlt:1611,1-1623,2"
+]
+
+VerificationTest[
+    StringCount[ $multipleNegatedResult, "NegatedDateObject" ],
+    4,
+    SameTest -> SameQ,
+    TestID   -> "NegatedDateObject-Multiple-FindsAllFour@@Tests/CodeInspectorTool.wlt:1625,1-1630,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Integration Tests - Cleanup*)
 VerificationTest[
     DeleteDirectory[ $integrationTempDir, DeleteContents -> True ];
     ! DirectoryQ @ $integrationTempDir,
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:1479,1-1485,2"
+    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:1635,1-1641,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

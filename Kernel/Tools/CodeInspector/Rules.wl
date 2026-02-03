@@ -16,15 +16,39 @@ Needs[ "CodeParser`"    -> "cp`"   ];
 $holdingSymbols = { "Hold", "HoldForm", "HoldComplete", "HoldCompleteForm" };
 $$holdingSymbol = Alternatives @@ Flatten @ { "System`" <> # & /@ $holdingSymbols, $holdingSymbols };
 
+$$yieldsDateObject = HoldPattern @ Alternatives[
+    _CurrentDate,
+    _DateObject,
+    _DatePlus,
+    _FileDate,
+    _NextDate,
+    _PreviousDate,
+    _RandomDate,
+    Now,
+    Today,
+    Tomorrow,
+    Yesterday
+];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*AST Pattern Helper*)
+importResourceFunction[ astPattern, "ASTPattern" ];
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Abstract Rules*)
 $abstractRules := $abstractRules = <|
     CodeInspector`AbstractRules`$DefaultAbstractRules,
+    $customAbstractRules
+|>;
+
+$customAbstractRules := $customAbstractRules = <|
     cp`CallNode[ cp`LeafNode[ Symbol, "Throw"|"System`Throw", _ ], { _ }, _ ] -> scanSingleArgThrow,
     cp`CallNode[ cp`LeafNode[ Symbol, "Return"|"System`Return", _ ], { _ }, _ ] -> scanReturn,
     cp`LeafNode[ Symbol, _String? privateContextQ, _ ] -> scanPrivateContext,
-    cp`LeafNode[ Symbol, _String? globalSymbolQ, _ ] -> scanGlobalSymbol
+    cp`LeafNode[ Symbol, _String? globalSymbolQ, _ ] -> scanGlobalSymbol,
+    astPattern[ - $$yieldsDateObject ] -> scanNegatedDateObject
 |>;
 
 (* ::**************************************************************************************************************:: *)
@@ -186,7 +210,30 @@ scanFixMeComment[ pos_, ast_ ] :=
 scanFixMeComment // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*scanNegatedDateObject*)
+scanNegatedDateObject // beginDefinition;
+
+scanNegatedDateObject[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, as },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        ci`InspectionObject[
+            "NegatedDateObject",
+            "Negating a ``DateObject`` does not produce a meaningful result",
+            "Error",
+            <| as, ConfidenceLevel -> 0.95 |>
+        ]
+    ];
+
+scanNegatedDateObject // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Package Footer*)
+addToMXInitialization[
+    $customAbstractRules;
+];
+
 End[ ];
 EndPackage[ ];
