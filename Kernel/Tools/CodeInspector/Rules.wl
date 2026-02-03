@@ -16,15 +16,39 @@ Needs[ "CodeParser`"    -> "cp`"   ];
 $holdingSymbols = { "Hold", "HoldForm", "HoldComplete", "HoldCompleteForm" };
 $$holdingSymbol = Alternatives @@ Flatten @ { "System`" <> # & /@ $holdingSymbols, $holdingSymbols };
 
+$$yieldsDateObject = HoldPattern @ Alternatives[
+    _CurrentDate,
+    _DateObject,
+    _DatePlus,
+    _FileDate,
+    _NextDate,
+    _PreviousDate,
+    _RandomDate,
+    Now,
+    Today,
+    Tomorrow,
+    Yesterday
+];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*AST Pattern Helper*)
+importResourceFunction[ astPattern, "ASTPattern" ];
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Abstract Rules*)
 $abstractRules := $abstractRules = <|
     CodeInspector`AbstractRules`$DefaultAbstractRules,
-    cp`CallNode[ cp`LeafNode[ Symbol, "Throw"|"System`Throw", _ ], { _ }, _ ] -> scanSingleArgThrow,
-    cp`CallNode[ cp`LeafNode[ Symbol, "Return"|"System`Return", _ ], { _ }, _ ] -> scanReturn,
-    cp`LeafNode[ Symbol, _String? privateContextQ, _ ] -> scanPrivateContext,
-    cp`LeafNode[ Symbol, _String? globalSymbolQ, _ ] -> scanGlobalSymbol
+    $customAbstractRules
+|>;
+
+$customAbstractRules := $customAbstractRules = <|
+    cp`CallNode[ cp`LeafNode[ Symbol, "Throw"|"System`Throw", _ ], { _ }, _ ] -> inspectSingleArgThrow,
+    cp`CallNode[ cp`LeafNode[ Symbol, "Return"|"System`Return", _ ], { _ }, _ ] -> inspectReturn,
+    cp`LeafNode[ Symbol, _String? privateContextQ, _ ] -> inspectPrivateContext,
+    cp`LeafNode[ Symbol, _String? globalSymbolQ, _ ] -> inspectGlobalSymbol,
+    astPattern[ - $$yieldsDateObject ] -> inspectNegatedDateObject
 |>;
 
 (* ::**************************************************************************************************************:: *)
@@ -44,7 +68,7 @@ $concreteRules := $concreteRules = <|
         Token`Comment,
         _String? (StringStartsQ[ "(*"~~WhitespaceCharacter...~~"FIXME:" ]),
         _
-    ] -> scanFixMeComment
+    ] -> inspectFixMeComment
 |>;
 
 (* ::**************************************************************************************************************:: *)
@@ -53,10 +77,10 @@ $concreteRules := $concreteRules = <|
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*scanSingleArgThrow*)
-scanSingleArgThrow // beginDefinition;
+(*inspectSingleArgThrow*)
+inspectSingleArgThrow // beginDefinition;
 
-scanSingleArgThrow[ pos_, ast_ ] := Catch[
+inspectSingleArgThrow[ pos_, ast_ ] := Catch[
     Replace[
         Fold[ walkASTForCatch, ast, pos ],
         {
@@ -73,7 +97,7 @@ scanSingleArgThrow[ pos_, ast_ ] := Catch[
     $tag
 ];
 
-scanSingleArgThrow // endDefinition;
+inspectSingleArgThrow // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -90,10 +114,10 @@ walkASTForCatch // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*scanReturn*)
-scanReturn // beginDefinition;
+(*inspectReturn*)
+inspectReturn // beginDefinition;
 
-scanReturn[ pos_, ast_ ] :=
+inspectReturn[ pos_, ast_ ] :=
     Enclose @ Module[ { node, as },
         node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
         as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
@@ -105,17 +129,17 @@ scanReturn[ pos_, ast_ ] :=
         ]
     ];
 
-scanReturn // endDefinition;
+inspectReturn // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*scanPrivateContext*)
-scanPrivateContext // beginDefinition;
+(*inspectPrivateContext*)
+inspectPrivateContext // beginDefinition;
 
 (* Skip matches inside AST metadata (e.g., "Definitions" key) to avoid duplicate issues *)
-scanPrivateContext[ pos_, ast_ ] /; MemberQ[ pos, _Key ] := { };
+inspectPrivateContext[ pos_, ast_ ] /; MemberQ[ pos, _Key ] := { };
 
-scanPrivateContext[ pos_, ast_ ] :=
+inspectPrivateContext[ pos_, ast_ ] :=
     Enclose @ Module[ { node, name, as },
         node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
         name = ConfirmBy[ node[[ 2 ]], StringQ, "Name" ];
@@ -128,7 +152,7 @@ scanPrivateContext[ pos_, ast_ ] :=
         ]
     ];
 
-scanPrivateContext // endDefinition;
+inspectPrivateContext // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -141,13 +165,13 @@ privateContextQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*scanGlobalSymbol*)
-scanGlobalSymbol // beginDefinition;
+(*inspectGlobalSymbol*)
+inspectGlobalSymbol // beginDefinition;
 
 (* Skip matches inside AST metadata (e.g., "Definitions" key) to avoid duplicate issues *)
-scanGlobalSymbol[ pos_, ast_ ] /; MemberQ[ pos, _Key ] := { };
+inspectGlobalSymbol[ pos_, ast_ ] /; MemberQ[ pos, _Key ] := { };
 
-scanGlobalSymbol[ pos_, ast_ ] :=
+inspectGlobalSymbol[ pos_, ast_ ] :=
     Enclose @ Module[ { node, name, as },
         node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
         name = ConfirmBy[ node[[ 2 ]], StringQ, "Name" ];
@@ -160,7 +184,7 @@ scanGlobalSymbol[ pos_, ast_ ] :=
         ]
     ];
 
-scanGlobalSymbol // endDefinition;
+inspectGlobalSymbol // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -172,10 +196,10 @@ globalSymbolQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*scanFixMeComment*)
-scanFixMeComment // beginDefinition;
+(*inspectFixMeComment*)
+inspectFixMeComment // beginDefinition;
 
-scanFixMeComment[ pos_, ast_ ] :=
+inspectFixMeComment[ pos_, ast_ ] :=
     Enclose @ Module[ { node, comment, as },
         node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
         comment = StringTrim @ StringTrim[ ConfirmBy[ node[[ 2 ]], StringQ, "Comment" ], { "(*", "*)" } ];
@@ -183,10 +207,33 @@ scanFixMeComment[ pos_, ast_ ] :=
         ci`InspectionObject[ "FixMeComment", comment, "Warning", <| as, ConfidenceLevel -> 0.9 |> ]
     ];
 
-scanFixMeComment // endDefinition;
+inspectFixMeComment // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectNegatedDateObject*)
+inspectNegatedDateObject // beginDefinition;
+
+inspectNegatedDateObject[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, as },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        ci`InspectionObject[
+            "NegatedDateObject",
+            "Negating a ``DateObject`` does not produce a meaningful result",
+            "Error",
+            <| as, ConfidenceLevel -> 0.95 |>
+        ]
+    ];
+
+inspectNegatedDateObject // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Package Footer*)
+addToMXInitialization[
+    $customAbstractRules;
+];
+
 End[ ];
 EndPackage[ ];
