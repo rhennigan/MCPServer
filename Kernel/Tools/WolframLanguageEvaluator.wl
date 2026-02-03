@@ -4,9 +4,10 @@
 BeginPackage[ "Wolfram`MCPServer`Tools`WolframLanguageEvaluator`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
-Needs[ "Wolfram`MCPServer`Tools`"  ];
+Needs[ "Wolfram`MCPServer`"          ];
+Needs[ "Wolfram`MCPServer`Common`"   ];
+Needs[ "Wolfram`MCPServer`Graphics`" ];
+Needs[ "Wolfram`MCPServer`Tools`"    ];
 
 Needs[ "Wolfram`Chatbook`" -> "cb`" ];
 
@@ -15,10 +16,22 @@ System`HoldCompleteForm;
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Config*)
-$imageExportMethod      = "CloudPublic";
 $cloudImagePath        := CloudObject[ "MCPServer/Images", Permissions -> $cloudImagePermissions ];
 $cloudImagePermissions := If[ $imageExportMethod === "CloudPublic", "Public", "Private" ];
 $line                   = 1;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Environment Variable Configuration*)
+$evaluatorMethod := $evaluatorMethod =
+    With[ { method = Environment[ "WOLFRAM_LANGUAGE_EVALUATOR_METHOD" ] },
+        If[ StringQ @ method && method =!= "", method, "Session" ]
+    ];
+
+$imageExportMethod := $imageExportMethod =
+    With[ { method = Environment[ "WOLFRAM_LANGUAGE_EVALUATOR_IMAGE_EXPORT_METHOD" ] },
+        If[ StringQ @ method && method =!= "", method, "None" ]
+    ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -83,8 +96,8 @@ evaluateWolframLanguage[ code_String, timeConstraint_Integer ] := Enclose[
     Module[ { string, exported },
         ConfirmMatch[ chatbookVersionCheck[ ], True, "ChatbookVersionCheck" ];
         string   = ConfirmBy[ evaluateWolframLanguage0[ code, timeConstraint ], StringQ, "Result" ];
-        exported = ConfirmBy[ exportImages @ string, StringQ, "Result" ];
-        StringTrim @ exported
+        exported = ConfirmBy[ exportImages @ string, AssociationQ, "Exported" ];
+        exported  (* Return the structured content *)
     ],
     throwInternalFailure
 ];
@@ -93,26 +106,24 @@ evaluateWolframLanguage // endDefinition;
 
 
 evaluateWolframLanguage0 // beginDefinition;
-
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
 evaluateWolframLanguage0[ code_String, timeConstraint_Integer ] :=
-    catchAlways @ cb`WolframLanguageToolEvaluate[
-        code,
-        "String",
-        "Line"                  -> $line++,
-        "MaxCharacterCount"     -> 10000,
-        "AppendRetryNotice"     -> False,
-        "AppendURIInstructions" -> False,
-        "Method"                -> $evaluatorMethod,
-        "TimeConstraint"        -> timeConstraint
+    Block[ (* FIXME: Expose this as an option in WolframLanguageToolEvaluate *)
+        { Wolfram`Chatbook`Sandbox`Private`$includeDefinitions = False },
+            catchAlways @ cb`WolframLanguageToolEvaluate[
+            code,
+            "String",
+            "Line"                  -> $line++,
+            "MaxCharacterCount"     -> 10000,
+            "AppendRetryNotice"     -> False,
+            "AppendURIInstructions" -> False,
+            "Method"                -> $evaluatorMethod,
+            "TimeConstraint"        -> timeConstraint
+        ]
     ];
-
+(* :!CodeAnalysis::EndBlock:: *)
 evaluateWolframLanguage0 // endDefinition;
-
-
-$evaluatorMethod :=
-    With[ { method = Environment[ "WOLFRAM_LANGUAGE_EVALUATOR_METHOD" ] },
-        If[ StringQ @ method && method =!= "", method, "Session" ]
-    ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -120,23 +131,37 @@ $evaluatorMethod :=
 exportImages // beginDefinition;
 
 exportImages[ str_String ] := Enclose[
-    Module[ { content, hasImages, exported, result },
+    Module[ { parts, hasImages, contentItems },
 
-        content = ConfirmMatch[ cb`GetExpressionURIs @ str, { __ }, "Content" ];
+        parts = ConfirmMatch[ cb`GetExpressionURIs @ str, { __ }, "Parts" ];
 
         hasImages = False;
-        exported = ConfirmMatch[
-            Replace[ content, expr: Except[ _String ] :> (hasImages = True; exportImage @ expr), { 1 } ],
-            { __String },
-            "Exported"
+        contentItems = Flatten @ Map[
+            Function[ item,
+                If[ StringQ @ item,
+                    (* Text segment: create text content *)
+                    { <| "type" -> "text", "text" -> item |> },
+                    (* Graphics: create text content (with cloud URL) + image content (base64) *)
+                    hasImages = True;
+                    Module[ { cloudURL, imageContent },
+                        cloudURL = ConfirmMatch[ exportImage @ item, _String|None, "CloudURL" ];  (* Returns "![Image](url)" *)
+                        imageContent = graphicsToImageContent @ item;
+                        Flatten @ {
+                            If[ StringQ @ cloudURL, <| "type" -> "text", "text" -> cloudURL |>, Nothing ],
+                            If[ AssociationQ @ imageContent, imageContent, Nothing ]
+                        }
+                    ]
+                ]
+            ],
+            parts
         ];
 
-        result = ConfirmBy[ StringJoin @ exported, StringQ, "Result" ];
+        (* Append the image hint reminder if there were images *)
+        If[ TrueQ @ hasImages && $imageExportMethod =!= "None",
+            AppendTo[ contentItems, <| "type" -> "text", "text" -> "\n\n" <> $markdownImageHint |> ]
+        ];
 
-        If[ TrueQ @ hasImages,
-            result <> "\n\n" <> $markdownImageHint,
-            result
-        ]
+        <| "Content" -> ConfirmMatch[ contentItems, { __Association }, "ContentItems" ] |>
     ],
     throwInternalFailure
 ];
@@ -148,7 +173,9 @@ exportImages // endDefinition;
 (*exportImage*)
 exportImage // beginDefinition;
 
-exportImage[ expr_ ] /; $imageExportMethod === "Local" := Enclose[
+exportImage[ expr_ ] := exportImage[ expr, $imageExportMethod ];
+
+exportImage[ expr_, "Local" ] := Enclose[
     Module[ { hash, file, png, lo, uri },
         hash = ConfirmBy[ Hash[ expr, Automatic, "HexString" ], StringQ, "Hash" ];
         file = ConfirmBy[ fileNameJoin[ $imagePath, StringTake[ hash, 3 ], hash <> ".png" ], fileQ, "File" ];
@@ -160,7 +187,7 @@ exportImage[ expr_ ] /; $imageExportMethod === "Local" := Enclose[
     throwInternalFailure
 ];
 
-exportImage[ expr_ ] := Enclose[
+exportImage[ expr_, "Cloud"|"CloudPublic" ] := Enclose[
     Module[ { hash, root, file, png, uri },
 
         hash = ConfirmBy[ Hash[ expr, Automatic, "HexString" ], StringQ, "Hash" ];
@@ -184,6 +211,8 @@ exportImage[ expr_ ] := Enclose[
     ],
     throwInternalFailure
 ];
+
+exportImage[ expr_, _ ] := None;
 
 exportImage // endDefinition;
 
@@ -276,14 +305,16 @@ initializePacletInLocalKernel[ ] := Enclose[
     Module[ { pacletDir, result },
         pacletDir = ConfirmMatch[ $thisPaclet[ "Location" ], _? DirectoryQ, "PacletDir" ];
 
-        result = cb`WolframLanguageToolEvaluate[
-            HoldComplete @ WithCleanup[
-                PacletDirectoryLoad @ pacletDir;
-                Block[ { $ContextPath }, Get[ "Wolfram`MCPServer`" ] ],
-                $Line--
-            ],
-            "Result",
-            "Method" -> "Local"
+        result = With[ { dir = pacletDir },
+            cb`WolframLanguageToolEvaluate[
+                HoldComplete @ WithCleanup[
+                    PacletDirectoryLoad @ dir;
+                    Block[ { $ContextPath }, Get[ "Wolfram`MCPServer`" ] ],
+                    $Line--
+                ],
+                "Result",
+                "Method" -> "Local"
+            ]
         ];
 
         initializePacletInLocalKernel[ ] = ConfirmMatch[ ReleaseHold @ result, Null, "Result" ]

@@ -3,8 +3,9 @@
 BeginPackage[ "Wolfram`MCPServer`StartMCPServer`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
+Needs[ "Wolfram`MCPServer`"          ];
+Needs[ "Wolfram`MCPServer`Common`"   ];
+Needs[ "Wolfram`MCPServer`Graphics`" ];
 
 Needs[ "Wolfram`Chatbook`" -> "cb`" ];
 
@@ -305,12 +306,38 @@ getPrompt // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*consolidateTextContent*)
+
+(* Consolidates content arrays into a single text object for client compatibility.
+   Extracts all text items and merges them. Non-text items (images) are dropped
+   since many MCP clients don't support multimodal prompt responses. *)
+consolidateTextContent // beginDefinition;
+
+consolidateTextContent[ content: { __Association } ] :=
+    Module[ { textItems },
+        textItems = Select[ content, MatchQ[ #, KeyValuePattern[ "type" -> "text" ] ] & ];
+        <| "type" -> "text", "text" -> StringJoin @ Lookup[ textItems, "text", "" ] |>
+    ];
+
+consolidateTextContent // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*makePromptContent*)
 makePromptContent // beginDefinition;
 
 (* Handle Function type - call the function with arguments *)
 makePromptContent[ KeyValuePattern[ { "Type" -> "Function", "Content" -> func_ } ], arguments_ ] :=
     makePromptContent[ catchPromptFunction[ func, arguments ], arguments ];
+
+(* Handle multimodal content - list of content items *)
+(* Consolidate text-only arrays into a single text object for client compatibility *)
+makePromptContent[ content: { __Association }, arguments_ ] :=
+    consolidateTextContent @ content;
+
+(* Handle structured content with "Content" key containing multimodal content *)
+makePromptContent[ KeyValuePattern[ "Content" -> content: { __Association } ], arguments_ ] :=
+    consolidateTextContent @ content;
 
 (* Handle Text type with Content *)
 makePromptContent[ KeyValuePattern[ "Content" -> content_ ], arguments_ ] :=
@@ -364,11 +391,123 @@ formatPromptError // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*graphicsToImageContent*)
+graphicsToImageContent // beginDefinition;
+
+graphicsToImageContent[ g_ ] := Enclose[
+    Module[ { png, base64 },
+        png = ConfirmBy[ Quiet @ ExportByteArray[ g, "PNG" ], ByteArrayQ, "PNG" ];
+        base64 = ConfirmBy[ BaseEncode @ png, StringQ, "Base64" ];
+        <| "type" -> "image", "data" -> base64, "mimeType" -> "image/png" |>
+    ],
+    $Failed &  (* Return $Failed on failure *)
+];
+
+graphicsToImageContent // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*extractWolframAlphaImages*)
+
+(* Pattern for WolframAlpha image URLs in markdown *)
+(* Matches: public6.wolframalpha.com, www6.wolframalpha.com, etc. *)
+$$waImageURLPattern = Shortest[
+    "![" ~~ Except[ "]" ]... ~~ "](" ~~
+    url: ("https://" ~~ __ ~~ "wolframalpha.com/files/" ~~ __ ~~ (".gif" | ".png" | ".jpg" | ".jpeg")) ~~
+    ")"
+];
+
+extractWolframAlphaImages // beginDefinition;
+
+extractWolframAlphaImages[ str_String ] := Enclose[
+    Catch @ Module[ { parts, hasImages, contentItems },
+
+        (* Split string into text segments and URLs *)
+        parts = StringSplit[ str, $$waImageURLPattern :> url ];
+
+        (* If no images found, return plain text *)
+        If[ Length @ parts === 1 && StringQ @ First @ parts,
+            Throw @ str  (* Return plain string for backward compatibility *)
+        ];
+
+        hasImages = False;
+        contentItems = Flatten @ Map[
+            Function[ item,
+                If[ StringQ @ item && ! StringStartsQ[ item, "https://" ],
+                    (* Text segment: create text content *)
+                    If[ StringLength @ item > 0,
+                        { <| "type" -> "text", "text" -> item |> },
+                        { }
+                    ],
+                    (* URL: import image and create both text + image content *)
+                    hasImages = True;
+                    Module[ { img, imageContent },
+                        img = Quiet @ Import[ item, "Image" ];
+                        imageContent = If[ ImageQ @ img, graphicsToImageContent @ img, $Failed ];
+                        Flatten @ {
+                            (* Always include the markdown link as text *)
+                            <| "type" -> "text", "text" -> "![Image](" <> item <> ")" |>,
+                            (* Add base64 image if import succeeded *)
+                            If[ AssociationQ @ imageContent, imageContent, Nothing ]
+                        }
+                    ]
+                ]
+            ],
+            parts
+        ];
+
+        (* If we successfully extracted images, return structured content *)
+        If[ TrueQ @ hasImages && MatchQ[ contentItems, { __Association } ],
+            <| "Content" -> contentItems |>,
+            str  (* Fallback to plain string *)
+        ]
+    ],
+    str &  (* On any error, return original string *)
+];
+
+extractWolframAlphaImages // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*extractImageContent*)
+extractImageContent // beginDefinition;
+
+extractImageContent[ g_? graphicsQ ] :=
+    With[ { img = graphicsToImageContent @ g },
+        If[ AssociationQ @ img, { img }, { } ]
+    ];
+
+extractImageContent[ list_List ] := Flatten[ extractImageContent /@ list, 1 ];
+extractImageContent[ as_Association ] := extractImageContent @ Values @ as;
+extractImageContent[ _Failure ] := { };
+extractImageContent[ _String  ] := { };
+extractImageContent[ _        ] := { };
+
+extractImageContent // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*resultToContent*)
+resultToContent // beginDefinition;
+
+resultToContent[ result_ ] := Enclose[
+    Module[ { textContent, imageContents },
+        textContent = <| "type" -> "text", "text" -> ConfirmBy[ safeString @ result, StringQ ] |>;
+        imageContents = ConfirmMatch[ extractImageContent @ result, { ___Association } ];
+        Flatten @ { textContent, imageContents }
+    ],
+    throwInternalFailure
+];
+
+resultToContent // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*evaluateTool*)
 evaluateTool // beginDefinition;
 
 evaluateTool[ msg_, req_ ] := Enclose[
-    Catch @ Module[ { params, toolName, args, tool, result, string },
+    Catch @ Module[ { params, toolName, args, tool, result, content },
         Quiet @ TaskRemove @ $warmupTask; (* We're in a tool call, so it no longer makes sense to warm up tools *)
         writeLog[ "ToolCall" -> msg ];
         params = ConfirmBy[ Lookup[ msg, "params", <| |> ], AssociationQ ];
@@ -385,14 +524,22 @@ evaluateTool[ msg_, req_ ] := Enclose[
         ];
 
         result = stealthCatchTop @ tool @ args;
-        If[ StringQ @ result[ "String" ], result = result[ "String" ] ];
-        (* TODO: return multimodal content here when appropriate *)
-        (* TODO: convert internal errors to more useful text *)
-        string = ConfirmBy[ safeString @ result, StringQ, "String" ];
-        <|
-            "content" -> { <| "type" -> "text", "text" -> string |> },
-            "isError" -> FailureQ @ result
-        |>
+
+        content = Which[
+            (* Structured result with Content key (from WolframLanguageEvaluator) *)
+            AssociationQ @ result && KeyExistsQ[ result, "Content" ],
+                result[ "Content" ],
+
+            (* Legacy: result has String key *)
+            StringQ @ result[ "String" ],
+                resultToContent @ result[ "String" ],
+
+            (* Default: auto-detect graphics *)
+            True,
+                resultToContent @ result
+        ];
+
+        <| "content" -> ConfirmMatch[ content, { __Association } ], "isError" -> FailureQ @ result |>
     ],
     throwInternalFailure
 ];

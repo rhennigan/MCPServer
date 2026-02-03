@@ -54,6 +54,7 @@ $MCPServerContexts = {
     "Wolfram`MCPServer`DefaultServers`",
     "Wolfram`MCPServer`Files`",
     "Wolfram`MCPServer`Formatting`",
+    "Wolfram`MCPServer`Graphics`",
     "Wolfram`MCPServer`InstallMCPServer`",
     "Wolfram`MCPServer`MCPServerObject`",
     "Wolfram`MCPServer`Prompts`",

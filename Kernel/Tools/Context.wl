@@ -132,14 +132,16 @@ relatedWolframContext[ KeyValuePattern[ "context" -> context_ ] ] :=
     relatedWolframContext @ context;
 
 relatedWolframContext[ context_String ] := Enclose[
-    Module[ { waPrompt, wlPrompt },
+    Module[ { waPrompt, wlPrompt, combined },
         waPrompt = ConfirmBy[ relatedWolframAlphaPrompt[ context, "Warning" ], StringQ, "WolframAlphaPrompt" ];
         wlPrompt = ConfirmBy[ relatedDocumentation @ context, StringQ, "WolframLanguagePrompt" ];
-        ConfirmBy[
+        combined = ConfirmBy[
             StringRiffle[ DeleteCases[ StringTrim @ { waPrompt, wlPrompt }, "" ], "\n\n======\n\n" ],
             StringQ,
-            "Result"
-        ]
+            "Combined"
+        ];
+        (* Extract any WolframAlpha images from the combined result *)
+        extractWolframAlphaImages @ combined
     ],
     throwInternalFailure
 ];
@@ -151,12 +153,20 @@ relatedWolframContext // endDefinition;
 (*relatedWolframAlphaPrompt*)
 relatedWolframAlphaPrompt // beginDefinition;
 
+relatedWolframAlphaPrompt[ KeyValuePattern[ "context" -> context_ ] ] :=
+    relatedWolframAlphaPrompt @ context;
+
 relatedWolframAlphaPrompt[ context_ ] :=
     relatedWolframAlphaPrompt[ context, "Error" ];
 
 relatedWolframAlphaPrompt[ context_, level_ ] :=
     relatedWolframAlphaPrompt[ context, level, llmKitSubscribedQ[ ] ];
 
+(* When subscribed and called as a tool (not internally), extract images *)
+relatedWolframAlphaPrompt[ context_, "Error", True ] :=
+    extractWolframAlphaImages @ relatedWolframAlphaResults @ context;
+
+(* When called internally (e.g., from relatedWolframContext), return plain string *)
 relatedWolframAlphaPrompt[ context_, level_, True ] :=
     relatedWolframAlphaResults @ context;
 

@@ -59,8 +59,8 @@ $defaultMCPTools[ "WolframAlpha" ] := LLMTool @ <|
 (*wolframAlphaToolEvaluate*)
 wolframAlphaToolEvaluate // beginDefinition;
 wolframAlphaToolEvaluate[ as_ ] := wolframAlphaToolEvaluate[ as, cb`$DefaultTools[ "WolframAlpha" ][ as ] ];
-wolframAlphaToolEvaluate[ as_, result_String ] := result;
-wolframAlphaToolEvaluate[ as_, KeyValuePattern[ "String" -> result_String ] ] := result;
+wolframAlphaToolEvaluate[ as_, result_String ] := extractWolframAlphaImages @ result;
+wolframAlphaToolEvaluate[ as_, KeyValuePattern[ "String" -> result_String ] ] := extractWolframAlphaImages @ result;
 wolframAlphaToolEvaluate // endDefinition;
 
 (* ::**************************************************************************************************************:: *)

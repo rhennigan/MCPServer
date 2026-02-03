@@ -5,13 +5,6 @@
 (*Initialization*)
 $Messages = Streams[ "stderr" ];
 
-With[ { cbDir = ReleaseHold @ PersistentSymbol[ "Chatbook/PacletDirectory" ] },
-    If[ Quiet @ PacletObjectQ @ PacletObject @ Flatten @ File @ cbDir,
-        PacletDirectoryLoad @ cbDir;
-        Block[ { $ContextPath }, << Wolfram`Chatbook` ];
-    ]
-];
-
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Definitions*)

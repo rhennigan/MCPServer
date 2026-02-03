@@ -5,6 +5,7 @@
         "CICD",
         "dpkg",
         "ENTITLEMENTID",
+        "Legended",
         "libgomp",
         "llmkit",
         "LOCALBASE",
@@ -28,6 +29,7 @@
         "unbuilt",
         "unformat",
         "USERBASE",
+        "wolframalpha",
         "wolframengine",
         "WOLFRAMINIT",
         "wolframresearch"

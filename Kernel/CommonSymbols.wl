@@ -63,6 +63,13 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 (* Shared symbols with Tools subcontexts: *)
 `exportMarkdownString;
 
+(* Graphics detection and conversion: *)
+`graphicsQ;
+`graphicsToImageContent;
+
+(* WolframAlpha image extraction: *)
+`extractWolframAlphaImages;
+
 (* Internal failure formatting: *)
 `$internalFailureLogPath;
 `extractFailureTag;

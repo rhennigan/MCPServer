@@ -15,6 +15,12 @@ VerificationTest[
     TestID   -> "LoadContext@@Tests/Tools.wlt:11,1-16,2"
 ]
 
+(* Helper function to extract text from tool results (handles both string and structured content) *)
+extractToolText[ str_String ] := str;
+extractToolText[ as_Association ] /; KeyExistsQ[ as, "Content" ] :=
+    StringJoin @ Cases[ as[ "Content" ], KeyValuePattern[ { "type" -> "text", "text" -> t_String } ] :> t ];
+extractToolText[ _ ] := "";
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*$DefaultMCPTools*)
@@ -22,7 +28,7 @@ VerificationTest[
     $DefaultMCPTools,
     _Association? AssociationQ,
     SameTest -> MatchQ,
-    TestID   -> "DefaultMCPTools-IsAssociation@@Tests/Tools.wlt:21,1-26,2"
+    TestID   -> "DefaultMCPTools-IsAssociation@@Tests/Tools.wlt:27,1-32,2"
 ]
 
 VerificationTest[
@@ -45,14 +51,14 @@ VerificationTest[
         ]
     },
     SameTest -> MatchQ,
-    TestID   -> "DefaultMCPTools-Keys@@Tests/Tools.wlt:28,1-49,2"
+    TestID   -> "DefaultMCPTools-Keys@@Tests/Tools.wlt:34,1-55,2"
 ]
 
 VerificationTest[
     AllTrue[ Values @ $DefaultMCPTools, MatchQ[ _LLMTool ] ],
     True,
     SameTest -> SameQ,
-    TestID   -> "DefaultMCPTools-AllLLMTools@@Tests/Tools.wlt:51,1-56,2"
+    TestID   -> "DefaultMCPTools-AllLLMTools@@Tests/Tools.wlt:57,1-62,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -66,21 +72,21 @@ VerificationTest[
     $readNotebookTool = $DefaultMCPTools[ "ReadNotebook" ],
     _LLMTool,
     SameTest -> MatchQ,
-    TestID   -> "ReadNotebook-GetTool@@Tests/Tools.wlt:65,1-70,2"
+    TestID   -> "ReadNotebook-GetTool@@Tests/Tools.wlt:71,1-76,2"
 ]
 
 VerificationTest[
     $exampleNotebook = FileNameJoin @ { DirectoryName[ $TestFileName, 2 ], "TestResources", "document.nb" },
     _String? FileExistsQ,
     SameTest -> MatchQ,
-    TestID   -> "ReadNotebook-FindExampleFile@@Tests/Tools.wlt:72,1-77,2"
+    TestID   -> "ReadNotebook-FindExampleFile@@Tests/Tools.wlt:78,1-83,2"
 ]
 
 VerificationTest[
     $readNotebookResult = $readNotebookTool[ <| "notebook" -> $exampleNotebook |> ],
     _String? StringQ,
     SameTest -> MatchQ,
-    TestID   -> "ReadNotebook-BasicRead@@Tests/Tools.wlt:79,1-84,2"
+    TestID   -> "ReadNotebook-BasicRead@@Tests/Tools.wlt:85,1-90,2"
 ]
 
 VerificationTest[
@@ -88,7 +94,7 @@ VerificationTest[
     StringContainsQ[ $readNotebookResult, "\n```wl\n" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ReadNotebook-ContainsExpectedContent@@Tests/Tools.wlt:86,1-92,2"
+    TestID   -> "ReadNotebook-ContainsExpectedContent@@Tests/Tools.wlt:92,1-98,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -98,7 +104,7 @@ VerificationTest[
     $readNotebookTool[ <| "notebook" -> "nonexistent_file_12345.nb" |> ],
     _String,
     SameTest -> MatchQ,
-    TestID   -> "ReadNotebook-NonexistentFile@@Tests/Tools.wlt:97,1-102,2"
+    TestID   -> "ReadNotebook-NonexistentFile@@Tests/Tools.wlt:103,1-108,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -112,14 +118,14 @@ VerificationTest[
     $writeNotebookTool = $DefaultMCPTools[ "WriteNotebook" ],
     _LLMTool,
     SameTest -> MatchQ,
-    TestID   -> "WriteNotebook-GetTool@@Tests/Tools.wlt:111,1-116,2"
+    TestID   -> "WriteNotebook-GetTool@@Tests/Tools.wlt:117,1-122,2"
 ]
 
 VerificationTest[
     $tempNotebookFile = FileNameJoin[ { $TemporaryDirectory, "MCPServerTest_" <> CreateUUID[ ] <> ".nb" } ],
     _String? StringQ,
     SameTest -> MatchQ,
-    TestID   -> "WriteNotebook-CreateTempPath@@Tests/Tools.wlt:118,1-123,2"
+    TestID   -> "WriteNotebook-CreateTempPath@@Tests/Tools.wlt:124,1-129,2"
 ]
 
 VerificationTest[
@@ -130,14 +136,14 @@ VerificationTest[
     |> ],
     _String? FileExistsQ,
     SameTest -> MatchQ,
-    TestID   -> "WriteNotebook-BasicWrite@@Tests/Tools.wlt:125,1-134,2"
+    TestID   -> "WriteNotebook-BasicWrite@@Tests/Tools.wlt:131,1-140,2"
 ]
 
 VerificationTest[
     FileExistsQ @ $tempNotebookFile,
     True,
     SameTest -> SameQ,
-    TestID   -> "WriteNotebook-FileExists@@Tests/Tools.wlt:136,1-141,2"
+    TestID   -> "WriteNotebook-FileExists@@Tests/Tools.wlt:142,1-147,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -151,7 +157,7 @@ VerificationTest[
     |> ],
     _String? (StringStartsQ[ "File already exists" ]),
     SameTest -> MatchQ,
-    TestID   -> "WriteNotebook-NoOverwriteExisting@@Tests/Tools.wlt:146,1-155,2"
+    TestID   -> "WriteNotebook-NoOverwriteExisting@@Tests/Tools.wlt:152,1-161,2"
 ]
 
 VerificationTest[
@@ -162,7 +168,7 @@ VerificationTest[
     |> ],
     _String? FileExistsQ,
     SameTest -> MatchQ,
-    TestID   -> "WriteNotebook-OverwriteExisting@@Tests/Tools.wlt:157,1-166,2"
+    TestID   -> "WriteNotebook-OverwriteExisting@@Tests/Tools.wlt:163,1-172,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -173,7 +179,7 @@ VerificationTest[
     FileExistsQ @ $tempNotebookFile,
     False,
     SameTest -> SameQ,
-    TestID   -> "WriteNotebook-Cleanup@@Tests/Tools.wlt:171,1-177,2"
+    TestID   -> "WriteNotebook-Cleanup@@Tests/Tools.wlt:177,1-183,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -187,28 +193,28 @@ VerificationTest[
     $evaluatorTool = $DefaultMCPTools[ "WolframLanguageEvaluator" ],
     _LLMTool,
     SameTest -> MatchQ,
-    TestID   -> "WolframLanguageEvaluator-GetTool@@Tests/Tools.wlt:186,1-191,2"
+    TestID   -> "WolframLanguageEvaluator-GetTool@@Tests/Tools.wlt:192,1-197,2"
 ]
 
 VerificationTest[
     $evalResult1 = $evaluatorTool[ <| "code" -> "1 + 1" |> ],
-    _String? StringQ,
+    _String | _Association,
     SameTest -> MatchQ,
-    TestID   -> "WolframLanguageEvaluator-BasicEval@@Tests/Tools.wlt:193,1-198,2"
+    TestID   -> "WolframLanguageEvaluator-BasicEval@@Tests/Tools.wlt:199,1-204,2"
 ]
 
 VerificationTest[
-    StringContainsQ[ $evalResult1, "2" ],
+    StringContainsQ[ extractToolText @ $evalResult1, "2" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframLanguageEvaluator-CorrectResult@@Tests/Tools.wlt:200,1-205,2"
+    TestID   -> "WolframLanguageEvaluator-CorrectResult@@Tests/Tools.wlt:206,1-211,2"
 ]
 
 VerificationTest[
-    StringContainsQ[ $evalResult1, "Out[" ],
+    StringContainsQ[ extractToolText @ $evalResult1, "Out[" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframLanguageEvaluator-HasOutLabel@@Tests/Tools.wlt:207,1-212,2"
+    TestID   -> "WolframLanguageEvaluator-HasOutLabel@@Tests/Tools.wlt:213,1-218,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -216,16 +222,16 @@ VerificationTest[
 (*Time Constraint*)
 VerificationTest[
     $evalResult2 = $evaluatorTool[ <| "code" -> "Range[5]", "timeConstraint" -> 30 |> ],
-    _String? StringQ,
+    _String | _Association,
     SameTest -> MatchQ,
-    TestID   -> "WolframLanguageEvaluator-WithTimeConstraint@@Tests/Tools.wlt:217,1-222,2"
+    TestID   -> "WolframLanguageEvaluator-WithTimeConstraint@@Tests/Tools.wlt:223,1-228,2"
 ]
 
 VerificationTest[
-    StringContainsQ[ $evalResult2, "{1, 2, 3, 4, 5}" ],
+    StringContainsQ[ extractToolText @ $evalResult2, "{1, 2, 3, 4, 5}" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframLanguageEvaluator-RangeResult@@Tests/Tools.wlt:224,1-229,2"
+    TestID   -> "WolframLanguageEvaluator-RangeResult@@Tests/Tools.wlt:230,1-235,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -233,16 +239,16 @@ VerificationTest[
 (*Complex Expressions*)
 VerificationTest[
     $evalResult3 = $evaluatorTool[ <| "code" -> "Table[n^2, {n, 1, 4}]" |> ],
-    _String? StringQ,
+    _String | _Association,
     SameTest -> MatchQ,
-    TestID   -> "WolframLanguageEvaluator-TableExpression@@Tests/Tools.wlt:234,1-239,2"
+    TestID   -> "WolframLanguageEvaluator-TableExpression@@Tests/Tools.wlt:240,1-245,2"
 ]
 
 VerificationTest[
-    StringContainsQ[ $evalResult3, "{1, 4, 9, 16}" ],
+    StringContainsQ[ extractToolText @ $evalResult3, "{1, 4, 9, 16}" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframLanguageEvaluator-TableResult@@Tests/Tools.wlt:241,1-246,2"
+    TestID   -> "WolframLanguageEvaluator-TableResult@@Tests/Tools.wlt:247,1-252,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -250,16 +256,16 @@ VerificationTest[
 (*String Output*)
 VerificationTest[
     $evalResult4 = $evaluatorTool[ <| "code" -> "StringJoin[\"Hello\", \" \", \"World\"]" |> ],
-    _String? StringQ,
+    _String | _Association,
     SameTest -> MatchQ,
-    TestID   -> "WolframLanguageEvaluator-StringExpression@@Tests/Tools.wlt:251,1-256,2"
+    TestID   -> "WolframLanguageEvaluator-StringExpression@@Tests/Tools.wlt:257,1-262,2"
 ]
 
 VerificationTest[
-    StringContainsQ[ $evalResult4, "Hello World" ],
+    StringContainsQ[ extractToolText @ $evalResult4, "Hello World" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframLanguageEvaluator-StringResult@@Tests/Tools.wlt:258,1-263,2"
+    TestID   -> "WolframLanguageEvaluator-StringResult@@Tests/Tools.wlt:264,1-269,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -267,51 +273,55 @@ VerificationTest[
 (*Print Output*)
 VerificationTest[
     $evalResultPrint1 = $evaluatorTool[ <| "code" -> "Print[\"Hello from Print\"]; 42" |> ],
-    _String? StringQ,
+    _String | _Association,
     SameTest -> MatchQ,
-    TestID   -> "WolframLanguageEvaluator-PrintBasic@@Tests/Tools.wlt:268,1-273,2"
+    TestID   -> "WolframLanguageEvaluator-PrintBasic@@Tests/Tools.wlt:274,1-279,2"
 ]
 
 VerificationTest[
-    StringContainsQ[ $evalResultPrint1, "Hello from Print" ],
+    StringContainsQ[ extractToolText @ $evalResultPrint1, "Hello from Print" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframLanguageEvaluator-PrintOutputCaptured@@Tests/Tools.wlt:275,1-280,2"
+    TestID   -> "WolframLanguageEvaluator-PrintOutputCaptured@@Tests/Tools.wlt:281,1-286,2"
 ]
 
 VerificationTest[
-    StringContainsQ[ $evalResultPrint1, "42" ],
+    StringContainsQ[ extractToolText @ $evalResultPrint1, "42" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframLanguageEvaluator-PrintResultIncluded@@Tests/Tools.wlt:282,1-287,2"
+    TestID   -> "WolframLanguageEvaluator-PrintResultIncluded@@Tests/Tools.wlt:288,1-293,2"
 ]
 
 VerificationTest[
     $evalResultPrint2 = $evaluatorTool[ <| "code" -> "Print[\"First\"]; Print[\"Second\"]; Print[\"Third\"]; \"Done\"" |> ],
-    _String? StringQ,
+    _String | _Association,
     SameTest -> MatchQ,
-    TestID   -> "WolframLanguageEvaluator-MultiplePrints@@Tests/Tools.wlt:289,1-294,2"
+    TestID   -> "WolframLanguageEvaluator-MultiplePrints@@Tests/Tools.wlt:295,1-300,2"
 ]
 
 VerificationTest[
-    StringContainsQ[ $evalResultPrint2, "First" ] && StringContainsQ[ $evalResultPrint2, "Second" ] && StringContainsQ[ $evalResultPrint2, "Third" ],
+    With[ { text = extractToolText @ $evalResultPrint2 },
+        StringContainsQ[ text, "First" ] && StringContainsQ[ text, "Second" ] && StringContainsQ[ text, "Third" ]
+    ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframLanguageEvaluator-MultiplePrintsCaptured@@Tests/Tools.wlt:296,1-301,2"
+    TestID   -> "WolframLanguageEvaluator-MultiplePrintsCaptured@@Tests/Tools.wlt:302,1-309,2"
 ]
 
 VerificationTest[
     $evalResultPrint3 = $evaluatorTool[ <| "code" -> "Do[Print[i], {i, 3}]; \"Complete\"" |> ],
-    _String? StringQ,
+    _String | _Association,
     SameTest -> MatchQ,
-    TestID   -> "WolframLanguageEvaluator-PrintInLoop@@Tests/Tools.wlt:303,1-308,2"
+    TestID   -> "WolframLanguageEvaluator-PrintInLoop@@Tests/Tools.wlt:311,1-316,2"
 ]
 
 VerificationTest[
-    StringContainsQ[ $evalResultPrint3, "1" ] && StringContainsQ[ $evalResultPrint3, "2" ] && StringContainsQ[ $evalResultPrint3, "3" ],
+    With[ { text = extractToolText @ $evalResultPrint3 },
+        StringContainsQ[ text, "1" ] && StringContainsQ[ text, "2" ] && StringContainsQ[ text, "3" ]
+    ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframLanguageEvaluator-PrintInLoopCaptured@@Tests/Tools.wlt:310,1-315,2"
+    TestID   -> "WolframLanguageEvaluator-PrintInLoopCaptured@@Tests/Tools.wlt:318,1-325,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -325,21 +335,21 @@ VerificationTest[
     $wolframAlphaTool = $DefaultMCPTools[ "WolframAlpha" ],
     _LLMTool,
     SameTest -> MatchQ,
-    TestID   -> "WolframAlpha-GetTool@@Tests/Tools.wlt:324,1-329,2"
+    TestID   -> "WolframAlpha-GetTool@@Tests/Tools.wlt:334,1-339,2"
 ]
 
 VerificationTest[
     $waResult = $wolframAlphaTool[ <| "query" -> "population of France" |> ],
     _String? StringQ,
     SameTest -> MatchQ,
-    TestID   -> "WolframAlpha-BasicQuery@@Tests/Tools.wlt:331,1-336,2"
+    TestID   -> "WolframAlpha-BasicQuery@@Tests/Tools.wlt:341,1-346,2"
 ]
 
 VerificationTest[
     StringLength[ $waResult ] > 0,
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframAlpha-NonEmptyResult@@Tests/Tools.wlt:338,1-343,2"
+    TestID   -> "WolframAlpha-NonEmptyResult@@Tests/Tools.wlt:348,1-353,2"
 ]
 
 (* TODO: multiple queries aren't supported until the next Chatbook paclet update *)
@@ -368,28 +378,28 @@ VerificationTest[
     $wlContextTool = $DefaultMCPTools[ "WolframLanguageContext" ],
     _LLMTool,
     SameTest -> MatchQ,
-    TestID   -> "WolframLanguageContext-GetTool@@Tests/Tools.wlt:367,1-372,2"
+    TestID   -> "WolframLanguageContext-GetTool@@Tests/Tools.wlt:377,1-382,2"
 ]
 
 skipIfGitHubActions @ VerificationTest[
     $wlContextResult = $wlContextTool[ <| "context" -> "How to create a list of prime numbers in Wolfram Language" |> ],
-    _String? StringQ,
+    _String | _Association,
     SameTest -> MatchQ,
-    TestID   -> "WolframLanguageContext-BasicQuery@@Tests/Tools.wlt:374,23-379,2"
+    TestID   -> "WolframLanguageContext-BasicQuery@@Tests/Tools.wlt:384,23-389,2"
 ]
 
 skipIfGitHubActions @ VerificationTest[
-    StringLength[ $wlContextResult ] > 0,
+    StringLength[ extractToolText @ $wlContextResult ] > 0,
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframLanguageContext-NonEmptyResult@@Tests/Tools.wlt:381,23-386,2"
+    TestID   -> "WolframLanguageContext-NonEmptyResult@@Tests/Tools.wlt:391,23-396,2"
 ]
 
 skipIfGitHubActions @ VerificationTest[
-    StringContainsQ[ $wlContextResult, "Prime" | "prime" | "Table" | "Range", IgnoreCase -> True ],
+    StringContainsQ[ extractToolText @ $wlContextResult, "Prime" | "prime" | "Table" | "Range", IgnoreCase -> True ],
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframLanguageContext-RelevantContent@@Tests/Tools.wlt:388,23-393,2"
+    TestID   -> "WolframLanguageContext-RelevantContent@@Tests/Tools.wlt:398,23-403,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -403,21 +413,21 @@ VerificationTest[
     $waContextTool = $DefaultMCPTools[ "WolframAlphaContext" ],
     _LLMTool,
     SameTest -> MatchQ,
-    TestID   -> "WolframAlphaContext-GetTool@@Tests/Tools.wlt:402,1-407,2"
+    TestID   -> "WolframAlphaContext-GetTool@@Tests/Tools.wlt:412,1-417,2"
 ]
 
 skipIfGitHubActions @ VerificationTest[
     $waContextResult = $waContextTool[ <| "context" -> "What is the distance from Earth to Mars" |> ],
-    _String? StringQ,
+    _String | _Association,
     SameTest -> MatchQ,
-    TestID   -> "WolframAlphaContext-BasicQuery@@Tests/Tools.wlt:409,23-414,2"
+    TestID   -> "WolframAlphaContext-BasicQuery@@Tests/Tools.wlt:419,23-424,2"
 ]
 
 skipIfGitHubActions @ VerificationTest[
-    StringLength[ $waContextResult ] > 0,
+    StringLength[ extractToolText @ $waContextResult ] > 0,
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframAlphaContext-NonEmptyResult@@Tests/Tools.wlt:416,23-421,2"
+    TestID   -> "WolframAlphaContext-NonEmptyResult@@Tests/Tools.wlt:426,23-431,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -431,21 +441,21 @@ VerificationTest[
     $wolframContextTool = $DefaultMCPTools[ "WolframContext" ],
     _LLMTool,
     SameTest -> MatchQ,
-    TestID   -> "WolframContext-GetTool@@Tests/Tools.wlt:430,1-435,2"
+    TestID   -> "WolframContext-GetTool@@Tests/Tools.wlt:440,1-445,2"
 ]
 
 skipIfGitHubActions @ VerificationTest[
     $wolframContextResult = $wolframContextTool[ <| "context" -> "How to compute derivatives symbolically" |> ],
-    _String? StringQ,
+    _String | _Association,
     SameTest -> MatchQ,
-    TestID   -> "WolframContext-BasicQuery@@Tests/Tools.wlt:437,23-442,2"
+    TestID   -> "WolframContext-BasicQuery@@Tests/Tools.wlt:447,23-452,2"
 ]
 
 skipIfGitHubActions @ VerificationTest[
-    StringLength[ $wolframContextResult ] > 0,
+    StringLength[ extractToolText @ $wolframContextResult ] > 0,
     True,
     SameTest -> SameQ,
-    TestID   -> "WolframContext-NonEmptyResult@@Tests/Tools.wlt:444,23-449,2"
+    TestID   -> "WolframContext-NonEmptyResult@@Tests/Tools.wlt:454,23-459,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -461,14 +471,14 @@ VerificationTest[
     $testReportTool = $DefaultMCPTools[ "TestReport" ],
     _LLMTool,
     SameTest -> MatchQ,
-    TestID   -> "TestReport-GetTool@@Tests/Tools.wlt:460,1-465,2"
+    TestID   -> "TestReport-GetTool@@Tests/Tools.wlt:470,1-475,2"
 ]
 
 VerificationTest[
     $testResourceDirectory = FileNameJoin @ { DirectoryName[ $TestFileName, 2 ], "TestResources" },
     _String? DirectoryQ,
     SameTest -> MatchQ,
-    TestID   -> "TestReport-TestResourceDirectory@@Tests/Tools.wlt:467,1-472,2"
+    TestID   -> "TestReport-TestResourceDirectory@@Tests/Tools.wlt:477,1-482,2"
 ]
 
 VerificationTest[
@@ -478,7 +488,7 @@ VerificationTest[
     |>,
     _String? (StringContainsQ[ "# Test Results Summary"~~__~~"TestFile1.wlt" ]),
     SameTest -> MatchQ,
-    TestID   -> "TestReport-SingleFile@@Tests/Tools.wlt:474,1-482,2"
+    TestID   -> "TestReport-SingleFile@@Tests/Tools.wlt:484,1-492,2"
 ]
 
 VerificationTest[
@@ -492,7 +502,7 @@ VerificationTest[
     |>,
     _String? (StringContainsQ[ "# Test Results Summary"~~__~~"TestFile1.wlt"~~__~~"TestFile2.wlt" ]),
     SameTest -> MatchQ,
-    TestID   -> "TestReport-MultipleFiles@@Tests/Tools.wlt:484,1-496,2"
+    TestID   -> "TestReport-MultipleFiles@@Tests/Tools.wlt:494,1-506,2"
 ]
 
 VerificationTest[
@@ -502,7 +512,7 @@ VerificationTest[
     |>,
     _String? (StringContainsQ[ "# Test Results Summary"~~__~~"TestFile1.wlt"~~__~~"TestFile2.wlt" ]),
     SameTest -> MatchQ,
-    TestID   -> "TestReport-Directory@@Tests/Tools.wlt:498,1-506,2"
+    TestID   -> "TestReport-Directory@@Tests/Tools.wlt:508,1-516,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -519,7 +529,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveNames@@Tests/Tools.wlt:515,1-523,2"
+    TestID   -> "ToolProperties-AllHaveNames@@Tests/Tools.wlt:525,1-533,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -532,7 +542,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveDescriptions@@Tests/Tools.wlt:528,1-536,2"
+    TestID   -> "ToolProperties-AllHaveDescriptions@@Tests/Tools.wlt:538,1-546,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -545,5 +555,5 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveParameters@@Tests/Tools.wlt:541,1-549,2"
+    TestID   -> "ToolProperties-AllHaveParameters@@Tests/Tools.wlt:551,1-559,2"
 ]
