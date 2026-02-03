@@ -371,4 +371,56 @@ VerificationTest[
     TestID   -> "CleanupOldFailureLogs-MaxFiles@@Tests/InternalFailureFormatting.wlt:363,1-372,2"
 ]
 
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*bugReportBody*)
+
+VerificationTest[
+    (* Verify bug report body is generated as a string *)
+    bugReportText = Wolfram`MCPServer`Common`Private`bugReportBody[
+        <| "Name" -> "Wolfram/MCPServer", "Version" -> "1.0.0" |>
+    ];
+    StringQ @ bugReportText,
+    True,
+    SameTest -> Equal,
+    TestID   -> "BugReportBody-ReturnsString@@Tests/InternalFailureFormatting.wlt:378,1-387,2"
+]
+
+VerificationTest[
+    (* Verify bug report does NOT contain Settings section - this paclet has no settings *)
+    bugReportText = Wolfram`MCPServer`Common`Private`bugReportBody[
+        <| "Name" -> "Wolfram/MCPServer", "Version" -> "1.0.0" |>
+    ];
+    ! StringContainsQ[ bugReportText, "## Settings" ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "BugReportBody-NoSettingsSection@@Tests/InternalFailureFormatting.wlt:389,1-398,2"
+]
+
+VerificationTest[
+    (* Verify no template placeholders remain in bug report *)
+    bugReportText = Wolfram`MCPServer`Common`Private`bugReportBody[
+        <| "Name" -> "Wolfram/MCPServer", "Version" -> "1.0.0" |>
+    ];
+    ! StringContainsQ[ bugReportText, "%%" ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "BugReportBody-NoTemplatePlaceholders@@Tests/InternalFailureFormatting.wlt:400,1-409,2"
+]
+
+VerificationTest[
+    (* Verify bug report contains expected sections *)
+    bugReportText = Wolfram`MCPServer`Common`Private`bugReportBody[
+        <| "Name" -> "Wolfram/MCPServer", "Version" -> "1.0.0" |>
+    ];
+    And[
+        StringContainsQ[ bugReportText, "Debug Data" ],
+        StringContainsQ[ bugReportText, "## Failure Data" ],
+        StringContainsQ[ bugReportText, "## Stack Data" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "BugReportBody-ContainsExpectedSections@@Tests/InternalFailureFormatting.wlt:411,1-424,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)
