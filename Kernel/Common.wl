@@ -834,7 +834,7 @@ cleanupOldFailureLogs[ maxFiles_Integer ] :=
         files = FileNames[ "*.mx", dir ];
         If[ Length @ files <= maxFiles, Throw @ Null ];
         (* Sort by modification time, newest first *)
-        files = SortBy[ files, -FileDate[ #, "Modification" ] & ];
+        files = ReverseSortBy[ files, FileDate[ #, "Modification" ] & ];
         toDelete = Drop[ files, maxFiles ];
         Quiet @ DeleteFile /@ toDelete;
     ];
@@ -855,7 +855,7 @@ cleanupOldOutputLogs[ maxFiles_Integer ] :=
         files = FileNames[ "*.log", dir ];
         If[ Length @ files <= maxFiles, Throw @ Null ];
         (* Sort by modification time, newest first *)
-        files = SortBy[ files, -FileDate[ #, "Modification" ] & ];
+        files = ReverseSortBy[ files, FileDate[ #, "Modification" ] & ];
         toDelete = Drop[ files, maxFiles ];
         Quiet @ DeleteFile /@ toDelete;
     ];
