@@ -1,0 +1,42 @@
+<project name='MCPServer' basedir='..'>
+
+	<property name='component' value='${ant.project.name}' />
+
+	<property name='app.name' value='${component}' />
+	<property name='inputDir' value='${basedir}/Documentation' />
+
+	<property environment='env' />
+	<import file='${env.RE_ANTLIBRARY_HOME}/ant-lib.xml' />
+
+	<!--
+		Component (platform-independent)
+	-->
+	<echo message='COMPONENT NAME: ${component}'/>
+
+	<target name='Component.MCPServer.execute' extensionOf='Component.execute'>
+
+		<copy todir='${files_directory}/${component}'>
+			<fileset dir='${basedir}'>
+				<include name='PacletInfo.wl'/>
+				<include name='Assets/**'/>
+				<include name='Kernel/**'/>
+			</fileset>
+		</copy>
+
+	</target>
+
+	<target name='MX.MCPServer.execute' extensionOf='MX.execute'>
+
+		<exec executable='${mathExe}' dir='${basedir}/Scripts'>
+			<arg line='-script' />
+			<arg line='BuildMX.wls' />
+		</exec>
+
+		<copy todir='${files_directory}/${component}'>
+			<fileset dir='${basedir}'>
+				<include name='Kernel/**/MCPServer.mx'/>
+			</fileset>
+		</copy>
+
+	</target>
+</project>
