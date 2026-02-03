@@ -9,9 +9,6 @@ Consolidated list of TODO/FIXME items from the codebase.
 - [ ] Add `Initialization` option to `CreateMCPServer`
   - Source: `Kernel/CreateMCPServer.wl`
 - [ ] Add `ProcessDirectory` option to `InstallMCPServer` ([See Issue #69](https://github.com/rhennigan/MCPServer/issues/69))
-- [x] Include all required environment variables in `makeJSONConfiguration`
-  - Source: `Kernel/MCPServerObject.wl`
-  - Should match `defaultEnvironment` from `InstallMCPServer.wl`
 
 ## MCP Protocol Support
 
