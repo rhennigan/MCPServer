@@ -8,11 +8,13 @@ The CodeInspector tool uses the [CodeInspector](https://github.com/WolframResear
 
 There are three types of rules:
 
-| Type | Description | Variable |
-|------|-------------|----------|
-| **Abstract Rules** | Pattern match on the abstract syntax tree (simplified, no whitespace/comments) | `$customAbstractRules` |
-| **Aggregate Rules** | Analyze relationships between multiple nodes in the AST | `$aggregateRules` |
-| **Concrete Rules** | Pattern match on the concrete syntax tree (includes whitespace/comments) | `$concreteRules` |
+| Type | Description | Custom Variable | Combined Variable |
+|------|-------------|-----------------|-------------------|
+| **Abstract Rules** | Pattern match on the abstract syntax tree (simplified, no whitespace/comments) | `$customAbstractRules` | `$abstractRules` |
+| **Aggregate Rules** | Analyze relationships between multiple nodes in the AST | `$aggregateRules` | — |
+| **Concrete Rules** | Pattern match on the concrete syntax tree (includes whitespace/comments) | `$concreteRules` | — |
+
+> Custom rules are defined in the "Custom Variable" column. For abstract rules, `$abstractRules` combines the defaults from `CodeInspector`AbstractRules`$DefaultAbstractRules` with custom rules.
 
 ## Rule Structure
 
@@ -39,11 +41,27 @@ The CodeParser package defines several node types used in patterns:
 | ``cp`PrefixNode`` | Prefix operator | `-x` |
 | ``cp`PostfixNode`` | Postfix operator | `x!` |
 
+> **Note:** This is not an exhaustive list. CodeParser also defines `BinaryNode`, `TernaryNode`, `ErrorNode`, `CompoundNode`, and others. See the [CodeParser documentation](https://github.com/WolframResearch/codeparser) for all node types. Some nodes are only available in the concrete syntax tree.
+
 Node structure: `NodeType[head, children, metadata]`
 
 - **head**: For ``CallNode``, this is the function being called (usually a ``LeafNode``)
 - **children**: List of argument nodes
 - **metadata**: Association with source location and other info
+
+To see the AST of a particular expression, you can use the `CodeParse` function via the `WolframLanguageEvaluator` MCP tool:
+
+```wl
+Needs[ "CodeParser`" ];
+CodeParser`CodeParse[ "MyFunction[x]" ]
+```
+
+If you're writing a rule that inspects concrete syntax, you can use the `CodeConcreteParse` function:
+
+```wl
+Needs[ "CodeParser`" ];
+CodeParser`CodeConcreteParse[ "MyFunction[x]" ]
+```
 
 ## Pattern Matching Techniques
 
@@ -173,8 +191,9 @@ inspectSingleArgThrow[ pos_, ast_ ] := Catch[
     $tag
 ];
 
-walkASTForCatch[ cp`CallNode[ cp`LeafNode[ Symbol, "Catch"|"System`Catch", _ ], { _ }, _ ], _ ] :=
-    Throw[ { }, $tag ];  (* Found enclosing Catch, abort with no issue *)
+(* Also stops at holding functions like Hold, HoldForm, HoldComplete, HoldCompleteForm *)
+walkASTForCatch[ cp`CallNode[ cp`LeafNode[ Symbol, "Catch"|"System`Catch"|$$holdingSymbol, _ ], { _ }, _ ], _ ] :=
+    Throw[ { }, $tag ];  (* Found enclosing Catch or holding function, abort with no issue *)
 
 walkASTForCatch[ ast_, pos_ ] :=
     Extract[ ast, pos ];  (* Continue walking *)
