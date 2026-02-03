@@ -371,6 +371,32 @@ VerificationTest[
     TestID   -> "CleanupOldFailureLogs-MaxFiles@@Tests/InternalFailureFormatting.wlt:363,1-372,2"
 ]
 
+VerificationTest[
+    (* Verify that cleanup keeps newest files, not oldest *)
+    Module[ { tempDir, oldFile, newFile, files },
+        tempDir = CreateDirectory[ ];
+        (* Create an "old" file *)
+        oldFile = FileNameJoin @ { tempDir, "old_file.mx" };
+        Export[ oldFile, <| "test" -> 1 |>, "MX" ];
+        Pause[ 1.1 ]; (* Ensure different modification times *)
+        (* Create a "new" file *)
+        newFile = FileNameJoin @ { tempDir, "new_file.mx" };
+        Export[ newFile, <| "test" -> 2 |>, "MX" ];
+        (* Run cleanup with maxFiles=1 *)
+        Block[
+            { Wolfram`MCPServer`Common`Private`$internalFailureLogDirectory = tempDir },
+            Wolfram`MCPServer`Common`cleanupOldFailureLogs[ 1 ]
+        ];
+        files = FileNames[ "*.mx", tempDir ];
+        DeleteDirectory[ tempDir, DeleteContents -> True ];
+        (* The newer file should be kept *)
+        files === { newFile }
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "CleanupOldFailureLogs-KeepsNewestFiles@@Tests/InternalFailureFormatting.wlt:374,1-398,2"
+]
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*bugReportBody*)
@@ -383,7 +409,7 @@ VerificationTest[
     StringQ @ bugReportText,
     True,
     SameTest -> Equal,
-    TestID   -> "BugReportBody-ReturnsString@@Tests/InternalFailureFormatting.wlt:378,1-387,2"
+    TestID   -> "BugReportBody-ReturnsString@@Tests/InternalFailureFormatting.wlt:404,1-413,2"
 ]
 
 VerificationTest[
@@ -394,7 +420,7 @@ VerificationTest[
     ! StringContainsQ[ bugReportText, "## Settings" ],
     True,
     SameTest -> Equal,
-    TestID   -> "BugReportBody-NoSettingsSection@@Tests/InternalFailureFormatting.wlt:389,1-398,2"
+    TestID   -> "BugReportBody-NoSettingsSection@@Tests/InternalFailureFormatting.wlt:415,1-424,2"
 ]
 
 VerificationTest[
@@ -405,7 +431,7 @@ VerificationTest[
     ! StringContainsQ[ bugReportText, "%%" ],
     True,
     SameTest -> Equal,
-    TestID   -> "BugReportBody-NoTemplatePlaceholders@@Tests/InternalFailureFormatting.wlt:400,1-409,2"
+    TestID   -> "BugReportBody-NoTemplatePlaceholders@@Tests/InternalFailureFormatting.wlt:426,1-435,2"
 ]
 
 VerificationTest[
@@ -420,7 +446,7 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "BugReportBody-ContainsExpectedSections@@Tests/InternalFailureFormatting.wlt:411,1-424,2"
+    TestID   -> "BugReportBody-ContainsExpectedSections@@Tests/InternalFailureFormatting.wlt:437,1-450,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
