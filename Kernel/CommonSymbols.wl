@@ -10,7 +10,6 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `$pacletVersion;
 `$rootPath;
 `$serverVersion;
-`$settingsData;
 `$storagePath;
 `$thisPaclet;
 `addToMXInitialization;

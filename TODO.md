@@ -73,8 +73,6 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Catch and redirect explicit `Write`/`WriteString`/`BinaryWrite` calls to stdout/stderr
 - [ ] Include information about the current MCP server in bug reports
   - Source: `Kernel/Common.wl`
-- [ ] Remove empty "Settings" section from bug reports (this paclet has no settings)
-  - Source: `Kernel/Common.wl`
 
 ## Connect to External MCP Servers (Major Feature)
 
