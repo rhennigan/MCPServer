@@ -1479,7 +1479,7 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*scanNegatedDateObject - Basic Detection*)
+(*inspectNegatedDateObject - Basic Detection*)
 VerificationTest[
     $negatedDateResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
         "code"               -> "SortBy[files, -FileDate[#1] &]",
@@ -1517,7 +1517,7 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*scanNegatedDateObject - Now and Today*)
+(*inspectNegatedDateObject - Now and Today*)
 VerificationTest[
     $negatedNowResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
         "code"               -> "x = -Now",
@@ -1562,7 +1562,7 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*scanNegatedDateObject - Other Date Functions*)
+(*inspectNegatedDateObject - Other Date Functions*)
 VerificationTest[
     $negatedDateObjectResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
         "code"               -> "z = -DateObject[]",
@@ -1607,7 +1607,7 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*scanNegatedDateObject - Multiple Negations*)
+(*inspectNegatedDateObject - Multiple Negations*)
 VerificationTest[
     $multipleNegatedResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
         "code"               -> "x = -Now; y = -Today; z = -Tomorrow; w = -Yesterday",
