@@ -984,8 +984,8 @@ Notebook[
                  TagBox[
                   TemplateBox[
                    {
-                    "\"index.md\"",
-                    FileNameJoin[{NotebookDirectory[], "docs", "index.md"}]
+                    "\"README.md\"",
+                    FileNameJoin[{NotebookDirectory[], "docs", "README.md"}]
                    },
                    "FileManagerFileOpenerTemplate"
                   ],
@@ -998,7 +998,7 @@ Notebook[
                    ]
                   ]
                  ],
-                 FileNameJoin[{NotebookDirectory[], "docs", "index.md"}],
+                 FileNameJoin[{NotebookDirectory[], "docs", "README.md"}],
                  BoxID -> "FileTreePath",
                  BaseStyle -> {"Text"}
                 ]

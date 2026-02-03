@@ -259,7 +259,7 @@ CreateMCPServer["My MCP Server", <|
 
 ## Development
 
-See the [developer documentation](docs/index.md) for information on:
+See the [developer documentation](docs/README.md) for information on:
 
 - [Getting started](docs/getting-started.md) with development
 - [Writing and running tests](docs/testing.md)
