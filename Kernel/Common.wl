@@ -568,7 +568,6 @@ $maxPartLength = 500;
 $thisPaclet    := PacletObject[ "Wolfram/MCPServer" ];
 $pacletVersion := $thisPaclet[ "Version" ];
 $debugData     := debugData @ $thisPaclet[ "PacletInfo" ];
-$settingsData  := $settings;
 $releaseID     := $releaseID = getReleaseID @ $thisPaclet;
 
 (* ::**************************************************************************************************************:: *)
@@ -629,11 +628,10 @@ $bugReportLink := Hyperlink[
 bugReportBody[ ] := bugReportBody @ $thisPaclet[ "PacletInfo" ];
 
 bugReportBody[ as_Association? AssociationQ ] :=
-    Module[ { debugData, stack, settings, internalFailure, bugReportText, dir, fileName, filePath, file, data },
+    Module[ { debugData, stack, internalFailure, bugReportText, dir, fileName, filePath, file, data },
 
         debugData        = $debugData;
         stack            = $bugReportStack;
-        settings         = $settings;
         internalFailure  = $internalFailure;
 
         bugReportText = TemplateApply[
@@ -642,8 +640,6 @@ bugReportBody[ as_Association? AssociationQ ] :=
                 (* FIXME: This should include information about the current MCP server (if applicable) *)
                 "DebugData"       -> associationMarkdown @ debugData,
                 "Stack"           -> stack,
-                (* FIXME: There are no settings in this paclet, so this is always empty *)
-                "Settings"        -> associationMarkdown @ takeRelevantSettings @ settings,
                 "InternalFailure" -> markdownCodeBlock @ internalFailure,
                 "SourceLink"      -> sourceLink @ internalFailure
             |>
@@ -654,7 +650,6 @@ bugReportBody[ as_Association? AssociationQ ] :=
             "PacletInfo"      -> as,
             "DebugData"       -> debugData,
             "Stack"           -> stack,
-            "Settings"        -> settings,
             "InternalFailure" -> internalFailure
         |>;
 
@@ -681,16 +676,6 @@ bugReportBody[ as_Association? AssociationQ ] :=
 
         bugReportText
     ];
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*takeRelevantSettings*)
-takeRelevantSettings // beginDefinition;
-takeRelevantSettings[ settings_Association ] := KeyDrop[ settings, $droppedSettingsKeys ];
-takeRelevantSettings // endDefinition;
-
-(* Settings that we don't need in debug data: *)
-$droppedSettingsKeys = { };
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -894,10 +879,6 @@ Remove any information that you do not wish to include in the report.\
 
 %%DebugData%%
 
-## Settings
-
-%%Settings%%
-
 ## Failure Data
 
 %%InternalFailure%%
@@ -935,11 +916,6 @@ $bugReportStack := StringRiffle[
     ],
     "\n"
 ];
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*$settings*)
-$settings = <| |>;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
