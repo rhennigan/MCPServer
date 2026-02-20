@@ -1652,7 +1652,7 @@ VerificationTest[
 (*Line Exactly at Maximum Length*)
 VerificationTest[
     $exactLineInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
-        StringJoin @ Table[ "a", 160 ],
+        StringJoin @ Table[ "a", 200 ],
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.0 |>
     ],
     { ___InspectionObject },
