@@ -28,7 +28,7 @@ Retrieves the definitions of one or more Wolfram Language symbols and returns th
 The tool generates clean, formatted definition strings by intelligently managing the context path to minimize \
 fully qualified symbol names.
 
-Use fully qualified symbol names (e.g., System`Plus, Wolfram`MCPServer`CreateMCPServer).
+Use fully qualified symbol names (e.g., System`Plus, Wolfram`MCPServer`CreateMCPServer) if the context is known.
 Multiple symbols can be requested by separating them with commas.";
 
 (* ::**************************************************************************************************************:: *)
@@ -44,7 +44,7 @@ $defaultMCPTools[ "SymbolDefinition" ] := LLMTool @ <|
     "Parameters"  -> {
         "symbols" -> <|
             "Interpreter" -> "String",
-            "Help"        -> "The fully qualified symbol name (or multiple names, comma separated).",
+            "Help"        -> "The symbol name (or multiple names, comma separated).",
             "Required"    -> True
         |>,
         "includeContextDetails" -> <|
