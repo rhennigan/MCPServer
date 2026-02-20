@@ -50,6 +50,8 @@ You can optionally include a third argument to specify any expected messages tha
 
 Existing test IDs will also have a suffix appended to them (everything after the last `@@`) to indicate where the test is located in the codebase. You do not need to include this suffix in your new test IDs, since they are automatically generated on commit.
 
+If the test corresponds to a GitHub issue, you should include the issue number in the test ID, e.g. `"AnAppropriateTestID-GH#123"`.
+
 ### Unit Tests
 
 You can write unit tests for private symbols, but you should suppress linting errors for private symbols by wrapping the file in:
