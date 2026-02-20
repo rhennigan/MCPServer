@@ -83,11 +83,6 @@ Consolidated list of TODO/FIXME items from the codebase.
 - [ ] Show relative paths in CodeInspector output when inspecting directories
   - Source: `Kernel/Tools/CodeInspector/Formatting.wl`
 
-### New CodeInspector Rules
-
-- [ ] Check for excessively long lines in the code (e.g. more than 160 characters) and issue a "Formatting" hint
-- [ ] Check for too many lines of code in a file (e.g. more than 10000 lines) and issue a "Formatting" hint
-
 ## Prompts
 
 - [ ] Implement `Documentation` prompt
