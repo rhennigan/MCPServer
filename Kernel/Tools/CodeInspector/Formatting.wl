@@ -399,11 +399,7 @@ extractCodeSnippet[
                 Module[ { lineNum, prefix },
                     lineNum = firstLine + First @ idx - 1;
                     prefix = StringPadLeft[ ToString @ lineNum, 4 ] <> " | ";
-                    (* Mark the issue line *)
-                    If[ lineNum >= startLine && lineNum <= endLine,
-                        prefix <> line <> "  (* <- issue here *)",
-                        prefix <> line
-                    ]
+                    prefix <> line
                 ]
             ],
             snippetLines
