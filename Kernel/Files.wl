@@ -9,10 +9,10 @@ Needs[ "Wolfram`MCPServer`Common`" ];
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Configuration*)
-$rootPath            := FileNameJoin @ { $UserBaseDirectory, "ApplicationData", "Wolfram", "MCPServer" };
-$storagePath         := FileNameJoin @ { $rootPath, "Servers" };
-$imagePath           := FileNameJoin @ { $rootPath, "Images"  };
-$outputLogDirectory  := FileNameJoin @ { $UserBaseDirectory, "Logs", "MCPServer", "Output" };
+$rootPath           := FileNameJoin @ { $UserBaseDirectory, "ApplicationData", "Wolfram", "MCPServer" };
+$storagePath        := FileNameJoin @ { $rootPath, "Servers" };
+$imagePath          := FileNameJoin @ { $rootPath, "Images"  };
+$outputLogDirectory := FileNameJoin @ { $UserBaseDirectory, "Logs", "MCPServer", "Output" };
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -151,8 +151,12 @@ ensureDirectory // endDefinition;
 (*ensureFilePath*)
 ensureFilePath // beginDefinition;
 
-ensureFilePath[ file_ ] := Enclose[
-    Module[ { dir },
+ensureFilePath[ File[ file_String ] ] :=
+    ensureFilePath @ file;
+
+ensureFilePath[ file0_String ] := Enclose[
+    Module[ { file, dir },
+        file = ExpandFileName @ file0;
         dir = ConfirmBy[ ensureDirectory @ DirectoryName @ file, DirectoryQ, "Directory" ];
         ConfirmBy[ toFile @ file, fileQ, "Result" ]
     ],
