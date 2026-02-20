@@ -32,6 +32,12 @@ $$yieldsDateObject = HoldPattern @ Alternatives[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Config*)
+$maxLineLength = 200;
+$maxFileLines  = 10000;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*AST Pattern Helper*)
 importResourceFunction[ astPattern, "ASTPattern" ];
 
@@ -227,6 +233,77 @@ inspectNegatedDateObject[ pos_, ast_ ] :=
     ];
 
 inspectNegatedDateObject // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Text-Level Inspections*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*textLevelInspections*)
+textLevelInspections // beginDefinition;
+
+textLevelInspections[ code_String ] :=
+    Module[ { lines },
+        lines = StringSplit[ code, "\n", All ];
+        Flatten @ {
+            inspectLineLengths @ lines,
+            inspectFileLength @ lines
+        }
+    ];
+
+textLevelInspections // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectLineLengths*)
+inspectLineLengths // beginDefinition;
+
+inspectLineLengths[ lines_List ] := MapIndexed[
+    Function[
+        { line, idx },
+        With[ { len = StringLength @ line },
+            If[ len > $maxLineLength,
+                ci`InspectionObject[
+                    "ExcessiveLineLength",
+                    StringJoin[
+                        "Line is ",
+                        ToString @ len,
+                        " characters long (maximum recommended: ",
+                        ToString @ $maxLineLength,
+                        ")"
+                    ],
+                    "Formatting",
+                    <|
+                        cp`Source -> { { First @ idx, $maxLineLength + 1 }, { First @ idx, len } },
+                        ConfidenceLevel -> 0.95
+                    |>
+                ],
+                Nothing
+            ]
+        ]
+    ],
+    lines
+];
+
+inspectLineLengths // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectFileLength*)
+inspectFileLength // beginDefinition;
+
+inspectFileLength[ lines_List ] /; Length @ lines > $maxFileLines :=
+    ci`InspectionObject[
+        "ExcessiveFileLength",
+        "File is " <> ToString @ Length @ lines <> " lines long (maximum recommended: " <> ToString @ $maxFileLines <> ")",
+        "Formatting",
+        <| cp`Source -> { { 1, 1 }, { Length @ lines, Max[ StringLength /@ lines, 1 ] } }, ConfidenceLevel -> 0.95 |>
+    ];
+
+inspectFileLength[ _List ] := { };
+
+inspectFileLength // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

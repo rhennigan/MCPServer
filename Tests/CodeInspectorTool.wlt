@@ -1617,13 +1617,164 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Custom Rules - ExcessiveLineLength*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Line Exceeding Maximum Length*)
+VerificationTest[
+    $longLineCode = "x = " <> StringJoin @ Table[ "a", 200 ];
+    $longLineInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+        $longLineCode,
+        <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.0 |>
+    ],
+    { __InspectionObject },
+    SameTest -> MatchQ,
+    TestID   -> "ExcessiveLineLength-Detected-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1625,1-1634,2"
+]
+
+VerificationTest[
+    MemberQ[ $longLineInspections, InspectionObject[ "ExcessiveLineLength", _, _, _ ] ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "ExcessiveLineLength-Detected-HasTag@@Tests/CodeInspectorTool.wlt:1636,1-1641,2"
+]
+
+VerificationTest[
+    MemberQ[ $longLineInspections, InspectionObject[ "ExcessiveLineLength", _, "Formatting", _ ] ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "ExcessiveLineLength-Detected-IsFormatting@@Tests/CodeInspectorTool.wlt:1643,1-1648,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Line Exactly at Maximum Length*)
+VerificationTest[
+    $exactLineInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+        StringJoin @ Table[ "a", 160 ],
+        <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.0 |>
+    ],
+    { ___InspectionObject },
+    SameTest -> MatchQ,
+    TestID   -> "ExcessiveLineLength-ExactLimit-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1653,1-1661,2"
+]
+
+VerificationTest[
+    MemberQ[ $exactLineInspections, InspectionObject[ "ExcessiveLineLength", _, _, _ ] ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "ExcessiveLineLength-ExactLimit-NotDetected@@Tests/CodeInspectorTool.wlt:1663,1-1668,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Short Lines Only*)
+VerificationTest[
+    $shortLineInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+        "f[x_] := x + 1\ng[y_] := y * 2",
+        <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.0 |>
+    ],
+    { ___InspectionObject },
+    SameTest -> MatchQ,
+    TestID   -> "ExcessiveLineLength-ShortLines-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1673,1-1681,2"
+]
+
+VerificationTest[
+    MemberQ[ $shortLineInspections, InspectionObject[ "ExcessiveLineLength", _, _, _ ] ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "ExcessiveLineLength-ShortLines-NotDetected@@Tests/CodeInspectorTool.wlt:1683,1-1688,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Custom Rules - ExcessiveFileLength*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*File Exceeding Maximum Lines*)
+VerificationTest[
+    $longFileCode = StringJoin @ Table[ "x = 1\n", 10001 ];
+    $longFileInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+        $longFileCode,
+        <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.0 |>
+    ],
+    { __InspectionObject },
+    SameTest -> MatchQ,
+    TestID   -> "ExcessiveFileLength-Detected-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1697,1-1706,2"
+]
+
+VerificationTest[
+    MemberQ[ $longFileInspections, InspectionObject[ "ExcessiveFileLength", _, _, _ ] ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "ExcessiveFileLength-Detected-HasTag@@Tests/CodeInspectorTool.wlt:1708,1-1713,2"
+]
+
+VerificationTest[
+    MemberQ[ $longFileInspections, InspectionObject[ "ExcessiveFileLength", _, "Formatting", _ ] ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "ExcessiveFileLength-Detected-IsFormatting@@Tests/CodeInspectorTool.wlt:1715,1-1720,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*File Within Maximum Lines*)
+VerificationTest[
+    $shortFileInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+        StringJoin @ Table[ "x = 1\n", 100 ],
+        <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.0 |>
+    ],
+    { ___InspectionObject },
+    SameTest -> MatchQ,
+    TestID   -> "ExcessiveFileLength-ShortFile-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1725,1-1733,2"
+]
+
+VerificationTest[
+    MemberQ[ $shortFileInspections, InspectionObject[ "ExcessiveFileLength", _, _, _ ] ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "ExcessiveFileLength-ShortFile-NotDetected@@Tests/CodeInspectorTool.wlt:1735,1-1740,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Custom Rules - Formatting Severity Exclusion*)
+VerificationTest[
+    $formattingExcludedInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+        "x = " <> StringJoin @ Table[ "a", 200 ],
+        <| "tagExclusions" -> { }, "severityExclusions" -> { "Formatting" }, "confidenceLevel" -> 0.0 |>
+    ],
+    { ___InspectionObject },
+    SameTest -> MatchQ,
+    TestID   -> "FormattingExclusion-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1745,1-1753,2"
+]
+
+VerificationTest[
+    MemberQ[ $formattingExcludedInspections, InspectionObject[ "ExcessiveLineLength", _, _, _ ] ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "FormattingExclusion-SuppressesLineLength@@Tests/CodeInspectorTool.wlt:1755,1-1760,2"
+]
+
+VerificationTest[
+    MemberQ[ $formattingExcludedInspections, InspectionObject[ "ExcessiveFileLength", _, _, _ ] ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "FormattingExclusion-SuppressesFileLength@@Tests/CodeInspectorTool.wlt:1762,1-1767,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Integration Tests - Cleanup*)
 VerificationTest[
     DeleteDirectory[ $integrationTempDir, DeleteContents -> True ];
     ! DirectoryQ @ $integrationTempDir,
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:1621,1-1627,2"
+    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:1772,1-1778,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

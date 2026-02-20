@@ -6,15 +6,16 @@ This document explains how to add custom code inspection rules to the MCPServer 
 
 The CodeInspector tool uses the [CodeInspector](https://github.com/WolframResearch/codeinspector) package to analyze Wolfram Language code. MCPServer extends the default rules with custom rules defined in `Kernel/Tools/CodeInspector/Rules.wl`.
 
-There are three types of rules:
+There are four types of inspections — three AST-based rule types and one text-level type:
 
 | Type | Description | Custom Variable | Combined Variable |
 |------|-------------|-----------------|-------------------|
 | **Abstract Rules** | Pattern match on the abstract syntax tree (simplified, no whitespace/comments) | `$customAbstractRules` | `$abstractRules` |
 | **Aggregate Rules** | Analyze relationships between multiple nodes in the AST | `$aggregateRules` | — |
 | **Concrete Rules** | Pattern match on the concrete syntax tree (includes whitespace/comments) | `$concreteRules` | — |
+| **Text-Level** | Inspect raw source text (line/file metrics) | defined inline in `textLevelInspections` | — |
 
-> Custom rules are defined in the "Custom Variable" column. For abstract rules, `$abstractRules` combines the defaults from ``CodeInspector`AbstractRules`$DefaultAbstractRules`` with custom rules.
+> Custom AST rules are defined in the "Custom Variable" column. For abstract rules, `$abstractRules` combines the defaults from ``CodeInspector`AbstractRules`$DefaultAbstractRules`` with custom rules. Text-level inspections are defined separately (see [Text-Level Inspections](#text-level-inspections)).
 
 ## Rule Structure
 
@@ -199,6 +200,42 @@ walkASTForCatch[ ast_, pos_ ] :=
     Extract[ ast, pos ];  (* Continue walking *)
 ```
 
+## Text-Level Inspections
+
+Text-level inspections run on the raw source string rather than the parsed AST. They are useful for checks that relate to the physical layout of code — line length, file size, etc. — rather than its syntactic structure.
+
+### Architecture
+
+The entry point is `textLevelInspections` in `Rules.wl`. It takes a code string, splits it into lines, and delegates to sub-inspectors:
+
+```wl
+textLevelInspections[ code_String ] :=
+    Module[ { lines },
+        lines = StringSplit[ code, "\n", All ];
+        Flatten @ {
+            inspectLineLengths @ lines,
+            inspectFileLength @ lines
+        }
+    ];
+```
+
+Results are filtered by `filterTextInspections` in `Inspection.wl`, which applies the same tag, severity, and confidence filters used for AST inspections.
+
+### Configuration
+
+Two package-scoped variables in `Rules.wl` control the thresholds:
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `$maxLineLength` | 200 | Maximum recommended characters per line |
+| `$maxFileLines` | 10,000 | Maximum recommended lines per file |
+
+### Handler Format
+
+Unlike AST handlers (which receive `pos` and `ast`), text-level handlers receive the list of lines and return `InspectionObject[...]` or `{}`.
+
+Line-level handlers typically use `MapIndexed` to iterate over lines and construct source positions manually:
+
 ## Severity Levels
 
 Choose an appropriate severity for the issue:
@@ -237,7 +274,7 @@ $$myPattern = HoldPattern @ Alternatives[ ... ];
 
 ### 2. Add the Rule
 
-Add your rule to the appropriate rules association:
+**For AST-based rules**, add your rule to the appropriate rules association:
 
 ```wl
 (* In $customAbstractRules for abstract rules *)
@@ -246,6 +283,20 @@ $customAbstractRules := $customAbstractRules = <|
     (* existing rules... *)
     myPattern -> inspectMyRule  (* Add your rule *)
 |>;
+```
+
+**For text-level rules**, add a call to your sub-inspector inside `textLevelInspections`:
+
+```wl
+textLevelInspections[ code_String ] :=
+    Module[ { lines },
+        lines = StringSplit[ code, "\n", All ];
+        Flatten @ {
+            inspectLineLengths @ lines,
+            inspectFileLength @ lines,
+            inspectMyTextRule @ lines  (* Add your sub-inspector *)
+        }
+    ];
 ```
 
 ### 3. Write the Handler Function
