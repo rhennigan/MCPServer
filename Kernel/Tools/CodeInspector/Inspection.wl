@@ -36,14 +36,27 @@ codeInspect[ code: _String | File[ _String ], opts_Association ] := Enclose[
 
         tagExclusions = StringSplit[ #, "::" ] & /@ tagExclusions;
 
-        ci`CodeInspect[
-            code,
-            "AbstractRules"      -> abstractRules,
-            "ConcreteRules"      -> concreteRules,
-            "AggregateRules"     -> aggregateRules,
-            "TagExclusions"      -> tagExclusions,
-            "SeverityExclusions" -> severityExclusions,
-            "ConfidenceLevel"    -> confidenceLevel
+        Module[ { astInspections, codeString, textInspections },
+            astInspections = ci`CodeInspect[
+                code,
+                "AbstractRules"      -> abstractRules,
+                "ConcreteRules"      -> concreteRules,
+                "AggregateRules"     -> aggregateRules,
+                "TagExclusions"      -> tagExclusions,
+                "SeverityExclusions" -> severityExclusions,
+                "ConfidenceLevel"    -> confidenceLevel
+            ];
+            codeString = Replace[ code, File[ path_String ] :> ReadString @ path ];
+            textInspections = If[ StringQ @ codeString,
+                filterTextInspections[
+                    textLevelInspections @ codeString,
+                    tagExclusions,
+                    severityExclusions,
+                    confidenceLevel
+                ],
+                { }
+            ];
+            Join[ astInspections, textInspections ]
         ]
     ],
     throwInternalFailure
@@ -121,6 +134,40 @@ inspectSingleFile[ file_String, opts_Association ] :=
     ];
 
 inspectSingleFile // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Text-Level Inspection Filtering*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*filterTextInspections*)
+filterTextInspections // beginDefinition;
+
+filterTextInspections[ inspections_List, tagExclusions_List, severityExclusions_List, confidenceLevel_Real ] :=
+    Select[ inspections, passesFilters[ #, tagExclusions, severityExclusions, confidenceLevel ] & ];
+
+filterTextInspections // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*passesFilters*)
+passesFilters // beginDefinition;
+
+passesFilters[
+    ci`InspectionObject[ tag_String, _, severity_String, as_Association ],
+    tagExclusions_,
+    severityExclusions_,
+    confidenceLevel_
+] := And[
+    ! MemberQ[ severityExclusions, severity ],
+    ! MemberQ[ tagExclusions, { tag, ___ } ],
+    Lookup[ as, ConfidenceLevel, 1.0 ] >= confidenceLevel
+];
+
+passesFilters[ ___, ___ ] := False;
+
+passesFilters // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

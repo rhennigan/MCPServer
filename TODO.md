@@ -37,6 +37,39 @@ Consolidated list of TODO/FIXME items from the codebase.
 
 ### Tool Improvements
 
+- [ ] Support file inputs in the evaluator tool
+  - Could use the existing "code" parameter or add a new "file" parameter (only one can be used at a time)
+    - If using the "code" parameter, disambiguate between a file path and a code string by using the syntax `"file://path/to/file.wl"`
+    - If using the "file" parameter, it should just be something like `"path/to/file.wl"`
+  - Should effectively just call `Get["path/to/file.wl"]` in the evaluator tool
+  - Update tool description to suggest this for large code inputs
+  - Could also allow other URI schemes, such as `"http://..."`, `"https://..."`, `"ftp://..."`, etc.
+
+- [ ] Support for `ResourceFunction["..."]` in the SymbolDefinition tool
+  - May want a special compact syntax to represent these, e.g. `rf:NameOfFunction`
+  - These can be cleanly generated from the original source code in the definition notebook:
+    ```wl
+    nb = Import[ ResourceFunction[ "BettiNumbers", "DefinitionNotebookObject" ], "NB" ];
+    definitionCells = DeleteCases[ DefinitionNotebookClient`ScrapeSection[ nb, "Function" ], CellLabel -> _, Infinity ];
+    ResourceFunction[ "ExportMarkdownString" ][ Notebook @ definitionCells ]
+    ```
+
+- [ ] Bug: Messages are not included in SymbolDefinition tool output
+  ```wl
+  In[1]:= MyFunction::test = "Test message, please ignore";
+  In[2]:= MyFunction[x_] := x + 1;
+  In[3]:= $DefaultMCPTools["SymbolDefinition"][<|"symbols" -> "MyFunction"|>]
+
+  Out[3]= "# MyFunction
+
+  ## Definition
+
+  ```wl
+  MyFunction[ x_ ] := x + 1
+  ```"
+  ```
+  Use `Messages[MyFunction]` to get the list of messages
+
 - [ ] Log tool calls (and generate a notebook)
   - Source: `Kernel/Tools/Tools.wl`
 - [ ] Add optional "description" parameter to evaluator tool (maybe all tools?)

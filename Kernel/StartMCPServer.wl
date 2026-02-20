@@ -642,10 +642,10 @@ initResponse[ name_String, version_String, tools0: { ___LLMTool }, prompts_ ] :=
             "protocolVersion" -> $protocolVersion,
             "instructions"    -> instructions,
             "capabilities" -> <|
-                "logging"   -> <| |>, (* TODO: support logging *)
-                "prompts"   -> <| |>, (* TODO: support prompts *)
-                "resources" -> <| |>, (* TODO: support resources *)
-                "tools"     -> tools
+                (* TODO: support logging *)
+                "prompts" -> <| |>,
+                (* TODO: support resources *)
+                "tools" -> tools
             |>,
             "serverInfo" -> <| "name" -> name, "version" -> version |>
         |>
