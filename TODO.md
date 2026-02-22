@@ -10,7 +10,9 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/InstallMCPServer.wl`
 - [ ] Implement `guessClientNameFromJSON` to guess client name based on JSON structure
   - Source: `Kernel/InstallMCPServer.wl`
-- [ ] Fix `UninstallMCPServer[All, obj]`: `mcpServerInstallations` now returns a list of associations
+- [x] Fix `UninstallMCPServer[All, obj]`: `mcpServerInstallations` now returns a list of associations
+  - Source: `Kernel/InstallMCPServer.wl`
+- [ ] Determine if `UninstallMCPServer[target_File, obj]` should use `guessClientName` instead of checking `.toml` extension
   - Source: `Kernel/InstallMCPServer.wl`
 - [ ] Fix ambiguity in `UninstallMCPServer[targets_List, obj]`: a list could also refer to a project-level installation
   - Source: `Kernel/InstallMCPServer.wl`

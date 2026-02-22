@@ -827,9 +827,24 @@ UninstallMCPServer[ target: _File | All, All ] :=
 UninstallMCPServer[ target: _File | All, servers_List ] :=
     catchMine @ DeleteMissing @ Flatten[ catchAlways @ UninstallMCPServer[ target, # ] & /@ servers ];
 
-(* FIXME: mcpServerInstallations now returns a list of associations *)
-UninstallMCPServer[ All, obj_MCPServerObject ] :=
-    catchMine @ UninstallMCPServer[ mcpServerInstallations @ obj, obj ];
+UninstallMCPServer[ All, obj0: _MCPServerObject|_String ] := catchMine @ Enclose[
+    Module[ { obj, installations },
+        obj = ensureMCPServerExists @ MCPServerObject @ obj0;
+        installations = ConfirmMatch[ mcpServerInstallations @ obj, { ___Association }, "Installations" ];
+
+        ConfirmMatch[
+            DeleteMissing[ catchAlways @ UninstallMCPServer[ #, obj ] & /@ installations ],
+            { ___Success },
+            "Results"
+        ]
+    ],
+    throwInternalFailure
+];
+
+UninstallMCPServer[ KeyValuePattern @ { "ClientName" -> name_, "ConfigurationFile" -> file_ }, obj_ ] :=
+    catchMine @ Block[ { $installClientName = toInstallName @ name },
+        UninstallMCPServer[ file, obj ]
+    ];
 
 UninstallMCPServer[ { name_String, dir_ }, obj_ ] :=
     catchMine @ Block[ { $installClientName = toInstallName @ name },
@@ -842,6 +857,7 @@ UninstallMCPServer[ targets_List, obj_MCPServerObject ] :=
 
 UninstallMCPServer[ target_File, obj_ ] :=
     catchMine @ Block[
+        (* FIXME: Shouldn't this use guessClientName instead? *)
         (* Auto-detect TOML format from file extension *)
         { $installClientName = If[ StringEndsQ[ First @ target, ".toml", IgnoreCase -> True ], "Codex", $installClientName ] },
         uninstallMCPServer[ target, ensureMCPServerExists @ MCPServerObject @ obj ]
@@ -1011,6 +1027,7 @@ projectInstallLocation // endDefinition;
 (*toInstallName*)
 toInstallName // beginDefinition;
 toInstallName[ name_String ] := Lookup[ $aliasToCanonicalName, name, name ];
+toInstallName[ None ] := None;
 toInstallName // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
