@@ -9,7 +9,7 @@ Needs[ "Wolfram`MCPServer`Common`" ];
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Config*)
-$installName = None; (* TODO: this should probably be called $installClientName *)
+$installClientName = None;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -193,7 +193,7 @@ InstallMCPServer[ target_, Automatic, opts: OptionsPattern[ ] ] :=
 InstallMCPServer[ target_File, server_, opts: OptionsPattern[ ] ] :=
     catchMine @ Block[
         (* Auto-detect TOML format from file extension *)
-        { $installName = If[ StringEndsQ[ First @ target, ".toml", IgnoreCase -> True ], "Codex", $installName ] },
+        { $installClientName = If[ StringEndsQ[ First @ target, ".toml", IgnoreCase -> True ], "Codex", $installClientName ] },
         installMCPServer[
             target,
             ensureMCPServerExists @ MCPServerObject @ server,
@@ -204,13 +204,13 @@ InstallMCPServer[ target_File, server_, opts: OptionsPattern[ ] ] :=
     ];
 
 InstallMCPServer[ name_String, server_, opts: OptionsPattern[ ] ] :=
-    catchMine @ Block[ { $installName = toInstallName @ name },
+    catchMine @ Block[ { $installClientName = toInstallName @ name },
         InstallMCPServer[ installLocation @ name, server, opts ]
     ];
 
 InstallMCPServer[ { name_String, dir_ }, server_, opts: OptionsPattern[ ] ] :=
-    catchMine @ Block[ { $installName = toInstallName @ name },
-        InstallMCPServer[ projectInstallLocation[ $installName, dir ], server, opts ]
+    catchMine @ Block[ { $installClientName = toInstallName @ name },
+        InstallMCPServer[ projectInstallLocation[ $installClientName, dir ], server, opts ]
     ];
 
 InstallMCPServer // endExportedDefinition;
@@ -223,7 +223,7 @@ installMCPServer // beginDefinition;
 installMCPServer[ target_, obj_, Automatic|Inherited, verifyLLMKit_, devMode_ ] :=
     installMCPServer[ target, obj, defaultEnvironment[ ], verifyLLMKit, devMode ];
 
-installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_, devMode_ ] /; $installName === "Codex" := Enclose[
+installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_, devMode_ ] /; $installClientName === "Codex" := Enclose[
     Module[ { target, name, json, data, server, existing, updated },
 
         If[ verifyLLMKit, ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ] ];
@@ -273,7 +273,7 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
         ];
         existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
 
-        Switch[ $installName,
+        Switch[ $installClientName,
             "VisualStudioCode",
             existing[ "mcp", "servers", name ] = server,
             "OpenCode",
@@ -393,7 +393,7 @@ $llmKitSubscribeLink := Hyperlink[ "here", $llmKitSubscribeURL ];
 recordMCPInstallation // beginDefinition;
 
 recordMCPInstallation[ target_? fileQ, obj_MCPServerObject ] :=
-    recordMCPInstallation[ { $installName, target }, obj ];
+    recordMCPInstallation[ { $installClientName, target }, obj ];
 
 recordMCPInstallation[ { name: _String|None, target_? fileQ }, obj_MCPServerObject ] := Enclose[
     Module[ { file, existing, installation, new, filtered },
@@ -415,7 +415,7 @@ recordMCPInstallation // endDefinition;
 clearRecordedInstallation // beginDefinition;
 
 clearRecordedInstallation[ target_? fileQ, obj_MCPServerObject ] :=
-    clearRecordedInstallation[ { $installName, target }, obj ];
+    clearRecordedInstallation[ { $installClientName, target }, obj ];
 
 clearRecordedInstallation[ { name: _String|None, target_? fileQ }, obj_MCPServerObject ] := Enclose[
     Module[ { file, existing, installation, new },
@@ -731,7 +731,7 @@ $overrideEnvironment := <|
 installSuccess // beginDefinition;
 
 installSuccess[ serverName_, installLocation_, obj_ ] :=
-    installSuccess[ serverName, installLocation, obj, installDisplayName @ $installName ];
+    installSuccess[ serverName, installLocation, obj, installDisplayName @ $installClientName ];
 
 installSuccess[ serverName_String, installLocation_File? fileQ, obj_MCPServerObject, installName_String ] :=
     Success[
@@ -767,7 +767,7 @@ readExistingMCPConfig[ file_ ] := Enclose[
     Catch @ Module[ { data },
 
         If[ ! FileExistsQ @ file,
-            Switch[ $installName,
+            Switch[ $installClientName,
                 "VisualStudioCode",
                 Throw @ <| "mcp" -> <| "servers" -> <| |> |> |>,
                 "OpenCode",
@@ -782,7 +782,7 @@ readExistingMCPConfig[ file_ ] := Enclose[
         data = readRawJSONFile @ ExpandFileName @ file;
         If[ ! AssociationQ @ data, throwFailure[ "InvalidMCPConfiguration", file ] ];
 
-        Switch[ $installName,
+        Switch[ $installClientName,
             (* Handle VS Code format *)
             "VisualStudioCode",
             If[ ! AssociationQ @ data[ "mcp" ], data[ "mcp" ] = <| "servers" -> <| |> |> ];
@@ -831,8 +831,8 @@ UninstallMCPServer[ All, obj_MCPServerObject ] :=
     catchMine @ UninstallMCPServer[ mcpServerInstallations @ obj, obj ];
 
 UninstallMCPServer[ { name_String, dir_ }, obj_ ] :=
-    catchMine @ Block[ { $installName = toInstallName @ name },
-        UninstallMCPServer[ projectInstallLocation[ $installName, dir ], obj ]
+    catchMine @ Block[ { $installClientName = toInstallName @ name },
+        UninstallMCPServer[ projectInstallLocation[ $installClientName, dir ], obj ]
     ];
 
 UninstallMCPServer[ targets_List, obj_MCPServerObject ] :=
@@ -841,12 +841,12 @@ UninstallMCPServer[ targets_List, obj_MCPServerObject ] :=
 UninstallMCPServer[ target_File, obj_ ] :=
     catchMine @ Block[
         (* Auto-detect TOML format from file extension *)
-        { $installName = If[ StringEndsQ[ First @ target, ".toml", IgnoreCase -> True ], "Codex", $installName ] },
+        { $installClientName = If[ StringEndsQ[ First @ target, ".toml", IgnoreCase -> True ], "Codex", $installClientName ] },
         uninstallMCPServer[ target, ensureMCPServerExists @ MCPServerObject @ obj ]
     ];
 
 UninstallMCPServer[ name_String, obj_ ] :=
-    catchMine @ Block[ { $installName = toInstallName @ name },
+    catchMine @ Block[ { $installClientName = toInstallName @ name },
         UninstallMCPServer[ installLocation @ name, obj ]
     ];
 
@@ -864,7 +864,7 @@ allMCPServers // endDefinition;
 (*uninstallMCPServer*)
 uninstallMCPServer // beginDefinition;
 
-uninstallMCPServer[ target0_File, obj_MCPServerObject ] /; $installName === "Codex" := Enclose[
+uninstallMCPServer[ target0_File, obj_MCPServerObject ] /; $installClientName === "Codex" := Enclose[
     Catch @ Module[ { target, name, existing, mcpServers, updated },
 
         target = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
@@ -901,7 +901,7 @@ uninstallMCPServer[ target0_File, obj_MCPServerObject ] := Enclose[
         name = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
         existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
 
-        Switch[ $installName,
+        Switch[ $installClientName,
             (* Handle VS Code format *)
             "VisualStudioCode",
             If[ ! AssociationQ @ existing[ "mcp", "servers" ], Throw @ Missing[ "NotInstalled", target ] ];
@@ -942,7 +942,7 @@ uninstallMCPServer // endDefinition;
 uninstallSuccess // beginDefinition;
 
 uninstallSuccess[ serverName_, installLocation_, obj_ ] :=
-    uninstallSuccess[ serverName, installLocation, obj, installDisplayName @ $installName ];
+    uninstallSuccess[ serverName, installLocation, obj, installDisplayName @ $installClientName ];
 
 uninstallSuccess[ serverName_String, installLocation_File? fileQ, obj_MCPServerObject, installName_String ] :=
     Success[

@@ -4,7 +4,7 @@ Consolidated list of TODO/FIXME items from the codebase.
 
 ## Installation
 
-- [ ] Rename `$installName` to `$installClientName`
+- [x] Rename `$installName` to `$installClientName`
   - Source: `Kernel/InstallMCPServer.wl`
 - [ ] Use `"ConfigKey"` property in `$supportedMCPClients` to determine config structure in `installMCPServer`, `readExistingMCPConfig`, and `uninstallMCPServer`
   - Source: `Kernel/InstallMCPServer.wl`

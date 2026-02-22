@@ -951,7 +951,7 @@ VerificationTest[
 (*Cline Install and Uninstall*)
 VerificationTest[
     clineConfigFile = testConfigFile[];
-    Block[ { Wolfram`MCPServer`InstallMCPServer`Private`$installName = "Cline" },
+    Block[ { Wolfram`MCPServer`InstallMCPServer`Private`$installClientName = "Cline" },
         installResult = InstallMCPServer[ clineConfigFile, "WolframLanguage", "VerifyLLMKit" -> False ]
     ],
     _Success,
@@ -989,7 +989,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`InstallMCPServer`Private`$installName = "Cline" },
+    Block[ { Wolfram`MCPServer`InstallMCPServer`Private`$installClientName = "Cline" },
         uninstallResult = UninstallMCPServer[ clineConfigFile, "WolframLanguage" ]
     ],
     _Success,
@@ -1130,7 +1130,7 @@ VerificationTest[
 (*Zed Install and Uninstall*)
 VerificationTest[
     zedConfigFile = testConfigFile[];
-    Block[ { Wolfram`MCPServer`InstallMCPServer`Private`$installName = "Zed" },
+    Block[ { Wolfram`MCPServer`InstallMCPServer`Private`$installClientName = "Zed" },
         installResult = InstallMCPServer[ zedConfigFile, "WolframLanguage", "VerifyLLMKit" -> False ]
     ],
     _Success,
@@ -1167,7 +1167,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`InstallMCPServer`Private`$installName = "Zed" },
+    Block[ { Wolfram`MCPServer`InstallMCPServer`Private`$installClientName = "Zed" },
         uninstallResult = UninstallMCPServer[ zedConfigFile, "WolframLanguage" ]
     ],
     _Success,
@@ -1198,7 +1198,7 @@ VerificationTest[
 VerificationTest[
     zedConfigFile = testConfigFile[];
     Export[ zedConfigFile, <| "theme" -> "One Dark", "context_servers" -> <| |> |>, "JSON" ];
-    Block[ { Wolfram`MCPServer`InstallMCPServer`Private`$installName = "Zed" },
+    Block[ { Wolfram`MCPServer`InstallMCPServer`Private`$installClientName = "Zed" },
         installResult = InstallMCPServer[ zedConfigFile, "WolframLanguage", "VerifyLLMKit" -> False ]
     ],
     _Success,
