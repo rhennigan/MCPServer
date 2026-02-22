@@ -16,6 +16,8 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/InstallMCPServer.wl`
 - [ ] Fix ambiguity in `UninstallMCPServer[targets_List, obj]`: a list could also refer to a project-level installation
   - Source: `Kernel/InstallMCPServer.wl`
+- [ ] `serverConverter` should be a property of the client rather than a hardcoded function
+  - Source: `Kernel/InstallMCPServer.wl`
 
 ## Server Features
 
