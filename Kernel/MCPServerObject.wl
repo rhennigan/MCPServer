@@ -30,6 +30,11 @@ $$metadata = KeyValuePattern @ {
     "Transport"     -> $$transport
 };
 
+$$installation = KeyValuePattern @ {
+    "ClientName"        -> _String? StringQ | None,
+    "ConfigurationFile" -> _? fileQ
+};
+
 $defaultMetadata := <|
     "LLMEvaluator"  -> Automatic,
     "Name"          -> CreateUUID[ ],
@@ -339,7 +344,7 @@ $specialProperties = {
 getInstallations // beginDefinition;
 
 getInstallations[ data_Association ] := Enclose[
-    ConfirmMatch[ mcpServerInstallations @ data, { ___? fileQ }, "Installations" ],
+    ConfirmMatch[ mcpServerInstallations @ data, { $$installation... }, "Installations" ],
     throwInternalFailure
 ];
 

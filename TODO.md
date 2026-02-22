@@ -2,6 +2,15 @@
 
 Consolidated list of TODO/FIXME items from the codebase.
 
+## Installation
+
+- [ ] Rename `$installName` to `$installClientName`
+  - Source: `Kernel/InstallMCPServer.wl`
+- [ ] Use `"ConfigKey"` property in `$supportedMCPClients` to determine config structure in `installMCPServer`, `readExistingMCPConfig`, and `uninstallMCPServer`
+  - Source: `Kernel/InstallMCPServer.wl`
+- [ ] Implement `guessClientNameFromJSON` to guess client name based on JSON structure
+  - Source: `Kernel/InstallMCPServer.wl`
+
 ## Server Features
 
 - [ ] Support "Remote" type for server deployment (deploy as cloud API)
