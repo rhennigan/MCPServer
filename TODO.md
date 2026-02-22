@@ -8,7 +8,7 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/InstallMCPServer.wl`
 - [x] Use `"ConfigKey"` property in `$supportedMCPClients` to determine config structure in `installMCPServer`, `readExistingMCPConfig`, and `uninstallMCPServer`
   - Source: `Kernel/InstallMCPServer.wl`
-- [ ] Implement `guessClientNameFromJSON` to guess client name based on JSON structure
+- [x] Implement `guessClientNameFromJSON` to guess client name based on JSON structure
   - Source: `Kernel/InstallMCPServer.wl`
 - [x] Fix `UninstallMCPServer[All, obj]`: `mcpServerInstallations` now returns a list of associations
   - Source: `Kernel/InstallMCPServer.wl`
@@ -17,6 +17,8 @@ Consolidated list of TODO/FIXME items from the codebase.
 - [ ] Fix ambiguity in `UninstallMCPServer[targets_List, obj]`: a list could also refer to a project-level installation
   - Source: `Kernel/InstallMCPServer.wl`
 - [ ] `serverConverter` should be a property of the client rather than a hardcoded function
+  - Source: `Kernel/InstallMCPServer.wl`
+- [ ] Add `"ApplicationName"` option to `InstallMCPServer` and `UninstallMCPServer` to let users specify `$installClientName` (default `Automatic` uses `guessClientName`)
   - Source: `Kernel/InstallMCPServer.wl`
 
 ## Server Features

@@ -33,6 +33,9 @@ InstallMCPServer[ target_, opts: OptionsPattern[ ] ] :=
 InstallMCPServer[ target_, Automatic, opts: OptionsPattern[ ] ] :=
     catchMine @ InstallMCPServer[ target, $defaultMCPServer, opts ];
 
+(* TODO: We should have an "ApplicationName" option that lets the user specify the value for `$installClientName`.
+   It should be `Automatic` by default, in which case we use `guessClientName` on the file.
+   We should likewise implement this for UninstallMCPServer. *)
 InstallMCPServer[ target_File, server_, opts: OptionsPattern[ ] ] :=
     catchMine @ Block[
         (* Auto-detect TOML format from file extension *)
@@ -369,9 +372,63 @@ guessClientName // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*guessClientNameFromJSON helpers*)
+anyServerEntryQ // beginDefinition;
+anyServerEntryQ[ servers_Association, test_ ] := AnyTrue[ Values @ servers, test ];
+anyServerEntryQ[ _, _ ] := False;
+anyServerEntryQ // endDefinition;
+
+hasOpenCodeTraits // beginDefinition;
+hasOpenCodeTraits[ entry_Association ] := KeyExistsQ[ entry, "type" ] && ListQ @ Lookup[ entry, "command" ];
+hasOpenCodeTraits[ _ ] := False;
+hasOpenCodeTraits // endDefinition;
+
+hasCopilotCLITraits // beginDefinition;
+hasCopilotCLITraits[ entry_Association ] := KeyExistsQ[ entry, "tools" ];
+hasCopilotCLITraits[ _ ] := False;
+hasCopilotCLITraits // endDefinition;
+
+hasClineTraits // beginDefinition;
+hasClineTraits[ entry_Association ] := KeyExistsQ[ entry, "disabled" ] && KeyExistsQ[ entry, "autoApprove" ];
+hasClineTraits[ _ ] := False;
+hasClineTraits // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*guessClientNameFromJSON*)
 guessClientNameFromJSON // beginDefinition;
-guessClientNameFromJSON[ _ ] := None; (* TODO: This should guess based on the JSON structure *)
+
+guessClientNameFromJSON[ file_ ] := Enclose[
+    Catch @ Module[ { json, mcp, mcpServers },
+
+        json = Quiet @ readRawJSONFile @ file;
+        If[ ! AssociationQ @ json, Throw @ None ];
+
+        (* Tier 1: unique top-level keys *)
+        If[ KeyExistsQ[ json, "context_servers" ], Throw[ "Zed" ] ];
+
+        If[ KeyExistsQ[ json, "mcp" ] && AssociationQ @ json[ "mcp" ],
+            mcp = json[ "mcp" ];
+            If[ KeyExistsQ[ mcp, "servers" ],
+                Throw[ "VisualStudioCode" ]
+            ];
+            If[ anyServerEntryQ[ mcp, hasOpenCodeTraits ],
+                Throw[ "OpenCode" ]
+            ];
+        ];
+
+        (* Tier 2: mcpServers clients, distinguished by server entry fields *)
+        If[ KeyExistsQ[ json, "mcpServers" ] && AssociationQ @ json[ "mcpServers" ],
+            mcpServers = json[ "mcpServers" ];
+            If[ anyServerEntryQ[ mcpServers, hasCopilotCLITraits ], Throw[ "CopilotCLI" ] ];
+            If[ anyServerEntryQ[ mcpServers, hasClineTraits ], Throw[ "Cline" ] ];
+        ];
+
+        None
+    ],
+    None &
+];
+
 guessClientNameFromJSON // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
