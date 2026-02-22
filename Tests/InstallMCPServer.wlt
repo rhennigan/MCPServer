@@ -1260,66 +1260,233 @@ VerificationTest[
             KeyExistsQ[ meta, "ConfigFormat" ] &&
             KeyExistsQ[ meta, "ProjectSupport" ] &&
             KeyExistsQ[ meta, "ConfigKey" ] &&
+            MatchQ[ meta[ "ConfigKey" ], { __String } ] &&
             KeyExistsQ[ meta, "URL" ]
         ]
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-AllHaveRequiredKeys@@Tests/InstallMCPServer.wlt:1253,1-1269,2"
+    TestID   -> "SupportedMCPClients-AllHaveRequiredKeys@@Tests/InstallMCPServer.wlt:1253,1-1270,2"
 ]
 
 VerificationTest[
     $SupportedMCPClients[ "ClaudeDesktop", "DisplayName" ],
     "Claude Desktop",
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-ClaudeDesktopDisplayName@@Tests/InstallMCPServer.wlt:1271,1-1276,2"
+    TestID   -> "SupportedMCPClients-ClaudeDesktopDisplayName@@Tests/InstallMCPServer.wlt:1272,1-1277,2"
 ]
 
 VerificationTest[
     $SupportedMCPClients[ "ClaudeDesktop", "Aliases" ],
     { "Claude" },
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-ClaudeDesktopAliases@@Tests/InstallMCPServer.wlt:1278,1-1283,2"
+    TestID   -> "SupportedMCPClients-ClaudeDesktopAliases@@Tests/InstallMCPServer.wlt:1279,1-1284,2"
 ]
 
 VerificationTest[
     $SupportedMCPClients[ "Codex", "ConfigFormat" ],
     "TOML",
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-CodexConfigFormat@@Tests/InstallMCPServer.wlt:1285,1-1290,2"
+    TestID   -> "SupportedMCPClients-CodexConfigFormat@@Tests/InstallMCPServer.wlt:1286,1-1291,2"
 ]
 
 VerificationTest[
     $SupportedMCPClients[ "ClaudeCode", "ProjectSupport" ],
     True,
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-ClaudeCodeProjectSupport@@Tests/InstallMCPServer.wlt:1292,1-1297,2"
+    TestID   -> "SupportedMCPClients-ClaudeCodeProjectSupport@@Tests/InstallMCPServer.wlt:1293,1-1298,2"
 ]
 
 VerificationTest[
     $SupportedMCPClients[ "Zed", "ConfigKey" ],
-    "context_servers",
+    { "context_servers" },
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-ZedConfigKey@@Tests/InstallMCPServer.wlt:1299,1-1304,2"
+    TestID   -> "SupportedMCPClients-ZedConfigKey@@Tests/InstallMCPServer.wlt:1300,1-1305,2"
 ]
 
 VerificationTest[
     $SupportedMCPClients[ "VisualStudioCode", "ConfigKey" ],
-    "mcp.servers",
+    { "mcp", "servers" },
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-VSCodeConfigKey@@Tests/InstallMCPServer.wlt:1306,1-1311,2"
+    TestID   -> "SupportedMCPClients-VSCodeConfigKey@@Tests/InstallMCPServer.wlt:1307,1-1312,2"
 ]
 
 VerificationTest[
     $SupportedMCPClients[ "OpenCode", "ConfigKey" ],
-    "mcp",
+    { "mcp" },
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-OpenCodeConfigKey@@Tests/InstallMCPServer.wlt:1313,1-1318,2"
+    TestID   -> "SupportedMCPClients-OpenCodeConfigKey@@Tests/InstallMCPServer.wlt:1314,1-1319,2"
 ]
 
 VerificationTest[
     AllTrue[ Values @ $SupportedMCPClients, StringQ[ #[ "URL" ] ] && StringStartsQ[ #[ "URL" ], "https://" ] & ],
     True,
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-AllHaveValidURLs@@Tests/InstallMCPServer.wlt:1320,1-1325,2"
+    TestID   -> "SupportedMCPClients-AllHaveValidURLs@@Tests/InstallMCPServer.wlt:1321,1-1326,2"
 ]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Helper Function Unit Tests*)
+
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*configKeyPath*)
+VerificationTest[
+    Block[ { Wolfram`MCPServer`InstallMCPServer`Private`$installClientName = "ClaudeDesktop" },
+        Wolfram`MCPServer`InstallMCPServer`Private`configKeyPath[ ]
+    ],
+    { "mcpServers" },
+    SameTest -> Equal,
+    TestID   -> "ConfigKeyPath-ClaudeDesktop@@Tests/InstallMCPServer.wlt:1338,1-1345,2"
+]
+
+VerificationTest[
+    Block[ { Wolfram`MCPServer`InstallMCPServer`Private`$installClientName = "VisualStudioCode" },
+        Wolfram`MCPServer`InstallMCPServer`Private`configKeyPath[ ]
+    ],
+    { "mcp", "servers" },
+    SameTest -> Equal,
+    TestID   -> "ConfigKeyPath-VSCode@@Tests/InstallMCPServer.wlt:1347,1-1354,2"
+]
+
+VerificationTest[
+    Block[ { Wolfram`MCPServer`InstallMCPServer`Private`$installClientName = "Zed" },
+        Wolfram`MCPServer`InstallMCPServer`Private`configKeyPath[ ]
+    ],
+    { "context_servers" },
+    SameTest -> Equal,
+    TestID   -> "ConfigKeyPath-Zed@@Tests/InstallMCPServer.wlt:1356,1-1363,2"
+]
+
+VerificationTest[
+    Block[ { Wolfram`MCPServer`InstallMCPServer`Private`$installClientName = "OpenCode" },
+        Wolfram`MCPServer`InstallMCPServer`Private`configKeyPath[ ]
+    ],
+    { "mcp" },
+    SameTest -> Equal,
+    TestID   -> "ConfigKeyPath-OpenCode@@Tests/InstallMCPServer.wlt:1365,1-1372,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`configKeyPath[ "UnknownClient" ],
+    { "mcpServers" },
+    SameTest -> Equal,
+    TestID   -> "ConfigKeyPath-UnknownFallback@@Tests/InstallMCPServer.wlt:1374,1-1379,2"
+]
+
+VerificationTest[
+    Block[ { Wolfram`MCPServer`InstallMCPServer`Private`$installClientName = None },
+        Wolfram`MCPServer`InstallMCPServer`Private`configKeyPath[ ]
+    ],
+    { "mcpServers" },
+    SameTest -> Equal,
+    TestID   -> "ConfigKeyPath-NoneFallback@@Tests/InstallMCPServer.wlt:1381,1-1388,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*emptyConfigForPath*)
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`emptyConfigForPath @ { "mcpServers" },
+    <| "mcpServers" -> <| |> |>,
+    SameTest -> Equal,
+    TestID   -> "EmptyConfigForPath-SingleKey@@Tests/InstallMCPServer.wlt:1393,1-1398,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`emptyConfigForPath @ { "mcp", "servers" },
+    <| "mcp" -> <| "servers" -> <| |> |> |>,
+    SameTest -> Equal,
+    TestID   -> "EmptyConfigForPath-NestedKeys@@Tests/InstallMCPServer.wlt:1400,1-1405,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`emptyConfigForPath @ { },
+    <| |>,
+    SameTest -> Equal,
+    TestID   -> "EmptyConfigForPath-EmptyPath@@Tests/InstallMCPServer.wlt:1407,1-1412,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*ensureNestedKey*)
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`ensureNestedKey[ <| "other" -> 1 |>, { "mcpServers" } ],
+    <| "other" -> 1, "mcpServers" -> <| |> |>,
+    SameTest -> Equal,
+    TestID   -> "EnsureNestedKey-AddMissing@@Tests/InstallMCPServer.wlt:1417,1-1422,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`ensureNestedKey[
+        <| "mcpServers" -> <| "existing" -> "data" |> |>,
+        { "mcpServers" }
+    ],
+    <| "mcpServers" -> <| "existing" -> "data" |> |>,
+    SameTest -> Equal,
+    TestID   -> "EnsureNestedKey-PreserveExisting@@Tests/InstallMCPServer.wlt:1424,1-1432,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`ensureNestedKey[
+        <| "theme" -> "dark" |>,
+        { "mcp", "servers" }
+    ],
+    <| "theme" -> "dark", "mcp" -> <| "servers" -> <| |> |> |>,
+    SameTest -> Equal,
+    TestID   -> "EnsureNestedKey-DeepNesting@@Tests/InstallMCPServer.wlt:1434,1-1442,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`ensureNestedKey[
+        <| "mcp" -> <| "existing" -> 1 |> |>,
+        { "mcp", "servers" }
+    ],
+    <| "mcp" -> <| "existing" -> 1, "servers" -> <| |> |> |>,
+    SameTest -> Equal,
+    TestID   -> "EnsureNestedKey-PartiallyExisting@@Tests/InstallMCPServer.wlt:1444,1-1452,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`ensureNestedKey[ "notAssoc", { "mcpServers" } ],
+    <| "mcpServers" -> <| |> |>,
+    SameTest -> Equal,
+    TestID   -> "EnsureNestedKey-NonAssocInput@@Tests/InstallMCPServer.wlt:1454,1-1459,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*serverConverter*)
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`serverConverter[ "OpenCode" ],
+    Wolfram`MCPServer`InstallMCPServer`Private`convertToOpenCodeFormat,
+    SameTest -> SameQ,
+    TestID   -> "ServerConverter-OpenCode@@Tests/InstallMCPServer.wlt:1464,1-1469,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`serverConverter[ "CopilotCLI" ],
+    Wolfram`MCPServer`InstallMCPServer`Private`convertToCopilotCLIFormat,
+    SameTest -> SameQ,
+    TestID   -> "ServerConverter-CopilotCLI@@Tests/InstallMCPServer.wlt:1471,1-1476,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`serverConverter[ "Cline" ],
+    Wolfram`MCPServer`InstallMCPServer`Private`convertToClineFormat,
+    SameTest -> SameQ,
+    TestID   -> "ServerConverter-Cline@@Tests/InstallMCPServer.wlt:1478,1-1483,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`serverConverter[ "ClaudeDesktop" ],
+    Identity,
+    SameTest -> SameQ,
+    TestID   -> "ServerConverter-Default@@Tests/InstallMCPServer.wlt:1485,1-1490,2"
+]
+
+(* :!CodeAnalysis::EndBlock:: *)
