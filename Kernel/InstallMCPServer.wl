@@ -395,7 +395,7 @@ recordMCPInstallation // beginDefinition;
 recordMCPInstallation[ target_? fileQ, obj_MCPServerObject ] :=
     recordMCPInstallation[ { $installName, target }, obj ];
 
-recordMCPInstallation[ { name_String, target_? fileQ }, obj_MCPServerObject ] := Enclose[
+recordMCPInstallation[ { name: _String|None, target_? fileQ }, obj_MCPServerObject ] := Enclose[
     Module[ { file, existing, installation, new, filtered },
         file = ConfirmBy[ mcpServerFile[ obj, "Installations.wxf" ], fileQ, "File" ];
         existing = mcpServerInstallations @ obj;
@@ -417,16 +417,22 @@ clearRecordedInstallation // beginDefinition;
 clearRecordedInstallation[ target_? fileQ, obj_MCPServerObject ] :=
     clearRecordedInstallation[ { $installName, target }, obj ];
 
-clearRecordedInstallation[ { name_String, target_? fileQ }, obj_MCPServerObject ] := Enclose[
+clearRecordedInstallation[ { name: _String|None, target_? fileQ }, obj_MCPServerObject ] := Enclose[
     Module[ { file, existing, installation, new },
         file = ConfirmBy[ mcpServerFile[ obj, "Installations.wxf" ], fileQ, "File" ];
         existing = mcpServerInstallations @ obj;
-        installation = { name, target };
-        new = DeleteCases[ If[ ListQ @ existing, existing, { } ], installation | target ];
+        installation = toMCPInstallationData @ { name, target };
+
+        new = DeleteCases[
+            If[ ListQ @ existing, existing, { } ],
+            installation | KeyValuePattern[ "ConfigurationFile" -> target ]
+        ];
+
         If[ new === { },
             Quiet @ DeleteFile @ file,
             ConfirmBy[ writeWXFFile[ file, new ], FileExistsQ, "Export" ]
         ];
+
         new
     ],
     throwInternalFailure
@@ -878,7 +884,7 @@ uninstallMCPServer[ target0_File, obj_MCPServerObject ] /; $installName === "Cod
 
         (* Write back *)
         ConfirmBy[ writeTOMLFile[ target, updated[ "Data" ], updated ], fileQ, "Export" ];
-        ConfirmMatch[ clearRecordedInstallation[ target, obj ], { ___? fileQ }, "Clear" ];
+        ConfirmMatch[ clearRecordedInstallation[ target, obj ], { ___Association }, "Clear" ];
 
         uninstallSuccess[ name, target, obj ]
     ],
@@ -921,7 +927,7 @@ uninstallMCPServer[ target0_File, obj_MCPServerObject ] := Enclose[
         ConfirmBy[ writeRawJSONFile[ target, existing ], FileExistsQ, "Export" ];
 
         ConfirmAssert[ readRawJSONFile @ target === existing, "ExportCheck" ];
-        ConfirmMatch[ clearRecordedInstallation[ target, obj ], { ___? fileQ }, "Clear" ];
+        ConfirmMatch[ clearRecordedInstallation[ target, obj ], { ___Association }, "Clear" ];
 
         uninstallSuccess[ name, target, obj ]
     ],
@@ -967,11 +973,13 @@ uninstallSuccess // endDefinition;
 (*installLocation*)
 installLocation // beginDefinition;
 
-installLocation[ name0_String ] := Enclose[
+installLocation[ name_String ] := installLocation[ name, $OperatingSystem ];
+
+installLocation[ name0_String, os0_String ] := Enclose[
     Module[ { name, os, clientData, locationSpec, path },
 
         name = ConfirmBy[ toInstallName @ name0, StringQ, "Name" ];
-        os = ConfirmBy[ $OperatingSystem, StringQ, "OperatingSystem" ];
+        os = ConfirmBy[ os0, StringQ, "OperatingSystem" ];
 
         clientData = ConfirmMatch[ Lookup[ $SupportedMCPClients, name, None ], _Association|None, "ClientData" ];
         If[ clientData === None, throwFailure[ "UnsupportedMCPClient", name ] ];
