@@ -701,10 +701,6 @@ UninstallMCPServer[ { name_String, dir_ }, obj_, opts: OptionsPattern[ ] ] :=
         UninstallMCPServer[ projectInstallLocation[ $installClientName, dir ], obj, opts ]
     ];
 
-(* FIXME: This is ambiguous, because a list could also refer to a project-level installation *)
-UninstallMCPServer[ targets_List, obj_MCPServerObject, opts: OptionsPattern[ ] ] :=
-    catchMine @ DeleteMissing[ catchAlways @ UninstallMCPServer[ #, obj, opts ] & /@ targets ];
-
 UninstallMCPServer[ target_File? fileQ, obj_, opts: OptionsPattern[ ] ] :=
     catchMine @ Block[
         { $installClientName = validateInstallClientName[ OptionValue[ "ApplicationName" ], target ] },

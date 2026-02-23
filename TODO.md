@@ -14,8 +14,9 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/InstallMCPServer.wl`
 - [x] Determine if `UninstallMCPServer[target_File, obj]` should use `guessClientName` instead of checking `.toml` extension
   - Source: `Kernel/InstallMCPServer.wl`
-- [ ] Fix ambiguity in `UninstallMCPServer[targets_List, obj]`: a list could also refer to a project-level installation
+- [x] Fix ambiguity in `UninstallMCPServer[targets_List, obj]`: a list could also refer to a project-level installation
   - Source: `Kernel/InstallMCPServer.wl`
+  - Removed. It was never documented, so it's not a breaking change.
 - [x] `serverConverter` should be a property of the client rather than a hardcoded function
   - Source: `Kernel/InstallMCPServer.wl`
 - [x] Add `"ApplicationName"` option to `InstallMCPServer` and `UninstallMCPServer` to let users specify `$installClientName` (default `Automatic` uses `guessClientName`)
