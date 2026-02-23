@@ -487,67 +487,6 @@ makeDevelopmentArgs // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
-(*convertToOpenCodeFormat*)
-convertToOpenCodeFormat // beginDefinition;
-
-convertToOpenCodeFormat[ server_Association ] := Enclose[
-    Module[ { command, args, env, result },
-        command = ConfirmMatch[ Lookup[ server, "command", Missing[ ] ], _String | _Missing, "Command" ];
-        args = Lookup[ server, "args", { } ];
-        env = Lookup[ server, "env", <| |> ];
-
-        result = <|
-            "type" -> "local",
-            "command" -> If[ command === Missing[ ], { }, Prepend[ args, command ] ],
-            "enabled" -> True
-        |>;
-
-        If[ AssociationQ @ env && Length @ env > 0,
-            result[ "environment" ] = env
-        ];
-
-        result
-    ],
-    throwInternalFailure
-];
-
-convertToOpenCodeFormat // endDefinition;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*convertToCopilotCLIFormat*)
-convertToCopilotCLIFormat // beginDefinition;
-
-convertToCopilotCLIFormat[ server_Association ] := Enclose[
-    Module[ { result },
-        result = ConfirmBy[ server, AssociationQ, "Server" ];
-        result[ "tools" ] = { "*" };
-        result
-    ],
-    throwInternalFailure
-];
-
-convertToCopilotCLIFormat // endDefinition;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*convertToClineFormat*)
-convertToClineFormat // beginDefinition;
-
-convertToClineFormat[ server_Association ] := Enclose[
-    Module[ { result },
-        result = ConfirmBy[ server, AssociationQ, "Server" ];
-        result[ "disabled" ] = False;
-        result[ "autoApprove" ] = { };
-        result
-    ],
-    throwInternalFailure
-];
-
-convertToClineFormat // endDefinition;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
 (*convertToCodexFormat*)
 convertToCodexFormat // beginDefinition;
 
@@ -688,12 +627,9 @@ ensureNestedKey // endDefinition;
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*serverConverter*)
-(* TODO: This should be a property of the client *)
 serverConverter // beginDefinition;
-serverConverter[ "OpenCode"   ] := convertToOpenCodeFormat;
-serverConverter[ "CopilotCLI" ] := convertToCopilotCLIFormat;
-serverConverter[ "Cline"      ] := convertToClineFormat;
-serverConverter[ _            ] := Identity;
+serverConverter[ name_String ] := Replace[ $supportedMCPClients[ name, "ServerConverter" ], _Missing -> Identity ];
+serverConverter[ _ ] := Identity;
 serverConverter // endDefinition;
 
 (* ::**************************************************************************************************************:: *)

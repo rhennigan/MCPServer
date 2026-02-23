@@ -796,7 +796,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*convertToCopilotCLIFormat*)
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`convertToCopilotCLIFormat @ <|
+    Wolfram`MCPServer`SupportedClients`Private`convertToCopilotCLIFormat @ <|
         "command" -> "wolfram",
         "args" -> { "-run", "test" },
         "env" -> <| "KEY" -> "value" |>
@@ -812,7 +812,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`convertToCopilotCLIFormat @ <|
+    Wolfram`MCPServer`SupportedClients`Private`convertToCopilotCLIFormat @ <|
         "command" -> "wolfram"
     |>,
     <| "command" -> "wolfram", "tools" -> { "*" } |>,
@@ -921,7 +921,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*convertToClineFormat*)
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`convertToClineFormat @ <|
+    Wolfram`MCPServer`SupportedClients`Private`convertToClineFormat @ <|
         "command" -> "wolfram",
         "args" -> { "-run", "test" },
         "env" -> <| "KEY" -> "value" |>
@@ -938,7 +938,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`convertToClineFormat @ <|
+    Wolfram`MCPServer`SupportedClients`Private`convertToClineFormat @ <|
         "command" -> "wolfram"
     |>,
     <| "command" -> "wolfram", "disabled" -> False, "autoApprove" -> { } |>,
@@ -1564,21 +1564,21 @@ VerificationTest[
 (*serverConverter*)
 VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`serverConverter[ "OpenCode" ],
-    Wolfram`MCPServer`InstallMCPServer`Private`convertToOpenCodeFormat,
+    Wolfram`MCPServer`SupportedClients`Private`convertToOpenCodeFormat,
     SameTest -> SameQ,
     TestID   -> "ServerConverter-OpenCode@@Tests/InstallMCPServer.wlt:1565,1-1570,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`serverConverter[ "CopilotCLI" ],
-    Wolfram`MCPServer`InstallMCPServer`Private`convertToCopilotCLIFormat,
+    Wolfram`MCPServer`SupportedClients`Private`convertToCopilotCLIFormat,
     SameTest -> SameQ,
     TestID   -> "ServerConverter-CopilotCLI@@Tests/InstallMCPServer.wlt:1572,1-1577,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`serverConverter[ "Cline" ],
-    Wolfram`MCPServer`InstallMCPServer`Private`convertToClineFormat,
+    Wolfram`MCPServer`SupportedClients`Private`convertToClineFormat,
     SameTest -> SameQ,
     TestID   -> "ServerConverter-Cline@@Tests/InstallMCPServer.wlt:1579,1-1584,2"
 ]

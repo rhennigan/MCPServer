@@ -76,6 +76,7 @@ $supportedMCPClients = <|
         "Aliases"         -> { "Copilot" },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "mcpServers" },
+        "ServerConverter" -> convertToCopilotCLIFormat,
         "URL"             -> "https://github.com/features/copilot/cli",
         "InstallLocation" :> { $HomeDirectory, ".copilot", "mcp-config.json" }
     |>,
@@ -84,6 +85,7 @@ $supportedMCPClients = <|
         "Aliases"         -> { },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "mcp" },
+        "ServerConverter" -> convertToOpenCodeFormat,
         "URL"             -> "https://opencode.ai",
         "ProjectPath"     -> { "opencode.json" },
         "InstallLocation" :> { $HomeDirectory, ".config", "opencode", "opencode.json" }
@@ -114,6 +116,7 @@ $supportedMCPClients = <|
         "Aliases"         -> { },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "mcpServers" },
+        "ServerConverter" -> convertToClineFormat,
         "URL"             -> "https://cline.bot",
         "InstallLocation" -> <|
             "MacOSX"  :> { $HomeDirectory, "Library", "Application Support", "Code", "User", "globalStorage",
@@ -145,10 +148,16 @@ $supportedMCPClients = <|
 clientMetadata // beginDefinition;
 
 clientMetadata[ name_String ] := Enclose[
-    Module[ { data, projectSupport },
+    Module[ { data, projectSupport, converter },
         data = ConfirmBy[ $supportedMCPClients @ name, AssociationQ, "Data" ];
         projectSupport = MatchQ[ data[ "ProjectPath" ], { __String } ];
-        KeySort @ <| data, "Name" -> name, "ProjectSupport" -> projectSupport |>
+        converter = Lookup[ data, "ServerConverter", Identity ];
+        KeySort @ <|
+            data,
+            "Name"            -> name,
+            "ProjectSupport"  -> projectSupport,
+            "ServerConverter" -> converter
+        |>
     ],
     throwInternalFailure
 ];
@@ -162,6 +171,71 @@ $aliasToCanonicalName := $aliasToCanonicalName = Association @ Flatten @ KeyValu
     Function[ { name, meta }, Thread[ meta[ "Aliases" ] -> name ] ],
     $supportedMCPClients
 ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Converter Functions*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*convertToOpenCodeFormat*)
+convertToOpenCodeFormat // beginDefinition;
+
+convertToOpenCodeFormat[ server_Association ] := Enclose[
+    Module[ { command, args, env, result },
+        command = ConfirmMatch[ Lookup[ server, "command", Missing[ ] ], _String | _Missing, "Command" ];
+        args = Lookup[ server, "args", { } ];
+        env = Lookup[ server, "env", <| |> ];
+
+        result = <|
+            "type" -> "local",
+            "command" -> If[ command === Missing[ ], { }, Prepend[ args, command ] ],
+            "enabled" -> True
+        |>;
+
+        If[ AssociationQ @ env && Length @ env > 0,
+            result[ "environment" ] = env
+        ];
+
+        result
+    ],
+    throwInternalFailure
+];
+
+convertToOpenCodeFormat // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*convertToCopilotCLIFormat*)
+convertToCopilotCLIFormat // beginDefinition;
+
+convertToCopilotCLIFormat[ server_Association ] := Enclose[
+    Module[ { result },
+        result = ConfirmBy[ server, AssociationQ, "Server" ];
+        result[ "tools" ] = { "*" };
+        result
+    ],
+    throwInternalFailure
+];
+
+convertToCopilotCLIFormat // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*convertToClineFormat*)
+convertToClineFormat // beginDefinition;
+
+convertToClineFormat[ server_Association ] := Enclose[
+    Module[ { result },
+        result = ConfirmBy[ server, AssociationQ, "Server" ];
+        result[ "disabled" ] = False;
+        result[ "autoApprove" ] = { };
+        result
+    ],
+    throwInternalFailure
+];
+
+convertToClineFormat // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
