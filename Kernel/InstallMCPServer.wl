@@ -22,9 +22,10 @@ InstallMCPServer // beginDefinition;
    - path_String: Uses Scripts/StartMCPServer.wls from the specified directory
    This allows testing local changes without reinstalling the paclet. *)
 InstallMCPServer // Options = {
-    "DevelopmentMode"  -> False,
-    ProcessEnvironment -> Automatic,
-    "VerifyLLMKit"     -> True
+    "ApplicationName"    -> Automatic,
+    "DevelopmentMode"    -> False,
+    "ProcessEnvironment" -> Automatic,
+    "VerifyLLMKit"       -> True
 };
 
 InstallMCPServer[ target_, opts: OptionsPattern[ ] ] :=
@@ -33,13 +34,9 @@ InstallMCPServer[ target_, opts: OptionsPattern[ ] ] :=
 InstallMCPServer[ target_, Automatic, opts: OptionsPattern[ ] ] :=
     catchMine @ InstallMCPServer[ target, $defaultMCPServer, opts ];
 
-(* TODO: We should have an "ApplicationName" option that lets the user specify the value for `$installClientName`.
-   It should be `Automatic` by default, in which case we use `guessClientName` on the file.
-   We should likewise implement this for UninstallMCPServer. *)
-InstallMCPServer[ target_File, server_, opts: OptionsPattern[ ] ] :=
+InstallMCPServer[ target_File? fileQ, server_, opts: OptionsPattern[ ] ] :=
     catchMine @ Block[
-        (* Auto-detect TOML format from file extension *)
-        { $installClientName = If[ StringEndsQ[ First @ target, ".toml", IgnoreCase -> True ], "Codex", $installClientName ] },
+        { $installClientName = validateInstallClientName[ OptionValue[ "ApplicationName" ], target ] },
         installMCPServer[
             target,
             ensureMCPServerExists @ MCPServerObject @ server,
@@ -60,6 +57,15 @@ InstallMCPServer[ { name_String, dir_ }, server_, opts: OptionsPattern[ ] ] :=
     ];
 
 InstallMCPServer // endExportedDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*validateInstallClientName*)
+validateInstallClientName // beginDefinition;
+validateInstallClientName[ Automatic, file_? fileQ ] := guessClientName @ file;
+validateInstallClientName[ name_String, _ ] := toInstallName @ name;
+validateInstallClientName[ other_, _ ] := throwFailure[ "InvalidApplicationName", other ];
+validateInstallClientName // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -713,28 +719,32 @@ readExistingMCPConfig // endDefinition;
 (*UninstallMCPServer*)
 UninstallMCPServer // beginDefinition;
 
-UninstallMCPServer[ target_File ] :=
-    catchMine @ UninstallMCPServer[ target, All ];
+UninstallMCPServer // Options = {
+    "ApplicationName" -> Automatic
+};
 
-UninstallMCPServer[ name_String ] :=
-    catchMine @ UninstallMCPServer[ name, All ];
+UninstallMCPServer[ target_File, opts: OptionsPattern[ ] ] :=
+    catchMine @ UninstallMCPServer[ target, All, opts ];
 
-UninstallMCPServer[ obj_ ] :=
-    catchMine @ UninstallMCPServer[ All, obj ];
+UninstallMCPServer[ name_String, opts: OptionsPattern[ ] ] :=
+    catchMine @ UninstallMCPServer[ name, All, opts ];
 
-UninstallMCPServer[ target: _File | All, All ] :=
-    catchMine @ UninstallMCPServer[ target, allMCPServers[ ] ];
+UninstallMCPServer[ obj_, opts: OptionsPattern[ ] ] :=
+    catchMine @ UninstallMCPServer[ All, obj, opts ];
 
-UninstallMCPServer[ target: _File | All, servers_List ] :=
-    catchMine @ DeleteMissing @ Flatten[ catchAlways @ UninstallMCPServer[ target, # ] & /@ servers ];
+UninstallMCPServer[ target: _File | All, All, opts: OptionsPattern[ ] ] :=
+    catchMine @ UninstallMCPServer[ target, allMCPServers[ ], opts ];
 
-UninstallMCPServer[ All, obj0: _MCPServerObject|_String ] := catchMine @ Enclose[
+UninstallMCPServer[ target: _File | All, servers_List, opts: OptionsPattern[ ] ] :=
+    catchMine @ DeleteMissing @ Flatten[ catchAlways @ UninstallMCPServer[ target, #, opts ] & /@ servers ];
+
+UninstallMCPServer[ All, obj0: _MCPServerObject|_String, opts: OptionsPattern[ ] ] := catchMine @ Enclose[
     Module[ { obj, installations },
         obj = ensureMCPServerExists @ MCPServerObject @ obj0;
         installations = ConfirmMatch[ mcpServerInstallations @ obj, { ___Association }, "Installations" ];
 
         ConfirmMatch[
-            DeleteMissing[ catchAlways @ UninstallMCPServer[ #, obj ] & /@ installations ],
+            DeleteMissing[ catchAlways @ UninstallMCPServer[ #, obj, opts ] & /@ installations ],
             { ___Success },
             "Results"
         ]
@@ -742,31 +752,32 @@ UninstallMCPServer[ All, obj0: _MCPServerObject|_String ] := catchMine @ Enclose
     throwInternalFailure
 ];
 
-UninstallMCPServer[ KeyValuePattern @ { "ClientName" -> name_, "ConfigurationFile" -> file_ }, obj_ ] :=
-    catchMine @ Block[ { $installClientName = toInstallName @ name },
-        UninstallMCPServer[ file, obj ]
+UninstallMCPServer[
+    KeyValuePattern @ { "ClientName" -> name_, "ConfigurationFile" -> file_ },
+    obj_,
+    opts: OptionsPattern[ ]
+] := catchMine @ Block[ { $installClientName = toInstallName @ name },
+        UninstallMCPServer[ file, obj, opts ]
     ];
 
-UninstallMCPServer[ { name_String, dir_ }, obj_ ] :=
+UninstallMCPServer[ { name_String, dir_ }, obj_, opts: OptionsPattern[ ] ] :=
     catchMine @ Block[ { $installClientName = toInstallName @ name },
-        UninstallMCPServer[ projectInstallLocation[ $installClientName, dir ], obj ]
+        UninstallMCPServer[ projectInstallLocation[ $installClientName, dir ], obj, opts ]
     ];
 
 (* FIXME: This is ambiguous, because a list could also refer to a project-level installation *)
-UninstallMCPServer[ targets_List, obj_MCPServerObject ] :=
-    catchMine @ DeleteMissing[ catchAlways @ UninstallMCPServer[ #, obj ] & /@ targets ];
+UninstallMCPServer[ targets_List, obj_MCPServerObject, opts: OptionsPattern[ ] ] :=
+    catchMine @ DeleteMissing[ catchAlways @ UninstallMCPServer[ #, obj, opts ] & /@ targets ];
 
-UninstallMCPServer[ target_File, obj_ ] :=
+UninstallMCPServer[ target_File? fileQ, obj_, opts: OptionsPattern[ ] ] :=
     catchMine @ Block[
-        (* FIXME: Shouldn't this use guessClientName instead? *)
-        (* Auto-detect TOML format from file extension *)
-        { $installClientName = If[ StringEndsQ[ First @ target, ".toml", IgnoreCase -> True ], "Codex", $installClientName ] },
+        { $installClientName = validateInstallClientName[ OptionValue[ "ApplicationName" ], target ] },
         uninstallMCPServer[ target, ensureMCPServerExists @ MCPServerObject @ obj ]
     ];
 
-UninstallMCPServer[ name_String, obj_ ] :=
+UninstallMCPServer[ name_String, obj_, opts: OptionsPattern[ ] ] :=
     catchMine @ Block[ { $installClientName = toInstallName @ name },
-        UninstallMCPServer[ installLocation @ name, obj ]
+        UninstallMCPServer[ installLocation @ name, obj, opts ]
     ];
 
 UninstallMCPServer // endExportedDefinition;

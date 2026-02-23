@@ -8,6 +8,7 @@ MCPServer::InvalidDevelopmentMode        = "Invalid value for DevelopmentMode op
 MCPServer::InstallMCPServer              = "Successfully installed MCP server \"`1`\".";
 MCPServer::InstallMCPServerNamed         = "Successfully installed MCP server \"`1`\" for `2`.";
 MCPServer::Internal                      = "An unexpected error occurred. `1`";
+MCPServer::InvalidApplicationName        = "Invalid value given for ApplicationName: `1`. Expected a string or Automatic.";
 MCPServer::InvalidArguments              = "Invalid arguments given for `1` in `2`.";
 MCPServer::InvalidMCPConfiguration       = "Invalid MCP configuration file: `1`.";
 MCPServer::InvalidMCPServerFile          = "Invalid MCPServerObject file: \"`1`\".";
