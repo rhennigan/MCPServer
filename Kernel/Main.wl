@@ -62,6 +62,7 @@ $MCPServerContexts = {
     "Wolfram`MCPServer`SupportedClients`",
     "Wolfram`MCPServer`TOML`",
     "Wolfram`MCPServer`Tools`",
+    "Wolfram`MCPServer`UIResources`",
     "Wolfram`MCPServer`Utilities`"
 };
 

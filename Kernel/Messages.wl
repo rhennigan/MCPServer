@@ -52,6 +52,11 @@ MCPServer::InvalidMCPPromptsSpecification = "Invalid MCP prompts specification: 
 MCPServer::PromptNameNotFound             = "No prompt named \"`1`\" found in $DefaultMCPPrompts.";
 MCPServer::DeprecatedPromptData           = "The \"PromptData\" property is deprecated. Use \"MCPPrompts\" instead.";
 
+(* MCP Apps / UI resource messages *)
+MCPServer::UIResourceNotFound              = "UI resource not found: `1`.";
+MCPServer::UIResourceLoadFailed            = "Failed to load UI resource from `1`.";
+MCPServer::UIAppAssetsMissing              = "UI app assets directory not found. MCP Apps will be disabled.";
+
 (* CodeInspector messages *)
 MCPServer::CodeInspectorNoInput            = "Either 'code' or 'file' parameter must be provided.";
 MCPServer::CodeInspectorAmbiguousInput     = "Provide either 'code' or 'file', not both.";

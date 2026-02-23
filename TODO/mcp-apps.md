@@ -6,7 +6,7 @@
 
 For any task that involves writing non-trivial Wolfram Language code, please write and run unit tests for the code you write.
 
-- [ ] Scaffolding (create files, etc.)
+- [x] Scaffolding (create files, etc.)
 - [ ] Extension negotiation
 - [ ] UI resource registry
 - [ ] Resource handlers

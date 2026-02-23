@@ -1,0 +1,13 @@
+{
+    "ui": {
+        "csp": {
+            "connectDomains": [],
+            "resourceDomains": [],
+            "frameDomains": [
+                "https://www.wolframcloud.com",
+                "https://wolfr.am"
+            ]
+        },
+        "prefersBorder": true
+    }
+}
