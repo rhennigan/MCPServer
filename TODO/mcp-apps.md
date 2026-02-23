@@ -13,7 +13,10 @@ For any task that involves writing non-trivial Wolfram Language code, please wri
 - [ ] Tool metadata
 - [ ] Fully review and verify phase 1 code
 
-Before proceeding to phase 2, create a minimal tool that can be used to test the MCP Apps extension.
+- [ ] Interactively Test the MCP Apps extension
+  - Before proceeding to phase 2, create a temporary minimal tool that can be used to test the MCP Apps extension
+  - Ask the user to test the tool in Claude Desktop
+  - Remove the temporary tool after verifying that it works as expected
 
 ## Phase 2: WolframAlpha Viewer
 
