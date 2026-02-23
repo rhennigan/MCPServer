@@ -30,6 +30,7 @@
         "unbuilt",
         "unformat",
         "USERBASE",
+        "USERPROFILE",
         "wolframalpha",
         "wolframengine",
         "WOLFRAMINIT",
