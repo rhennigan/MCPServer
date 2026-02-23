@@ -20,8 +20,8 @@ The following clients have built-in support for automatic configuration via `Ins
 | Copilot CLI | `"CopilotCLI"` | `"Copilot"` | JSON | No |
 | Cursor | `"Cursor"` | — | JSON | No |
 | Gemini CLI | `"GeminiCLI"` | `"Gemini"` | JSON | No |
-| Google Antigravity | `"Antigravity"` | `"GoogleAntigravity"` | JSON | No |
-| OpenAI Codex | `"Codex"` | `"OpenAICodex"` | TOML | No |
+| Antigravity | `"Antigravity"` | `"GoogleAntigravity"` | JSON | No |
+| Codex CLI | `"Codex"` | `"OpenAICodex"` | TOML | No |
 | OpenCode | `"OpenCode"` | — | JSON | Yes |
 | Visual Studio Code | `"VisualStudioCode"` | `"VSCode"` | JSON | Yes |
 | Windsurf | `"Windsurf"` | `"Codeium"` | JSON | No |
@@ -175,7 +175,7 @@ Note: Copilot CLI requires the `tools` field to specify which tools to enable. `
 
 **Format:** Same as Claude Desktop (`mcpServers` key).
 
-### OpenAI Codex
+### Codex CLI
 
 | Scope | Config Location |
 |-------|----------------|
@@ -352,38 +352,98 @@ Controls whether to check LLMKit subscription requirements:
 | `True` (default) | Warns or errors if tools require LLMKit subscription |
 | `False` | Skips the LLMKit check |
 
+### ApplicationName
+
+Specifies which MCP client the configuration file belongs to:
+
+| Value | Behavior |
+|-------|----------|
+| `Automatic` (default) | Auto-detects the client from the file path or content |
+| `"ClientName"` | Explicitly specifies the target client |
+
+This option works with both `InstallMCPServer` and `UninstallMCPServer`. It is useful when installing to a `File[...]` target where the client cannot be auto-detected from the path:
+
+```wl
+InstallMCPServer[File["config.json"], "ApplicationName" -> "Cline"]
+UninstallMCPServer[File["config.json"], "ApplicationName" -> "Cline"]
+```
+
+## Querying Supported Clients
+
+The public variable `$SupportedMCPClients` provides an association of all supported client metadata. It can be used to programmatically query which clients are supported and inspect their configuration details.
+
+```wl
+(* List all supported client names *)
+Keys[$SupportedMCPClients]
+(* {"Antigravity", "ClaudeCode", "ClaudeDesktop", "Cline", "Codex", ...} *)
+
+(* Get metadata for a specific client *)
+$SupportedMCPClients["ClaudeDesktop"]
+(* <|"Aliases" -> {"Claude"}, "ConfigFormat" -> "JSON", "ConfigKey" -> {"mcpServers"}, ...|> *)
+```
+
 ## Adding Support for New Clients
 
-To add support for a new MCP client application:
+All client configuration is centralized in `$supportedMCPClients` in `Kernel/SupportedClients.wl`. To add support for a new MCP client, add an entry to this association.
 
-1. **Add install location** in `Kernel/InstallMCPServer.wl`:
-   ```wl
-   installLocation["NewClient", "MacOSX"] :=
-       fileNameJoin[$HomeDirectory, ".newclient", "config.json"];
-   ```
+### Client Entry Structure
 
-2. **Add name aliases** (optional):
-   ```wl
-   toInstallName["newclient"] := "NewClient";
-   ```
+Each entry is keyed by the canonical client name and contains an association with the following fields:
 
-3. **Add display name**:
-   ```wl
-   installDisplayName["NewClient"] := "New Client";
-   ```
+| Field | Required | Description |
+|-------|----------|-------------|
+| `"DisplayName"` | Yes | Human-readable name shown to users |
+| `"Aliases"` | Yes | List of alternative names (can be empty `{ }`) |
+| `"ConfigFormat"` | Yes | File format: `"JSON"` or `"TOML"` |
+| `"ConfigKey"` | Yes | Key path to the servers section (e.g. `{"mcpServers"}` or `{"mcp", "servers"}`) |
+| `"URL"` | Yes | Client's website or download page |
+| `"InstallLocation"` | Yes | Config file path(s) per OS (see below) |
+| `"ProjectPath"` | No | Relative path components for project-level config |
+| `"ServerConverter"` | No | Function to transform the standard server entry into a client-specific format |
 
-4. **Handle format differences** (if needed):
-   - If the client uses a non-standard JSON structure, add handling in `installMCPServer` and `uninstallMCPServer`
-   - If the client uses a different file format (like TOML), add appropriate conversion functions
+### Example Entry
 
-5. **Add project-level support** (if applicable):
-   ```wl
-   projectInstallLocation["NewClient", dir_] :=
-       fileNameJoin[dir, ".newclient.json"];
-   ```
+```wl
+"NewClient" -> <|
+    "DisplayName"     -> "New Client",
+    "Aliases"         -> { "NC" },
+    "ConfigFormat"    -> "JSON",
+    "ConfigKey"       -> { "mcpServers" },
+    "URL"             -> "https://newclient.example.com",
+    "ProjectPath"     -> { ".newclient.json" },
+    "InstallLocation" -> <|
+        "MacOSX"  :> { $HomeDirectory, ".newclient", "config.json" },
+        "Windows" :> { $HomeDirectory, "AppData", "Roaming", "NewClient", "config.json" },
+        "Unix"    :> { $HomeDirectory, ".config", "newclient", "config.json" }
+    |>
+|>
+```
+
+If the install location is the same on all platforms, use a single `RuleDelayed` instead of a per-OS association:
+
+```wl
+"InstallLocation" :> { $HomeDirectory, ".newclient", "config.json" }
+```
+
+### Custom Server Converters
+
+If the client uses a non-standard server entry format, provide a `"ServerConverter"` function. This function receives a standard server association (with `"command"`, `"args"`, `"env"` keys) and should return the client-specific format. For example, Cline adds `"disabled"` and `"autoApprove"` fields:
+
+```wl
+convertToClineFormat[ server_Association ] := Enclose[
+    Module[ { result },
+        result = ConfirmBy[ server, AssociationQ, "Server" ];
+        result[ "disabled" ] = False;
+        result[ "autoApprove" ] = { };
+        result
+    ],
+    throwInternalFailure
+];
+```
 
 ## Related Files
 
+- `Kernel/SupportedClients.wl` - Supported MCP client definitions and format converters
 - `Kernel/InstallMCPServer.wl` - Installation and uninstallation implementation
 - `Kernel/CreateMCPServer.wl` - Server creation and JSON configuration generation
 - `Kernel/MCPServerObject.wl` - Server object structure

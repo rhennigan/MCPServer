@@ -450,7 +450,9 @@ messageFailure[ args___ ] :=
         message = messageFailure0;
         WithCleanup[
             StackInhibit @ promoteSourceInfo @ convertCloudFailure @ quiet @ message @ args,
-            If[ TrueQ @ $catching, $failed = True ]
+            If[ TrueQ @ $catching && ! MatchQ[ Internal`QuietStatus[ ], KeyValuePattern[ "Global" -> "Quiet" ] ],
+                $failed = True
+            ]
         ]
     ];
 

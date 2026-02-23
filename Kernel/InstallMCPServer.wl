@@ -9,133 +9,7 @@ Needs[ "Wolfram`MCPServer`Common`" ];
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Config*)
-$installName = None;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Section::Closed:: *)
-(*$SupportedMCPClients*)
-$SupportedMCPClients := WithCleanup[
-    Unprotect @ $SupportedMCPClients,
-    $SupportedMCPClients = KeySort @ AssociationMap[ clientMetadata, Keys @ $supportedMCPClients ],
-    Protect @ $SupportedMCPClients
-];
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
-(*$supportedMCPClients*)
-$supportedMCPClients = <|
-    "ClaudeDesktop" -> <|
-        "DisplayName"    -> "Claude Desktop",
-        "Aliases"        -> { "Claude" },
-        "ConfigFormat"   -> "JSON",
-        "ProjectSupport" -> False,
-        "ConfigKey"      -> "mcpServers",
-        "URL"            -> "https://claude.ai/download"
-    |>,
-    "ClaudeCode" -> <|
-        "DisplayName"    -> "Claude Code",
-        "Aliases"        -> { },
-        "ConfigFormat"   -> "JSON",
-        "ProjectSupport" -> True,
-        "ConfigKey"      -> "mcpServers",
-        "URL"            -> "https://code.claude.com"
-    |>,
-    "Cursor" -> <|
-        "DisplayName"    -> "Cursor",
-        "Aliases"        -> { },
-        "ConfigFormat"   -> "JSON",
-        "ProjectSupport" -> False,
-        "ConfigKey"      -> "mcpServers",
-        "URL"            -> "https://www.cursor.com"
-    |>,
-    "GeminiCLI" -> <|
-        "DisplayName"    -> "Gemini CLI",
-        "Aliases"        -> { "Gemini" },
-        "ConfigFormat"   -> "JSON",
-        "ProjectSupport" -> False,
-        "ConfigKey"      -> "mcpServers",
-        "URL"            -> "https://github.com/google-gemini/gemini-cli"
-    |>,
-    "Antigravity" -> <|
-        "DisplayName"    -> "Antigravity",
-        "Aliases"        -> { "GoogleAntigravity" },
-        "ConfigFormat"   -> "JSON",
-        "ProjectSupport" -> False,
-        "ConfigKey"      -> "mcpServers",
-        "URL"            -> "https://antigravity.google"
-    |>,
-    "Codex" -> <|
-        "DisplayName"    -> "Codex CLI",
-        "Aliases"        -> { "OpenAICodex" },
-        "ConfigFormat"   -> "TOML",
-        "ProjectSupport" -> False,
-        "ConfigKey"      -> "mcp_servers",
-        "URL"            -> "https://openai.com/codex"
-    |>,
-    "CopilotCLI" -> <|
-        "DisplayName"    -> "Copilot CLI",
-        "Aliases"        -> { "Copilot" },
-        "ConfigFormat"   -> "JSON",
-        "ProjectSupport" -> False,
-        "ConfigKey"      -> "mcpServers",
-        "URL"            -> "https://github.com/features/copilot/cli"
-    |>,
-    "OpenCode" -> <|
-        "DisplayName"    -> "OpenCode",
-        "Aliases"        -> { },
-        "ConfigFormat"   -> "JSON",
-        "ProjectSupport" -> True,
-        "ConfigKey"      -> "mcp",
-        "URL"            -> "https://opencode.ai"
-    |>,
-    "VisualStudioCode" -> <|
-        "DisplayName"    -> "Visual Studio Code",
-        "Aliases"        -> { "VSCode" },
-        "ConfigFormat"   -> "JSON",
-        "ProjectSupport" -> True,
-        "ConfigKey"      -> "mcp.servers",
-        "URL"            -> "https://code.visualstudio.com"
-    |>,
-    "Windsurf" -> <|
-        "DisplayName"    -> "Windsurf",
-        "Aliases"        -> { "Codeium" },
-        "ConfigFormat"   -> "JSON",
-        "ProjectSupport" -> False,
-        "ConfigKey"      -> "mcpServers",
-        "URL"            -> "https://codeium.com/windsurf"
-    |>,
-    "Cline" -> <|
-        "DisplayName"    -> "Cline",
-        "Aliases"        -> { },
-        "ConfigFormat"   -> "JSON",
-        "ProjectSupport" -> False,
-        "ConfigKey"      -> "mcpServers",
-        "URL"            -> "https://cline.bot"
-    |>,
-    "Zed" -> <|
-        "DisplayName"    -> "Zed",
-        "Aliases"        -> { },
-        "ConfigFormat"   -> "JSON",
-        "ProjectSupport" -> True,
-        "ConfigKey"      -> "context_servers",
-        "URL"            -> "https://zed.dev"
-    |>
-|>;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
-(*clientMetadata*)
-clientMetadata // beginDefinition;
-clientMetadata[ name_String ] := KeySort @ <| "Name" -> name, $supportedMCPClients @ name |>;
-clientMetadata // endDefinition;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
-(*$aliasToCanonicalName*)
-$aliasToCanonicalName := $aliasToCanonicalName = Association @ Flatten @ KeyValueMap[
-    Function[ { name, meta }, Thread[ meta[ "Aliases" ] -> name ] ],
-    $supportedMCPClients
-];
+$installClientName = None;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -148,9 +22,10 @@ InstallMCPServer // beginDefinition;
    - path_String: Uses Scripts/StartMCPServer.wls from the specified directory
    This allows testing local changes without reinstalling the paclet. *)
 InstallMCPServer // Options = {
-    "DevelopmentMode"  -> False,
-    ProcessEnvironment -> Automatic,
-    "VerifyLLMKit"     -> True
+    "ApplicationName"    -> Automatic,
+    "DevelopmentMode"    -> False,
+    "ProcessEnvironment" -> Automatic,
+    "VerifyLLMKit"       -> True
 };
 
 InstallMCPServer[ target_, opts: OptionsPattern[ ] ] :=
@@ -159,10 +34,9 @@ InstallMCPServer[ target_, opts: OptionsPattern[ ] ] :=
 InstallMCPServer[ target_, Automatic, opts: OptionsPattern[ ] ] :=
     catchMine @ InstallMCPServer[ target, $defaultMCPServer, opts ];
 
-InstallMCPServer[ target_File, server_, opts: OptionsPattern[ ] ] :=
+InstallMCPServer[ target_File? fileQ, server_, opts: OptionsPattern[ ] ] :=
     catchMine @ Block[
-        (* Auto-detect TOML format from file extension *)
-        { $installName = If[ StringEndsQ[ First @ target, ".toml", IgnoreCase -> True ], "Codex", $installName ] },
+        { $installClientName = validateInstallClientName[ OptionValue[ "ApplicationName" ], target ] },
         installMCPServer[
             target,
             ensureMCPServerExists @ MCPServerObject @ server,
@@ -173,16 +47,25 @@ InstallMCPServer[ target_File, server_, opts: OptionsPattern[ ] ] :=
     ];
 
 InstallMCPServer[ name_String, server_, opts: OptionsPattern[ ] ] :=
-    catchMine @ Block[ { $installName = toInstallName @ name },
+    catchMine @ Block[ { $installClientName = toInstallName @ name },
         InstallMCPServer[ installLocation @ name, server, opts ]
     ];
 
 InstallMCPServer[ { name_String, dir_ }, server_, opts: OptionsPattern[ ] ] :=
-    catchMine @ Block[ { $installName = toInstallName @ name },
-        InstallMCPServer[ projectInstallLocation[ $installName, dir ], server, opts ]
+    catchMine @ Block[ { $installClientName = toInstallName @ name },
+        InstallMCPServer[ projectInstallLocation[ $installClientName, dir ], server, opts ]
     ];
 
 InstallMCPServer // endExportedDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*validateInstallClientName*)
+validateInstallClientName // beginDefinition;
+validateInstallClientName[ Automatic, file_? fileQ ] := guessClientName @ file;
+validateInstallClientName[ name_String, _ ] := toInstallName @ name;
+validateInstallClientName[ other_, _ ] := throwFailure[ "InvalidApplicationName", other ];
+validateInstallClientName // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -192,7 +75,7 @@ installMCPServer // beginDefinition;
 installMCPServer[ target_, obj_, Automatic|Inherited, verifyLLMKit_, devMode_ ] :=
     installMCPServer[ target, obj, defaultEnvironment[ ], verifyLLMKit, devMode ];
 
-installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_, devMode_ ] /; $installName === "Codex" := Enclose[
+installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_, devMode_ ] /; $installClientName === "Codex" := Enclose[
     Module[ { target, name, json, data, server, existing, updated },
 
         If[ verifyLLMKit, ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ] ];
@@ -226,7 +109,7 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
 ];
 
 installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_, devMode_ ] := Enclose[
-    Module[ { target, name, json, data, server, existing },
+    Module[ { target, name, json, data, server, existing, path, convert },
 
         If[ verifyLLMKit, ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ] ];
         initializeTools @ obj;
@@ -241,19 +124,12 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
         ];
         existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
 
-        Switch[ $installName,
-            "VisualStudioCode",
-            existing[ "mcp", "servers", name ] = server,
-            "OpenCode",
-            existing[ "mcp", name ] = ConfirmBy[ convertToOpenCodeFormat @ server, AssociationQ, "OpenCodeServer" ],
-            "CopilotCLI",
-            existing[ "mcpServers", name ] = ConfirmBy[ convertToCopilotCLIFormat @ server, AssociationQ, "CopilotCLIServer" ],
-            "Cline",
-            existing[ "mcpServers", name ] = ConfirmBy[ convertToClineFormat @ server, AssociationQ, "ClineServer" ],
-            "Zed",
-            existing[ "context_servers", name ] = server,
-            _,
-            existing[ "mcpServers", name ] = server
+        path    = ConfirmMatch[ configKeyPath[ ], { __String }, "ConfigKeyPath" ];
+        convert = serverConverter @ $installClientName;
+        server  = ConfirmBy[ convert @ server, AssociationQ, "ConvertedServer" ];
+
+        With[ { keys = Sequence @@ path },
+            existing[ keys, name ] = server
         ];
 
         ConfirmBy[ writeRawJSONFile[ target, existing ], FileExistsQ, "Export" ];
@@ -360,12 +236,17 @@ $llmKitSubscribeLink := Hyperlink[ "here", $llmKitSubscribeURL ];
 (*recordMCPInstallation*)
 recordMCPInstallation // beginDefinition;
 
-recordMCPInstallation[ target_? fileQ, obj_MCPServerObject ] := Enclose[
-    Module[ { file, existing, new },
+recordMCPInstallation[ target_? fileQ, obj_MCPServerObject ] :=
+    recordMCPInstallation[ { $installClientName, target }, obj ];
+
+recordMCPInstallation[ { name: _String|None, target_? fileQ }, obj_MCPServerObject ] := Enclose[
+    Module[ { file, existing, installation, new, filtered },
         file = ConfirmBy[ mcpServerFile[ obj, "Installations.wxf" ], fileQ, "File" ];
         existing = mcpServerInstallations @ obj;
-        new = Select[ If[ ListQ @ existing, Union[ existing, { target } ], { target } ], FileExistsQ ];
-        ConfirmBy[ writeWXFFile[ file, new ], FileExistsQ, "Export" ]
+        installation = ConfirmBy[ toMCPInstallationData @ { name, target }, AssociationQ, "Installation" ];
+        new = If[ ListQ @ existing, Union[ existing, { installation } ], { installation } ];
+        filtered = Select[ new, mcpConfigExistsQ ];
+        ConfirmBy[ writeWXFFile[ file, filtered ], FileExistsQ, "Export" ]
     ],
     throwInternalFailure
 ];
@@ -377,15 +258,25 @@ recordMCPInstallation // endDefinition;
 (*clearRecordedInstallation*)
 clearRecordedInstallation // beginDefinition;
 
-clearRecordedInstallation[ target_? fileQ, obj_MCPServerObject ] := Enclose[
-    Module[ { file, existing, new },
+clearRecordedInstallation[ target_? fileQ, obj_MCPServerObject ] :=
+    clearRecordedInstallation[ { $installClientName, target }, obj ];
+
+clearRecordedInstallation[ { name: _String|None, target_? fileQ }, obj_MCPServerObject ] := Enclose[
+    Module[ { file, existing, installation, new },
         file = ConfirmBy[ mcpServerFile[ obj, "Installations.wxf" ], fileQ, "File" ];
         existing = mcpServerInstallations @ obj;
-        new = DeleteCases[ If[ ListQ @ existing, existing, { } ], target ];
+        installation = toMCPInstallationData @ { name, target };
+
+        new = DeleteCases[
+            If[ ListQ @ existing, existing, { } ],
+            installation | KeyValuePattern[ "ConfigurationFile" -> target ]
+        ];
+
         If[ new === { },
             Quiet @ DeleteFile @ file,
             ConfirmBy[ writeWXFFile[ file, new ], FileExistsQ, "Export" ]
         ];
+
         new
     ],
     throwInternalFailure
@@ -399,19 +290,160 @@ clearRecordedInstallation // endDefinition;
 mcpServerInstallations // beginDefinition;
 
 mcpServerInstallations[ obj0_ ] := Enclose[
-    Module[ { obj, file, installations },
+    Catch @ Module[ { obj, file, installations, updated, unique },
         obj = ConfirmBy[ MCPServerObject @ obj0, MCPServerObjectQ, "MCPServerObject" ];
         file = ConfirmBy[ mcpServerFile[ obj, "Installations.wxf" ], fileQ, "File" ];
         installations = If[ FileExistsQ @ file, Quiet @ readWXFFile @ file, { } ];
-        If[ ListQ @ installations,
-            Select[ installations, FileExistsQ ],
-            { }
-        ]
+        If[ ! ListQ @ installations, Throw @ { } ];
+
+        (* Legacy installations have only the configuration file, so we try to guess the client name from it *)
+        updated = ConfirmMatch[ toMCPInstallationData /@ installations, { ___Association }, "Updated" ];
+        unique = DeleteDuplicates[ KeySort /@ updated ];
+
+        (* If we've updated legacy data, be sure to write it back to the file *)
+        If[ unique =!= installations, ConfirmBy[ writeWXFFile[ file, unique ], FileExistsQ, "Export" ] ];
+
+        (* Return the unique installations *)
+        unique
     ],
     throwInternalFailure
 ];
 
 mcpServerInstallations // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*toMCPInstallationData*)
+toMCPInstallationData // beginDefinition;
+
+toMCPInstallationData[ as: KeyValuePattern @ { "ClientName" -> _String|None, "ConfigurationFile" -> _? fileQ } ] :=
+    as;
+
+toMCPInstallationData[ { name: _String|None, file_? fileQ } ] := <|
+    "ClientName"        -> name,
+    "ConfigurationFile" -> file
+|>;
+
+toMCPInstallationData[ file_? fileQ ] := <|
+    "ClientName"        -> guessClientName @ file,
+    "ConfigurationFile" -> file
+|>;
+
+toMCPInstallationData // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*guessClientName*)
+guessClientName // beginDefinition;
+
+(* Legacy code only recorded the file name, not the name of the client.
+   To update these, we attempt to guess the original client name from the file name. *)
+guessClientName[ file_? fileQ ] := Enclose[
+    Catch @ Module[ { clientNames, client, split, extension, format },
+
+        (* Check if the file explicitly matches a client's global install location *)
+        clientNames = Keys @ $SupportedMCPClients;
+        client = SelectFirst[ clientNames, Quiet @ catchAlways @ installLocation @ # === file & ];
+        If[ StringQ @ client, Throw @ client ];
+
+        (* Try to guess from the file path for project-level installations *)
+        split = ToLowerCase @ ConfirmMatch[ FileNameSplit @ file, { __String }, "Split" ];
+        Switch[ split,
+            { __, ".mcp.json" }, Throw[ "ClaudeCode" ],
+            { __, "opencode.json" }, Throw[ "OpenCode" ],
+            { __, ".vscode", "settings.json" }, Throw[ "VisualStudioCode" ],
+            { __, ".zed", "settings.json" }, Throw[ "Zed" ]
+        ];
+
+        (* Try to guess from the file extension *)
+        extension = ToLowerCase @ ConfirmBy[ FileExtension @ file, StringQ, "Extension" ];
+        If[ extension === "toml", Throw[ "Codex" ] ];
+        If[ extension === "json", Throw @ guessClientNameFromJSON @ file ];
+
+        (* Try to guess from the file format (only if the file exists) *)
+        If[ ! FileExistsQ @ file, Throw @ None ];
+        format = Quiet @ FileFormat @ file;
+        If[ ! StringQ @ format, Throw @ None ];
+        format = ToLowerCase @ ConfirmBy[ format, StringQ, "Format" ];
+        If[ format === "json", Throw @ guessClientNameFromJSON @ file ];
+        If[ format === "toml", Throw[ "Codex" ] ];
+
+        (* If all else fails, return None *)
+        None
+    ],
+    None &
+];
+
+guessClientName // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*guessClientNameFromJSON helpers*)
+anyServerEntryQ // beginDefinition;
+anyServerEntryQ[ servers_Association, test_ ] := AnyTrue[ Values @ servers, test ];
+anyServerEntryQ[ _, _ ] := False;
+anyServerEntryQ // endDefinition;
+
+hasOpenCodeTraits // beginDefinition;
+hasOpenCodeTraits[ entry_Association ] := KeyExistsQ[ entry, "type" ] && ListQ @ Lookup[ entry, "command" ];
+hasOpenCodeTraits[ _ ] := False;
+hasOpenCodeTraits // endDefinition;
+
+hasCopilotCLITraits // beginDefinition;
+hasCopilotCLITraits[ entry_Association ] := KeyExistsQ[ entry, "tools" ];
+hasCopilotCLITraits[ _ ] := False;
+hasCopilotCLITraits // endDefinition;
+
+hasClineTraits // beginDefinition;
+hasClineTraits[ entry_Association ] := KeyExistsQ[ entry, "disabled" ] && KeyExistsQ[ entry, "autoApprove" ];
+hasClineTraits[ _ ] := False;
+hasClineTraits // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*guessClientNameFromJSON*)
+guessClientNameFromJSON // beginDefinition;
+
+guessClientNameFromJSON[ file_ ] := Enclose[
+    Catch @ Module[ { json, mcp, mcpServers },
+
+        json = Quiet @ readRawJSONFile @ file;
+        If[ ! AssociationQ @ json, Throw @ None ];
+
+        (* Tier 1: unique top-level keys *)
+        If[ KeyExistsQ[ json, "context_servers" ], Throw[ "Zed" ] ];
+
+        If[ KeyExistsQ[ json, "mcp" ] && AssociationQ @ json[ "mcp" ],
+            mcp = json[ "mcp" ];
+            If[ KeyExistsQ[ mcp, "servers" ],
+                Throw[ "VisualStudioCode" ]
+            ];
+            If[ anyServerEntryQ[ mcp, hasOpenCodeTraits ],
+                Throw[ "OpenCode" ]
+            ];
+        ];
+
+        (* Tier 2: mcpServers clients, distinguished by server entry fields *)
+        If[ KeyExistsQ[ json, "mcpServers" ] && AssociationQ @ json[ "mcpServers" ],
+            mcpServers = json[ "mcpServers" ];
+            If[ anyServerEntryQ[ mcpServers, hasCopilotCLITraits ], Throw[ "CopilotCLI" ] ];
+            If[ anyServerEntryQ[ mcpServers, hasClineTraits ], Throw[ "Cline" ] ];
+        ];
+
+        None
+    ],
+    None &
+];
+
+guessClientNameFromJSON // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*mcpConfigExistsQ*)
+mcpConfigExistsQ // beginDefinition;
+mcpConfigExistsQ[ KeyValuePattern[ "ConfigurationFile" -> file_ ] ] := mcpConfigExistsQ @ file;
+mcpConfigExistsQ[ target_? fileQ ] := FileExistsQ @ target;
+mcpConfigExistsQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -452,67 +484,6 @@ makeDevelopmentArgs[ invalid_ ] :=
     throwFailure[ "InvalidDevelopmentMode", invalid ];
 
 makeDevelopmentArgs // endDefinition;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*convertToOpenCodeFormat*)
-convertToOpenCodeFormat // beginDefinition;
-
-convertToOpenCodeFormat[ server_Association ] := Enclose[
-    Module[ { command, args, env, result },
-        command = ConfirmMatch[ Lookup[ server, "command", Missing[ ] ], _String | _Missing, "Command" ];
-        args = Lookup[ server, "args", { } ];
-        env = Lookup[ server, "env", <| |> ];
-
-        result = <|
-            "type" -> "local",
-            "command" -> If[ command === Missing[ ], { }, Prepend[ args, command ] ],
-            "enabled" -> True
-        |>;
-
-        If[ AssociationQ @ env && Length @ env > 0,
-            result[ "environment" ] = env
-        ];
-
-        result
-    ],
-    throwInternalFailure
-];
-
-convertToOpenCodeFormat // endDefinition;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*convertToCopilotCLIFormat*)
-convertToCopilotCLIFormat // beginDefinition;
-
-convertToCopilotCLIFormat[ server_Association ] := Enclose[
-    Module[ { result },
-        result = ConfirmBy[ server, AssociationQ, "Server" ];
-        result[ "tools" ] = { "*" };
-        result
-    ],
-    throwInternalFailure
-];
-
-convertToCopilotCLIFormat // endDefinition;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*convertToClineFormat*)
-convertToClineFormat // beginDefinition;
-
-convertToClineFormat[ server_Association ] := Enclose[
-    Module[ { result },
-        result = ConfirmBy[ server, AssociationQ, "Server" ];
-        result[ "disabled" ] = False;
-        result[ "autoApprove" ] = { };
-        result
-    ],
-    throwInternalFailure
-];
-
-convertToClineFormat // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -597,7 +568,7 @@ $overrideEnvironment := <|
 installSuccess // beginDefinition;
 
 installSuccess[ serverName_, installLocation_, obj_ ] :=
-    installSuccess[ serverName, installLocation, obj, installDisplayName @ $installName ];
+    installSuccess[ serverName, installLocation, obj, installDisplayName @ $installClientName ];
 
 installSuccess[ serverName_String, installLocation_File? fileQ, obj_MCPServerObject, installName_String ] :=
     Success[
@@ -625,47 +596,54 @@ installSuccess // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*configKeyPath*)
+configKeyPath // beginDefinition;
+configKeyPath[ ] := configKeyPath @ $installClientName;
+configKeyPath[ name_String ] /; KeyExistsQ[ $supportedMCPClients, name ] := $supportedMCPClients[ name, "ConfigKey" ];
+configKeyPath[ _ ] := { "mcpServers" };
+configKeyPath // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*emptyConfigForPath*)
+emptyConfigForPath // beginDefinition;
+emptyConfigForPath[ { } ] := <| |>;
+emptyConfigForPath[ { key_String, rest___String } ] := <| key -> emptyConfigForPath @ { rest } |>;
+emptyConfigForPath // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*ensureNestedKey*)
+ensureNestedKey // beginDefinition;
+ensureNestedKey[ data_? AssociationQ, { } ] := data;
+ensureNestedKey[ data_? AssociationQ, { key_String, rest___String } ] :=
+    Append[ data, key -> ensureNestedKey[
+        Replace[ data @ key, Except[ _? AssociationQ ] -> <| |> ],
+        { rest }
+    ] ];
+ensureNestedKey[ data_, path_List ] := ensureNestedKey[ <| |>, path ];
+ensureNestedKey // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*serverConverter*)
+serverConverter // beginDefinition;
+serverConverter[ name_String ] := Replace[ $supportedMCPClients[ name, "ServerConverter" ], _Missing -> Identity ];
+serverConverter[ _ ] := Identity;
+serverConverter // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*readExistingMCPConfig*)
 readExistingMCPConfig // beginDefinition;
 
 readExistingMCPConfig[ file_ ] := Enclose[
-    Catch @ Module[ { data },
-
-        If[ ! FileExistsQ @ file,
-            Switch[ $installName,
-                "VisualStudioCode",
-                Throw @ <| "mcp" -> <| "servers" -> <| |> |> |>,
-                "OpenCode",
-                Throw @ <| "mcp" -> <| |> |>,
-                "Zed",
-                Throw @ <| "context_servers" -> <| |> |>,
-                _,
-                Throw @ <| "mcpServers" -> <| |> |>
-            ]
-        ];
-
+    Catch @ Module[ { path, data },
+        path = ConfirmMatch[ configKeyPath[ ], { __String }, "ConfigKeyPath" ];
+        If[ ! FileExistsQ @ file, Throw @ emptyConfigForPath @ path ];
         data = readRawJSONFile @ ExpandFileName @ file;
         If[ ! AssociationQ @ data, throwFailure[ "InvalidMCPConfiguration", file ] ];
-
-        Switch[ $installName,
-            (* Handle VS Code format *)
-            "VisualStudioCode",
-            If[ ! AssociationQ @ data[ "mcp" ], data[ "mcp" ] = <| "servers" -> <| |> |> ];
-            If[ ! AssociationQ @ data[ "mcp", "servers" ], data[ "mcp", "servers" ] = <| |> ];
-            data,
-            (* Handle OpenCode format *)
-            "OpenCode",
-            If[ ! AssociationQ @ data[ "mcp" ], data[ "mcp" ] = <| |> ];
-            data,
-            (* Handle Zed format *)
-            "Zed",
-            If[ ! AssociationQ @ data[ "context_servers" ], data[ "context_servers" ] = <| |> ];
-            data,
-            (* Handle standard format *)
-            _,
-            If[ ! AssociationQ @ data[ "mcpServers" ], data[ "mcpServers" ] = <| |> ];
-            data
-        ]
+        ensureNestedKey[ data, path ]
     ],
     throwInternalFailure
 ];
@@ -677,42 +655,61 @@ readExistingMCPConfig // endDefinition;
 (*UninstallMCPServer*)
 UninstallMCPServer // beginDefinition;
 
-UninstallMCPServer[ target_File ] :=
-    catchMine @ UninstallMCPServer[ target, All ];
+UninstallMCPServer // Options = {
+    "ApplicationName" -> Automatic
+};
 
-UninstallMCPServer[ name_String ] :=
-    catchMine @ UninstallMCPServer[ name, All ];
+UninstallMCPServer[ target_File, opts: OptionsPattern[ ] ] :=
+    catchMine @ UninstallMCPServer[ target, All, opts ];
 
-UninstallMCPServer[ obj_ ] :=
-    catchMine @ UninstallMCPServer[ All, obj ];
+UninstallMCPServer[ name_String, opts: OptionsPattern[ ] ] :=
+    catchMine @ UninstallMCPServer[ name, All, opts ];
 
-UninstallMCPServer[ target: _File | All, All ] :=
-    catchMine @ UninstallMCPServer[ target, allMCPServers[ ] ];
+UninstallMCPServer[ obj_, opts: OptionsPattern[ ] ] :=
+    catchMine @ UninstallMCPServer[ All, obj, opts ];
 
-UninstallMCPServer[ target: _File | All, servers_List ] :=
-    catchMine @ DeleteMissing @ Flatten[ catchAlways @ UninstallMCPServer[ target, # ] & /@ servers ];
+UninstallMCPServer[ target: _File | All, All, opts: OptionsPattern[ ] ] :=
+    catchMine @ UninstallMCPServer[ target, allMCPServers[ ], opts ];
 
-UninstallMCPServer[ All, obj_MCPServerObject ] :=
-    catchMine @ UninstallMCPServer[ mcpServerInstallations @ obj, obj ];
+UninstallMCPServer[ target: _File | All, servers_List, opts: OptionsPattern[ ] ] :=
+    catchMine @ DeleteMissing @ Flatten[ catchAlways @ UninstallMCPServer[ target, #, opts ] & /@ servers ];
 
-UninstallMCPServer[ { name_String, dir_ }, obj_ ] :=
-    catchMine @ Block[ { $installName = toInstallName @ name },
-        UninstallMCPServer[ projectInstallLocation[ $installName, dir ], obj ]
+UninstallMCPServer[ All, obj0: _MCPServerObject|_String, opts: OptionsPattern[ ] ] := catchMine @ Enclose[
+    Module[ { obj, installations },
+        obj = ensureMCPServerExists @ MCPServerObject @ obj0;
+        installations = ConfirmMatch[ mcpServerInstallations @ obj, { ___Association }, "Installations" ];
+
+        ConfirmMatch[
+            DeleteMissing[ catchAlways @ UninstallMCPServer[ #, obj, opts ] & /@ installations ],
+            { ___Success },
+            "Results"
+        ]
+    ],
+    throwInternalFailure
+];
+
+UninstallMCPServer[
+    KeyValuePattern @ { "ClientName" -> name_, "ConfigurationFile" -> file_ },
+    obj_,
+    opts: OptionsPattern[ ]
+] := catchMine @ Block[ { $installClientName = toInstallName @ name },
+        UninstallMCPServer[ file, obj, opts ]
     ];
 
-UninstallMCPServer[ targets_List, obj_MCPServerObject ] :=
-    catchMine @ DeleteMissing[ catchAlways @ UninstallMCPServer[ #, obj ] & /@ targets ];
+UninstallMCPServer[ { name_String, dir_ }, obj_, opts: OptionsPattern[ ] ] :=
+    catchMine @ Block[ { $installClientName = toInstallName @ name },
+        UninstallMCPServer[ projectInstallLocation[ $installClientName, dir ], obj, opts ]
+    ];
 
-UninstallMCPServer[ target_File, obj_ ] :=
+UninstallMCPServer[ target_File? fileQ, obj_, opts: OptionsPattern[ ] ] :=
     catchMine @ Block[
-        (* Auto-detect TOML format from file extension *)
-        { $installName = If[ StringEndsQ[ First @ target, ".toml", IgnoreCase -> True ], "Codex", $installName ] },
+        { $installClientName = validateInstallClientName[ OptionValue[ "ApplicationName" ], target ] },
         uninstallMCPServer[ target, ensureMCPServerExists @ MCPServerObject @ obj ]
     ];
 
-UninstallMCPServer[ name_String, obj_ ] :=
-    catchMine @ Block[ { $installName = toInstallName @ name },
-        UninstallMCPServer[ installLocation @ name, obj ]
+UninstallMCPServer[ name_String, obj_, opts: OptionsPattern[ ] ] :=
+    catchMine @ Block[ { $installClientName = toInstallName @ name },
+        UninstallMCPServer[ installLocation @ name, obj, opts ]
     ];
 
 UninstallMCPServer // endExportedDefinition;
@@ -729,7 +726,7 @@ allMCPServers // endDefinition;
 (*uninstallMCPServer*)
 uninstallMCPServer // beginDefinition;
 
-uninstallMCPServer[ target0_File, obj_MCPServerObject ] /; $installName === "Codex" := Enclose[
+uninstallMCPServer[ target0_File, obj_MCPServerObject ] /; $installClientName === "Codex" := Enclose[
     Catch @ Module[ { target, name, existing, mcpServers, updated },
 
         target = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
@@ -749,7 +746,7 @@ uninstallMCPServer[ target0_File, obj_MCPServerObject ] /; $installName === "Cod
 
         (* Write back *)
         ConfirmBy[ writeTOMLFile[ target, updated[ "Data" ], updated ], fileQ, "Export" ];
-        ConfirmMatch[ clearRecordedInstallation[ target, obj ], { ___? fileQ }, "Clear" ];
+        ConfirmMatch[ clearRecordedInstallation[ target, obj ], { ___Association }, "Clear" ];
 
         uninstallSuccess[ name, target, obj ]
     ],
@@ -757,7 +754,7 @@ uninstallMCPServer[ target0_File, obj_MCPServerObject ] /; $installName === "Cod
 ];
 
 uninstallMCPServer[ target0_File, obj_MCPServerObject ] := Enclose[
-    Catch @ Module[ { target, name, existing },
+    Catch @ Module[ { target, name, existing, path },
 
         target = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
         If[ ! FileExistsQ @ target, Throw @ Missing[ "NotInstalled", target ] ];
@@ -765,33 +762,18 @@ uninstallMCPServer[ target0_File, obj_MCPServerObject ] := Enclose[
         name = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
         existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
 
-        Switch[ $installName,
-            (* Handle VS Code format *)
-            "VisualStudioCode",
-            If[ ! AssociationQ @ existing[ "mcp", "servers" ], Throw @ Missing[ "NotInstalled", target ] ];
-            If[ ! KeyExistsQ[ existing[ "mcp", "servers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
-            KeyDropFrom[ existing[ "mcp", "servers" ], name ],
-            (* Handle OpenCode format *)
-            "OpenCode",
-            If[ ! AssociationQ @ existing[ "mcp" ], Throw @ Missing[ "NotInstalled", target ] ];
-            If[ ! KeyExistsQ[ existing[ "mcp" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
-            KeyDropFrom[ existing[ "mcp" ], name ],
-            (* Handle Zed format *)
-            "Zed",
-            If[ ! AssociationQ @ existing[ "context_servers" ], Throw @ Missing[ "NotInstalled", target ] ];
-            If[ ! KeyExistsQ[ existing[ "context_servers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
-            KeyDropFrom[ existing[ "context_servers" ], name ],
-            (* Handle standard format *)
-            _,
-            If[ ! AssociationQ @ existing[ "mcpServers" ], Throw @ Missing[ "NotInstalled", target ] ];
-            If[ ! KeyExistsQ[ existing[ "mcpServers" ], name ], Throw @ Missing[ "NotInstalled", target ] ];
-            KeyDropFrom[ existing[ "mcpServers" ], name ]
+        path = ConfirmMatch[ configKeyPath[ ], { __String }, "ConfigKeyPath" ];
+
+        With[ { keys = Sequence @@ path },
+            If[ ! AssociationQ @ existing[ keys ], Throw @ Missing[ "NotInstalled", target ] ];
+            If[ ! KeyExistsQ[ existing[ keys ], name ], Throw @ Missing[ "NotInstalled", target ] ];
+            KeyDropFrom[ existing[ keys ], name ]
         ];
 
         ConfirmBy[ writeRawJSONFile[ target, existing ], FileExistsQ, "Export" ];
 
         ConfirmAssert[ readRawJSONFile @ target === existing, "ExportCheck" ];
-        ConfirmMatch[ clearRecordedInstallation[ target, obj ], { ___? fileQ }, "Clear" ];
+        ConfirmMatch[ clearRecordedInstallation[ target, obj ], { ___Association }, "Clear" ];
 
         uninstallSuccess[ name, target, obj ]
     ],
@@ -806,7 +788,7 @@ uninstallMCPServer // endDefinition;
 uninstallSuccess // beginDefinition;
 
 uninstallSuccess[ serverName_, installLocation_, obj_ ] :=
-    uninstallSuccess[ serverName, installLocation, obj, installDisplayName @ $installName ];
+    uninstallSuccess[ serverName, installLocation, obj, installDisplayName @ $installClientName ];
 
 uninstallSuccess[ serverName_String, installLocation_File? fileQ, obj_MCPServerObject, installName_String ] :=
     Success[
@@ -836,119 +818,32 @@ uninstallSuccess // endDefinition;
 (* ::Subsection::Closed:: *)
 (*installLocation*)
 installLocation // beginDefinition;
-installLocation[ name_String ] := installLocation[ toInstallName @ name, $OperatingSystem ];
 
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*Claude Desktop*)
-installLocation[ "ClaudeDesktop", "MacOSX" ] :=
-    fileNameJoin[ $HomeDirectory, "Library", "Application Support", "Claude", "claude_desktop_config.json" ];
+installLocation[ name_String ] := installLocation[ name, $OperatingSystem ];
 
-installLocation[ "ClaudeDesktop", "Windows" ] :=
-    fileNameJoin[ $HomeDirectory, "AppData", "Roaming", "Claude", "claude_desktop_config.json" ];
+installLocation[ name0_String, os0_String ] := Enclose[
+    Module[ { name, os, clientData, locationSpec, path },
 
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*Claude Code*)
-installLocation[ "ClaudeCode", _ ] :=
-    fileNameJoin[ $HomeDirectory, ".claude.json" ];
+        name = ConfirmBy[ toInstallName @ name0, StringQ, "Name" ];
+        os = ConfirmBy[ os0, StringQ, "OperatingSystem" ];
 
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*Cursor*)
-installLocation[ "Cursor", _ ] := fileNameJoin[ $HomeDirectory, ".cursor", "mcp.json" ];
+        clientData = ConfirmMatch[ Lookup[ $SupportedMCPClients, name, None ], _Association|None, "ClientData" ];
+        If[ clientData === None, throwFailure[ "UnsupportedMCPClient", name ] ];
+        locationSpec = ConfirmMatch[ clientData[ "InstallLocation" ], _Association|_List, "InstallLocation" ];
 
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*Gemini CLI*)
-installLocation[ "GeminiCLI", _ ] :=
-    fileNameJoin[ $HomeDirectory, ".gemini", "settings.json" ];
+        path = ConfirmMatch[
+            If[ AssociationQ @ locationSpec, Lookup[ locationSpec, os, None ], locationSpec ],
+            { __String }|None,
+            "Path"
+        ];
 
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*Antigravity*)
-installLocation[ "Antigravity", _ ] :=
-    fileNameJoin[ $HomeDirectory, ".gemini", "antigravity", "mcp_config.json" ];
+        If[ path === None, throwFailure[ "UnknownInstallLocation", name, os ] ];
 
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*Codex*)
-installLocation[ "Codex", _ ] :=
-    fileNameJoin[ $HomeDirectory, ".codex", "config.toml" ];
+        ConfirmBy[ fileNameJoin @ path, fileQ, "Result" ]
+    ],
+    throwInternalFailure
+];
 
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*Copilot CLI*)
-installLocation[ "CopilotCLI", _ ] :=
-    fileNameJoin[ $HomeDirectory, ".copilot", "mcp-config.json" ];
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*OpenCode*)
-installLocation[ "OpenCode", _ ] :=
-    fileNameJoin[ $HomeDirectory, ".config", "opencode", "opencode.json" ];
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*Visual Studio Code*)
-installLocation[ "VisualStudioCode", "MacOSX" ] :=
-    fileNameJoin[ $HomeDirectory, "Library", "Application Support", "Code", "User", "settings.json" ];
-
-installLocation[ "VisualStudioCode", "Windows" ] :=
-    fileNameJoin[ $HomeDirectory, "AppData", "Roaming", "Code", "User", "settings.json" ];
-
-installLocation[ "VisualStudioCode", "Linux" ] :=
-    fileNameJoin[ $HomeDirectory, ".config", "Code", "User", "settings.json" ];
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*Windsurf*)
-installLocation[ "Windsurf", "MacOSX" | "Unix" ] :=
-    fileNameJoin[ $HomeDirectory, ".codeium", "windsurf", "mcp_config.json" ];
-
-installLocation[ "Windsurf", "Windows" ] :=
-    fileNameJoin[ $HomeDirectory, ".codeium", "windsurf", "mcp_config.json" ];
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*Cline*)
-installLocation[ "Cline", "MacOSX" ] :=
-    fileNameJoin[
-        $HomeDirectory,
-        "Library", "Application Support", "Code", "User", "globalStorage",
-        "saoudrizwan.claude-dev", "settings", "cline_mcp_settings.json"
-    ];
-
-installLocation[ "Cline", "Windows" ] :=
-    fileNameJoin[
-        $HomeDirectory,
-        "AppData", "Roaming", "Code", "User", "globalStorage",
-        "saoudrizwan.claude-dev", "settings", "cline_mcp_settings.json"
-    ];
-
-installLocation[ "Cline", "Unix" ] :=
-    fileNameJoin[
-        $HomeDirectory,
-        ".config", "Code", "User", "globalStorage",
-        "saoudrizwan.claude-dev", "settings", "cline_mcp_settings.json"
-    ];
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*Zed*)
-installLocation[ "Zed", "MacOSX" ] :=
-    fileNameJoin[ $HomeDirectory, ".config", "zed", "settings.json" ];
-
-installLocation[ "Zed", "Windows" ] :=
-    fileNameJoin[ $HomeDirectory, "AppData", "Roaming", "Zed", "settings.json" ];
-
-installLocation[ "Zed", "Unix" ] :=
-    fileNameJoin[ $HomeDirectory, ".config", "zed", "settings.json" ];
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*Unknown*)
-installLocation[ name_String, os_String ] := throwFailure[ "UnknownInstallLocation", name, os ];
 installLocation // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
@@ -956,20 +851,18 @@ installLocation // endDefinition;
 (*projectInstallLocation*)
 projectInstallLocation // beginDefinition;
 
-projectInstallLocation[ "ClaudeCode", dir_ ] :=
-    fileNameJoin[ dir, ".mcp.json" ];
-
-projectInstallLocation[ "OpenCode", dir_ ] :=
-    fileNameJoin[ dir, "opencode.json" ];
-
-projectInstallLocation[ "VisualStudioCode", dir_ ] :=
-    fileNameJoin[ dir, ".vscode", "settings.json" ];
-
-projectInstallLocation[ "Zed", dir_ ] :=
-    fileNameJoin[ dir, ".zed", "settings.json" ];
-
-projectInstallLocation[ name_, dir_ ] :=
-    throwFailure[ "UnknownProjectInstallLocation", name ];
+projectInstallLocation[ name_String, dir_ ] := Enclose[
+    Module[ { clientData, path },
+        clientData = Lookup[ $SupportedMCPClients, name, None ];
+        If[ clientData === None, throwFailure[ "UnsupportedMCPClient", name ] ];
+        ConfirmAssert[ AssociationQ @ clientData, "ClientData" ];
+        If[ ! TrueQ @ clientData[ "ProjectSupport" ], throwFailure[ "UnsupportedMCPClientProject", name ] ];
+        path = ConfirmMatch[ Lookup[ clientData, "ProjectPath" ], { __String }, "ProjectPath" ];
+        If[ path === None, throwFailure[ "UnknownProjectInstallLocation", name ] ];
+        fileNameJoin[ dir, path ]
+    ],
+    throwInternalFailure
+];
 
 projectInstallLocation // endDefinition;
 
@@ -978,6 +871,7 @@ projectInstallLocation // endDefinition;
 (*toInstallName*)
 toInstallName // beginDefinition;
 toInstallName[ name_String ] := Lookup[ $aliasToCanonicalName, name, name ];
+toInstallName[ None ] := None;
 toInstallName // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
@@ -992,8 +886,7 @@ installDisplayName // endDefinition;
 (* ::Section::Closed:: *)
 (*Package Footer*)
 addToMXInitialization[
-    $SupportedMCPClients;
-    $aliasToCanonicalName
+    Null
 ];
 
 End[ ];

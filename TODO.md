@@ -2,6 +2,26 @@
 
 Consolidated list of TODO/FIXME items from the codebase.
 
+## Installation
+
+- [x] Rename `$installName` to `$installClientName`
+  - Source: `Kernel/InstallMCPServer.wl`
+- [x] Use `"ConfigKey"` property in `$supportedMCPClients` to determine config structure in `installMCPServer`, `readExistingMCPConfig`, and `uninstallMCPServer`
+  - Source: `Kernel/InstallMCPServer.wl`
+- [x] Implement `guessClientNameFromJSON` to guess client name based on JSON structure
+  - Source: `Kernel/InstallMCPServer.wl`
+- [x] Fix `UninstallMCPServer[All, obj]`: `mcpServerInstallations` now returns a list of associations
+  - Source: `Kernel/InstallMCPServer.wl`
+- [x] Determine if `UninstallMCPServer[target_File, obj]` should use `guessClientName` instead of checking `.toml` extension
+  - Source: `Kernel/InstallMCPServer.wl`
+- [x] Fix ambiguity in `UninstallMCPServer[targets_List, obj]`: a list could also refer to a project-level installation
+  - Source: `Kernel/InstallMCPServer.wl`
+  - Removed. It was never documented, so it's not a breaking change.
+- [x] `serverConverter` should be a property of the client rather than a hardcoded function
+  - Source: `Kernel/InstallMCPServer.wl`
+- [x] Add `"ApplicationName"` option to `InstallMCPServer` and `UninstallMCPServer` to let users specify `$installClientName` (default `Automatic` uses `guessClientName`)
+  - Source: `Kernel/InstallMCPServer.wl`
+
 ## Server Features
 
 - [ ] Support "Remote" type for server deployment (deploy as cloud API)
@@ -19,11 +39,19 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/StartMCPServer.wl`
 - [ ] Support resources capability
   - Source: `Kernel/StartMCPServer.wl`
+- [ ] Investigate MCP apps
+  - Spec: https://modelcontextprotocol.io/extensions/apps/overview.md
+  - Can we use this to display Wolfram Alpha tool call results in an iframe?
+  - How about results of the WL evaluator that produces CloudObjects (e.g. CloudDeploy)?
 
 ## Tools
 
 ### New Tools
 
+- [ ] Implement `CreateResourceFunction` tool
+  - Should create a new resource function definition notebook
+- [ ] Implement `EditResourceFunction` tool
+  - Should edit an existing resource function definition notebook
 - [ ] Implement `BuildPaclet` tool
   - Source: `Kernel/Tools/Tools.wl`
 - [ ] Implement `ReloadPaclet` tool
