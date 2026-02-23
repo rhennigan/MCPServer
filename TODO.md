@@ -39,10 +39,16 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/StartMCPServer.wl`
 - [ ] Support resources capability
   - Source: `Kernel/StartMCPServer.wl`
-- [ ] Investigate MCP apps
+- [x] Investigate MCP apps
   - Spec: https://modelcontextprotocol.io/extensions/apps/overview.md
   - Can we use this to display Wolfram Alpha tool call results in an iframe?
   - How about results of the WL evaluator that produces CloudObjects (e.g. CloudDeploy)?
+  - Result: Implementation specification created at `Specs/MCPApps.md`
+- [ ] Implement MCP Apps extension (see `Specs/MCPApps.md`)
+  - Phase 1: Infrastructure (extension negotiation, UI resource registry, resource handlers, tool metadata)
+  - Phase 2: WolframAlpha Interactive Viewer
+  - Phase 3: WL Evaluator Interactive Viewer
+  - Phase 4: App-Only Tools (optional)
 
 ## Tools
 
