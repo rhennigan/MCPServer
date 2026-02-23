@@ -39,11 +39,19 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/StartMCPServer.wl`
 - [ ] Support resources capability
   - Source: `Kernel/StartMCPServer.wl`
+- [ ] Investigate MCP apps
+  - Spec: https://modelcontextprotocol.io/extensions/apps/overview.md
+  - Can we use this to display Wolfram Alpha tool call results in an iframe?
+  - How about results of the WL evaluator that produces CloudObjects (e.g. CloudDeploy)?
 
 ## Tools
 
 ### New Tools
 
+- [ ] Implement `CreateResourceFunction` tool
+  - Should create a new resource function definition notebook
+- [ ] Implement `EditResourceFunction` tool
+  - Should edit an existing resource function definition notebook
 - [ ] Implement `BuildPaclet` tool
   - Source: `Kernel/Tools/Tools.wl`
 - [ ] Implement `ReloadPaclet` tool
