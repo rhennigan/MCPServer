@@ -24,10 +24,10 @@ Completed scaffolding for MCP Apps (Phase 1.6/1.7/1.8 from spec):
 - Added 3 new error messages to `Messages.wl`
 - Registered `Apps` asset location in `PacletInfo.wl`
 - Added `UIResources` context to `Main.wl`
-- Created `Tests/MCPApps.wlt` with test skeleton covering all new functions
+- Created `Tests/MCPApps.wlt` with initial boilerplate
 
 Key design notes:
-- All new functions live in `Kernel/UIResources.wl` (context `Wolfram\`MCPServer\`UIResources\``)
+- All new functions live in `Kernel/UIResources.wl` (context ``Wolfram`MCPServer`UIResources` ``)
 - Symbols are declared in `CommonSymbols.wl` so `StartMCPServer.wl` can reference them
 - The next tasks (extension negotiation, resource handlers, tool metadata) will modify `StartMCPServer.wl` to call these functions
 
