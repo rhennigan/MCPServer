@@ -65,6 +65,10 @@ Consolidated list of TODO/FIXME items from the codebase.
 
 ### Tool Improvements
 
+- [ ] Tool options set via environment variables
+  - Example: we already have `WOLFRAM_LANGUAGE_EVALUATOR_METHOD`. We could make a nice interface for this in InstallMCPServer.
+  - We could also have a single environment variable that points to a file containing all the options for tools
+
 - [ ] Support file inputs in the evaluator tool
   - Could use the existing "code" parameter or add a new "file" parameter (only one can be used at a time)
     - If using the "code" parameter, disambiguate between a file path and a code string by using the syntax `"file://path/to/file.wl"`
@@ -138,6 +142,50 @@ This is effectively what the paclet currently does, but we'll run it in reverse.
 
 - [ ] Support connecting to local MCP servers
 - [ ] Support connecting to remote MCP servers
+
+## Agent Skills
+
+Create distributable agent skills that use functionality from this paclet.
+
+- [ ] Testing
+  - Instructions:
+    - writing tests
+    - running tests
+    - inspecting code
+  - Scripts:
+    - `TestReport.wls [path/to/Tests/]`
+    - `CodeInspect.wls [path/to/Code/]`
+
+- [ ] Paclet Building
+  - Instructions:
+    - checking the paclet
+    - building the paclet
+    - submitting the paclet
+  - Scripts:
+    - `CheckPaclet.wls [path/to/Paclet/]`
+    - `BuildPaclet.wls [path/to/Paclet/]`
+    - `SubmitPaclet.wls [path/to/Paclet/]`
+
+- [ ] Paclet Optimization
+  - Instructions:
+    - MX builds
+    - compiled functions
+
+- [ ] Creating New Paclets
+  - Instructions:
+    - layout guidelines
+    - naming conventions
+    - documentation guidelines
+  - Scripts:
+    - `NewPaclet.wls [path/to/NewPaclet/]`
+
+- [ ] Documentation
+  - Instructions:
+    - writing paclet documentation
+    - building paclet documentation
+  - Scripts:
+    - `CreateDocumentation.wls [path/to/Documentation/]`
+    - `BuildDocumentation.wls [path/to/Documentation/]`
 
 ## Blocked / Dependencies
 
