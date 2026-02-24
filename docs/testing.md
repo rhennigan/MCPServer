@@ -30,6 +30,7 @@ VerificationTest[
 ## TestID Conventions
 
 - Every test should have a `TestID` specification
+- If the test corresponds to a GitHub issue, you should include the issue number in the test ID, e.g. `"AnAppropriateTestID-GH#123"`
 - Do not manually write the trailing `@@path/to/file.wlt:l,c` suffix
 - This location suffix is automatically generated on commit by `Scripts/FormatFiles.wls`
 
@@ -39,7 +40,13 @@ To enable automatic TestID annotation, configure the git hook:
 git config --local core.hooksPath Scripts/.githooks
 ```
 
-## Running Tests with wolframscript
+## Running Tests with the TestReport MCP Tool
+
+If you're using an AI coding agent with the WolframPacletDevelopment MCP server, you can run tests using the `TestReport` tool on the `Tests/` directory.
+
+## Running Tests with `wolframscript`
+
+> Note: Only use `wolframscript` for running tests if the TestReport MCP tool is not available.
 
 Run all tests:
 
@@ -74,16 +81,12 @@ You can write unit tests for private symbols. Suppress linting errors by wrappin
 (* :!CodeAnalysis::EndBlock:: *)
 ```
 
-## Using the TestReport MCP Tool
-
-If you're using an AI coding agent with the WolframPacletDevelopment MCP server, you can run tests using the `TestReport` tool on the `Tests/` directory.
-
 ## Troubleshooting
 
 If tests fail, consider:
 
 1. **Check for MX file conflicts**: If you've modified source files but an MX file exists, delete `Kernel/64Bit/MCPServer.mx` and reload the paclet
-2. **Reload the paclet**: Changes to source files require reloading with ``Get["Wolfram`MCPServer`"]``
+2. **Reload the paclet**: Changes to source files require reloading with ``PacletDirectoryLoad["path/to/MCPServer"]; Get["Wolfram`MCPServer`"]``
 3. **Review test output**: The test report will show which tests failed and why
 
 ## See Also
