@@ -231,4 +231,262 @@ VerificationTest[
     TestID   -> "InitResponse-BackwardCompat4Arg@@Tests/MCPApps.wlt:222,1-232,2"
 ]
 
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*loadUIResource*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*HTML File Without JSON Metadata*)
+VerificationTest[
+    Module[ { dir, htmlFile, result },
+        dir = CreateDirectory[ ];
+        htmlFile = FileNameJoin[ { dir, "test-app.html" } ];
+        WriteString[ htmlFile, "<!DOCTYPE html><html><body>Test</body></html>" ];
+        Close @ htmlFile;
+        result = Wolfram`MCPServer`Common`loadUIResource @ htmlFile;
+        DeleteDirectory[ dir, DeleteContents -> True ];
+        result
+    ],
+    "ui://wolfram/test-app" -> KeyValuePattern[ {
+        "uri"      -> "ui://wolfram/test-app",
+        "name"     -> "test-app",
+        "mimeType" -> "text/html;profile=mcp-app",
+        "html"     -> "<!DOCTYPE html><html><body>Test</body></html>",
+        "meta"     -> _Association
+    } ],
+    SameTest -> MatchQ,
+    TestID   -> "LoadUIResource-HTMLOnly@@Tests/MCPApps.wlt:241,1-260,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*HTML File With JSON Metadata*)
+VerificationTest[
+    Module[ { dir, htmlFile, jsonFile, result },
+        dir = CreateDirectory[ ];
+        htmlFile = FileNameJoin[ { dir, "test-app.html" } ];
+        jsonFile = FileNameJoin[ { dir, "test-app.json" } ];
+        WriteString[ htmlFile, "<html><body>Hello</body></html>" ];
+        Close @ htmlFile;
+        WriteString[ jsonFile, "{\"ui\":{\"prefersBorder\":true,\"csp\":{\"connectDomains\":[]}}}" ];
+        Close @ jsonFile;
+        result = Wolfram`MCPServer`Common`loadUIResource @ htmlFile;
+        DeleteDirectory[ dir, DeleteContents -> True ];
+        result
+    ],
+    "ui://wolfram/test-app" -> KeyValuePattern[ {
+        "uri"      -> "ui://wolfram/test-app",
+        "name"     -> "test-app",
+        "mimeType" -> "text/html;profile=mcp-app",
+        "html"     -> "<html><body>Hello</body></html>",
+        "meta"     -> KeyValuePattern[ "ui" -> _Association ]
+    } ],
+    SameTest -> MatchQ,
+    TestID   -> "LoadUIResource-WithJSON@@Tests/MCPApps.wlt:265,1-287,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*URI Derivation From File Name*)
+VerificationTest[
+    Module[ { dir, htmlFile, result },
+        dir = CreateDirectory[ ];
+        htmlFile = FileNameJoin[ { dir, "wolframalpha-viewer.html" } ];
+        WriteString[ htmlFile, "<html></html>" ];
+        Close @ htmlFile;
+        result = Wolfram`MCPServer`Common`loadUIResource @ htmlFile;
+        DeleteDirectory[ dir, DeleteContents -> True ];
+        First @ result
+    ],
+    "ui://wolfram/wolframalpha-viewer",
+    SameTest -> Equal,
+    TestID   -> "LoadUIResource-URIFromFileName@@Tests/MCPApps.wlt:292,1-305,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Meta Is Empty Association When No JSON*)
+VerificationTest[
+    Module[ { dir, htmlFile, result },
+        dir = CreateDirectory[ ];
+        htmlFile = FileNameJoin[ { dir, "no-meta.html" } ];
+        WriteString[ htmlFile, "<html></html>" ];
+        Close @ htmlFile;
+        result = Wolfram`MCPServer`Common`loadUIResource @ htmlFile;
+        DeleteDirectory[ dir, DeleteContents -> True ];
+        Last[ result ][ "meta" ]
+    ],
+    <| |>,
+    SameTest -> MatchQ,
+    TestID   -> "LoadUIResource-EmptyMeta@@Tests/MCPApps.wlt:310,1-323,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*initializeUIResources*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Loads From Paclet Assets*)
+VerificationTest[
+    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        AssociationQ @ Wolfram`MCPServer`Common`$uiResourceRegistry
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InitializeUIResources-ReturnsAssociation@@Tests/MCPApps.wlt:332,1-340,2"
+]
+
+VerificationTest[
+    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        Sort @ Keys @ Wolfram`MCPServer`Common`$uiResourceRegistry
+    ],
+    { "ui://wolfram/evaluator-viewer", "ui://wolfram/wolframalpha-viewer" },
+    SameTest -> Equal,
+    TestID   -> "InitializeUIResources-LoadsBothApps@@Tests/MCPApps.wlt:342,1-350,2"
+]
+
+VerificationTest[
+    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        StringQ @ Wolfram`MCPServer`Common`$uiResourceRegistry[ "ui://wolfram/wolframalpha-viewer", "html" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InitializeUIResources-HTMLIsString@@Tests/MCPApps.wlt:352,1-360,2"
+]
+
+VerificationTest[
+    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        Wolfram`MCPServer`Common`$uiResourceRegistry[ "ui://wolfram/wolframalpha-viewer", "mimeType" ]
+    ],
+    "text/html;profile=mcp-app",
+    SameTest -> Equal,
+    TestID   -> "InitializeUIResources-MimeType@@Tests/MCPApps.wlt:362,1-370,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*JSON Metadata Loaded*)
+VerificationTest[
+    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        Wolfram`MCPServer`Common`$uiResourceRegistry[ "ui://wolfram/evaluator-viewer", "meta" ]
+    ],
+    KeyValuePattern[ "ui" -> KeyValuePattern[ "csp" -> _Association ] ],
+    SameTest -> MatchQ,
+    TestID   -> "InitializeUIResources-MetadataLoaded@@Tests/MCPApps.wlt:375,1-383,2"
+]
+
+VerificationTest[
+    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        Wolfram`MCPServer`Common`$uiResourceRegistry[
+            "ui://wolfram/evaluator-viewer", "meta", "ui", "csp", "frameDomains"
+        ]
+    ],
+    { "https://www.wolframcloud.com", "https://wolfr.am" },
+    SameTest -> Equal,
+    TestID   -> "InitializeUIResources-EvaluatorFrameDomains@@Tests/MCPApps.wlt:385,1-395,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Graceful Fallback*)
+VerificationTest[
+    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
+        (* Use Block to temporarily override the paclet lookup to simulate missing assets *)
+        Block[ { PacletObject },
+            PacletObject[ "Wolfram/MCPServer" ][ "AssetLocation", "Apps" ] := $Failed;
+            Wolfram`MCPServer`Common`initializeUIResources[ ]
+        ];
+        Wolfram`MCPServer`Common`$uiResourceRegistry
+    ],
+    <| |>,
+    SameTest -> MatchQ,
+    TestID   -> "InitializeUIResources-GracefulFallback@@Tests/MCPApps.wlt:400,1-412,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*listUIResources*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Returns Resources When UI Supported*)
+VerificationTest[
+    Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = True,
+        Wolfram`MCPServer`Common`$uiResourceRegistry
+    },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        Wolfram`MCPServer`Common`listUIResources[ ]
+    ],
+    { KeyValuePattern[ { "uri" -> _String, "name" -> _String, "mimeType" -> _String } ].. },
+    SameTest -> MatchQ,
+    TestID   -> "ListUIResources-ReturnsWhenUISupported@@Tests/MCPApps.wlt:421,1-432,2"
+]
+
+VerificationTest[
+    Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = True,
+        Wolfram`MCPServer`Common`$uiResourceRegistry
+    },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        Length @ Wolfram`MCPServer`Common`listUIResources[ ]
+    ],
+    2,
+    SameTest -> Equal,
+    TestID   -> "ListUIResources-ReturnsTwoResources@@Tests/MCPApps.wlt:434,1-445,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Returns Empty When UI Not Supported*)
+VerificationTest[
+    Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = False,
+        Wolfram`MCPServer`Common`$uiResourceRegistry
+    },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        Wolfram`MCPServer`Common`listUIResources[ ]
+    ],
+    { },
+    SameTest -> Equal,
+    TestID   -> "ListUIResources-EmptyWhenNoUI@@Tests/MCPApps.wlt:450,1-461,2"
+]
+
+VerificationTest[
+    Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI,
+        Wolfram`MCPServer`Common`$uiResourceRegistry
+    },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        Wolfram`MCPServer`Common`listUIResources[ ]
+    ],
+    { },
+    SameTest -> Equal,
+    TestID   -> "ListUIResources-EmptyWhenUnset@@Tests/MCPApps.wlt:463,1-474,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Resource Structure*)
+VerificationTest[
+    Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = True,
+        Wolfram`MCPServer`Common`$uiResourceRegistry
+    },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        Sort @ Map[ #[ "uri" ] &, Wolfram`MCPServer`Common`listUIResources[ ] ]
+    ],
+    { "ui://wolfram/evaluator-viewer", "ui://wolfram/wolframalpha-viewer" },
+    SameTest -> Equal,
+    TestID   -> "ListUIResources-CorrectURIs@@Tests/MCPApps.wlt:479,1-490,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)

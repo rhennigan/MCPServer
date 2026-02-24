@@ -30,6 +30,8 @@ If a symbol appears to be undefined when you expected otherwise, check to see if
 Names[ "*`nameOfSymbol" ]
 ```
 
+You should use the SymbolDefinition tool to investigate symbols rather than use things like `DownValues`, `Information`, etc. This tool runs in the same kernel session as the WolframLanguageEvaluator tool, so it will have access to the same definitions.
+
 ## Writing Tests
 
 Write tests in the following format:

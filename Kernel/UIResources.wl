@@ -64,10 +64,10 @@ loadUIResource[ htmlFile_String ] := Enclose[
     Module[ { baseName, uri, html, metaFile, meta },
         baseName = FileBaseName @ htmlFile;
         uri = "ui://wolfram/" <> baseName;
-        html = ConfirmBy[ ReadString[ htmlFile, CharacterEncoding -> "UTF-8" ], StringQ, "HTML" ];
+        html = ConfirmBy[ ByteArrayToString @ ReadByteArray @ htmlFile, StringQ, "HTML" ];
         metaFile = FileNameJoin[ { DirectoryName @ htmlFile, baseName <> ".json" } ];
         meta = If[ FileExistsQ @ metaFile,
-            Quiet @ Developer`ReadRawJSONString @ ReadString[ metaFile, CharacterEncoding -> "UTF-8" ],
+            Quiet @ Developer`ReadRawJSONString @ ByteArrayToString @ ReadByteArray @ metaFile,
             <| |>
         ];
         uri -> <|
@@ -88,20 +88,21 @@ loadUIResource // endDefinition;
 (*listUIResources*)
 listUIResources // beginDefinition;
 
-listUIResources[ ] /; TrueQ @ $clientSupportsUI :=
-    KeyValueMap[
-        Function[ { uri, data },
-            <|
-                "uri"         -> uri,
-                "name"        -> data[ "name" ],
-                "description" -> Lookup[ data, "description", "" ],
-                "mimeType"    -> data[ "mimeType" ]
-            |>
+listUIResources[ ] :=
+    If[ TrueQ @ $clientSupportsUI,
+        KeyValueMap[
+            Function[ { uri, data },
+                <|
+                    "uri"         -> uri,
+                    "name"        -> data[ "name" ],
+                    "description" -> Lookup[ data, "description", "" ],
+                    "mimeType"    -> data[ "mimeType" ]
+                |>
+            ],
+            $uiResourceRegistry
         ],
-        $uiResourceRegistry
+        { }
     ];
-
-listUIResources[ ] := { };
 
 listUIResources // endDefinition;
 
