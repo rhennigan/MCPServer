@@ -45,10 +45,4 @@ Completed extension negotiation (Phase 1.1 from spec):
   - `initResponse[name, version, tools, prompts, clientMsg]` - includes `extensions` in capabilities when `$clientSupportsUI` is True
   - Old 4-arg form preserved for backward compatibility
 - Fixed `clientSupportsUIQ` to use `! MissingQ @ msg["params", "capabilities", "extensions", "io.modelcontextprotocol/ui"]` instead of `KeyExistsQ` with nested key paths (which doesn't work in WL)
-- Wrote 20 unit tests covering `clientSupportsUIQ`, `initResponse` extensions, and integration
-
-Key lessons:
-- `KeyExistsQ[assoc, {k1, k2, ...}]` does NOT work for nested key lookup in WL; use `! MissingQ @ assoc["k1", "k2", ...]` instead
-- `Nothing` works correctly as a standalone element in `Association` constructors (e.g. `<| "a" -> 1, If[cond, "b" -> 2, Nothing] |>`) but NOT as a value (e.g. `<| "a" -> Nothing |>` keeps the key)
-- `LLMTool[<| "Name" -> ..., "Function" -> ... |>]` may fail with `interr2`; avoid constructing LLMTools in unit tests unless necessary
-
+- Wrote unit tests covering `clientSupportsUIQ`, `initResponse` extensions, and integration
