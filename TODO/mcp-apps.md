@@ -9,7 +9,7 @@ For any task that involves writing non-trivial Wolfram Language code, please wri
 - [x] Scaffolding (create files, etc.)
 - [x] Extension negotiation
 - [x] UI resource registry
-- [ ] Resource handlers
+- [x] Resource handlers
 - [ ] Tool metadata
 - [ ] Fully review and verify phase 1 code
 

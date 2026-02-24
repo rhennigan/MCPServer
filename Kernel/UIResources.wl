@@ -116,16 +116,16 @@ readUIResource[ msg_Association, req_ ] := Enclose[
         uri = ConfirmBy[ msg[[ "params", "uri" ]], StringQ, "URI" ];
         resource = Lookup[ $uiResourceRegistry, uri, Missing[ "NotFound" ] ];
         If[ MissingQ @ resource,
-            throwFailure[ "UIResourceNotFound", uri ]
-        ];
-        <| "contents" -> {
-            <|
-                "uri"      -> resource[ "uri" ],
-                "mimeType" -> resource[ "mimeType" ],
-                "text"     -> resource[ "html" ],
-                "_meta"    -> resource[ "meta" ]
-            |>
-        } |>
+            throwFailure[ "UIResourceNotFound", uri ],
+            <| "contents" -> {
+                <|
+                    "uri"      -> resource[ "uri" ],
+                    "mimeType" -> resource[ "mimeType" ],
+                    "text"     -> resource[ "html" ],
+                    "_meta"    -> resource[ "meta" ]
+                |>
+            } |>
+        ]
     ],
     throwInternalFailure
 ];

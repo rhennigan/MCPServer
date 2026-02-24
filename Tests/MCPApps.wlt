@@ -489,4 +489,265 @@ VerificationTest[
     TestID   -> "ListUIResources-CorrectURIs@@Tests/MCPApps.wlt:479,1-490,2"
 ]
 
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*readUIResource*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Valid URI Returns Content*)
+VerificationTest[
+    Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = True,
+        Wolfram`MCPServer`Common`$uiResourceRegistry
+    },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        Wolfram`MCPServer`Common`readUIResource[
+            <| "params" -> <| "uri" -> "ui://wolfram/wolframalpha-viewer" |> |>,
+            <| "jsonrpc" -> "2.0", "id" -> 1 |>
+        ]
+    ],
+    KeyValuePattern[ "contents" -> { KeyValuePattern[ {
+        "uri"      -> "ui://wolfram/wolframalpha-viewer",
+        "mimeType" -> "text/html;profile=mcp-app",
+        "text"     -> _String,
+        "_meta"    -> _Association
+    } ] } ],
+    SameTest -> MatchQ,
+    TestID   -> "ReadUIResource-ValidURI@@Tests/MCPApps.wlt:499,1-518,2"
+]
+
+VerificationTest[
+    Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = True,
+        Wolfram`MCPServer`Common`$uiResourceRegistry
+    },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        result = Wolfram`MCPServer`Common`readUIResource[
+            <| "params" -> <| "uri" -> "ui://wolfram/evaluator-viewer" |> |>,
+            <| "jsonrpc" -> "2.0", "id" -> 2 |>
+        ];
+        result[[ "contents", 1, "text" ]]
+    ],
+    _String? (StringContainsQ[ "<!DOCTYPE html>" | "<html" ]),
+    SameTest -> MatchQ,
+    TestID   -> "ReadUIResource-HTMLContent@@Tests/MCPApps.wlt:520,1-535,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Unknown URI Returns Failure*)
+VerificationTest[
+    Quiet @ Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = True,
+        Wolfram`MCPServer`Common`$uiResourceRegistry
+    },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        Wolfram`MCPServer`Common`readUIResource[
+            <| "params" -> <| "uri" -> "ui://wolfram/nonexistent" |> |>,
+            <| "jsonrpc" -> "2.0", "id" -> 3 |>
+        ]
+    ],
+    _Failure,
+    SameTest -> MatchQ,
+    TestID   -> "ReadUIResource-UnknownURI@@Tests/MCPApps.wlt:540,1-554,2"
+]
+
+VerificationTest[
+    Quiet @ Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = True,
+        Wolfram`MCPServer`Common`$uiResourceRegistry
+    },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        Wolfram`MCPServer`Common`readUIResource[
+            <| "params" -> <| "uri" -> 123 |> |>,
+            <| "jsonrpc" -> "2.0", "id" -> 4 |>
+        ]
+    ],
+    _Failure,
+    SameTest -> MatchQ,
+    TestID   -> "ReadUIResource-InvalidURIType@@Tests/MCPApps.wlt:556,1-570,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*handleResourceRead*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Valid URI Returns Result*)
+VerificationTest[
+    Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = True,
+        Wolfram`MCPServer`Common`$uiResourceRegistry
+    },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        Wolfram`MCPServer`StartMCPServer`Private`handleResourceRead[
+            <| "params" -> <| "uri" -> "ui://wolfram/wolframalpha-viewer" |> |>,
+            <| "jsonrpc" -> "2.0", "id" -> 1 |>
+        ]
+    ],
+    KeyValuePattern[ {
+        "jsonrpc" -> "2.0",
+        "id"      -> 1,
+        "result"  -> KeyValuePattern[ "contents" -> { _Association.. } ]
+    } ],
+    SameTest -> MatchQ,
+    TestID   -> "HandleResourceRead-ValidURI@@Tests/MCPApps.wlt:579,1-597,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Unknown URI Returns Error With Code -32602*)
+VerificationTest[
+    Quiet @ Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = True,
+        Wolfram`MCPServer`Common`$uiResourceRegistry
+    },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        Wolfram`MCPServer`StartMCPServer`Private`handleResourceRead[
+            <| "params" -> <| "uri" -> "ui://wolfram/nonexistent" |> |>,
+            <| "jsonrpc" -> "2.0", "id" -> 2 |>
+        ]
+    ],
+    KeyValuePattern[ {
+        "jsonrpc" -> "2.0",
+        "id"      -> 2,
+        "error"   -> KeyValuePattern[ {
+            "code"    -> -32602,
+            "message" -> _String? (StringContainsQ[ "ui://wolfram/nonexistent" ])
+        } ]
+    } ],
+    SameTest -> MatchQ,
+    TestID   -> "HandleResourceRead-UnknownURIError@@Tests/MCPApps.wlt:602,1-623,2"
+]
+
+VerificationTest[
+    Quiet @ Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = True,
+        Wolfram`MCPServer`Common`$uiResourceRegistry
+    },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        response = Wolfram`MCPServer`StartMCPServer`Private`handleResourceRead[
+            <| "params" -> <| "uri" -> "ui://wolfram/nonexistent" |> |>,
+            <| "jsonrpc" -> "2.0", "id" -> 5 |>
+        ];
+        response[ "error", "code" ]
+    ],
+    -32602,
+    SameTest -> Equal,
+    TestID   -> "HandleResourceRead-ErrorCodeIs32602@@Tests/MCPApps.wlt:625,1-640,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Invalid Params Returns Error*)
+VerificationTest[
+    Quiet @ Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = True,
+        Wolfram`MCPServer`Common`$uiResourceRegistry
+    },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        response = Wolfram`MCPServer`StartMCPServer`Private`handleResourceRead[
+            <| "params" -> <| "uri" -> 999 |> |>,
+            <| "jsonrpc" -> "2.0", "id" -> 6 |>
+        ];
+        KeyExistsQ[ response, "error" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "HandleResourceRead-InvalidParamsError@@Tests/MCPApps.wlt:645,1-660,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*handleMethod - resources/list Integration*)
+
+VerificationTest[
+    Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = True,
+        Wolfram`MCPServer`Common`$uiResourceRegistry
+    },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        Wolfram`MCPServer`StartMCPServer`Private`handleMethod[
+            "resources/list",
+            <| "method" -> "resources/list", "params" -> <| |> |>,
+            <| "jsonrpc" -> "2.0", "id" -> 1 |>
+        ]
+    ],
+    KeyValuePattern[ {
+        "result" -> KeyValuePattern[ "resources" -> { __Association } ]
+    } ],
+    SameTest -> MatchQ,
+    TestID   -> "HandleMethod-ResourcesList-UIClient@@Tests/MCPApps.wlt:666,1-683,2"
+]
+
+VerificationTest[
+    Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = False,
+        Wolfram`MCPServer`Common`$uiResourceRegistry
+    },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        Wolfram`MCPServer`StartMCPServer`Private`handleMethod[
+            "resources/list",
+            <| "method" -> "resources/list", "params" -> <| |> |>,
+            <| "jsonrpc" -> "2.0", "id" -> 1 |>
+        ]
+    ],
+    KeyValuePattern[ {
+        "result" -> KeyValuePattern[ "resources" -> { } ]
+    } ],
+    SameTest -> MatchQ,
+    TestID   -> "HandleMethod-ResourcesList-NonUIClient@@Tests/MCPApps.wlt:685,1-702,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*handleMethod - resources/read Integration*)
+
+VerificationTest[
+    Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = True,
+        Wolfram`MCPServer`Common`$uiResourceRegistry
+    },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        Wolfram`MCPServer`StartMCPServer`Private`handleMethod[
+            "resources/read",
+            <| "method" -> "resources/read", "params" -> <| "uri" -> "ui://wolfram/wolframalpha-viewer" |> |>,
+            <| "jsonrpc" -> "2.0", "id" -> 2 |>
+        ]
+    ],
+    KeyValuePattern[ {
+        "result" -> KeyValuePattern[ "contents" -> { KeyValuePattern[ {
+            "uri"      -> "ui://wolfram/wolframalpha-viewer",
+            "mimeType" -> "text/html;profile=mcp-app",
+            "text"     -> _String
+        } ] } ]
+    } ],
+    SameTest -> MatchQ,
+    TestID   -> "HandleMethod-ResourcesRead-ValidURI@@Tests/MCPApps.wlt:708,1-729,2"
+]
+
+VerificationTest[
+    Quiet @ Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = True,
+        Wolfram`MCPServer`Common`$uiResourceRegistry
+    },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        Wolfram`MCPServer`StartMCPServer`Private`handleMethod[
+            "resources/read",
+            <| "method" -> "resources/read", "params" -> <| "uri" -> "ui://wolfram/unknown" |> |>,
+            <| "jsonrpc" -> "2.0", "id" -> 3 |>
+        ]
+    ],
+    KeyValuePattern[ {
+        "error" -> KeyValuePattern[ {
+            "code"    -> -32602,
+            "message" -> _String? (StringContainsQ[ "ui://wolfram/unknown" ])
+        } ]
+    } ],
+    SameTest -> MatchQ,
+    TestID   -> "HandleMethod-ResourcesRead-UnknownURI@@Tests/MCPApps.wlt:731,1-751,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)

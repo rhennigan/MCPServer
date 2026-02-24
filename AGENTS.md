@@ -10,13 +10,15 @@ MCPServer is a Wolfram Language package that implements a Model Context Protocol
 
 Always use the WolframLanguageContext tool when working with Wolfram Language code to ensure that you are aware of the latest documentation and other Wolfram resources.
 
-When you make changes to paclet source code, you should also write and run tests for the changes you made using the TestReport tool and check your work with the CodeInspector tool.
+When you make changes to paclet source code, you should also write and run tests for the changes you made using the TestReport tool and check the updated files with the CodeInspector tool.
 
 If you need to debug code in the WolframLanguageEvaluator tool, you'll first need to evaluate:
 ```wl
 PacletDirectoryLoad[ "path/to/MCPServer" ];
 Get[ "Wolfram`MCPServer`" ]
 ```
+
+Note: This is not necessary for the TestReport tool, since the tests load the paclet automatically.
 
 You should use the SymbolDefinition tool to investigate symbols rather than use things like `DownValues`, `Definition`, etc. It runs in the same kernel as the WolframLanguageEvaluator tool, so it will have access to the same definitions.
 
@@ -135,7 +137,6 @@ The `Enclose` wrapper is only necessary if you are using any `Confirm`, `Confirm
 
 ### Other Development Guidelines
 
-- Avoid using `Return` since the return point can sometimes be ambiguous. Instead, use `Catch` and `Throw` to control the flow of execution.
 - Whenever you modify source code, you should also write and run tests for the changes you made.
 - If you are using a package-scoped symbol defined in a different file, ensure that it is declared in a context that's reachable (e.g. `CommonSymbols.wl`).
 

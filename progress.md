@@ -61,3 +61,21 @@ Completed UI resource registry (Phase 1.2 from spec):
 Key learnings:
 - `ReadString` does NOT accept `CharacterEncoding` as an option; use `ByteArrayToString @ ReadByteArray @ file` instead
 - When two DownValues have identical LHS patterns (one with `/;` condition, one without), `endDefinition` can cause the unconditional definition to be ordered first, shadowing the conditional one. Use `If` inside a single definition to avoid this
+
+## Session 4
+
+Completed resource handlers (Phase 1.3 from spec):
+
+- Updated `handleMethod["resources/list", ...]` in `StartMCPServer.wl` to call `listUIResources[]` instead of returning empty list
+- Added `handleMethod["resources/read", ...]` that delegates to new `handleResourceRead` function
+- Added `handleResourceRead` function that wraps `readUIResource` in `catchAlways` and converts failures to MCP error responses with code `-32602` (Invalid params)
+- Added `resourceReadErrorMessage` helper to extract the URI from the request and format the error message
+- Fixed bug in `readUIResource` (`UIResources.wl`): changed `If[..., throwFailure[...]]; <| ... |>` to `If[..., throwFailure[...], <| ... |>]` so that the failure is properly returned instead of being discarded by `CompoundExpression`
+- Wrote 13 new unit tests covering:
+  - `readUIResource`: valid URI returns content, HTML content accessible, unknown URI returns Failure, invalid URI type returns Failure
+  - `handleResourceRead`: valid URI returns result with `"result"` key, unknown URI returns error with code -32602 and URI in message, invalid params returns error
+  - `handleMethod` integration: `resources/list` returns UI resources for UI clients and empty for non-UI clients, `resources/read` returns content for valid URI and error for unknown URI
+
+Key learnings:
+- `throwFailure` only throws (via `Throw`) when `$catching` is `True` (inside `catchAlways`/`catchMine`). Otherwise it returns a `Failure` without throwing. Code after `If[..., throwFailure[...]]; ...` will continue executing when `$catching` is False — use `If/Else` pattern instead of `If; continue`
+- Tests that invoke error paths emitting messages need `Quiet` wrapper to avoid `MessagesFailure` outcomes

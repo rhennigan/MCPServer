@@ -268,7 +268,8 @@ handleMethod[ "initialize", msg_, req_ ] := (
 );
 
 handleMethod[ "ping"          , msg_, req_ ] := <| req, "result" -> <| |> |>;
-handleMethod[ "resources/list", msg_, req_ ] := <| req, "result" -> <| "resources" -> { } |> |>;
+handleMethod[ "resources/list", msg_, req_ ] := <| req, "result" -> <| "resources" -> listUIResources[ ] |> |>;
+handleMethod[ "resources/read", msg_, req_ ] := handleResourceRead[ msg, req ];
 handleMethod[ "prompts/list"  , msg_, req_ ] := <| req, "result" -> <| "prompts" -> $promptList |> |>;
 handleMethod[ "prompts/get"   , msg_, req_ ] := <| req, "result" -> getPrompt[ msg, req ] |>;
 handleMethod[ "tools/list"    , msg_, req_ ] := <| req, "result" -> <| "tools" -> $toolList |> |>;
@@ -285,6 +286,35 @@ e: handleMethod[ method_, msg_, req_ ] := (
 );
 
 handleMethod // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*handleResourceRead*)
+handleResourceRead // beginDefinition;
+
+handleResourceRead[ msg_Association, req_ ] :=
+    Module[ { result },
+        result = catchAlways @ readUIResource[ msg, req ];
+        If[ FailureQ @ result,
+            <| req, "error" -> <| "code" -> -32602, "message" -> resourceReadErrorMessage[ msg ] |> |>,
+            <| req, "result" -> result |>
+        ]
+    ];
+
+handleResourceRead // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*resourceReadErrorMessage*)
+resourceReadErrorMessage // beginDefinition;
+
+resourceReadErrorMessage[ msg_Association ] :=
+    resourceReadErrorMessage @ Replace[ msg[[ "params", "uri" ]], Except[ _String ] :> "unknown" ];
+
+resourceReadErrorMessage[ uri_String ] :=
+    "UI resource not found: " <> uri;
+
+resourceReadErrorMessage // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
