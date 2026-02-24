@@ -121,6 +121,33 @@ Consolidated list of TODO/FIXME items from the codebase.
 - [ ] Show relative paths in CodeInspector output when inspecting directories
   - Source: `Kernel/Tools/CodeInspector/Formatting.wl`
 
+- [ ] New CodeInspector rules
+  - [ ] Rule for `ReadString` with `CharacterEncoding` option
+    - Bad:
+    ```wl
+    ReadString[file, CharacterEncoding -> "enc"]
+    ```
+    - Recommendation:
+    ```wl
+    ByteArrayToString[ReadByteArray[file], "enc"]
+    ```
+  - [ ] Rule for `Nothing` in associations
+    - Nothing does not get dropped from the association:
+      ```wl
+      In[9]:= <|"a" -> 1, "b" -> Nothing|>
+
+      Out[9]= <|"a" -> 1, "b" -> Nothing|>
+      ```
+  - [ ] Rule for `KeyExistsQ` with nested key paths
+    - Valid, but likely a mistake (this does not represent a nested key path):
+      ```wl
+      KeyExistsQ[assoc, {"k1", "k2", ...}]
+      ```
+    - Recommendation:
+      ```wl
+      ! MissingQ @ assoc["k1", "k2", ...]
+      ```
+
 ## Prompts
 
 - [ ] Implement `Documentation` prompt
