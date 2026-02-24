@@ -22,7 +22,7 @@ $toolUIAssociations = <|
 clientSupportsUIQ // beginDefinition;
 
 clientSupportsUIQ[ msg_Association ] :=
-    KeyExistsQ[ msg, { "params", "capabilities", "extensions", "io.modelcontextprotocol/ui" } ];
+    ! MissingQ @ msg[ "params", "capabilities", "extensions", "io.modelcontextprotocol/ui" ];
 
 clientSupportsUIQ[ _ ] := False;
 

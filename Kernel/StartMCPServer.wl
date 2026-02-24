@@ -58,7 +58,7 @@ startMCPServer[ obj_ ] /; $Notebooks :=
 (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
 startMCPServer[ obj_MCPServerObject ] := Enclose[
     Block[ { $currentMCPServer = obj },
-        superQuiet @ Module[ { logFile, llmTools, toolList, promptList, promptLookup, init, response },
+        superQuiet @ Module[ { logFile, llmTools, toolList, promptList, promptLookup, response },
 
         SetOptions[ First @ Streams[ "stdout" ], CharacterEncoding -> "UTF-8" ];
         SetOptions[ First @ Streams[ "stderr" ], CharacterEncoding -> "UTF-8" ];
@@ -80,11 +80,11 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
 
         promptList   = ConfirmMatch[ makePromptData @ obj[ "PromptData" ], { ___Association }, "PromptData" ];
         promptLookup = ConfirmBy[ makePromptLookup @ obj[ "PromptData" ], AssociationQ, "PromptLookup" ];
-        init         = ConfirmBy[ initResponse @ obj, AssociationQ, "InitResponse" ];
+
+        initializeUIResources[ ];
 
         Block[
             {
-                $initResult   = init,
                 $toolList     = toolList,
                 $llmTools     = llmTools,
                 $promptList   = promptList,
@@ -262,8 +262,9 @@ handleMethod // beginDefinition;
    https://modelcontextprotocol.io/specification/2025-11-25/client/roots#protocol-messages *)
 handleMethod[ "initialize", msg_, req_ ] := (
     $clientName = Replace[ msg[[ "params", "clientInfo", "name" ]], Except[ _String ] :> None ];
+    $clientSupportsUI = clientSupportsUIQ @ msg;
     If[ ! stderrEnabledQ[ ], $Messages = { } ];
-    <| req, "result" -> $initResult |>
+    <| req, "result" -> initResponse[ $currentMCPServer, msg ] |>
 );
 
 handleMethod[ "ping"          , msg_, req_ ] := <| req, "result" -> <| |> |>;
@@ -634,7 +635,13 @@ initResponse // beginDefinition;
 initResponse[ obj_MCPServerObject ] :=
     initResponse[ obj[ "Name" ], obj[ "ServerVersion" ], obj[ "Tools" ], obj[ "Prompts" ] ];
 
-initResponse[ name_String, version_String, tools0: { ___LLMTool }, prompts_ ] := Enclose[
+initResponse[ obj_MCPServerObject, clientMsg_Association ] :=
+    initResponse[ obj[ "Name" ], obj[ "ServerVersion" ], obj[ "Tools" ], obj[ "Prompts" ], clientMsg ];
+
+initResponse[ name_String, version_String, tools0: { ___LLMTool }, prompts_ ] :=
+    initResponse[ name, version, tools0, prompts, <| |> ];
+
+initResponse[ name_String, version_String, tools0: { ___LLMTool }, prompts_, clientMsg_Association ] := Enclose[
     Module[ { tools, instructions },
         tools = If[ Length @ tools0 > 0, <| "listChanged" -> True |>, <| |> ];
         instructions = ConfirmMatch[ makeInstructions @ prompts, _Missing | _String, "Instructions" ];
@@ -642,10 +649,16 @@ initResponse[ name_String, version_String, tools0: { ___LLMTool }, prompts_ ] :=
             "protocolVersion" -> $protocolVersion,
             "instructions"    -> instructions,
             "capabilities" -> <|
-                (* TODO: support logging *)
                 "prompts" -> <| |>,
-                (* TODO: support resources *)
-                "tools" -> tools
+                "tools" -> tools,
+                If[ TrueQ @ $clientSupportsUI,
+                    "extensions" -> <|
+                        "io.modelcontextprotocol/ui" -> <|
+                            "mimeTypes" -> { "text/html;profile=mcp-app" }
+                        |>
+                    |>,
+                    Nothing
+                ]
             |>,
             "serverInfo" -> <| "name" -> name, "version" -> version |>
         |>

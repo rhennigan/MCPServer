@@ -11,6 +11,7 @@
         "LOCALBASE",
         "MCPB",
         "mcpserver",
+        "modelcontextprotocol",
         "Multicolumn",
         "newclient",
         "noinit",
