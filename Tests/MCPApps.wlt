@@ -344,9 +344,9 @@ VerificationTest[
         Wolfram`MCPServer`Common`initializeUIResources[ ];
         Sort @ Keys @ Wolfram`MCPServer`Common`$uiResourceRegistry
     ],
-    { "ui://wolfram/evaluator-viewer", "ui://wolfram/wolframalpha-viewer" },
+    { "ui://wolfram/evaluator-viewer", "ui://wolfram/mcp-apps-test", "ui://wolfram/notebook-viewer", "ui://wolfram/wolframalpha-viewer" },
     SameTest -> Equal,
-    TestID   -> "InitializeUIResources-LoadsBothApps@@Tests/MCPApps.wlt:342,1-350,2"
+    TestID   -> "InitializeUIResources-LoadsAllApps@@Tests/MCPApps.wlt:342,1-350,2"
 ]
 
 VerificationTest[
@@ -439,9 +439,9 @@ VerificationTest[
         Wolfram`MCPServer`Common`initializeUIResources[ ];
         Length @ Wolfram`MCPServer`Common`listUIResources[ ]
     ],
-    2,
+    4,
     SameTest -> Equal,
-    TestID   -> "ListUIResources-ReturnsTwoResources@@Tests/MCPApps.wlt:434,1-445,2"
+    TestID   -> "ListUIResources-ReturnsFourResources@@Tests/MCPApps.wlt:434,1-445,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -484,7 +484,7 @@ VerificationTest[
         Wolfram`MCPServer`Common`initializeUIResources[ ];
         Sort @ Map[ #[ "uri" ] &, Wolfram`MCPServer`Common`listUIResources[ ] ]
     ],
-    { "ui://wolfram/evaluator-viewer", "ui://wolfram/wolframalpha-viewer" },
+    { "ui://wolfram/evaluator-viewer", "ui://wolfram/mcp-apps-test", "ui://wolfram/notebook-viewer", "ui://wolfram/wolframalpha-viewer" },
     SameTest -> Equal,
     TestID   -> "ListUIResources-CorrectURIs@@Tests/MCPApps.wlt:479,1-490,2"
 ]

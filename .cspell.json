@@ -4,6 +4,7 @@
         "buildx",
         "CICD",
         "dpkg",
+        "Embedder",
         "ENTITLEMENTID",
         "Legended",
         "libgomp",
@@ -22,6 +23,7 @@
         "prebuild",
         "pwfile",
         "reranking",
+        "sandboxed",
         "saoudrizwan",
         "shdw",
         "Stylesheet",
@@ -35,7 +37,8 @@
         "wolframalpha",
         "wolframengine",
         "WOLFRAMINIT",
-        "wolframresearch"
+        "wolframresearch",
+        "zoomable"
     ],
     "ignoreRegExpList": [
         "\\:\\:[a-z]+", // message names
