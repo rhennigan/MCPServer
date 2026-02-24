@@ -27,6 +27,35 @@ VerificationTest[
 ]
 ```
 
+### Creating New Test Files
+
+Always start new test files with the following boilerplate:
+
+```wl
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Initialization*)
+VerificationTest[
+    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
+    Null,
+    SameTest -> MatchQ,
+    TestID   -> "GetDefinitions"
+]
+
+VerificationTest[
+    Needs[ "Wolfram`MCPServer`" ],
+    Null,
+    SameTest -> MatchQ,
+    TestID   -> "LoadContext"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Name of First Section*)
+```
+
+The first test defines some helper functions and ensures that the paclet is loaded from the correct directory. The second test puts the main context into scope.
+
 ## TestID Conventions
 
 - Every test should have a `TestID` specification
