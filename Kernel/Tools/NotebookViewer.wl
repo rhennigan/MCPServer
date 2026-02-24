@@ -1,7 +1,7 @@
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Tools`EmbedNotebook`" ];
+BeginPackage[ "Wolfram`MCPServer`Tools`NotebookViewer`" ];
 Begin[ "`Private`" ];
 
 Needs[ "Wolfram`MCPServer`"        ];
@@ -11,19 +11,19 @@ Needs[ "Wolfram`MCPServer`Tools`"  ];
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Prompts*)
-$embedNotebookDescription = "\
-Embed an interactive Wolfram Cloud notebook inline. Provide a cloud notebook URL and the notebook will be rendered \
+$notebookViewerDescription = "\
+View an interactive Wolfram Cloud notebook inline. Provide a cloud notebook URL and the notebook will be rendered \
 using the Wolfram Notebook Embedder, allowing the user to view and interact with the notebook directly.";
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Tool Definition*)
 (* Add to $defaultMCPTools Association (initialized in Kernel/Tools/Tools.wl) *)
-$defaultMCPTools[ "EmbedNotebook" ] := LLMTool @ <|
-    "Name"        -> "EmbedNotebook",
-    "DisplayName" -> "Embed Notebook",
-    "Description" -> $embedNotebookDescription,
-    "Function"    -> embedNotebookEvaluate,
+$defaultMCPTools[ "NotebookViewer" ] := LLMTool @ <|
+    "Name"        -> "NotebookViewer",
+    "DisplayName" -> "Notebook Viewer",
+    "Description" -> $notebookViewerDescription,
+    "Function"    -> notebookViewerEvaluate,
     "Options"     -> { },
     "Parameters"  -> {
         "url" -> <|
@@ -50,10 +50,10 @@ $defaultMCPTools[ "EmbedNotebook" ] := LLMTool @ <|
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*embedNotebookEvaluate*)
-embedNotebookEvaluate // beginDefinition;
+(*notebookViewerEvaluate*)
+notebookViewerEvaluate // beginDefinition;
 
-embedNotebookEvaluate[ args_Association ] := Enclose[
+notebookViewerEvaluate[ args_Association ] := Enclose[
     Module[ { url, allowInteract, maxHeight, responseData, json },
         url            = ConfirmBy[ args[ "url" ], StringQ, "URL" ];
         allowInteract  = Replace[ args[ "allowInteract" ], Except[ True | False ] -> True ];
@@ -69,7 +69,7 @@ embedNotebookEvaluate[ args_Association ] := Enclose[
     throwInternalFailure
 ];
 
-embedNotebookEvaluate // endDefinition;
+notebookViewerEvaluate // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

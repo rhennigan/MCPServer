@@ -12,7 +12,7 @@ Needs[ "Wolfram`MCPServer`Common`" ];
 
 (* Mapping of tool names to their associated UI resource URIs *)
 $toolUIAssociations = <|
-    "EmbedNotebook"            -> "ui://wolfram/notebook-viewer",
+    "NotebookViewer"           -> "ui://wolfram/notebook-viewer",
     "MCPAppsTest"              -> "ui://wolfram/mcp-apps-test",
     "WolframAlpha"             -> "ui://wolfram/wolframalpha-viewer",
     "WolframLanguageEvaluator" -> "ui://wolfram/evaluator-viewer"
