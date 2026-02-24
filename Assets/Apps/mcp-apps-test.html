@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP Apps Test</title>
+    <style>
+        :root {
+            --app-bg: #ffffff;
+            --app-fg: #1a1a2e;
+            --card-bg: #f8f9fa;
+            --border-color: #dee2e6;
+            --success-color: #28a745;
+            --pending-color: #6c757d;
+            --accent-color: #0066cc;
+            --log-bg: #f1f3f5;
+            --log-entry-border: #e9ecef;
+            --input-bg: #ffffff;
+            --input-border: #ced4da;
+            --button-bg: #0066cc;
+            --button-fg: #ffffff;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --app-bg: #1a1a2e;
+                --app-fg: #e0e0e0;
+                --card-bg: #252540;
+                --border-color: #3a3a5c;
+                --success-color: #4caf50;
+                --pending-color: #888888;
+                --accent-color: #5599ff;
+                --log-bg: #1e1e36;
+                --log-entry-border: #2e2e4a;
+                --input-bg: #2a2a48;
+                --input-border: #4a4a6c;
+                --button-bg: #4488dd;
+                --button-fg: #ffffff;
+            }
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+            font-size: 14px;
+            background: var(--app-bg);
+            color: var(--app-fg);
+            padding: 16px;
+            line-height: 1.5;
+        }
+        h1 { font-size: 1.3em; margin-bottom: 12px; }
+        h2 { font-size: 1.05em; margin-bottom: 8px; color: var(--accent-color); }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg, 8px);
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        .checklist { list-style: none; }
+        .checklist li {
+            padding: 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .check-icon {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid var(--pending-color);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: transparent;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        .check-icon.done {
+            border-color: var(--success-color);
+            background: var(--success-color);
+            color: #fff;
+        }
+        .data-section { margin-top: 8px; }
+        .data-label { font-weight: 600; font-size: 0.85em; margin-bottom: 2px; }
+        .data-value {
+            font-family: var(--font-mono, "SF Mono", "Fira Code", monospace);
+            font-size: 0.85em;
+            background: var(--log-bg);
+            padding: 6px 8px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .call-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .call-row input {
+            flex: 1;
+            padding: 6px 10px;
+            border: 1px solid var(--input-border);
+            border-radius: var(--border-radius-md, 6px);
+            background: var(--input-bg);
+            color: var(--app-fg);
+            font-size: 0.9em;
+        }
+        .call-row button {
+            padding: 6px 16px;
+            border: none;
+            border-radius: var(--border-radius-md, 6px);
+            background: var(--button-bg);
+            color: var(--button-fg);
+            cursor: pointer;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+        .call-row button:hover { opacity: 0.85; }
+        .call-row button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .call-result {
+            margin-top: 6px;
+            font-size: 0.85em;
+            font-family: var(--font-mono, monospace);
+        }
+        #event-log {
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: var(--font-mono, "SF Mono", "Fira Code", monospace);
+            font-size: 0.8em;
+            background: var(--log-bg);
+            border-radius: 4px;
+            padding: 8px;
+        }
+        .log-entry {
+            padding: 3px 0;
+            border-bottom: 1px solid var(--log-entry-border);
+        }
+        .log-entry:last-child { border-bottom: none; }
+        .log-ts { color: var(--pending-color); margin-right: 6px; }
+        .log-dir { margin-right: 4px; }
+        .log-dir.in { color: var(--success-color); }
+        .log-dir.out { color: var(--accent-color); }
+        .theme-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 2px 12px;
+            font-size: 0.85em;
+        }
+        .theme-grid dt { font-weight: 600; }
+        .theme-grid dd { font-family: var(--font-mono, monospace); }
+    </style>
+</head>
+<body>
+    <h1>MCP Apps Pipeline Test</h1>
+
+    <!-- Pipeline Status -->
+    <div class="card">
+        <h2>Pipeline Status</h2>
+        <ul class="checklist">
+            <li><span class="check-icon" id="chk-init">&#10003;</span> ui/initialize</li>
+            <li><span class="check-icon" id="chk-input">&#10003;</span> tool-input</li>
+            <li><span class="check-icon" id="chk-result">&#10003;</span> tool-result</li>
+            <li><span class="check-icon" id="chk-theme">&#10003;</span> Host theming</li>
+            <li><span class="check-icon" id="chk-call">&#10003;</span> App-initiated tools/call</li>
+        </ul>
+    </div>
+
+    <!-- Tool Data -->
+    <div class="card">
+        <h2>Tool Data</h2>
+        <div class="data-section">
+            <div class="data-label">Input Arguments</div>
+            <div class="data-value" id="tool-input-data">Waiting for tool-input...</div>
+        </div>
+        <div class="data-section" style="margin-top:8px">
+            <div class="data-label">Tool Result</div>
+            <div class="data-value" id="tool-result-data">Waiting for tool-result...</div>
+        </div>
+    </div>
+
+    <!-- Call Tool from App -->
+    <div class="card">
+        <h2>Call Tool from App</h2>
+        <p style="font-size:0.85em;margin-bottom:6px">Send a message to MCPAppsTest from within this app:</p>
+        <div class="call-row">
+            <input type="text" id="call-msg" placeholder="Enter a test message..." value="Hello from the app!">
+            <button id="call-btn">Call MCPAppsTest</button>
+        </div>
+        <div class="call-result" id="call-result"></div>
+    </div>
+
+    <!-- Theme Info -->
+    <div class="card">
+        <h2>Host Theme</h2>
+        <dl class="theme-grid">
+            <dt>Mode</dt>    <dd id="theme-mode">unknown</dd>
+            <dt>Locale</dt>  <dd id="theme-locale">unknown</dd>
+            <dt>Platform</dt><dd id="theme-platform">unknown</dd>
+        </dl>
+    </div>
+
+    <!-- Event Log -->
+    <div class="card">
+        <h2>Event Log</h2>
+        <div id="event-log"></div>
+    </div>
+
+    <script>
+    (function() {
+        "use strict";
+
+        // ---- State ----
+        var nextId = 1;
+        var pending = {}; // id -> { resolve, reject }
+
+        // ---- Logging ----
+        var logEl = document.getElementById("event-log");
+        function log(dir, method, detail) {
+            var entry = document.createElement("div");
+            entry.className = "log-entry";
+            var ts = new Date().toISOString().slice(11, 23);
+            var arrow = dir === "in" ? "\u2b05" : "\u27a1";
+            var dirClass = dir === "in" ? "in" : "out";
+            var summary = typeof detail === "string" ? detail : JSON.stringify(detail || {}).slice(0, 120);
+            entry.innerHTML =
+                '<span class="log-ts">' + ts + "</span>" +
+                '<span class="log-dir ' + dirClass + '">' + arrow + "</span>" +
+                "<strong>" + method + "</strong> " + summary;
+            logEl.appendChild(entry);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        // ---- Check helpers ----
+        function check(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.add("done");
+        }
+
+        // ---- postMessage transport ----
+        function send(msg) {
+            window.parent.postMessage(msg, "*");
+        }
+
+        function sendRequest(method, params) {
+            var id = nextId++;
+            var msg = { jsonrpc: "2.0", id: id, method: method, params: params || {} };
+            send(msg);
+            log("out", method, params);
+            return new Promise(function(resolve, reject) {
+                pending[id] = { resolve: resolve, reject: reject };
+            });
+        }
+
+        function sendNotification(method, params) {
+            var msg = { jsonrpc: "2.0", method: method };
+            if (params) msg.params = params;
+            send(msg);
+            log("out", method, params || "(notification)");
+        }
+
+        function sendResult(id, result) {
+            send({ jsonrpc: "2.0", id: id, result: result });
+        }
+
+        function sendError(id, code, message) {
+            send({ jsonrpc: "2.0", id: id, error: { code: code, message: message } });
+        }
+
+        // ---- Auto-resize ----
+        function setupAutoResize() {
+            if (typeof ResizeObserver === "undefined") return;
+            var observer = new ResizeObserver(function() {
+                var width = document.documentElement.scrollWidth;
+                var height = document.documentElement.scrollHeight;
+                sendNotification("ui/notifications/size-changed", {
+                    width: width,
+                    height: height
+                });
+            });
+            observer.observe(document.documentElement);
+            observer.observe(document.body);
+        }
+
+        // ---- Theme application ----
+        function applyTheme(ctx) {
+            if (!ctx) return;
+
+            // Apply CSS variables from host
+            if (ctx.styles && ctx.styles.css) {
+                var vars = ctx.styles.css.variables;
+                if (vars) {
+                    var keys = Object.keys(vars);
+                    for (var i = 0; i < keys.length; i++) {
+                        document.documentElement.style.setProperty(keys[i], vars[keys[i]]);
+                    }
+                }
+                // Apply custom fonts
+                if (ctx.styles.css.fonts && ctx.styles.css.fonts.length) {
+                    for (var j = 0; j < ctx.styles.css.fonts.length; j++) {
+                        var style = document.createElement("style");
+                        style.textContent = ctx.styles.css.fonts[j];
+                        document.head.appendChild(style);
+                    }
+                }
+            }
+
+            // Also check top-level styles.variables (alternate structure)
+            if (ctx.styles && ctx.styles.variables) {
+                var topVars = ctx.styles.variables;
+                var topKeys = Object.keys(topVars);
+                for (var k = 0; k < topKeys.length; k++) {
+                    document.documentElement.style.setProperty(topKeys[k], topVars[topKeys[k]]);
+                }
+            }
+
+            // Display theme info
+            var mode = (ctx.appearance && ctx.appearance.colorScheme) || ctx.theme || "unknown";
+            document.getElementById("theme-mode").textContent = mode;
+
+            if (ctx.locale) {
+                document.getElementById("theme-locale").textContent = ctx.locale;
+            }
+            if (ctx.platform) {
+                document.getElementById("theme-platform").textContent = ctx.platform;
+            }
+
+            check("chk-theme");
+        }
+
+        // ---- Incoming message handler ----
+        window.addEventListener("message", function(event) {
+            // Only accept messages from parent
+            if (event.source !== window.parent) return;
+
+            var msg = event.data;
+            if (!msg || typeof msg !== "object" || msg.jsonrpc !== "2.0") return;
+
+            // Handle responses to our requests
+            if (msg.id != null && pending[msg.id]) {
+                var p = pending[msg.id];
+                delete pending[msg.id];
+                if (msg.error) {
+                    log("in", "response/error", msg.error);
+                    p.reject(msg.error);
+                } else {
+                    log("in", "response/result", msg.result);
+                    p.resolve(msg.result);
+                }
+                return;
+            }
+
+            // Handle notifications and requests from host
+            var method = msg.method;
+            if (!method) return;
+
+            log("in", method, msg.params);
+
+            switch (method) {
+                case "ui/notifications/tool-input":
+                    check("chk-input");
+                    document.getElementById("tool-input-data").textContent =
+                        JSON.stringify(msg.params && msg.params.arguments, null, 2) || "(no arguments)";
+                    break;
+
+                case "ui/notifications/tool-input-partial":
+                    document.getElementById("tool-input-data").textContent =
+                        JSON.stringify(msg.params && msg.params.arguments, null, 2) || "(partial)";
+                    break;
+
+                case "ui/notifications/tool-result":
+                    check("chk-result");
+                    document.getElementById("tool-result-data").textContent =
+                        JSON.stringify(msg.params, null, 2) || "(no result)";
+                    break;
+
+                case "ui/notifications/tool-cancelled":
+                    document.getElementById("tool-result-data").textContent = "(cancelled)";
+                    break;
+
+                case "ui/notifications/host-context-changed":
+                    applyTheme(msg.params);
+                    break;
+
+                case "ui/resource-teardown":
+                    log("in", "teardown", "cleaning up");
+                    if (msg.id != null) sendResult(msg.id, {});
+                    break;
+
+                default:
+                    if (msg.id != null) {
+                        sendError(msg.id, -32601, "Method not found: " + method);
+                    }
+                    break;
+            }
+        });
+
+        // ---- Initialize ----
+        sendRequest("ui/initialize", {
+            protocolVersion: "2026-01-26",
+            appInfo: {
+                name: "mcp-apps-test",
+                version: "1.0.0"
+            },
+            appCapabilities: {
+                availableDisplayModes: ["inline"],
+                tools: { listChanged: false }
+            }
+        }).then(function(result) {
+            check("chk-init");
+
+            // Send the required initialized notification
+            sendNotification("ui/notifications/initialized");
+
+            // Set up auto-resize reporting
+            setupAutoResize();
+
+            // Apply initial host context
+            if (result) {
+                applyTheme(result.hostContext || result.context || result);
+            }
+        }).catch(function(err) {
+            log("in", "init-error", err);
+        });
+
+        // ---- Call tool from app ----
+        document.getElementById("call-btn").addEventListener("click", function() {
+            var input = document.getElementById("call-msg");
+            var btn = document.getElementById("call-btn");
+            var resultEl = document.getElementById("call-result");
+            var message = input.value.trim();
+            if (!message) return;
+
+            btn.disabled = true;
+            resultEl.textContent = "Calling...";
+
+            sendRequest("tools/call", {
+                name: "MCPAppsTest",
+                arguments: { message: message }
+            }).then(function(result) {
+                check("chk-call");
+                resultEl.textContent = JSON.stringify(result, null, 2);
+                btn.disabled = false;
+            }).catch(function(err) {
+                resultEl.textContent = "Error: " + JSON.stringify(err);
+                btn.disabled = false;
+            });
+        });
+    })();
+    </script>
+</body>
+</html>
