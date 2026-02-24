@@ -137,16 +137,31 @@ readUIResource // endDefinition;
 (*toolUIMetadata*)
 toolUIMetadata // beginDefinition;
 
-toolUIMetadata[ toolName_String ] /; TrueQ @ $clientSupportsUI :=
-    toolUIMetadata[ toolName, Lookup[ $toolUIAssociations, toolName, None ] ];
+toolUIMetadata[ toolName_String ] :=
+    If[ TrueQ @ $clientSupportsUI,
+        toolUIMetadata[ toolName, Lookup[ $toolUIAssociations, toolName, None ] ],
+        { }
+    ];
 
 toolUIMetadata[ toolName_String, uri_String ] :=
     { "_meta" -> <| "ui" -> <| "resourceUri" -> uri, "visibility" -> { "model", "app" } |> |> };
 
 toolUIMetadata[ toolName_String, None ] := { };
-toolUIMetadata[ _String ] := { };
 
 toolUIMetadata // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*withToolUIMetadata*)
+withToolUIMetadata // beginDefinition;
+
+withToolUIMetadata[ tools_List ] :=
+    Map[
+        Function[ tool, Join[ tool, Association @ toolUIMetadata[ tool[ "name" ] ] ] ],
+        tools
+    ];
+
+withToolUIMetadata // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

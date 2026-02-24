@@ -750,4 +750,224 @@ VerificationTest[
     TestID   -> "HandleMethod-ResourcesRead-UnknownURI@@Tests/MCPApps.wlt:731,1-751,2"
 ]
 
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*toolUIMetadata*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Returns _meta for Known Tool When UI Supported*)
+VerificationTest[
+    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
+        Wolfram`MCPServer`Common`toolUIMetadata[ "WolframAlpha" ]
+    ],
+    { "_meta" -> _Association },
+    SameTest -> MatchQ,
+    TestID   -> "ToolUIMetadata-KnownToolWithUI@@Tests/MCPApps.wlt:760,1-767,2"
+]
+
+VerificationTest[
+    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
+        meta = Wolfram`MCPServer`Common`toolUIMetadata[ "WolframAlpha" ];
+        ("_meta" /. meta)[ "ui", "resourceUri" ]
+    ],
+    "ui://wolfram/wolframalpha-viewer",
+    SameTest -> Equal,
+    TestID   -> "ToolUIMetadata-CorrectResourceURI@@Tests/MCPApps.wlt:769,1-777,2"
+]
+
+VerificationTest[
+    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
+        meta = Wolfram`MCPServer`Common`toolUIMetadata[ "WolframAlpha" ];
+        ("_meta" /. meta)[ "ui", "visibility" ]
+    ],
+    { "model", "app" },
+    SameTest -> Equal,
+    TestID   -> "ToolUIMetadata-CorrectVisibility@@Tests/MCPApps.wlt:779,1-787,2"
+]
+
+VerificationTest[
+    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
+        Wolfram`MCPServer`Common`toolUIMetadata[ "WolframLanguageEvaluator" ]
+    ],
+    { "_meta" -> KeyValuePattern[ "ui" -> KeyValuePattern[ "resourceUri" -> "ui://wolfram/evaluator-viewer" ] ] },
+    SameTest -> MatchQ,
+    TestID   -> "ToolUIMetadata-EvaluatorTool@@Tests/MCPApps.wlt:789,1-796,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Returns Empty for Unknown or Unsupported Tools*)
+VerificationTest[
+    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
+        Wolfram`MCPServer`Common`toolUIMetadata[ "UnknownTool" ]
+    ],
+    { },
+    SameTest -> Equal,
+    TestID   -> "ToolUIMetadata-UnknownTool@@Tests/MCPApps.wlt:801,1-808,2"
+]
+
+VerificationTest[
+    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = False },
+        Wolfram`MCPServer`Common`toolUIMetadata[ "WolframAlpha" ]
+    ],
+    { },
+    SameTest -> Equal,
+    TestID   -> "ToolUIMetadata-KnownToolNoUI@@Tests/MCPApps.wlt:810,1-817,2"
+]
+
+VerificationTest[
+    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI },
+        Wolfram`MCPServer`Common`toolUIMetadata[ "WolframAlpha" ]
+    ],
+    { },
+    SameTest -> Equal,
+    TestID   -> "ToolUIMetadata-KnownToolUIUnset@@Tests/MCPApps.wlt:819,1-826,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*withToolUIMetadata*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Adds _meta When UI Supported*)
+VerificationTest[
+    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
+        tools = {
+            <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |>,
+            <| "name" -> "OtherTool",    "description" -> "test", "inputSchema" -> <| |> |>
+        };
+        result = Wolfram`MCPServer`Common`withToolUIMetadata @ tools;
+        KeyExistsQ[ result[[ 1 ]], "_meta" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "WithToolUIMetadata-AddsMetaToKnownTool@@Tests/MCPApps.wlt:835,1-847,2"
+]
+
+VerificationTest[
+    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
+        tools = {
+            <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |>,
+            <| "name" -> "OtherTool",    "description" -> "test", "inputSchema" -> <| |> |>
+        };
+        result = Wolfram`MCPServer`Common`withToolUIMetadata @ tools;
+        KeyExistsQ[ result[[ 2 ]], "_meta" ]
+    ],
+    False,
+    SameTest -> Equal,
+    TestID   -> "WithToolUIMetadata-NoMetaForUnknownTool@@Tests/MCPApps.wlt:849,1-861,2"
+]
+
+VerificationTest[
+    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
+        tools = {
+            <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |>
+        };
+        result = Wolfram`MCPServer`Common`withToolUIMetadata @ tools;
+        result[[ 1, "_meta", "ui", "resourceUri" ]]
+    ],
+    "ui://wolfram/wolframalpha-viewer",
+    SameTest -> Equal,
+    TestID   -> "WithToolUIMetadata-CorrectMetaContent@@Tests/MCPApps.wlt:863,1-874,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*No Changes When UI Not Supported*)
+VerificationTest[
+    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = False },
+        tools = {
+            <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |>
+        };
+        Wolfram`MCPServer`Common`withToolUIMetadata @ tools
+    ],
+    { <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |> },
+    SameTest -> Equal,
+    TestID   -> "WithToolUIMetadata-NoChangesWhenNoUI@@Tests/MCPApps.wlt:879,1-889,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Preserves Existing Fields*)
+VerificationTest[
+    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
+        tools = {
+            <| "name" -> "WolframAlpha", "description" -> "WA tool", "inputSchema" -> <| "type" -> "object" |> |>
+        };
+        result = Wolfram`MCPServer`Common`withToolUIMetadata @ tools;
+        { result[[ 1, "name" ]], result[[ 1, "description" ]], result[[ 1, "inputSchema" ]] }
+    ],
+    { "WolframAlpha", "WA tool", <| "type" -> "object" |> },
+    SameTest -> Equal,
+    TestID   -> "WithToolUIMetadata-PreservesExistingFields@@Tests/MCPApps.wlt:894,1-905,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*handleMethod - tools/list Integration*)
+
+VerificationTest[
+    Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = True,
+        Wolfram`MCPServer`StartMCPServer`Private`$toolList = {
+            <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |>,
+            <| "name" -> "OtherTool",    "description" -> "test", "inputSchema" -> <| |> |>
+        }
+    },
+        result = Wolfram`MCPServer`StartMCPServer`Private`handleMethod[
+            "tools/list",
+            <| "method" -> "tools/list", "params" -> <| |> |>,
+            <| "jsonrpc" -> "2.0", "id" -> 1 |>
+        ];
+        waTool = SelectFirst[ result[ "result", "tools" ], #[ "name" ] === "WolframAlpha" & ];
+        KeyExistsQ[ waTool, "_meta" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "HandleMethod-ToolsList-UIMetaPresent@@Tests/MCPApps.wlt:911,1-930,2"
+]
+
+VerificationTest[
+    Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = True,
+        Wolfram`MCPServer`StartMCPServer`Private`$toolList = {
+            <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |>,
+            <| "name" -> "OtherTool",    "description" -> "test", "inputSchema" -> <| |> |>
+        }
+    },
+        result = Wolfram`MCPServer`StartMCPServer`Private`handleMethod[
+            "tools/list",
+            <| "method" -> "tools/list", "params" -> <| |> |>,
+            <| "jsonrpc" -> "2.0", "id" -> 1 |>
+        ];
+        otherTool = SelectFirst[ result[ "result", "tools" ], #[ "name" ] === "OtherTool" & ];
+        KeyExistsQ[ otherTool, "_meta" ]
+    ],
+    False,
+    SameTest -> Equal,
+    TestID   -> "HandleMethod-ToolsList-NoMetaForUnlinkedTool@@Tests/MCPApps.wlt:932,1-951,2"
+]
+
+VerificationTest[
+    Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = False,
+        Wolfram`MCPServer`StartMCPServer`Private`$toolList = {
+            <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |>
+        }
+    },
+        result = Wolfram`MCPServer`StartMCPServer`Private`handleMethod[
+            "tools/list",
+            <| "method" -> "tools/list", "params" -> <| |> |>,
+            <| "jsonrpc" -> "2.0", "id" -> 1 |>
+        ];
+        waTool = First @ result[ "result", "tools" ];
+        KeyExistsQ[ waTool, "_meta" ]
+    ],
+    False,
+    SameTest -> Equal,
+    TestID   -> "HandleMethod-ToolsList-NoMetaWhenNoUI@@Tests/MCPApps.wlt:953,1-971,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)

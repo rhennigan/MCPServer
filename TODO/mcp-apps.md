@@ -10,7 +10,7 @@ For any task that involves writing non-trivial Wolfram Language code, please wri
 - [x] Extension negotiation
 - [x] UI resource registry
 - [x] Resource handlers
-- [ ] Tool metadata
+- [x] Tool metadata
 - [ ] Fully review and verify phase 1 code
 
 - [ ] Interactively Test the MCP Apps extension

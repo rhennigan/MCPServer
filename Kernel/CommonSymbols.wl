@@ -93,5 +93,6 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `loadUIResource;
 `readUIResource;
 `toolUIMetadata;
+`withToolUIMetadata;
 
 EndPackage[ ];

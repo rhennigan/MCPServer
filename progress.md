@@ -79,3 +79,19 @@ Completed resource handlers (Phase 1.3 from spec):
 Key learnings:
 - `throwFailure` only throws (via `Throw`) when `$catching` is `True` (inside `catchAlways`/`catchMine`). Otherwise it returns a `Failure` without throwing. Code after `If[..., throwFailure[...]]; ...` will continue executing when `$catching` is False — use `If/Else` pattern instead of `If; continue`
 - Tests that invoke error paths emitting messages need `Quiet` wrapper to avoid `MessagesFailure` outcomes
+
+## Session 5
+
+Completed tool metadata (Phase 1.4 from spec):
+
+- Fixed `toolUIMetadata` in `UIResources.wl`: replaced `/; TrueQ @ $clientSupportsUI` conditional definition + catch-all `_String` fallback with a single definition using `If[TrueQ @ $clientSupportsUI, ..., {}]` to avoid the `endDefinition` reordering bug
+- Added `withToolUIMetadata` function in `UIResources.wl`: takes a list of tool associations and adds `_meta.ui` to each tool that has a UI resource association in `$toolUIAssociations`
+- Declared `withToolUIMetadata` in `CommonSymbols.wl`
+- Modified `handleMethod["tools/list", ...]` in `StartMCPServer.wl` to call `withToolUIMetadata @ $toolList` instead of returning `$toolList` directly — this is needed because `$toolList` is pre-computed at startup before `$clientSupportsUI` is set during the `initialize` handshake
+- Wrote 16 new unit tests covering:
+  - `toolUIMetadata`: known tools return `_meta` with correct resourceUri and visibility, evaluator tool mapping, empty for unknown tools, empty when UI not supported, empty when UI unset
+  - `withToolUIMetadata`: adds `_meta` to known tools, no `_meta` for unknown tools, correct meta content, no changes when UI not supported, preserves existing fields
+  - `handleMethod["tools/list"]` integration: `_meta` present for UI-linked tools, absent for unlinked tools, absent when UI not supported
+
+Key design note:
+- `$toolList` is pre-computed during `startMCPServer` init (before `$clientSupportsUI` is known), so UI metadata must be added dynamically at request time via `withToolUIMetadata`, not during the initial `Map` over tools
