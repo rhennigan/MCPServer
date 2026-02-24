@@ -95,3 +95,19 @@ Completed tool metadata (Phase 1.4 from spec):
 
 Key design note:
 - `$toolList` is pre-computed during `startMCPServer` init (before `$clientSupportsUI` is known), so UI metadata must be added dynamically at request time via `withToolUIMetadata`, not during the initial `Map` over tools
+
+## Session 6
+
+Completed full review and verification of phase 1 code:
+
+- Reviewed all phase 1 implementation files: `UIResources.wl`, `StartMCPServer.wl`, `CommonSymbols.wl`, `Messages.wl`, `PacletInfo.wl`, `Assets/Apps/`, `Tests/MCPApps.wlt`
+- **Fixed cross-context symbol bug:** `writeError` and `debugPrint` used in `UIResources.wl` resolved to `Wolfram`MCPServer`UIResources`Private`` instead of `Wolfram`MCPServer`Common`` where the definitions live (defined in `StartMCPServer.wl`). The logging calls were effectively no-ops. Fixed by adding both symbols to `CommonSymbols.wl` as shared symbols.
+- Verified correct behavior with `SymbolDefinition` and raw `DownValues` inspection: `initializeUIResources` now correctly references `Wolfram`MCPServer`Common`writeError` and `Wolfram`MCPServer`Common`debugPrint`
+- All 60 MCP Apps tests pass; all other tests pass (6 pre-existing SymbolDefinition.wlt failures unrelated)
+- CodeInspector reports no issues on UIResources.wl
+- Confirmed all spec requirements for Phase 1 are met:
+  - Extension negotiation: `$clientSupportsUI` flag + `initResponse` extensions ✓
+  - UI resource registry: HTML + JSON loaded from paclet assets ✓
+  - Resource handlers: `resources/list` + `resources/read` ✓
+  - Tool metadata: `_meta.ui` attached dynamically via `withToolUIMetadata` ✓
+  - Graceful degradation: non-UI clients get empty resources, no metadata ✓
