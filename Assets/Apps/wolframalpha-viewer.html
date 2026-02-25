@@ -4,9 +4,532 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WolframAlpha Interactive Viewer</title>
+    <style>
+        :root {
+            --app-bg: #ffffff;
+            --app-fg: #1a1a2e;
+            --border-color: #dee2e6;
+            --spinner-color: #0066cc;
+            --error-bg: #fff5f5;
+            --error-fg: #c53030;
+            --error-border: #feb2b2;
+            --input-bg: #ffffff;
+            --input-border: #ced4da;
+            --button-bg: #0066cc;
+            --button-fg: #ffffff;
+            --card-bg: #f8f9fa;
+            --accent-color: #0066cc;
+            --img-border: #e9ecef;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --app-bg: #1a1a2e;
+                --app-fg: #e0e0e0;
+                --border-color: #3a3a5c;
+                --spinner-color: #5599ff;
+                --error-bg: #2d1b1b;
+                --error-fg: #fc8181;
+                --error-border: #742a2a;
+                --input-bg: #2a2a48;
+                --input-border: #4a4a6c;
+                --button-bg: #4488dd;
+                --button-fg: #ffffff;
+                --card-bg: #252540;
+                --accent-color: #5599ff;
+                --img-border: #3a3a5c;
+            }
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+            font-size: 14px;
+            background: var(--app-bg);
+            color: var(--app-fg);
+            line-height: 1.5;
+        }
+        #query-bar {
+            display: flex;
+            gap: 8px;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--card-bg);
+            align-items: center;
+        }
+        #query-bar input {
+            flex: 1;
+            padding: 6px 10px;
+            border: 1px solid var(--input-border);
+            border-radius: var(--border-radius-md, 6px);
+            background: var(--input-bg);
+            color: var(--app-fg);
+            font-size: 0.95em;
+            font-family: inherit;
+        }
+        #query-bar input:focus {
+            outline: none;
+            border-color: var(--spinner-color);
+        }
+        #query-bar button {
+            padding: 6px 18px;
+            border: none;
+            border-radius: var(--border-radius-md, 6px);
+            background: var(--button-bg);
+            color: var(--button-fg);
+            cursor: pointer;
+            font-size: 0.95em;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        #query-bar button:hover { opacity: 0.85; }
+        #query-bar button:disabled { opacity: 0.5; cursor: not-allowed; }
+        #wa-link {
+            font-size: 0.85em;
+            color: var(--accent-color);
+            text-decoration: none;
+            white-space: nowrap;
+            display: none;
+        }
+        #wa-link:hover { text-decoration: underline; }
+        #error {
+            display: none;
+            padding: 12px 16px;
+            margin: 8px 12px;
+            background: var(--error-bg);
+            color: var(--error-fg);
+            border: 1px solid var(--error-border);
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+        #loading {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 32px 16px;
+            color: var(--app-fg);
+            opacity: 0.7;
+        }
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--spinner-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #notebook-container {
+            width: 100%;
+            min-height: 100px;
+        }
+        #notebook-container:empty { display: none; }
+        #results {
+            padding: 12px 16px;
+        }
+        #results:empty { display: none; }
+        .result-text {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        .result-image {
+            margin: 8px 0;
+            text-align: center;
+        }
+        .result-image img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid var(--img-border);
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
-    <!-- TODO: Implement WolframAlpha interactive viewer in Phase 2 -->
-    <p>WolframAlpha Interactive Viewer (placeholder)</p>
+    <div id="query-bar">
+        <input type="text" id="query-input" placeholder="Enter a WolframAlpha query..." />
+        <button id="go-btn">Go</button>
+        <a id="wa-link" href="#" target="_blank" rel="noopener">Open in W|A</a>
+    </div>
+    <div id="error"></div>
+    <div id="loading">
+        <div class="spinner"></div>
+        <span>Querying WolframAlpha...</span>
+    </div>
+    <div id="notebook-container"></div>
+    <div id="results"></div>
+
+    <script>
+    (function() {
+        "use strict";
+
+        // ---- State ----
+        var nextId = 1;
+        var pending = {};
+        var currentQuery = "";
+        var embedded = null;
+
+        // ---- Load WolframNotebookEmbedder dynamically ----
+        var embedderLoaded = new Promise(function(resolve, reject) {
+            var script = document.createElement("script");
+            script.src = "https://unpkg.com/wolfram-notebook-embedder@0.3/dist/wolfram-notebook-embedder.min.js";
+            script.crossOrigin = "";
+            script.onload = resolve;
+            script.onerror = function() {
+                // Non-fatal: embedder is optional; text+image fallback still works
+                reject(new Error("Failed to load WolframNotebookEmbedder library from CDN."));
+            };
+            document.head.appendChild(script);
+        });
+
+        // ---- DOM refs ----
+        var queryInput = document.getElementById("query-input");
+        var goBtn = document.getElementById("go-btn");
+        var waLink = document.getElementById("wa-link");
+        var errorEl = document.getElementById("error");
+        var loadingEl = document.getElementById("loading");
+        var notebookContainer = document.getElementById("notebook-container");
+        var resultsEl = document.getElementById("results");
+
+        // ---- Helpers ----
+        function showError(msg) {
+            errorEl.style.display = "block";
+            errorEl.textContent = msg;
+        }
+
+        function clearError() {
+            errorEl.style.display = "none";
+            errorEl.textContent = "";
+        }
+
+        function showLoading() {
+            loadingEl.style.display = "flex";
+        }
+
+        function hideLoading() {
+            loadingEl.style.display = "none";
+        }
+
+        function updateWALink(query) {
+            if (query) {
+                waLink.href = "https://www.wolframalpha.com/input?i=" + encodeURIComponent(query);
+                waLink.style.display = "inline";
+            } else {
+                waLink.style.display = "none";
+            }
+        }
+
+        // ---- Find notebookUrl in top-level _meta or content items ----
+        function findNotebookUrl(content, meta) {
+            // Check top-level _meta first (from tool-result notification)
+            if (meta && meta.notebookUrl) return meta.notebookUrl;
+            // Fall back to checking content items (from tools/call response)
+            if (!content || !Array.isArray(content)) return null;
+            for (var i = 0; i < content.length; i++) {
+                var item = content[i];
+                if (item && item._meta && item._meta.notebookUrl) {
+                    return item._meta.notebookUrl;
+                }
+            }
+            return null;
+        }
+
+        // ---- Detach previous notebook ----
+        function detachNotebook() {
+            if (embedded) {
+                embedded.detach();
+                embedded = null;
+            }
+            notebookContainer.innerHTML = "";
+        }
+
+        // ---- Embed a cloud notebook ----
+        function embedNotebook(url) {
+            detachNotebook();
+            resultsEl.innerHTML = "";
+            loadingEl.style.display = "flex";
+
+            embedderLoaded.then(function() {
+                return WolframNotebookEmbedder.embed(url, notebookContainer, {
+                    allowInteract: true,
+                    showRenderProgress: true,
+                    width: null,
+                    maxHeight: Infinity
+                });
+            }).then(function(nb) {
+                embedded = nb;
+                loadingEl.style.display = "none";
+            }).catch(function(err) {
+                loadingEl.style.display = "none";
+                // Embedder failed; text+image fallback content is already rendered
+            });
+        }
+
+        // ---- Render tool result content (text+image fallback) ----
+        function renderContent(content) {
+            resultsEl.innerHTML = "";
+
+            if (!content || !Array.isArray(content) || content.length === 0) return;
+
+            for (var i = 0; i < content.length; i++) {
+                var item = content[i];
+                if (!item || !item.type) continue;
+
+                // Skip metadata-only items (notebookUrl carrier)
+                if (item._meta && (!item.text || item.text === "")) continue;
+
+                if (item.type === "text" && item.text) {
+                    var div = document.createElement("div");
+                    div.className = "result-text";
+                    div.textContent = item.text;
+                    resultsEl.appendChild(div);
+                } else if (item.type === "image" && item.data && item.mimeType) {
+                    var imgDiv = document.createElement("div");
+                    imgDiv.className = "result-image";
+                    var img = document.createElement("img");
+                    img.src = "data:" + item.mimeType + ";base64," + item.data;
+                    img.alt = "WolframAlpha result";
+                    imgDiv.appendChild(img);
+                    resultsEl.appendChild(imgDiv);
+                }
+            }
+        }
+
+        function renderPlainText(text) {
+            resultsEl.innerHTML = "";
+            if (!text) return;
+            var div = document.createElement("div");
+            div.className = "result-text";
+            div.textContent = text;
+            resultsEl.appendChild(div);
+        }
+
+        // ---- Handle tool result: try notebook embed, or show error ----
+        function handleToolResult(content, meta) {
+            var notebookUrl = findNotebookUrl(content, meta);
+
+            if (notebookUrl) {
+                embedNotebook(notebookUrl);
+            } else {
+                // No notebook URL: show error instead of raw text
+                detachNotebook();
+                showError("Unable to load notebook. Click Go to retry.");
+            }
+        }
+
+        // ---- postMessage transport ----
+        function send(msg) {
+            window.parent.postMessage(msg, "*");
+        }
+
+        function sendRequest(method, params) {
+            var id = nextId++;
+            var msg = { jsonrpc: "2.0", id: id, method: method, params: params || {} };
+            send(msg);
+            return new Promise(function(resolve, reject) {
+                pending[id] = { resolve: resolve, reject: reject };
+            });
+        }
+
+        function sendNotification(method, params) {
+            var msg = { jsonrpc: "2.0", method: method };
+            if (params) msg.params = params;
+            send(msg);
+        }
+
+        function sendResult(id, result) {
+            send({ jsonrpc: "2.0", id: id, result: result });
+        }
+
+        function sendError(id, code, message) {
+            send({ jsonrpc: "2.0", id: id, error: { code: code, message: message } });
+        }
+
+        // ---- Auto-resize ----
+        function setupAutoResize() {
+            if (typeof ResizeObserver === "undefined") return;
+            var observer = new ResizeObserver(function() {
+                var width = document.documentElement.scrollWidth;
+                var height = document.documentElement.scrollHeight;
+                sendNotification("ui/notifications/size-changed", {
+                    width: width,
+                    height: height
+                });
+            });
+            observer.observe(document.documentElement);
+            observer.observe(document.body);
+        }
+
+        // ---- Theme application ----
+        function applyTheme(ctx) {
+            if (!ctx) return;
+            if (ctx.styles && ctx.styles.css) {
+                var vars = ctx.styles.css.variables;
+                if (vars) {
+                    var keys = Object.keys(vars);
+                    for (var i = 0; i < keys.length; i++) {
+                        document.documentElement.style.setProperty(keys[i], vars[keys[i]]);
+                    }
+                }
+                if (ctx.styles.css.fonts && ctx.styles.css.fonts.length) {
+                    for (var j = 0; j < ctx.styles.css.fonts.length; j++) {
+                        var style = document.createElement("style");
+                        style.textContent = ctx.styles.css.fonts[j];
+                        document.head.appendChild(style);
+                    }
+                }
+            }
+            if (ctx.styles && ctx.styles.variables) {
+                var topVars = ctx.styles.variables;
+                var topKeys = Object.keys(topVars);
+                for (var k = 0; k < topKeys.length; k++) {
+                    document.documentElement.style.setProperty(topKeys[k], topVars[topKeys[k]]);
+                }
+            }
+        }
+
+        // ---- Query bar: call WolframAlpha tool ----
+        function submitQuery(query) {
+            if (!query || !query.trim()) return;
+            query = query.trim();
+            currentQuery = query;
+            queryInput.value = query;
+            updateWALink(query);
+            clearError();
+            detachNotebook();
+            resultsEl.innerHTML = "";
+            showLoading();
+            goBtn.disabled = true;
+
+            sendRequest("tools/call", {
+                name: "WolframAlpha",
+                arguments: { query: query }
+            }).then(function(result) {
+                hideLoading();
+                goBtn.disabled = false;
+                if (result && result.content) {
+                    handleToolResult(result.content, result._meta);
+                } else if (result && typeof result === "string") {
+                    renderPlainText(result);
+                }
+            }).catch(function(err) {
+                hideLoading();
+                goBtn.disabled = false;
+                showError("Query failed: " + ((err && err.message) || JSON.stringify(err)));
+            });
+        }
+
+        goBtn.addEventListener("click", function() {
+            submitQuery(queryInput.value);
+        });
+
+        queryInput.addEventListener("keydown", function(e) {
+            if (e.key === "Enter") {
+                submitQuery(queryInput.value);
+            }
+        });
+
+        // ---- Incoming message handler ----
+        window.addEventListener("message", function(event) {
+            if (event.source !== window.parent) return;
+
+            var msg = event.data;
+            if (!msg || typeof msg !== "object" || msg.jsonrpc !== "2.0") return;
+
+            // Handle responses to our requests
+            if (msg.id != null && pending[msg.id]) {
+                var p = pending[msg.id];
+                delete pending[msg.id];
+                if (msg.error) {
+                    p.reject(msg.error);
+                } else {
+                    p.resolve(msg.result);
+                }
+                return;
+            }
+
+            // Handle notifications and requests from host
+            var method = msg.method;
+            if (!method) return;
+
+            switch (method) {
+                case "ui/notifications/tool-input":
+                    var args = (msg.params && msg.params.arguments) || {};
+                    var query = args.query || "";
+                    currentQuery = query;
+                    queryInput.value = query;
+                    updateWALink(query);
+                    if (query) {
+                        clearError();
+                        detachNotebook();
+                        resultsEl.innerHTML = "";
+                        showLoading();
+                    }
+                    break;
+
+                case "ui/notifications/tool-input-partial":
+                    var partialArgs = (msg.params && msg.params.arguments) || {};
+                    if (partialArgs.query != null) {
+                        queryInput.value = partialArgs.query;
+                    }
+                    break;
+
+                case "ui/notifications/tool-result":
+                    hideLoading();
+                    var params = msg.params || {};
+                    if (params.content && Array.isArray(params.content)) {
+                        handleToolResult(params.content, params._meta);
+                    } else if (params.text) {
+                        renderPlainText(params.text);
+                    }
+                    updateWALink(currentQuery);
+                    break;
+
+                case "ui/notifications/tool-cancelled":
+                    hideLoading();
+                    detachNotebook();
+                    break;
+
+                case "ui/notifications/host-context-changed":
+                    applyTheme(msg.params);
+                    break;
+
+                case "ui/resource-teardown":
+                    detachNotebook();
+                    resultsEl.innerHTML = "";
+                    hideLoading();
+                    if (msg.id != null) sendResult(msg.id, {});
+                    break;
+
+                default:
+                    if (msg.id != null) {
+                        sendError(msg.id, -32601, "Method not found: " + method);
+                    }
+                    break;
+            }
+        });
+
+        // ---- Initialize ----
+        sendRequest("ui/initialize", {
+            protocolVersion: "2026-01-26",
+            appInfo: {
+                name: "wolframalpha-viewer",
+                version: "2.0.0"
+            },
+            appCapabilities: {
+                availableDisplayModes: ["inline"],
+                tools: { listChanged: false }
+            }
+        }).then(function(result) {
+            sendNotification("ui/notifications/initialized");
+            setupAutoResize();
+            if (result) {
+                applyTheme(result.hostContext || result.context || result);
+            }
+        }).catch(function(err) {
+            showError("Failed to initialize: " + ((err && err.message) || String(err)));
+        });
+    })();
+    </script>
 </body>
 </html>
