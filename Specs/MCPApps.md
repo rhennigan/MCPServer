@@ -1,8 +1,8 @@
-# MCP Apps - Implementation Specification
+# MCP Apps - Design Specification
 
 ## Overview
 
-This specification defines the implementation plan for integrating [MCP Apps](https://modelcontextprotocol.io/docs/extensions/apps) into the MCPServer paclet. MCP Apps is the first official MCP extension (`io.modelcontextprotocol/ui`), enabling servers to deliver interactive HTML user interfaces that render inside MCP hosts (Claude Desktop, VS Code, etc.) in sandboxed iframes.
+This specification defines the design for integrating [MCP Apps](https://modelcontextprotocol.io/docs/extensions/apps) into the MCPServer paclet. MCP Apps is the first official MCP extension (`io.modelcontextprotocol/ui`), enabling servers to deliver interactive HTML user interfaces that render inside MCP hosts (Claude Desktop, VS Code, etc.) in sandboxed iframes.
 
 This enables three key use cases for the Wolfram MCP server:
 
@@ -169,284 +169,61 @@ Core protocol changes to support MCP Apps negotiation, resource serving, and too
 
 #### 1.1 Extension Negotiation
 
-**File:** `Kernel/StartMCPServer.wl`
+During `initialize`, the server inspects the client's `capabilities.extensions` for `io.modelcontextprotocol/ui` and stores the result in a shared flag (`$clientSupportsUI`) so downstream code can branch on it.
 
-During `initialize`, inspect the client's `capabilities.extensions` for `io.modelcontextprotocol/ui`. Store the result so downstream code can branch on it.
+Key requirements:
 
-**New symbols** (declare in `Kernel/CommonSymbols.wl`):
-
-```wl
-`$clientSupportsUI;
-`$uiResourceRegistry;
-```
-
-**Changes to `handleMethod["initialize", ...]`:**
-
-```wl
-handleMethod[ "initialize", msg_, req_ ] := (
-    $clientName = Replace[ msg[[ "params", "clientInfo", "name" ]], Except[ _String ] :> None ];
-    $clientSupportsUI = clientSupportsUIQ @ msg;
-    If[ ! stderrEnabledQ[ ], $Messages = { } ];
-    <| req, "result" -> initResult[ msg ] |>
-);
-```
-
-The key change: `$initResult` (currently a pre-computed value) becomes a function call `initResult[msg]` that examines the client message and returns the appropriate response. The existing `initResponse` function gains an additional argument for the client message. When the client advertises `io.modelcontextprotocol/ui`, the server echoes it back in `capabilities.extensions`.
-
-**Note:** `$clientSupportsUI` must be set *before* `initResult` is called, because `initResult` (and subsequently `initResponse`) reads it to decide whether to include extensions. The `$initResult` variable in the `Block` scope of `startMCPServer` should be removed; instead, `handleMethod["initialize", ...]` computes the response dynamically. Other methods that reference `$initResult` do not exist (only `handleMethod["initialize", ...]` uses it), so the change is safe.
-
-**New function `clientSupportsUIQ`:**
-
-```wl
-clientSupportsUIQ // beginDefinition;
-
-clientSupportsUIQ[ msg_Association ] :=
-    KeyExistsQ[ msg, { "params", "capabilities", "extensions", "io.modelcontextprotocol/ui" } ];
-
-clientSupportsUIQ[ _ ] := False;
-
-clientSupportsUIQ // endDefinition;
-```
-
-**Changes to `initResponse`:**
-
-```wl
-initResponse[ name_String, version_String, tools0: { ___LLMTool }, prompts_, clientMsg_ ] := Enclose[
-    Module[ { tools, instructions, extensions },
-        tools = If[ Length @ tools0 > 0, <| "listChanged" -> True |>, <| |> ];
-        instructions = ConfirmMatch[ makeInstructions @ prompts, _Missing | _String, "Instructions" ];
-
-        (* Only include extensions if client supports UI *)
-        extensions = If[ clientSupportsUIQ @ clientMsg,
-            <| "io.modelcontextprotocol/ui" -> <| "mimeTypes" -> { "text/html;profile=mcp-app" } |> |>,
-            Nothing
-        ];
-
-        DeleteMissing @ <|
-            "protocolVersion" -> $protocolVersion,
-            "instructions"    -> instructions,
-            "capabilities" -> DeleteMissing @ <|
-                "prompts"    -> <| |>,
-                "tools"      -> tools,
-                "extensions" -> extensions
-            |>,
-            "serverInfo" -> <| "name" -> name, "version" -> version |>
-        |>
-    ],
-    throwInternalFailure
-];
-```
+- The `initialize` response must be computed dynamically (not pre-computed at startup) so it can reflect whether the connecting client supports UI.
+- `$clientSupportsUI` must be set *before* computing the init response, since the response builder reads it to decide whether to include `capabilities.extensions`.
+- When the client advertises UI support, the server echoes `io.modelcontextprotocol/ui` back in `capabilities.extensions`. When it does not, the `extensions` field is omitted entirely.
 
 #### 1.2 UI Resource Registry
 
-**File:** `Kernel/StartMCPServer.wl` (or new file `Kernel/UIResources.wl`)
+An in-memory registry mapping `ui://` URIs to HTML content and metadata, populated at server startup from paclet assets.
 
-A registry mapping `ui://` URIs to HTML content and metadata. Populated at server startup from paclet assets.
+Each registry entry contains:
 
-**Data structure:**
+| Field | Description |
+|-------|-------------|
+| `uri` | The `ui://wolfram/<name>` URI |
+| `name` | Human-readable name for the resource |
+| `mimeType` | Always `text/html;profile=mcp-app` |
+| `html` | The full HTML content (loaded from `Assets/Apps/<name>.html`) |
+| `meta` | CSP and display metadata (loaded from `Assets/Apps/<name>.json`, if present) |
 
-```wl
-$uiResourceRegistry = <|
-    "ui://wolfram/wolframalpha-viewer" -> <|
-        "uri"      -> "ui://wolfram/wolframalpha-viewer",
-        "name"     -> "WolframAlpha Interactive Viewer",
-        "mimeType" -> "text/html;profile=mcp-app",
-        "html"     -> "<!DOCTYPE html>...",  (* loaded from Assets/Apps/ *)
-        "meta"     -> <|
-            "ui" -> <|
-                "csp" -> <| "connectDomains" -> {}, "resourceDomains" -> {} |>,
-                "prefersBorder" -> True
-            |>
-        |>
-    |>,
-    ...
-|>;
-```
+Loading behavior:
 
-**New function `initializeUIResources`:**
-
-Called during `startMCPServer`, after `$clientSupportsUI` is set but before the main loop. Insert the call in `startMCPServer` after the `init` computation:
-
-```wl
-(* In startMCPServer, after init = ConfirmBy[ initResponse @ obj, ... ] *)
-initializeUIResources[ ];
-```
-
-```wl
-initializeUIResources // beginDefinition;
-
-initializeUIResources[ ] := Enclose[
-    Module[ { assetsDir, htmlFiles },
-        assetsDir = ConfirmBy[
-            PacletObject[ "Wolfram/MCPServer" ][ "AssetLocation", "Apps" ],
-            DirectoryQ,
-            "AssetsDir"
-        ];
-        htmlFiles = FileNames[ "*.html", assetsDir ];
-        $uiResourceRegistry = Association[
-            loadUIResource /@ htmlFiles
-        ];
-        debugPrint[ "Loaded " <> ToString[ Length @ htmlFiles ] <> " UI resources" ];
-    ],
-    (
-        (* Graceful fallback: no UI resources. Log the error but do not fail startup. *)
-        writeError[ "Failed to load UI app assets. MCP Apps will be disabled." ];
-        $uiResourceRegistry = <| |>
-    ) &
-];
-
-initializeUIResources // endDefinition;
-```
-
-**Note:** `initializeUIResources` runs once at startup. HTML files are read from disk and cached in memory. To update an app during development, restart the server. Hot-reload is not supported (see Future Considerations).
-
-**New function `loadUIResource`:**
-
-```wl
-loadUIResource // beginDefinition;
-
-loadUIResource[ htmlFile_String ] := Enclose[
-    Module[ { baseName, uri, html, metaFile, meta },
-        baseName = FileBaseName @ htmlFile;
-        uri = "ui://wolfram/" <> baseName;
-        html = ConfirmBy[ ReadString[ htmlFile, CharacterEncoding -> "UTF-8" ], StringQ, "HTML" ];
-        metaFile = FileNameJoin[ { DirectoryName @ htmlFile, baseName <> ".json" } ];
-        meta = If[ FileExistsQ @ metaFile,
-            Quiet @ Developer`ReadRawJSONString @ ReadString[ metaFile, CharacterEncoding -> "UTF-8" ],
-            <| |>
-        ];
-        uri -> <|
-            "uri"      -> uri,
-            "name"     -> baseName,
-            "mimeType" -> "text/html;profile=mcp-app",
-            "html"     -> html,
-            "meta"     -> Replace[ meta, Except[ _Association ] :> <| |> ]
-        |>
-    ],
-    throwInternalFailure
-];
-
-loadUIResource // endDefinition;
-```
+- At startup, scan the `Assets/Apps/` paclet asset directory for `*.html` files.
+- For each HTML file, derive the URI from the file's base name: `ui://wolfram/<baseName>`.
+- If a corresponding `<baseName>.json` file exists alongside the HTML file, load it as metadata.
+- HTML files are read from disk once and cached in memory. Restarting the server reloads them.
+- If the assets directory is missing or loading fails, log an error and initialize the registry as empty. Do not fail server startup.
 
 #### 1.3 Resources Handler
 
-**File:** `Kernel/StartMCPServer.wl`
+Handle `resources/list` and `resources/read` MCP methods:
 
-Update the `resources/list` and add `resources/read` handler.
-
-**Changes to `handleMethod`:**
-
-```wl
-(* Return UI resources when client supports UI, empty otherwise *)
-handleMethod[ "resources/list", msg_, req_ ] :=
-    <| req, "result" -> <| "resources" -> listUIResources[ ] |> |>;
-
-(* New: resources/read handler *)
-handleMethod[ "resources/read", msg_, req_ ] :=
-    <| req, "result" -> readUIResource[ msg, req ] |>;
-```
-
-**New function `listUIResources`:**
-
-```wl
-listUIResources // beginDefinition;
-
-listUIResources[ ] /; TrueQ @ $clientSupportsUI :=
-    KeyValueMap[
-        Function[ { uri, data },
-            <|
-                "uri"         -> uri,
-                "name"        -> data[ "name" ],
-                "description" -> Lookup[ data, "description", "" ],
-                "mimeType"    -> data[ "mimeType" ]
-            |>
-        ],
-        $uiResourceRegistry
-    ];
-
-listUIResources[ ] := { };
-
-listUIResources // endDefinition;
-```
-
-**New function `readUIResource`:**
-
-```wl
-readUIResource // beginDefinition;
-
-readUIResource[ msg_Association, req_ ] := Enclose[
-    Module[ { uri, resource },
-        uri = ConfirmBy[ msg[[ "params", "uri" ]], StringQ, "URI" ];
-        resource = Lookup[ $uiResourceRegistry, uri, Missing[ "NotFound" ] ];
-        If[ MissingQ @ resource,
-            throwFailure[ "UIResourceNotFound", uri ]
-        ];
-        <| "contents" -> {
-            <|
-                "uri"      -> resource[ "uri" ],
-                "mimeType" -> resource[ "mimeType" ],
-                "text"     -> resource[ "html" ],
-                "_meta"    -> resource[ "meta" ]
-            |>
-        } |>
-    ],
-    throwInternalFailure
-];
-
-readUIResource // endDefinition;
-```
+- **`resources/list`**: When the client supports UI, return the registered UI resources (URI, name, description, mimeType). Otherwise return an empty list.
+- **`resources/read`**: Look up the requested URI in the registry. If found, return the HTML content, mimeType, and `_meta` from the registry entry. If not found, return a standard MCP error (`-32602`).
 
 #### 1.4 Tool Metadata
 
-**File:** `Kernel/StartMCPServer.wl`
+When building the tool list for `tools/list`, conditionally attach `_meta.ui` to tools that have a registered UI resource:
 
-When building the tool list for `tools/list`, attach `_meta.ui` to tools that have a registered UI resource, but only when the client supports UI.
+- Maintain a mapping from tool names to UI resource URIs (e.g., `"WolframAlpha"` -> `"ui://wolfram/wolframalpha-viewer"`).
+- When `$clientSupportsUI` is true, include a `_meta` field on matching tools containing `ui.resourceUri` and `ui.visibility`.
+- When `$clientSupportsUI` is false, omit `_meta` entirely.
 
-**Changes to `startMCPServer` (tool list construction):**
+Tool-to-UI associations:
 
-```wl
-toolList = Map[
-    <|
-        "name"        -> safeString @ #[ "Name"        ],
-        "description" -> safeString @ #[ "Description" ],
-        "inputSchema" -> #[ "JSONSchema" ],
-        (* Add _meta.ui when client supports UI and tool has a UI resource *)
-        Sequence @@ toolUIMetadata[ #[ "Name" ] ]
-    |> &,
-    Values @ llmTools
-];
-```
-
-**New function `toolUIMetadata`:**
-
-```wl
-toolUIMetadata // beginDefinition;
-
-toolUIMetadata[ toolName_String ] /; TrueQ @ $clientSupportsUI :=
-    toolUIMetadata[ toolName, Lookup[ $toolUIAssociations, toolName, None ] ];
-
-toolUIMetadata[ toolName_, uri_String ] :=
-    { "_meta" -> <| "ui" -> <| "resourceUri" -> uri, "visibility" -> { "model", "app" } |> |> };
-
-toolUIMetadata[ toolName_, None ] := { };
-toolUIMetadata[ _ ] := { };
-
-toolUIMetadata // endDefinition;
-```
-
-**New symbol `$toolUIAssociations`** (mapping tool names to UI resource URIs):
-
-```wl
-$toolUIAssociations = <|
-    "WolframAlpha"            -> "ui://wolfram/wolframalpha-viewer",
-    "WolframLanguageEvaluator" -> "ui://wolfram/evaluator-viewer"
-|>;
-```
+| Tool Name | UI Resource URI |
+|-----------|----------------|
+| `WolframAlpha` | `ui://wolfram/wolframalpha-viewer` |
+| `WolframLanguageEvaluator` | `ui://wolfram/evaluator-viewer` |
 
 #### 1.5 Graceful Degradation
 
-The design ensures backward compatibility. `$clientSupportsUI` affects **both** tool metadata and tool count:
+The design ensures backward compatibility:
 
 | Aspect | UI-capable client | Non-UI client |
 |--------|-------------------|---------------|
@@ -458,12 +235,12 @@ The design ensures backward compatibility. `$clientSupportsUI` affects **both** 
 | `tools/call` WolframAlpha results | JSON metadata (notebookUrl) + text + base64 PNG | Text + base64 PNG (unchanged) |
 | `tools/call` other tool results | Unchanged (text + base64 PNG) | Unchanged (text + base64 PNG) |
 
-**Detailed rules:**
+Detailed rules:
 
 - **Extension negotiation is opt-in.** If the client does not advertise `io.modelcontextprotocol/ui` in its `capabilities.extensions` (or does not send `capabilities` at all), the server responds exactly as it does today.
-- **App-only tools are excluded for non-UI clients.** Tools with visibility `["app"]` are not included in `tools/list` or `$llmTools` when `$clientSupportsUI` is `False`. This prevents non-UI clients from seeing tools they cannot use.
-- **Tool results are mostly unchanged.** The `evaluateTool` function continues to return text + base64 PNG content items for all tools. The one exception is `WolframAlpha`: when `$clientSupportsUI` is `True`, the WolframAlpha tool prepends a JSON metadata content item containing the cloud notebook URL (`{"notebookUrl": "https://..."}`) before the standard text + image items. The UI app finds this URL and embeds the notebook using WolframNotebookEmbedder. If the notebook deployment fails, the tool falls back to the standard format. The text + image items are always included regardless, so the LLM always receives usable text.
-- **`resources/read` for unknown URIs** returns a standard MCP error response:
+- **App-only tools are excluded for non-UI clients.** Tools with visibility `["app"]` are not included in `tools/list` when `$clientSupportsUI` is false. This prevents non-UI clients from seeing tools they cannot use.
+- **Tool results are mostly unchanged.** The existing tool evaluation pipeline continues to return text + base64 PNG content items. The one exception is WolframAlpha (see Phase 2): when `$clientSupportsUI` is true, a JSON metadata content item is prepended with the cloud notebook URL. The text + image items are always included regardless, so the LLM always receives usable text.
+- **`resources/read` for unknown URIs** returns a standard MCP error:
 
 ```json
 {
@@ -491,23 +268,17 @@ Kernel/
 
 #### 1.7 Error Messages
 
-Add to `Kernel/Messages.wl`:
+New error message tags:
 
-```wl
-MCPServer::UIResourceNotFound    = "UI resource not found: `1`.";
-MCPServer::UIResourceLoadFailed  = "Failed to load UI resource from `1`.";
-MCPServer::UIAppAssetsMissing    = "UI app assets directory not found. MCP Apps will be disabled.";
-```
+| Tag | Description |
+|-----|-------------|
+| `UIResourceNotFound` | Requested `ui://` URI does not exist in the registry |
+| `UIResourceLoadFailed` | Failed to load an HTML asset file |
+| `UIAppAssetsMissing` | The `Assets/Apps` directory was not found |
 
 #### 1.8 PacletInfo.wl Changes
 
-Register the `Apps` asset location:
-
-```wl
-"Assets" -> {
-    {"Apps", "Assets/Apps"}
-}
-```
+Register the `Apps` asset location so it can be resolved via `PacletObject["Wolfram/MCPServer"]["AssetLocation", "Apps"]`.
 
 ---
 
@@ -515,7 +286,7 @@ Register the `Apps` asset location:
 
 An HTML app that displays WolframAlpha results as an interactive cloud notebook, using the same WolframNotebookEmbedder approach as the NotebookViewer tool.
 
-**Background:** WolframAlpha does not allow iframe embedding (`X-Frame-Options: SAMEORIGIN`), so the original plan of embedding `wolframalpha.com` directly is not viable. Instead, the server formats WA results into a Wolfram Notebook, CloudDeploys it, and the app embeds the cloud notebook using WolframNotebookEmbedder.
+**Background:** WolframAlpha does not allow iframe embedding (`X-Frame-Options: SAMEORIGIN`), so embedding `wolframalpha.com` directly is not viable. Instead, the server formats WA results into a Wolfram Notebook, CloudDeploys it, and the app embeds the cloud notebook using WolframNotebookEmbedder.
 
 #### 2.1 Design Goals
 
@@ -525,7 +296,7 @@ An HTML app that displays WolframAlpha results as an interactive cloud notebook,
 - Include a JSON metadata content item with the cloud notebook URL so the app can extract and embed it
 - Allow the user to submit follow-up queries from within the app (each follow-up deploys a new notebook)
 - Use host CSS variables for theming the query bar chrome
-- Graceful fallback: when `$clientSupportsUI` is `False` or CloudDeploy fails, the tool keeps current behavior (text + base64 PNG only)
+- Graceful fallback: when UI is not supported or CloudDeploy fails, the tool keeps current behavior (text + base64 PNG only)
 
 #### 2.2 Data Flow
 
@@ -533,17 +304,17 @@ An HTML app that displays WolframAlpha results as an interactive cloud notebook,
 LLM calls WolframAlpha tool with { "query": "current distance to Mars" }
     -> Host sends ui/notifications/tool-input to the WA viewer app
        (App shows query in query bar, displays loading state)
-    -> Server's wolframAlphaToolEvaluateUI runs:
+    -> Server's UI-aware evaluation pipeline runs:
        1. Calls Chatbook with $ChatNotebookEvaluation = True
-          -> Returns <| "Result" -> <pods data>, "String" -> "<text for LLM>" |>
-       2. Extracts images from "String" via extractWolframAlphaImages (unchanged for LLM)
-       3. Formats "Result" via FormatWolframAlphaPods (with FoldPods = True)
-       4. Creates Notebook[{inputCell, outputCell}]
+          -> Returns structured result with pods data and text string
+       2. Extracts images from the text string for the LLM (unchanged pipeline)
+       3. Formats pods via FormatWolframAlphaPods (with FoldPods = True)
+       4. Creates a Notebook with input cell (query) and output cell (formatted pods)
        5. CloudDeploys to MCPServer/Notebooks/WolframAlpha/<encoded-query>.nb
           with Permissions -> {"All" -> {"Read", "Interact"}}, AutoRemove -> True
        6. Returns content items:
           - JSON metadata item: {"notebookUrl": "https://www.wolframcloud.com/obj/..."}
-          - Text items + base64 PNG images (from extractWolframAlphaImages, for LLM)
+          - Text items + base64 PNG images (for the LLM, unchanged)
     -> Host receives tool result, sends ui/notifications/tool-result to app
     -> App parses content items, finds the JSON metadata item with "notebookUrl"
     -> App loads WolframNotebookEmbedder and embeds the cloud notebook
@@ -616,23 +387,7 @@ ui/resource-teardown
 
 **Metadata content item detection:**
 
-The app identifies the metadata item by attempting to parse each text content item as JSON and checking for the `notebookUrl` key:
-
-```javascript
-function findNotebookUrl(content) {
-    for (var i = 0; i < content.length; i++) {
-        if (content[i].type === "text" && content[i].text) {
-            try {
-                var parsed = JSON.parse(content[i].text);
-                if (parsed && parsed.notebookUrl) return parsed.notebookUrl;
-            } catch (e) { /* not JSON, skip */ }
-        }
-    }
-    return null;
-}
-```
-
-**Fallback rendering:** If no `notebookUrl` is found (e.g., CloudDeploy failed and the tool fell back to standard output), the app renders text and base64 images directly, identical to the current behavior. This ensures the app works gracefully even when the server-side notebook formatting fails.
+The app identifies the metadata item by attempting to parse each text content item as JSON and checking for the `notebookUrl` key. If no `notebookUrl` is found (e.g., CloudDeploy failed and the tool fell back to standard output), the app renders text and base64 images directly. This ensures the app works gracefully even when the server-side notebook formatting fails.
 
 #### 2.4 CSP Metadata: `wolframalpha-viewer.json`
 
@@ -665,116 +420,20 @@ This is identical to `notebook-viewer.json` because the WolframAlpha viewer uses
 
 #### 2.5 WolframAlpha Tool Changes
 
-**File:** `Kernel/Tools/WolframAlpha.wl`
+When the client supports UI, the WolframAlpha tool runs an enhanced pipeline that produces a cloud notebook alongside the standard text + image output.
 
-When `$clientSupportsUI` is `True`, the WolframAlpha tool runs an enhanced pipeline that produces a cloud notebook alongside the standard text + image output.
+**Server-side pipeline (UI-capable client):**
 
-**Changes to `wolframAlphaToolEvaluate`:**
-
-```wl
-wolframAlphaToolEvaluate // beginDefinition;
-
-(* When client supports UI: get structured result, format notebook, CloudDeploy *)
-wolframAlphaToolEvaluate[ as_ ] /; TrueQ @ $clientSupportsUI :=
-    wolframAlphaToolEvaluateUI @ as;
-
-(* When client does not support UI: current behavior (text + base64 PNG) *)
-wolframAlphaToolEvaluate[ as_ ] :=
-    wolframAlphaToolEvaluate[ as, cb`$DefaultTools[ "WolframAlpha" ][ as ] ];
-
-wolframAlphaToolEvaluate[ as_, result_String ] := extractWolframAlphaImages @ result;
-wolframAlphaToolEvaluate[ as_, KeyValuePattern[ "String" -> result_String ] ] :=
-    extractWolframAlphaImages @ result;
-
-wolframAlphaToolEvaluate // endDefinition;
-```
-
-**New function `wolframAlphaToolEvaluateUI`:**
-
-```wl
-wolframAlphaToolEvaluateUI // beginDefinition;
-
-wolframAlphaToolEvaluateUI[ as_Association ] := Enclose[
-    Module[ { query, result, string, pods, inputCell, outputCell, notebook,
-              target, cloudObj, url, textContent, metadataItem },
-
-        query = ConfirmBy[ as[ "query" ], StringQ, "Query" ];
-
-        (* Step 1: Call Chatbook with $ChatNotebookEvaluation = True *)
-        result = Block[ { cb`$ChatNotebookEvaluation = True },
-            cb`$DefaultTools[ "WolframAlpha" ][ as ]
-        ];
-
-        (* Step 2: Extract images from the string for the LLM (unchanged pipeline) *)
-        string = ConfirmBy[ result[ "String" ], StringQ, "String" ];
-        textContent = extractWolframAlphaImages @ string;
-
-        (* Step 3: Format the Result into notebook cells *)
-        pods = Block[ { cb`$DefaultToolOptions = cb`$DefaultToolOptions },
-            cb`$DefaultToolOptions[ "WolframAlpha", "FoldPods" ] = True;
-            cb`FormatWolframAlphaPods[ result[ "Result" ] ]
-        ];
-        inputCell  = Cell[ query, "WolframAlphaLong" ];
-        outputCell = Cell[ BoxData @ ToBoxes @ pods, "Output" ];
-        notebook   = Notebook[ { inputCell, outputCell } ];
-
-        (* Step 4: CloudDeploy *)
-        target = FileNameJoin @ {
-            CloudObject[ $deployedNotebookRoot, Permissions -> "Public" ],
-            "WolframAlpha",
-            URLEncode[ query ] <> ".nb"
-        };
-        cloudObj = ConfirmMatch[
-            CloudDeploy[ notebook, target,
-                Permissions -> { "All" -> { "Read", "Interact" } },
-                AutoRemove  -> True,
-                IconRules   -> { }
-            ],
-            _CloudObject,
-            "CloudDeploy"
-        ];
-        url = ConfirmBy[ First @ cloudObj, StringQ, "URL" ];
-
-        (* Step 5: Build content items with metadata *)
-        metadataItem = <|
-            "type" -> "text",
-            "text" -> Developer`WriteRawJSONString @ <| "notebookUrl" -> url |>
-        |>;
-
-        <| "Content" -> Flatten @ { metadataItem, toContentList @ textContent } |>
-    ],
-    (* On any failure, fall back to non-UI behavior *)
-    Function[ { failureInfo },
-        writeError[ "WolframAlpha UI formatting failed, falling back to text+image" ];
-        wolframAlphaToolEvaluate[ as, cb`$DefaultTools[ "WolframAlpha" ][ as ] ]
-    ]
-];
-
-wolframAlphaToolEvaluateUI // endDefinition;
-```
-
-**New variable `$deployedNotebookRoot`:**
-
-```wl
-$deployedNotebookRoot = "MCPServer/Notebooks";
-```
-
-**New helper `toContentList`:**
-
-Normalizes the output of `extractWolframAlphaImages` (which may return a string or an association with a `"Content"` key) into a flat list of content item associations:
-
-```wl
-toContentList // beginDefinition;
-toContentList[ KeyValuePattern[ "Content" -> items_List ] ] := items;
-toContentList[ items_List ] := items;
-toContentList[ str_String ] := { <| "type" -> "text", "text" -> str |> };
-toContentList[ other_ ] := { <| "type" -> "text", "text" -> safeString @ other |> };
-toContentList // endDefinition;
-```
+1. Call Chatbook's WolframAlpha handler with `$ChatNotebookEvaluation = True` to get structured result data (pods + text string).
+2. Extract images from the text string for the LLM (unchanged from current behavior).
+3. Format the pods data into notebook cells using `FormatWolframAlphaPods` with `FoldPods = True`.
+4. Wrap in a `Notebook` with a `"WolframAlphaLong"` input cell and an `"Output"` cell.
+5. CloudDeploy the notebook to `MCPServer/Notebooks/WolframAlpha/<encoded-query>.nb` with `Permissions -> {"All" -> {"Read", "Interact"}}`, `AutoRemove -> True`, and `IconRules -> {}`.
+6. Return content items: a JSON metadata item (`{"notebookUrl": "<url>"}`) followed by the standard text + image items.
 
 **Key design decisions:**
 
-- **Fallback on failure**: If CloudDeploy fails (no cloud credentials, network issue, etc.), the function falls back to the standard text + image behavior. The app's fallback rendering handles this gracefully.
+- **Fallback on failure**: If any step fails (CloudDeploy error, missing cloud credentials, network issue), fall back to the standard text + image behavior. The app's fallback rendering handles this gracefully.
 - **Content item ordering**: The metadata item comes first so the app can find it quickly.
 - **AutoRemove -> True**: Cloud notebooks auto-expire, avoiding cleanup burden.
 - **IconRules -> {}**: Skips icon generation for the temporary cloud file.
@@ -872,16 +531,16 @@ The `frameDomains` entry allows embedding Wolfram Cloud deployed content in ifra
 
 Hidden tools (visibility `["app"]`) that are callable only by the UI apps, not visible to the LLM. These support app-side interactivity without polluting the LLM's tool list.
 
-**This phase is optional.** The WolframAlpha viewer (Phase 2) does not need app-only tools since follow-up queries are handled by calling the existing `WolframAlpha` tool via `tools/call` (visibility `["model", "app"]`), which triggers a new CloudDeploy and returns a fresh notebook URL. The evaluator viewer (Phase 3) can call the existing `WolframLanguageEvaluator` tool directly (visibility `["model", "app"]`). App-only tools should only be implemented if:
+**This phase is optional.** The WolframAlpha viewer (Phase 2) does not need app-only tools since follow-up queries are handled by calling the existing `WolframAlpha` tool via `tools/call` (visibility `["model", "app"]`). The evaluator viewer (Phase 3) can call the existing `WolframLanguageEvaluator` tool directly. App-only tools should only be implemented if:
 
 - We want to separate app-initiated calls from LLM-initiated calls for logging/analytics
 - We discover during Phase 3 implementation that the standard tool is awkward for app use
 
-**Go/no-go criteria:** Implement Phase 4 only after Phase 2 and Phase 3 are complete and tested. Evaluate whether the existing tools are sufficient for app interactivity.
+**Go/no-go criteria:** Implement Phase 4 only after Phase 2 and Phase 3 are complete and tested.
 
 #### 4.1 Re-Evaluate Tool
 
-**Purpose:** Allow the evaluator viewer app to re-evaluate modified code.
+**Purpose:** Allow the evaluator viewer app to re-evaluate modified code without the LLM seeing or calling this tool.
 
 **Tool definition:**
 
@@ -905,13 +564,11 @@ Hidden tools (visibility `["app"]`) that are callable only by the UI apps, not v
 }
 ```
 
-**Implementation:** Delegates to the same `evaluateWolframLanguage` function. This is essentially the same as calling `WolframLanguageEvaluator` but hidden from the LLM to avoid confusion.
+Delegates to the same evaluation function as `WolframLanguageEvaluator`.
 
 #### 4.2 Registration
 
-App-only tools should be registered conditionally based on `$clientSupportsUI`. They should be added to `$toolList` and `$llmTools` during `startMCPServer` initialization only when UI is supported.
-
-When building the tool list for `tools/list`, app-only tools must include `_meta.ui.visibility` set to `["app"]` so the host knows not to show them to the LLM.
+App-only tools are registered conditionally: only when `$clientSupportsUI` is true. They must include `_meta.ui.visibility` set to `["app"]` so the host knows not to show them to the LLM.
 
 ---
 
@@ -1096,7 +753,7 @@ Tool call and result format is unchanged for most tools. The host forwards the r
 
 **Exception: WolframAlpha tool result (UI-capable client):**
 
-When `$clientSupportsUI` is `True`, the WolframAlpha tool prepends a JSON metadata content item with the cloud notebook URL:
+When the client supports UI, the WolframAlpha tool prepends a JSON metadata content item with the cloud notebook URL:
 
 ```json
 {
@@ -1156,17 +813,14 @@ CSP metadata flows as follows:
 
 1. **Server** declares CSP requirements in `_meta.ui.csp` within the `resources/read` response
 2. **Host** reads the CSP metadata and constructs HTTP `Content-Security-Policy` headers (or equivalent) for the iframe
-3. **Host** applies a restrictive default CSP if the server omits the `csp` field:
-   ```
-   default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'none'
-   ```
+3. **Host** applies a restrictive default CSP if the server omits the `csp` field
 
 The server does **not** generate CSP headers or embed them in the HTML. The server only declares *what external access the app requires*; the host enforces it.
 
 **Per-app CSP:**
 
 - **WolframAlpha viewer**: Requires `connectDomains` for `https://www.wolframcloud.com` (WolframNotebookEmbedder API communication), `resourceDomains` for `https://unpkg.com` (embedder JS library) and `https://www.wolframcloud.com` (notebook resources), and `frameDomains` for `https://www.wolframcloud.com` and `https://wolfr.am` (embedded notebook iframe). This is identical to the NotebookViewer CSP because both apps use the same WolframNotebookEmbedder approach.
-- **Evaluator viewer**: Requires `frameDomains` for `https://www.wolframcloud.com` and `https://wolfr.am` to embed CloudDeploy results. No `connectDomains` needed since the app does not make direct API calls. The `script-src` and `style-src` directives use the host's defaults (`'self' 'unsafe-inline'`).
+- **Evaluator viewer**: Requires `frameDomains` for `https://www.wolframcloud.com` and `https://wolfr.am` to embed CloudDeploy results. No `connectDomains` needed since the app does not make direct API calls.
 
 ### Iframe Sandbox
 
@@ -1176,7 +830,7 @@ All apps run in sandboxed iframes controlled by the host. The server does not co
 
 App-only tools (visibility `["app"]`) prevent the LLM from accidentally calling internal tools. Visibility enforcement is a **host responsibility**: the host filters the tool list before presenting it to the LLM. The server includes visibility metadata in the `_meta.ui.visibility` field for the host to use.
 
-Additionally, the server excludes app-only tools from `tools/list` when `$clientSupportsUI` is `False`, as a defense-in-depth measure.
+Additionally, the server excludes app-only tools from `tools/list` when the client does not support UI, as a defense-in-depth measure.
 
 ### Input Validation
 
@@ -1192,18 +846,18 @@ Additionally, the server excludes app-only tools from `tools/list` when `$client
 
 ### Unit Tests
 
-Create `Tests/MCPApps.wlt`:
+Test file: `Tests/MCPApps.wlt`
 
 #### Extension Negotiation
 
-1. **UI client negotiation** -- `initResponse` includes `extensions` when client advertises UI support
-2. **Non-UI client** -- `initResponse` omits `extensions` when client does not advertise UI
-3. **clientSupportsUIQ** -- correctly parses various client capability formats
+1. **UI client negotiation** -- init response includes `extensions` when client advertises UI support
+2. **Non-UI client** -- init response omits `extensions` when client does not advertise UI
+3. **UI detection** -- correctly parses various client capability formats
 
 #### Resource Registry
 
-4. **loadUIResource** -- loads HTML file and optional JSON metadata
-5. **initializeUIResources** -- populates registry from assets directory
+4. **Load resource** -- loads HTML file and optional JSON metadata
+5. **Initialize resources** -- populates registry from assets directory
 6. **Missing assets** -- graceful fallback when assets directory is missing
 
 #### Resource Handlers
@@ -1214,8 +868,8 @@ Create `Tests/MCPApps.wlt`:
 
 #### Tool Metadata
 
-10. **toolUIMetadata** -- attaches `_meta.ui` for tools with UI associations
-11. **toolUIMetadata no association** -- returns empty for tools without UI
+10. **UI metadata attached** -- `_meta.ui` attached for tools with UI associations
+11. **No UI metadata** -- no `_meta` for tools without UI associations
 12. **tools/list with UI** -- includes `_meta` in tool definitions for UI clients
 13. **tools/list without UI** -- omits `_meta` for non-UI clients
 
@@ -1227,10 +881,10 @@ Create `Tests/MCPApps.wlt`:
 
 #### WolframAlpha Tool (UI-Aware Behavior)
 
-17. **WolframAlpha tool with UI support** -- when `$clientSupportsUI` is `True`, `wolframAlphaToolEvaluateUI` returns content items including a JSON metadata item with `notebookUrl` key
-18. **WolframAlpha tool without UI support** -- when `$clientSupportsUI` is `False`, `wolframAlphaToolEvaluate` returns text + base64 PNG only (backward compatibility)
-19. **WolframAlpha tool fallback on CloudDeploy failure** -- when `$clientSupportsUI` is `True` but CloudDeploy fails, the tool falls back to text + base64 PNG behavior
-20. **Metadata content item format** -- the JSON metadata item parses correctly and contains a valid wolframcloud.com URL
+17. **WolframAlpha with UI** -- returns content items including a JSON metadata item with `notebookUrl` key
+18. **WolframAlpha without UI** -- returns text + base64 PNG only (backward compatibility)
+19. **WolframAlpha fallback** -- falls back to text + base64 PNG when CloudDeploy fails
+20. **Metadata item format** -- the JSON metadata item parses correctly and contains a valid wolframcloud.com URL
 
 ### Integration Tests
 
@@ -1245,16 +899,15 @@ Create `Tests/MCPApps.wlt`:
 
 | File | Action | Purpose |
 |------|--------|---------|
-| `Specs/MCPApps.md` | Create | This specification |
 | `Kernel/UIResources.wl` | Create | UI resource registry, loading, serving |
-| `Kernel/StartMCPServer.wl` | Edit | Extension negotiation, `initResult` refactor, `resources/read` handler, tool metadata |
-| `Kernel/CommonSymbols.wl` | Edit | Add `$clientSupportsUI`, `$uiResourceRegistry`, `$toolUIAssociations` |
-| `Kernel/Messages.wl` | Edit | Add UI-related error messages |
-| `Kernel/Tools/Tools.wl` | Edit | Register `UIResources` subcontext, add app-only tools |
-| `Kernel/Tools/WolframAlpha.wl` | Edit | Branch on `$clientSupportsUI`: add notebook formatting, CloudDeploy, metadata content item |
+| `Kernel/StartMCPServer.wl` | Edit | Extension negotiation, dynamic init response, resource handlers, tool metadata |
+| `Kernel/CommonSymbols.wl` | Edit | New shared symbols (`$clientSupportsUI`, `$uiResourceRegistry`, `$toolUIAssociations`) |
+| `Kernel/Messages.wl` | Edit | UI-related error messages |
+| `Kernel/Tools/Tools.wl` | Edit | Register UIResources subcontext, add app-only tools |
+| `Kernel/Tools/WolframAlpha.wl` | Edit | UI-aware evaluation pipeline with CloudDeploy and metadata content item |
 | `PacletInfo.wl` | Edit | Register `Assets/Apps` asset location |
-| `Assets/Apps/wolframalpha-viewer.html` | Edit | WolframAlpha viewer -- rewrite to use WolframNotebookEmbedder for cloud notebook embedding |
-| `Assets/Apps/wolframalpha-viewer.json` | Edit | CSP metadata -- change to wolframcloud.com + unpkg.com (matches notebook-viewer.json) |
+| `Assets/Apps/wolframalpha-viewer.html` | Create/Edit | WolframAlpha viewer using WolframNotebookEmbedder |
+| `Assets/Apps/wolframalpha-viewer.json` | Create/Edit | CSP metadata (wolframcloud.com + unpkg.com) |
 | `Assets/Apps/evaluator-viewer.html` | Create | WL Evaluator interactive viewer app |
 | `Assets/Apps/evaluator-viewer.json` | Create | CSP metadata for evaluator viewer |
 | `Tests/MCPApps.wlt` | Create | Test suite |
@@ -1282,7 +935,6 @@ Phase 3 (Evaluator App)
 
 Phase 4 (App-Only Tools) [Optional]
     └── Depends on Phase 1 (tool registration) + Phase 3 (evaluator app)
-    └── Can be deferred; Phase 2 uses iframe natively, Phase 3 can use existing tools
     └── Go/no-go decision after Phase 3 is implemented and tested
 ```
 
