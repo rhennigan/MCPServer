@@ -84,6 +84,18 @@
         var pending = {};
         var embedded = null;
 
+        // ---- Load WolframNotebookEmbedder dynamically ----
+        var embedderLoaded = new Promise(function(resolve, reject) {
+            var script = document.createElement("script");
+            script.src = "https://unpkg.com/wolfram-notebook-embedder@0.3/dist/wolfram-notebook-embedder.min.js";
+            script.crossOrigin = "";
+            script.onload = resolve;
+            script.onerror = function() {
+                reject(new Error("Failed to load WolframNotebookEmbedder library from CDN."));
+            };
+            document.head.appendChild(script);
+        });
+
         // ---- DOM refs ----
         var loadingEl = document.getElementById("loading");
         var errorEl = document.getElementById("error");
@@ -169,27 +181,24 @@
 
         // ---- Embed notebook ----
         function embedNotebook(url, allowInteract, maxHeight) {
-            if (typeof WolframNotebookEmbedder === "undefined") {
-                showError("WolframNotebookEmbedder library failed to load.");
-                return;
-            }
-
-            var opts = {
-                allowInteract: allowInteract !== false,
-                showRenderProgress: true,
-                width: null,
-                maxHeight: typeof maxHeight === "number" && maxHeight > 0 ? maxHeight : Infinity
-            };
-
             loadingEl.style.display = "flex";
             errorEl.style.display = "none";
 
-            WolframNotebookEmbedder.embed(url, containerEl, opts).then(function(nb) {
+            embedderLoaded.then(function() {
+                var opts = {
+                    allowInteract: allowInteract !== false,
+                    showRenderProgress: true,
+                    width: null,
+                    maxHeight: typeof maxHeight === "number" && maxHeight > 0 ? maxHeight : Infinity
+                };
+
+                return WolframNotebookEmbedder.embed(url, containerEl, opts);
+            }).then(function(nb) {
                 embedded = nb;
                 loadingEl.style.display = "none";
             }).catch(function(err) {
                 var msg = (err && err.message) ? err.message : String(err);
-                showError("Failed to embed notebook: " + msg);
+                showError(msg);
             });
         }
 
@@ -287,6 +296,5 @@
         });
     })();
     </script>
-    <script crossorigin src="https://unpkg.com/wolfram-notebook-embedder@0.3/dist/wolfram-notebook-embedder.min.js"></script>
 </body>
 </html>
