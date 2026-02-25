@@ -1,8 +1,13 @@
 {
     "ui": {
         "csp": {
-            "connectDomains": [],
-            "resourceDomains": [],
+            "connectDomains": [
+                "https://www.wolframcloud.com"
+            ],
+            "resourceDomains": [
+                "https://unpkg.com",
+                "https://www.wolframcloud.com"
+            ],
             "frameDomains": [
                 "https://www.wolframcloud.com",
                 "https://wolfr.am"
