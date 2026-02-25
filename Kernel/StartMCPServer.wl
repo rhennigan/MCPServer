@@ -15,6 +15,7 @@ Needs[ "Wolfram`Chatbook`" -> "cb`" ];
 $protocolVersion    = "2024-11-05";
 $toolWarmupDelay    = 5; (* seconds *)
 $clientName         = None;
+$clientSupportsUI   = False;
 $currentMCPServer   = None;
 
 $logTimeStamp := DateString[
