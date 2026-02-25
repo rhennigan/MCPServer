@@ -430,8 +430,10 @@ formatPromptError // endDefinition;
 graphicsToImageContent // beginDefinition;
 
 graphicsToImageContent[ g_ ] := Enclose[
-    Module[ { png, base64 },
-        png = ConfirmBy[ Quiet @ ExportByteArray[ g, "PNG" ], ByteArrayQ, "PNG" ];
+    Module[ { img, png, base64 },
+        (* Ensure it's an image, otherwise ExportByteArray may try to export an animated PNG, which is not desired *)
+        img = If[ ImageQ @ g, g, Rasterize @ g ];
+        png = ConfirmBy[ Quiet @ ExportByteArray[ img, "PNG" ], ByteArrayQ, "PNG" ];
         base64 = ConfirmBy[ BaseEncode @ png, StringQ, "Base64" ];
         <| "type" -> "image", "data" -> base64, "mimeType" -> "image/png" |>
     ],
