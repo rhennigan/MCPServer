@@ -38,8 +38,7 @@ $defaultMCPServers[ "Wolfram" ] := <|
         "Tools" -> {
             "WolframContext",
             "WolframLanguageEvaluator",
-            "WolframAlpha",
-            "NotebookViewer"
+            "WolframAlpha"
         },
         "MCPPrompts" -> { "WolframSearch" }
     |>
