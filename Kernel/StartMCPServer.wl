@@ -542,7 +542,7 @@ resultToContent // endDefinition;
 evaluateTool // beginDefinition;
 
 evaluateTool[ msg_, req_ ] := Enclose[
-    Catch @ Module[ { params, toolName, args, tool, result, content },
+    Catch @ Module[ { params, toolName, args, tool, result, content, toolResultAssoc },
         Quiet @ TaskRemove @ $warmupTask; (* We're in a tool call, so it no longer makes sense to warm up tools *)
         writeLog[ "ToolCall" -> msg ];
         params = ConfirmBy[ Lookup[ msg, "params", <| |> ], AssociationQ ];
@@ -574,7 +574,14 @@ evaluateTool[ msg_, req_ ] := Enclose[
                 resultToContent @ result
         ];
 
-        <| "content" -> ConfirmMatch[ content, { __Association } ], "isError" -> FailureQ @ result |>
+        toolResultAssoc = <| "content" -> ConfirmMatch[ content, { __Association } ], "isError" -> FailureQ @ result |>;
+
+        (* Forward _meta from structured tool results (e.g. notebookUrl for MCP Apps) *)
+        If[ AssociationQ @ result && AssociationQ @ result[ "_meta" ],
+            toolResultAssoc[ "_meta" ] = result[ "_meta" ]
+        ];
+
+        toolResultAssoc
     ],
     throwInternalFailure
 ];
