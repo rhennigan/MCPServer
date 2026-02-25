@@ -15,6 +15,8 @@
             --error-border: #feb2b2;
             --input-bg: #ffffff;
             --input-border: #ced4da;
+            --wa-orange: #f96932;
+            --wa-orange-hover: #cb1000;
             --button-bg: #0066cc;
             --button-fg: #ffffff;
             --card-bg: #f8f9fa;
@@ -32,6 +34,8 @@
                 --error-border: #742a2a;
                 --input-bg: #2a2a48;
                 --input-border: #4a4a6c;
+                --wa-orange: #ff9415;
+                --wa-orange-hover: #feb94c;
                 --button-bg: #4488dd;
                 --button-fg: #ffffff;
                 --card-bg: #252540;
@@ -49,47 +53,57 @@
         }
         #query-bar {
             display: flex;
-            gap: 8px;
+            gap: 0;
             padding: 10px 12px;
             border-bottom: 1px solid var(--border-color);
             background: var(--card-bg);
             align-items: center;
         }
-        #query-bar input {
+        .wa-input-wrapper {
+            display: flex;
             flex: 1;
-            padding: 6px 10px;
-            border: 1px solid var(--input-border);
-            border-radius: var(--border-radius-md, 6px);
+            align-items: center;
+            border: 2px solid var(--wa-orange);
+            border-radius: 6px;
             background: var(--input-bg);
+            transition: box-shadow 0.15s;
+        }
+        .wa-input-wrapper:focus-within {
+            box-shadow: 0 0 0 2px color-mix(in srgb, var(--wa-orange) 30%, transparent);
+        }
+        .wa-input-wrapper input {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            background: transparent;
             color: var(--app-fg);
             font-size: 0.95em;
             font-family: inherit;
-        }
-        #query-bar input:focus {
             outline: none;
-            border-color: var(--spinner-color);
+            min-width: 0;
         }
-        #query-bar button {
-            padding: 6px 18px;
+        #clear-btn, #go-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             border: none;
-            border-radius: var(--border-radius-md, 6px);
-            background: var(--button-bg);
-            color: var(--button-fg);
+            background: transparent;
             cursor: pointer;
-            font-size: 0.95em;
-            font-family: inherit;
-            white-space: nowrap;
+            flex-shrink: 0;
+            padding: 4px;
+            line-height: 0;
         }
-        #query-bar button:hover { opacity: 0.85; }
-        #query-bar button:disabled { opacity: 0.5; cursor: not-allowed; }
-        #wa-link {
-            font-size: 0.85em;
-            color: var(--accent-color);
-            text-decoration: none;
-            white-space: nowrap;
+        #clear-btn {
             display: none;
+            margin-right: 2px;
         }
-        #wa-link:hover { text-decoration: underline; }
+        #clear-btn:hover svg path { fill: #666; }
+        #go-btn {
+            color: var(--wa-orange);
+            margin-right: 6px;
+        }
+        #go-btn:hover { opacity: 0.8; }
+        #go-btn:disabled { opacity: 0.4; cursor: not-allowed; }
         #error {
             display: none;
             padding: 12px 16px;
@@ -147,9 +161,15 @@
 </head>
 <body>
     <div id="query-bar">
-        <input type="text" id="query-input" placeholder="Enter a WolframAlpha query..." />
-        <button id="go-btn">Go</button>
-        <a id="wa-link" href="#" target="_blank" rel="noopener">Open in W|A</a>
+        <div class="wa-input-wrapper">
+            <input type="text" id="query-input" placeholder="Enter a WolframAlpha query..." />
+            <button id="clear-btn" type="button" title="Clear">
+                <svg viewBox="0 0 20 20" width="20" height="20"><path d="M14 12.667L12.667 14 10 11.333 7.333 14 6 12.667 8.666 10 6 7.333 7.333 6 10 8.666 12.667 6 14 7.333 11.333 10zM0 10c0 5.523 4.478 10 10 10 5.523 0 10-4.477 10-10 0-5.522-4.477-10-10-10C4.478 0 0 4.478 0 10z" fill="#979797" fill-rule="evenodd"/></svg>
+            </button>
+            <button id="go-btn" type="button" title="Compute">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 2H5a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3zm-2 13H7v-2h10zm0-4H7V9h10z" fill="currentColor"/></svg>
+            </button>
+        </div>
     </div>
     <div id="error"></div>
     <div id="loading">
@@ -185,7 +205,7 @@
         // ---- DOM refs ----
         var queryInput = document.getElementById("query-input");
         var goBtn = document.getElementById("go-btn");
-        var waLink = document.getElementById("wa-link");
+        var clearBtn = document.getElementById("clear-btn");
         var errorEl = document.getElementById("error");
         var loadingEl = document.getElementById("loading");
         var notebookContainer = document.getElementById("notebook-container");
@@ -210,13 +230,8 @@
             loadingEl.style.display = "none";
         }
 
-        function updateWALink(query) {
-            if (query) {
-                waLink.href = "https://www.wolframalpha.com/input?i=" + encodeURIComponent(query);
-                waLink.style.display = "inline";
-            } else {
-                waLink.style.display = "none";
-            }
+        function updateClearBtn() {
+            clearBtn.style.display = queryInput.value ? "flex" : "none";
         }
 
         // ---- Find notebookUrl in top-level _meta or content items ----
@@ -394,7 +409,8 @@
             query = query.trim();
             currentQuery = query;
             queryInput.value = query;
-            updateWALink(query);
+            updateClearBtn();
+
             clearError();
             detachNotebook();
             resultsEl.innerHTML = "";
@@ -429,6 +445,14 @@
             }
         });
 
+        queryInput.addEventListener("input", updateClearBtn);
+
+        clearBtn.addEventListener("click", function() {
+            queryInput.value = "";
+            updateClearBtn();
+            queryInput.focus();
+        });
+
         // ---- Incoming message handler ----
         window.addEventListener("message", function(event) {
             if (event.source !== window.parent) return;
@@ -458,7 +482,8 @@
                     var query = args.query || "";
                     currentQuery = query;
                     queryInput.value = query;
-                    updateWALink(query);
+                    updateClearBtn();
+
                     if (query) {
                         clearError();
                         detachNotebook();
@@ -471,6 +496,7 @@
                     var partialArgs = (msg.params && msg.params.arguments) || {};
                     if (partialArgs.query != null) {
                         queryInput.value = partialArgs.query;
+                        updateClearBtn();
                     }
                     break;
 
@@ -482,7 +508,6 @@
                     } else if (params.text) {
                         renderPlainText(params.text);
                     }
-                    updateWALink(currentQuery);
                     break;
 
                 case "ui/notifications/tool-cancelled":
