@@ -121,7 +121,14 @@ makeUIResult[ as_, KeyValuePattern[ { "Result" -> waResult_, "String" -> stringR
             Confirm[ cb`FormatWolframAlphaPods @ waResult, "Formatted" ]
         ];
 
-        nb = Notebook[ { Cell[ BoxData @ ToBoxes @ formatted, "Output" ] } ];
+        nb = Notebook @ {
+            Cell[
+                BoxData @ ToBoxes @ formatted,
+                "Output",
+                CellMargins     -> { { 20, 20 }, { 20, 20 } },
+                ShowCellBracket -> False
+            ]
+        };
 
         query = ConfirmBy[ as[ "query" ], StringQ, "Query" ];
 
@@ -136,7 +143,7 @@ makeUIResult[ as_, KeyValuePattern[ { "Result" -> waResult_, "String" -> stringR
         ];
 
         deployed = ConfirmMatch[
-            CloudDeploy[ nb, target, AutoRemove -> True, IconRules -> { } ],
+            CloudDeploy[ nb, target, AppearanceElements -> None, AutoRemove -> True, IconRules -> { } ],
             _CloudObject,
             "CloudDeploy"
         ];
