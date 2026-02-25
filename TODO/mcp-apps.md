@@ -19,8 +19,8 @@ For any task that involves writing non-trivial Wolfram Language code, please wri
 
 ## Phase 2: WolframAlpha Viewer
 
-- [ ] WA viewer app
-- [ ] WA viewer metadata
+- [x] WA viewer app
+- [x] WA viewer metadata
 
 ## Phase 3: Evaluator Viewer
 
