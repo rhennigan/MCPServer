@@ -84,8 +84,14 @@ wolframAlphaToolEvaluateUI // beginDefinition;
 
 wolframAlphaToolEvaluateUI[ as_ ] :=
     Module[ { result, uiResult },
-        (* Call Chatbook with $ChatNotebookEvaluation = True to get rich result *)
-        result = Block[ { cb`$ChatNotebookEvaluation = True },
+
+        result = Block[
+            {
+                (* Call Chatbook with $ChatNotebookEvaluation = True to get rich result *)
+                cb`$ChatNotebookEvaluation = True,
+                (* Set $CloudEvaluation to True since we're creating a notebook for the cloud *)
+                $CloudEvaluation = True
+            },
             cb`$DefaultTools[ "WolframAlpha" ][ as ]
         ];
 
@@ -115,9 +121,13 @@ makeUIResult[ as_, KeyValuePattern[ { "Result" -> waResult_, "String" -> stringR
             "TextContent"
         ];
 
-        (* Format WA pods into notebook cells with FoldPods=True for compact display *)
         formatted = Block[
-            { cb`$DefaultToolOptions = <| cb`$DefaultToolOptions, "WolframAlpha" -> <| "FoldPods" -> True |> |> },
+            {
+                (* Format WA pods into notebook cells with FoldPods=True for compact display *)
+                cb`$DefaultToolOptions = <| cb`$DefaultToolOptions, "WolframAlpha" -> <| "FoldPods" -> True |> |>,
+                (* Set $CloudEvaluation to True since we're creating a notebook for the cloud *)
+                $CloudEvaluation = True
+            },
             Confirm[ cb`FormatWolframAlphaPods @ waResult, "Formatted" ]
         ];
 
@@ -126,6 +136,7 @@ makeUIResult[ as_, KeyValuePattern[ { "Result" -> waResult_, "String" -> stringR
                 BoxData @ ToBoxes @ formatted,
                 "Output",
                 CellMargins     -> { { 20, 20 }, { 20, 20 } },
+                FontColor       -> Black,
                 ShowCellBracket -> False
             ]
         };
