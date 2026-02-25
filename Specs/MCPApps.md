@@ -6,7 +6,7 @@ This specification defines the implementation plan for integrating [MCP Apps](ht
 
 This enables three key use cases for the Wolfram MCP server:
 
-1. **Interactive WolframAlpha results** -- images, pods, zoom/scroll, drill-down
+1. **Interactive WolframAlpha results** -- full WA experience embedded in an iframe
 2. **CloudDeploy results in iframes** -- live Wolfram Cloud deployments embedded in conversation
 3. **Rich WL evaluator output** -- interactive graphics, formatted expressions, Manipulate-like controls
 
@@ -512,72 +512,68 @@ Register the `Apps` asset location:
 
 ### Phase 2: WolframAlpha Interactive Viewer
 
-An HTML app that renders WolframAlpha results interactively instead of as static base64 PNG images.
+An HTML app that embeds the WolframAlpha website in an iframe, providing the full interactive WA experience directly in the conversation.
 
 #### 2.1 Design Goals
 
-- Display WolframAlpha pod images with zoom and scroll
-- Allow clicking on pods to drill down (follow-up queries)
-- Show the original query and allow modification
-- Render results progressively as they arrive
-- Fall back to displaying base64 PNG images from the tool result when WA URLs are unavailable
+- Embed the WolframAlpha results page in an iframe using the query from the tool input
+- Provide the full native WA experience (pods, drill-down, related queries, etc.) without reimplementing it
+- Show a loading state while the iframe loads
+- Allow the user to submit follow-up queries from within the app
+- Use host CSS variables for theming the surrounding chrome
 
 #### 2.2 Data Flow
 
 ```
 LLM calls WolframAlpha tool
-    -> Server executes WA query, returns text + images as today
+    -> Server executes WA query, returns text + images as today (unchanged)
     -> Host receives tool result
-    -> Host sends ui/notifications/tool-result to the WA viewer app
-    -> App parses result content items:
-        - Text items: extract pod structure, query text
-        - Image items: display as zoomable images
-    -> User interacts (zoom, click pod for details)
-    -> App calls tools/call("WolframAlpha", { query: "follow-up..." }) via host
-    -> Host forwards to server, returns new result
-    -> App updates display
+    -> Host sends ui/notifications/tool-input to the WA viewer app
+    -> App extracts the query from tool input arguments
+    -> App constructs WA URL: https://www.wolframalpha.com/input?i=<encoded query>
+    -> App renders the URL in an iframe
+    -> User interacts with full WA interface natively inside the iframe
 ```
 
 #### 2.3 HTML App: `wolframalpha-viewer.html`
 
 **High-level features:**
 
-- **Layout**: Vertical list of pods with titles, collapsible sections
-- **Images**: Display base64 PNG images from tool result `image` content items with zoom-on-click
-- **Text**: Show plain text results alongside images
-- **Follow-up queries**: Input field at top allowing the user to refine the query; submits via `tools/call`
-- **Responsive**: Adapts to inline display mode dimensions; supports fullscreen toggle via `ui/request-display-mode`
-- **Theming**: Uses CSS variables from host context (`--color-background`, `--color-text`, etc.)
+- **Iframe embed**: Renders `https://www.wolframalpha.com/input?i=<query>` in a full-size iframe
+- **Query bar**: Shows the current query above the iframe; editable for follow-up queries
+- **Loading state**: Spinner/skeleton shown while iframe loads
+- **Responsive**: Fills container; supports fullscreen toggle via `ui/request-display-mode`
+- **Theming**: Uses CSS variables from host context for the query bar and chrome
 
 **Key UI components:**
 
-- Query bar with current query displayed and editable
-- Pod container (scrollable, collapsible sections)
-- Image viewer with pinch-zoom / scroll-zoom
-- Loading indicator during tool calls
-- Error display for failed queries
+- Query bar displaying the current query with a "Go" button for follow-ups
+- Full-size iframe embedding the WA results page
+- Loading indicator overlaid on the iframe until it finishes loading
+- Error display if the iframe fails to load
 
 **Lifecycle handling:**
 
 ```
 ui/initialize
     -> Store host context, theme, container dimensions
-    -> Display loading state
+    -> Display empty state / branding
 
 ui/notifications/tool-input
-    -> Display the query being sent (e.g. "Querying: population of France")
+    -> Extract query from tool input arguments
+    -> Construct WA URL and set iframe src
+    -> Show loading indicator
 
-ui/notifications/tool-result
-    -> Parse content items from result
-    -> Separate text items and image items
-    -> Render pods with images and text
-    -> Enable interactive features
+iframe loads
+    -> Hide loading indicator
+    -> User interacts with WA natively
 
-User clicks "Ask follow-up"
-    -> App sends tools/call to host
-    -> Host forwards to server
-    -> App receives result, updates display
+User edits query and clicks "Go"
+    -> Update iframe src with new query URL
+    -> Show loading indicator again
 ```
+
+**Note:** The tool result (text + base64 PNG) is still returned to the LLM for use in the conversation. The iframe provides a richer interactive experience alongside the text summary.
 
 #### 2.4 CSP Metadata: `wolframalpha-viewer.json`
 
@@ -587,14 +583,17 @@ User clicks "Ask follow-up"
         "csp": {
             "connectDomains": [],
             "resourceDomains": [],
-            "frameDomains": []
+            "frameDomains": [
+                "https://www.wolframalpha.com",
+                "https://wolfr.am"
+            ]
         },
         "prefersBorder": true
     }
 }
 ```
 
-No external domains needed since all WA images are delivered as base64 in tool results.
+The `frameDomains` entry allows embedding the WolframAlpha website in an iframe within the app. No `connectDomains` needed since the app does not make direct API calls.
 
 ---
 
@@ -689,41 +688,14 @@ The `frameDomains` entry allows embedding Wolfram Cloud deployed content in ifra
 
 Hidden tools (visibility `["app"]`) that are callable only by the UI apps, not visible to the LLM. These support app-side interactivity without polluting the LLM's tool list.
 
-**This phase is optional.** In Phase 2 and Phase 3, apps can call the existing `WolframAlpha` and `WolframLanguageEvaluator` tools directly (both have default visibility `["model", "app"]`). App-only tools should only be implemented if:
+**This phase is optional.** The WolframAlpha viewer (Phase 2) does not need app-only tools since follow-up queries are handled natively by updating the iframe URL. The evaluator viewer (Phase 3) can call the existing `WolframLanguageEvaluator` tool directly (visibility `["model", "app"]`). App-only tools should only be implemented if:
 
-- We need a simplified API for follow-up queries (e.g., omitting parameters the app always sets the same way)
 - We want to separate app-initiated calls from LLM-initiated calls for logging/analytics
-- We discover during Phase 2/3 implementation that the standard tools are awkward for app use
+- We discover during Phase 3 implementation that the standard tool is awkward for app use
 
 **Go/no-go criteria:** Implement Phase 4 only after Phase 2 and Phase 3 are complete and tested. Evaluate whether the existing tools are sufficient for app interactivity.
 
-#### 4.1 WolframAlpha Follow-Up Tool
-
-**Tool definition:**
-
-```json
-{
-    "name": "WolframAlphaFollowUp",
-    "description": "Execute a follow-up WolframAlpha query from the interactive viewer.",
-    "inputSchema": {
-        "type": "object",
-        "properties": {
-            "query": { "type": "string", "description": "The follow-up query" },
-            "originalQuery": { "type": "string", "description": "The original query for context" }
-        },
-        "required": ["query"]
-    },
-    "_meta": {
-        "ui": {
-            "visibility": ["app"]
-        }
-    }
-}
-```
-
-**Implementation:** Delegates to the same WolframAlpha evaluation logic but with optional context from the original query.
-
-#### 4.2 Re-Evaluate Tool
+#### 4.1 Re-Evaluate Tool
 
 **Purpose:** Allow the evaluator viewer app to re-evaluate modified code.
 
@@ -751,7 +723,7 @@ Hidden tools (visibility `["app"]`) that are callable only by the UI apps, not v
 
 **Implementation:** Delegates to the same `evaluateWolframLanguage` function. This is essentially the same as calling `WolframLanguageEvaluator` but hidden from the LLM to avoid confusion.
 
-#### 4.3 Registration
+#### 4.2 Registration
 
 App-only tools should be registered conditionally based on `$clientSupportsUI`. They should be added to `$toolList` and `$llmTools` during `startMCPServer` initialization only when UI is supported.
 
@@ -929,16 +901,6 @@ When building the tool list for `tools/list`, app-only tools must include `_meta
                     "visibility": ["model", "app"]
                 }
             }
-        },
-        {
-            "name": "WolframAlphaFollowUp",
-            "description": "Execute a follow-up WolframAlpha query...",
-            "inputSchema": { ... },
-            "_meta": {
-                "ui": {
-                    "visibility": ["app"]
-                }
-            }
         }
     ]
 }
@@ -967,7 +929,7 @@ The server does **not** generate CSP headers or embed them in the HTML. The serv
 
 **Per-app CSP:**
 
-- **WolframAlpha viewer**: No external domains needed. All images are base64-encoded in tool results. CSP is maximally restrictive (empty domain lists).
+- **WolframAlpha viewer**: Requires `frameDomains` for `https://www.wolframalpha.com` and `https://wolfr.am` to embed the WA results page in an iframe. No `connectDomains` needed since the app does not make direct API calls.
 - **Evaluator viewer**: Requires `frameDomains` for `https://www.wolframcloud.com` and `https://wolfr.am` to embed CloudDeploy results. No `connectDomains` needed since the app does not make direct API calls. The `script-src` and `style-src` directives use the host's defaults (`'self' 'unsafe-inline'`).
 
 ### Iframe Sandbox
@@ -1075,9 +1037,9 @@ Phase 3 (Evaluator App)
     └── Can be developed in parallel with Phase 2
 
 Phase 4 (App-Only Tools) [Optional]
-    └── Depends on Phase 1 (tool registration) + at least one of Phase 2 or Phase 3
-    └── Can be deferred; Phase 2/3 work without it using existing tools
-    └── Go/no-go decision after Phase 2/3 are implemented and tested
+    └── Depends on Phase 1 (tool registration) + Phase 3 (evaluator app)
+    └── Can be deferred; Phase 2 uses iframe natively, Phase 3 can use existing tools
+    └── Go/no-go decision after Phase 3 is implemented and tested
 ```
 
 ---
