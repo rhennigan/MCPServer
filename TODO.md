@@ -21,6 +21,7 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/InstallMCPServer.wl`
 - [x] Add `"ApplicationName"` option to `InstallMCPServer` and `UninstallMCPServer` to let users specify `$installClientName` (default `Automatic` uses `guessClientName`)
   - Source: `Kernel/InstallMCPServer.wl`
+- [ ] Document the `"ApplicationName"` option in documentation pages for `InstallMCPServer` and `UninstallMCPServer`
 
 ## Server Features
 
@@ -29,6 +30,10 @@ Consolidated list of TODO/FIXME items from the codebase.
 - [ ] Add `Initialization` option to `CreateMCPServer`
   - Source: `Kernel/CreateMCPServer.wl`
 - [ ] Add `ProcessDirectory` option to `InstallMCPServer` ([See Issue #69](https://github.com/rhennigan/MCPServer/issues/69))
+- [ ] Add `EnabledTools` and `DisabledTools` options to `InstallMCPServer`
+  - Sets environment variables with lists of tool names to include/exclude for easy customization
+- [ ] Add `"DisplayName"` property to MCP servers
+  - When installing, uses the display name as the config key, but keeps the `MCP_SERVER_NAME` environment variable as the canonical name
 
 ## MCP Protocol Support
 
