@@ -455,13 +455,14 @@ The design ensures backward compatibility. `$clientSupportsUI` affects **both** 
 | `resources/read` | Returns HTML content | Returns error (no resources registered) |
 | `tools/list` tool count | All tools including app-only | Standard tools only (app-only tools excluded) |
 | `tools/list` metadata | Includes `_meta.ui` on UI-linked tools | No `_meta` field on any tools |
-| `tools/call` results | Unchanged (text + base64 PNG) | Unchanged (text + base64 PNG) |
+| `tools/call` WolframAlpha results | JSON metadata (notebookUrl) + text + base64 PNG | Text + base64 PNG (unchanged) |
+| `tools/call` other tool results | Unchanged (text + base64 PNG) | Unchanged (text + base64 PNG) |
 
 **Detailed rules:**
 
 - **Extension negotiation is opt-in.** If the client does not advertise `io.modelcontextprotocol/ui` in its `capabilities.extensions` (or does not send `capabilities` at all), the server responds exactly as it does today.
 - **App-only tools are excluded for non-UI clients.** Tools with visibility `["app"]` are not included in `tools/list` or `$llmTools` when `$clientSupportsUI` is `False`. This prevents non-UI clients from seeing tools they cannot use.
-- **Tool results are unchanged.** The `evaluateTool` function continues to return text + base64 PNG content items. The UI app receives this same data via `ui/notifications/tool-result` (forwarded by the host) and renders it interactively. No changes to tool result format are needed.
+- **Tool results are mostly unchanged.** The `evaluateTool` function continues to return text + base64 PNG content items for all tools. The one exception is `WolframAlpha`: when `$clientSupportsUI` is `True`, the WolframAlpha tool prepends a JSON metadata content item containing the cloud notebook URL (`{"notebookUrl": "https://..."}`) before the standard text + image items. The UI app finds this URL and embeds the notebook using WolframNotebookEmbedder. If the notebook deployment fails, the tool falls back to the standard format. The text + image items are always included regardless, so the LLM always receives usable text.
 - **`resources/read` for unknown URIs** returns a standard MCP error response:
 
 ```json
@@ -512,68 +513,126 @@ Register the `Apps` asset location:
 
 ### Phase 2: WolframAlpha Interactive Viewer
 
-An HTML app that embeds the WolframAlpha website in an iframe, providing the full interactive WA experience directly in the conversation.
+An HTML app that displays WolframAlpha results as an interactive cloud notebook, using the same WolframNotebookEmbedder approach as the NotebookViewer tool.
+
+**Background:** WolframAlpha does not allow iframe embedding (`X-Frame-Options: SAMEORIGIN`), so the original plan of embedding `wolframalpha.com` directly is not viable. Instead, the server formats WA results into a Wolfram Notebook, CloudDeploys it, and the app embeds the cloud notebook using WolframNotebookEmbedder.
 
 #### 2.1 Design Goals
 
-- Embed the WolframAlpha results page in an iframe using the query from the tool input
-- Provide the full native WA experience (pods, drill-down, related queries, etc.) without reimplementing it
-- Show a loading state while the iframe loads
-- Allow the user to submit follow-up queries from within the app
-- Use host CSS variables for theming the surrounding chrome
+- Format WolframAlpha results as an interactive Wolfram Cloud notebook using Chatbook's `FormatWolframAlphaPods`
+- CloudDeploy the formatted notebook and embed it via WolframNotebookEmbedder (same approach as NotebookViewer)
+- Maintain the text + base64 PNG tool result for the LLM's consumption (unchanged)
+- Include a JSON metadata content item with the cloud notebook URL so the app can extract and embed it
+- Allow the user to submit follow-up queries from within the app (each follow-up deploys a new notebook)
+- Use host CSS variables for theming the query bar chrome
+- Graceful fallback: when `$clientSupportsUI` is `False` or CloudDeploy fails, the tool keeps current behavior (text + base64 PNG only)
 
 #### 2.2 Data Flow
 
 ```
-LLM calls WolframAlpha tool
-    -> Server executes WA query, returns text + images as today (unchanged)
-    -> Host receives tool result
+LLM calls WolframAlpha tool with { "query": "current distance to Mars" }
     -> Host sends ui/notifications/tool-input to the WA viewer app
-    -> App extracts the query from tool input arguments
-    -> App constructs WA URL: https://www.wolframalpha.com/input?i=<encoded query>
-    -> App renders the URL in an iframe
-    -> User interacts with full WA interface natively inside the iframe
+       (App shows query in query bar, displays loading state)
+    -> Server's wolframAlphaToolEvaluateUI runs:
+       1. Calls Chatbook with $ChatNotebookEvaluation = True
+          -> Returns <| "Result" -> <pods data>, "String" -> "<text for LLM>" |>
+       2. Extracts images from "String" via extractWolframAlphaImages (unchanged for LLM)
+       3. Formats "Result" via FormatWolframAlphaPods (with FoldPods = True)
+       4. Creates Notebook[{inputCell, outputCell}]
+       5. CloudDeploys to MCPServer/Notebooks/WolframAlpha/<encoded-query>.nb
+          with Permissions -> {"All" -> {"Read", "Interact"}}, AutoRemove -> True
+       6. Returns content items:
+          - JSON metadata item: {"notebookUrl": "https://www.wolframcloud.com/obj/..."}
+          - Text items + base64 PNG images (from extractWolframAlphaImages, for LLM)
+    -> Host receives tool result, sends ui/notifications/tool-result to app
+    -> App parses content items, finds the JSON metadata item with "notebookUrl"
+    -> App loads WolframNotebookEmbedder and embeds the cloud notebook
+    -> User sees interactive formatted WA results (pods, collapsible details, etc.)
+```
+
+**Key difference from NotebookViewer:** The NotebookViewer tool receives the URL as a tool *input argument*, so the app can start embedding immediately on `tool-input`. The WolframAlpha tool *generates* the URL during execution, so the app must wait for `tool-result` to get the notebook URL.
+
+**Follow-up queries:**
+
+```
+User edits query bar and clicks "Go"
+    -> App calls tools/call "WolframAlpha" with { "query": "<new query>" }
+    -> Server runs the same pipeline: Chatbook -> FormatWolframAlphaPods -> CloudDeploy
+    -> App receives tools/call response with new notebookUrl
+    -> App detaches previous embedded notebook, embeds the new one
 ```
 
 #### 2.3 HTML App: `wolframalpha-viewer.html`
 
 **High-level features:**
 
-- **Iframe embed**: Renders `https://www.wolframalpha.com/input?i=<query>` in a full-size iframe
-- **Query bar**: Shows the current query above the iframe; editable for follow-up queries
-- **Loading state**: Spinner/skeleton shown while iframe loads
-- **Responsive**: Fills container; supports fullscreen toggle via `ui/request-display-mode`
+- **Notebook embed**: Uses WolframNotebookEmbedder (loaded from unpkg CDN) to render the cloud notebook -- identical library and technique as `notebook-viewer.html`
+- **Query bar**: Shows the current query above the notebook embed; editable for follow-up queries
+- **Loading state**: Spinner shown while the server processes the query and deploys the notebook
+- **Responsive**: Fills container; auto-resize via `ui/notifications/size-changed`
 - **Theming**: Uses CSS variables from host context for the query bar and chrome
+- **"Open in W|A" link**: External link to `wolframalpha.com` for the current query
 
 **Key UI components:**
 
-- Query bar displaying the current query with a "Go" button for follow-ups
-- Full-size iframe embedding the WA results page
-- Loading indicator overlaid on the iframe until it finishes loading
-- Error display if the iframe fails to load
+- Query bar with input field, "Go" button, and "Open in W|A" link
+- Notebook embed container (replaces text/image rendering with WolframNotebookEmbedder)
+- Loading indicator
+- Error display
 
 **Lifecycle handling:**
 
 ```
 ui/initialize
-    -> Store host context, theme, container dimensions
-    -> Display empty state / branding
+    -> Store host context, theme
+    -> Load WolframNotebookEmbedder library from CDN
+    -> Display empty state
 
 ui/notifications/tool-input
     -> Extract query from tool input arguments
-    -> Construct WA URL and set iframe src
+    -> Display query in query bar, update "Open in W|A" link
     -> Show loading indicator
+    -> (Do NOT embed anything yet -- notebook URL is not known until tool-result)
 
-iframe loads
+ui/notifications/tool-result
+    -> Parse content items
+    -> Find the metadata content item containing {"notebookUrl": "https://..."}
+    -> If found: embed the notebook using WolframNotebookEmbedder.embed(url, container, opts)
+    -> If not found (fallback): render text/image content items directly
     -> Hide loading indicator
-    -> User interacts with WA natively
 
 User edits query and clicks "Go"
-    -> Update iframe src with new query URL
-    -> Show loading indicator again
+    -> Call tools/call "WolframAlpha" with { "query": "<new query>" }
+    -> Detach previous embedded notebook
+    -> Show loading indicator
+    -> On tools/call response: parse content, find notebookUrl, embed new notebook
+
+ui/notifications/tool-cancelled
+    -> Hide loading indicator
+
+ui/resource-teardown
+    -> Detach embedded notebook if any
 ```
 
-**Note:** The tool result (text + base64 PNG) is still returned to the LLM for use in the conversation. The iframe provides a richer interactive experience alongside the text summary.
+**Metadata content item detection:**
+
+The app identifies the metadata item by attempting to parse each text content item as JSON and checking for the `notebookUrl` key:
+
+```javascript
+function findNotebookUrl(content) {
+    for (var i = 0; i < content.length; i++) {
+        if (content[i].type === "text" && content[i].text) {
+            try {
+                var parsed = JSON.parse(content[i].text);
+                if (parsed && parsed.notebookUrl) return parsed.notebookUrl;
+            } catch (e) { /* not JSON, skip */ }
+        }
+    }
+    return null;
+}
+```
+
+**Fallback rendering:** If no `notebookUrl` is found (e.g., CloudDeploy failed and the tool fell back to standard output), the app renders text and base64 images directly, identical to the current behavior. This ensures the app works gracefully even when the server-side notebook formatting fails.
 
 #### 2.4 CSP Metadata: `wolframalpha-viewer.json`
 
@@ -581,10 +640,15 @@ User edits query and clicks "Go"
 {
     "ui": {
         "csp": {
-            "connectDomains": [],
-            "resourceDomains": [],
+            "connectDomains": [
+                "https://www.wolframcloud.com"
+            ],
+            "resourceDomains": [
+                "https://unpkg.com",
+                "https://www.wolframcloud.com"
+            ],
             "frameDomains": [
-                "https://www.wolframalpha.com",
+                "https://www.wolframcloud.com",
                 "https://wolfr.am"
             ]
         },
@@ -593,7 +657,127 @@ User edits query and clicks "Go"
 }
 ```
 
-The `frameDomains` entry allows embedding the WolframAlpha website in an iframe within the app. No `connectDomains` needed since the app does not make direct API calls.
+This is identical to `notebook-viewer.json` because the WolframAlpha viewer uses the same WolframNotebookEmbedder approach:
+
+- `connectDomains`: WolframNotebookEmbedder needs XHR/WebSocket access to wolframcloud.com
+- `resourceDomains`: The embedder JS library loads from unpkg.com; notebook resources load from wolframcloud.com
+- `frameDomains`: The embedded notebook renders in an iframe pointing to wolframcloud.com
+
+#### 2.5 WolframAlpha Tool Changes
+
+**File:** `Kernel/Tools/WolframAlpha.wl`
+
+When `$clientSupportsUI` is `True`, the WolframAlpha tool runs an enhanced pipeline that produces a cloud notebook alongside the standard text + image output.
+
+**Changes to `wolframAlphaToolEvaluate`:**
+
+```wl
+wolframAlphaToolEvaluate // beginDefinition;
+
+(* When client supports UI: get structured result, format notebook, CloudDeploy *)
+wolframAlphaToolEvaluate[ as_ ] /; TrueQ @ $clientSupportsUI :=
+    wolframAlphaToolEvaluateUI @ as;
+
+(* When client does not support UI: current behavior (text + base64 PNG) *)
+wolframAlphaToolEvaluate[ as_ ] :=
+    wolframAlphaToolEvaluate[ as, cb`$DefaultTools[ "WolframAlpha" ][ as ] ];
+
+wolframAlphaToolEvaluate[ as_, result_String ] := extractWolframAlphaImages @ result;
+wolframAlphaToolEvaluate[ as_, KeyValuePattern[ "String" -> result_String ] ] :=
+    extractWolframAlphaImages @ result;
+
+wolframAlphaToolEvaluate // endDefinition;
+```
+
+**New function `wolframAlphaToolEvaluateUI`:**
+
+```wl
+wolframAlphaToolEvaluateUI // beginDefinition;
+
+wolframAlphaToolEvaluateUI[ as_Association ] := Enclose[
+    Module[ { query, result, string, pods, inputCell, outputCell, notebook,
+              target, cloudObj, url, textContent, metadataItem },
+
+        query = ConfirmBy[ as[ "query" ], StringQ, "Query" ];
+
+        (* Step 1: Call Chatbook with $ChatNotebookEvaluation = True *)
+        result = Block[ { cb`$ChatNotebookEvaluation = True },
+            cb`$DefaultTools[ "WolframAlpha" ][ as ]
+        ];
+
+        (* Step 2: Extract images from the string for the LLM (unchanged pipeline) *)
+        string = ConfirmBy[ result[ "String" ], StringQ, "String" ];
+        textContent = extractWolframAlphaImages @ string;
+
+        (* Step 3: Format the Result into notebook cells *)
+        pods = Block[ { cb`$DefaultToolOptions = cb`$DefaultToolOptions },
+            cb`$DefaultToolOptions[ "WolframAlpha", "FoldPods" ] = True;
+            cb`FormatWolframAlphaPods[ result[ "Result" ] ]
+        ];
+        inputCell  = Cell[ query, "WolframAlphaLong" ];
+        outputCell = Cell[ BoxData @ ToBoxes @ pods, "Output" ];
+        notebook   = Notebook[ { inputCell, outputCell } ];
+
+        (* Step 4: CloudDeploy *)
+        target = FileNameJoin @ {
+            CloudObject[ $deployedNotebookRoot, Permissions -> "Public" ],
+            "WolframAlpha",
+            URLEncode[ query ] <> ".nb"
+        };
+        cloudObj = ConfirmMatch[
+            CloudDeploy[ notebook, target,
+                Permissions -> { "All" -> { "Read", "Interact" } },
+                AutoRemove  -> True,
+                IconRules   -> { }
+            ],
+            _CloudObject,
+            "CloudDeploy"
+        ];
+        url = ConfirmBy[ First @ cloudObj, StringQ, "URL" ];
+
+        (* Step 5: Build content items with metadata *)
+        metadataItem = <|
+            "type" -> "text",
+            "text" -> Developer`WriteRawJSONString @ <| "notebookUrl" -> url |>
+        |>;
+
+        <| "Content" -> Flatten @ { metadataItem, toContentList @ textContent } |>
+    ],
+    (* On any failure, fall back to non-UI behavior *)
+    Function[ { failureInfo },
+        writeError[ "WolframAlpha UI formatting failed, falling back to text+image" ];
+        wolframAlphaToolEvaluate[ as, cb`$DefaultTools[ "WolframAlpha" ][ as ] ]
+    ]
+];
+
+wolframAlphaToolEvaluateUI // endDefinition;
+```
+
+**New variable `$deployedNotebookRoot`:**
+
+```wl
+$deployedNotebookRoot = "MCPServer/Notebooks";
+```
+
+**New helper `toContentList`:**
+
+Normalizes the output of `extractWolframAlphaImages` (which may return a string or an association with a `"Content"` key) into a flat list of content item associations:
+
+```wl
+toContentList // beginDefinition;
+toContentList[ KeyValuePattern[ "Content" -> items_List ] ] := items;
+toContentList[ items_List ] := items;
+toContentList[ str_String ] := { <| "type" -> "text", "text" -> str |> };
+toContentList[ other_ ] := { <| "type" -> "text", "text" -> safeString @ other |> };
+toContentList // endDefinition;
+```
+
+**Key design decisions:**
+
+- **Fallback on failure**: If CloudDeploy fails (no cloud credentials, network issue, etc.), the function falls back to the standard text + image behavior. The app's fallback rendering handles this gracefully.
+- **Content item ordering**: The metadata item comes first so the app can find it quickly.
+- **AutoRemove -> True**: Cloud notebooks auto-expire, avoiding cleanup burden.
+- **IconRules -> {}**: Skips icon generation for the temporary cloud file.
 
 ---
 
@@ -688,7 +872,7 @@ The `frameDomains` entry allows embedding Wolfram Cloud deployed content in ifra
 
 Hidden tools (visibility `["app"]`) that are callable only by the UI apps, not visible to the LLM. These support app-side interactivity without polluting the LLM's tool list.
 
-**This phase is optional.** The WolframAlpha viewer (Phase 2) does not need app-only tools since follow-up queries are handled natively by updating the iframe URL. The evaluator viewer (Phase 3) can call the existing `WolframLanguageEvaluator` tool directly (visibility `["model", "app"]`). App-only tools should only be implemented if:
+**This phase is optional.** The WolframAlpha viewer (Phase 2) does not need app-only tools since follow-up queries are handled by calling the existing `WolframAlpha` tool via `tools/call` (visibility `["model", "app"]`), which triggers a new CloudDeploy and returns a fresh notebook URL. The evaluator viewer (Phase 3) can call the existing `WolframLanguageEvaluator` tool directly (visibility `["model", "app"]`). App-only tools should only be implemented if:
 
 - We want to separate app-initiated calls from LLM-initiated calls for logging/analytics
 - We discover during Phase 3 implementation that the standard tool is awkward for app use
@@ -814,7 +998,7 @@ When building the tool list for `tools/list`, app-only tools must include `_meta
             {
                 "uri": "ui://wolfram/wolframalpha-viewer",
                 "name": "WolframAlpha Interactive Viewer",
-                "description": "Interactive viewer for WolframAlpha results with zoomable images and follow-up queries.",
+                "description": "Interactive viewer for WolframAlpha results as cloud notebooks with follow-up queries.",
                 "mimeType": "text/html;profile=mcp-app"
             },
             {
@@ -906,9 +1090,61 @@ When building the tool list for `tools/list`, app-only tools must include `_meta
 }
 ```
 
-### Tools Call (unchanged)
+### Tools Call
 
-Tool call and result format is unchanged. The host forwards the result to the UI app via `ui/notifications/tool-result` using the standard content items format that the server already produces.
+Tool call and result format is unchanged for most tools. The host forwards the result to the UI app via `ui/notifications/tool-result` using the standard content items format that the server already produces.
+
+**Exception: WolframAlpha tool result (UI-capable client):**
+
+When `$clientSupportsUI` is `True`, the WolframAlpha tool prepends a JSON metadata content item with the cloud notebook URL:
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 5,
+    "result": {
+        "content": [
+            {
+                "type": "text",
+                "text": "{\"notebookUrl\":\"https://www.wolframcloud.com/obj/user/MCPServer/Notebooks/WolframAlpha/current+distance+to+Mars.nb\"}"
+            },
+            {
+                "type": "text",
+                "text": "Input: current distance to Mars\n\nResult: 1.234 AU (astronomical units)..."
+            },
+            {
+                "type": "image",
+                "mimeType": "image/png",
+                "data": "iVBOR..."
+            }
+        ],
+        "isError": false
+    }
+}
+```
+
+**WolframAlpha tool result (non-UI client, unchanged):**
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 5,
+    "result": {
+        "content": [
+            {
+                "type": "text",
+                "text": "Input: current distance to Mars\n\nResult: 1.234 AU (astronomical units)..."
+            },
+            {
+                "type": "image",
+                "mimeType": "image/png",
+                "data": "iVBOR..."
+            }
+        ],
+        "isError": false
+    }
+}
+```
 
 ---
 
@@ -929,7 +1165,7 @@ The server does **not** generate CSP headers or embed them in the HTML. The serv
 
 **Per-app CSP:**
 
-- **WolframAlpha viewer**: Requires `frameDomains` for `https://www.wolframalpha.com` and `https://wolfr.am` to embed the WA results page in an iframe. No `connectDomains` needed since the app does not make direct API calls.
+- **WolframAlpha viewer**: Requires `connectDomains` for `https://www.wolframcloud.com` (WolframNotebookEmbedder API communication), `resourceDomains` for `https://unpkg.com` (embedder JS library) and `https://www.wolframcloud.com` (notebook resources), and `frameDomains` for `https://www.wolframcloud.com` and `https://wolfr.am` (embedded notebook iframe). This is identical to the NotebookViewer CSP because both apps use the same WolframNotebookEmbedder approach.
 - **Evaluator viewer**: Requires `frameDomains` for `https://www.wolframcloud.com` and `https://wolfr.am` to embed CloudDeploy results. No `connectDomains` needed since the app does not make direct API calls. The `script-src` and `style-src` directives use the host's defaults (`'self' 'unsafe-inline'`).
 
 ### Iframe Sandbox
@@ -989,12 +1225,19 @@ Create `Tests/MCPApps.wlt`:
 15. **App-only tool visibility** -- visibility is `["app"]` in tool list
 16. **App-only tools absent** -- not registered when UI not supported
 
+#### WolframAlpha Tool (UI-Aware Behavior)
+
+17. **WolframAlpha tool with UI support** -- when `$clientSupportsUI` is `True`, `wolframAlphaToolEvaluateUI` returns content items including a JSON metadata item with `notebookUrl` key
+18. **WolframAlpha tool without UI support** -- when `$clientSupportsUI` is `False`, `wolframAlphaToolEvaluate` returns text + base64 PNG only (backward compatibility)
+19. **WolframAlpha tool fallback on CloudDeploy failure** -- when `$clientSupportsUI` is `True` but CloudDeploy fails, the tool falls back to text + base64 PNG behavior
+20. **Metadata content item format** -- the JSON metadata item parses correctly and contains a valid wolframcloud.com URL
+
 ### Integration Tests
 
-17. **Full initialize handshake** -- send initialize with UI extension, verify response
-18. **Full resource fetch** -- initialize -> resources/list -> resources/read
-19. **Tool call with UI metadata** -- initialize -> tools/list, verify _meta present
-20. **Backward compatibility** -- initialize without extensions, verify identical behavior to current
+21. **Full initialize handshake** -- send initialize with UI extension, verify response
+22. **Full resource fetch** -- initialize -> resources/list -> resources/read
+23. **Tool call with UI metadata** -- initialize -> tools/list, verify _meta present
+24. **Backward compatibility** -- initialize without extensions, verify identical behavior to current
 
 ---
 
@@ -1008,9 +1251,10 @@ Create `Tests/MCPApps.wlt`:
 | `Kernel/CommonSymbols.wl` | Edit | Add `$clientSupportsUI`, `$uiResourceRegistry`, `$toolUIAssociations` |
 | `Kernel/Messages.wl` | Edit | Add UI-related error messages |
 | `Kernel/Tools/Tools.wl` | Edit | Register `UIResources` subcontext, add app-only tools |
+| `Kernel/Tools/WolframAlpha.wl` | Edit | Branch on `$clientSupportsUI`: add notebook formatting, CloudDeploy, metadata content item |
 | `PacletInfo.wl` | Edit | Register `Assets/Apps` asset location |
-| `Assets/Apps/wolframalpha-viewer.html` | Create | WolframAlpha interactive viewer app |
-| `Assets/Apps/wolframalpha-viewer.json` | Create | CSP metadata for WA viewer |
+| `Assets/Apps/wolframalpha-viewer.html` | Edit | WolframAlpha viewer -- rewrite to use WolframNotebookEmbedder for cloud notebook embedding |
+| `Assets/Apps/wolframalpha-viewer.json` | Edit | CSP metadata -- change to wolframcloud.com + unpkg.com (matches notebook-viewer.json) |
 | `Assets/Apps/evaluator-viewer.html` | Create | WL Evaluator interactive viewer app |
 | `Assets/Apps/evaluator-viewer.json` | Create | CSP metadata for evaluator viewer |
 | `Tests/MCPApps.wlt` | Create | Test suite |
