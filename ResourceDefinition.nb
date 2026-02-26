@@ -10256,7 +10256,7 @@ Notebook[
               PlotRange -> {{0, 593.0}, {0, 647.0}}
              ]
             ],
-            "Input",
+            "ExampleImage",
             CellID -> 17303771
            ]
           },
