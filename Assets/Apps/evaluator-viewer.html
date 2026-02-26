@@ -91,13 +91,15 @@
     </style>
 </head>
 <body>
-    <div id="error"></div>
-    <div id="loading">
-        <div class="spinner"></div>
-        <span>Evaluating...</span>
+    <div id="app-root">
+        <div id="error"></div>
+        <div id="loading">
+            <div class="spinner"></div>
+            <span>Evaluating...</span>
+        </div>
+        <div id="notebook-container"></div>
+        <div id="results"></div>
     </div>
-    <div id="notebook-container"></div>
-    <div id="results"></div>
 
     <script>
     (function() {
@@ -270,16 +272,16 @@
         // ---- Auto-resize ----
         function setupAutoResize() {
             if (typeof ResizeObserver === "undefined") return;
+            var appRoot = document.getElementById("app-root");
             var observer = new ResizeObserver(function() {
-                var width = document.documentElement.scrollWidth;
-                var height = document.documentElement.scrollHeight;
+                var width = appRoot.scrollWidth;
+                var height = appRoot.scrollHeight;
                 sendNotification("ui/notifications/size-changed", {
                     width: width,
                     height: height
                 });
             });
-            observer.observe(document.documentElement);
-            observer.observe(document.body);
+            observer.observe(appRoot);
         }
 
         // ---- Theme application ----

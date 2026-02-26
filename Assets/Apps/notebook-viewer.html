@@ -68,12 +68,14 @@
     </style>
 </head>
 <body>
-    <div id="loading">
-        <div class="spinner"></div>
-        <span>Loading notebook...</span>
+    <div id="app-root">
+        <div id="loading">
+            <div class="spinner"></div>
+            <span>Loading notebook...</span>
+        </div>
+        <div id="error"></div>
+        <div id="container"></div>
     </div>
-    <div id="error"></div>
-    <div id="container"></div>
 
     <script>
     (function() {
@@ -139,16 +141,16 @@
         // ---- Auto-resize ----
         function setupAutoResize() {
             if (typeof ResizeObserver === "undefined") return;
+            var appRoot = document.getElementById("app-root");
             var observer = new ResizeObserver(function() {
-                var width = document.documentElement.scrollWidth;
-                var height = document.documentElement.scrollHeight;
+                var width = appRoot.scrollWidth;
+                var height = appRoot.scrollHeight;
                 sendNotification("ui/notifications/size-changed", {
                     width: width,
                     height: height
                 });
             });
-            observer.observe(document.documentElement);
-            observer.observe(document.body);
+            observer.observe(appRoot);
         }
 
         // ---- Theme application ----

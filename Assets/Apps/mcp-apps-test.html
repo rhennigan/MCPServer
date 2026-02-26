@@ -43,8 +43,10 @@
             font-size: 14px;
             background: var(--app-bg);
             color: var(--app-fg);
-            padding: 16px;
             line-height: 1.5;
+        }
+        #app-root {
+            padding: 16px;
         }
         h1 { font-size: 1.3em; margin-bottom: 12px; }
         h2 { font-size: 1.05em; margin-bottom: 8px; color: var(--accent-color); }
@@ -153,58 +155,60 @@
     </style>
 </head>
 <body>
-    <h1>MCP Apps Pipeline Test</h1>
+    <div id="app-root">
+        <h1>MCP Apps Pipeline Test</h1>
 
-    <!-- Pipeline Status -->
-    <div class="card">
-        <h2>Pipeline Status</h2>
-        <ul class="checklist">
-            <li><span class="check-icon" id="chk-init">&#10003;</span> ui/initialize</li>
-            <li><span class="check-icon" id="chk-input">&#10003;</span> tool-input</li>
-            <li><span class="check-icon" id="chk-result">&#10003;</span> tool-result</li>
-            <li><span class="check-icon" id="chk-theme">&#10003;</span> Host theming</li>
-            <li><span class="check-icon" id="chk-call">&#10003;</span> App-initiated tools/call</li>
-        </ul>
-    </div>
-
-    <!-- Tool Data -->
-    <div class="card">
-        <h2>Tool Data</h2>
-        <div class="data-section">
-            <div class="data-label">Input Arguments</div>
-            <div class="data-value" id="tool-input-data">Waiting for tool-input...</div>
+        <!-- Pipeline Status -->
+        <div class="card">
+            <h2>Pipeline Status</h2>
+            <ul class="checklist">
+                <li><span class="check-icon" id="chk-init">&#10003;</span> ui/initialize</li>
+                <li><span class="check-icon" id="chk-input">&#10003;</span> tool-input</li>
+                <li><span class="check-icon" id="chk-result">&#10003;</span> tool-result</li>
+                <li><span class="check-icon" id="chk-theme">&#10003;</span> Host theming</li>
+                <li><span class="check-icon" id="chk-call">&#10003;</span> App-initiated tools/call</li>
+            </ul>
         </div>
-        <div class="data-section" style="margin-top:8px">
-            <div class="data-label">Tool Result</div>
-            <div class="data-value" id="tool-result-data">Waiting for tool-result...</div>
+
+        <!-- Tool Data -->
+        <div class="card">
+            <h2>Tool Data</h2>
+            <div class="data-section">
+                <div class="data-label">Input Arguments</div>
+                <div class="data-value" id="tool-input-data">Waiting for tool-input...</div>
+            </div>
+            <div class="data-section" style="margin-top:8px">
+                <div class="data-label">Tool Result</div>
+                <div class="data-value" id="tool-result-data">Waiting for tool-result...</div>
+            </div>
         </div>
-    </div>
 
-    <!-- Call Tool from App -->
-    <div class="card">
-        <h2>Call Tool from App</h2>
-        <p style="font-size:0.85em;margin-bottom:6px">Send a message to MCPAppsTest from within this app:</p>
-        <div class="call-row">
-            <input type="text" id="call-msg" placeholder="Enter a test message..." value="Hello from the app!">
-            <button id="call-btn">Call MCPAppsTest</button>
+        <!-- Call Tool from App -->
+        <div class="card">
+            <h2>Call Tool from App</h2>
+            <p style="font-size:0.85em;margin-bottom:6px">Send a message to MCPAppsTest from within this app:</p>
+            <div class="call-row">
+                <input type="text" id="call-msg" placeholder="Enter a test message..." value="Hello from the app!">
+                <button id="call-btn">Call MCPAppsTest</button>
+            </div>
+            <div class="call-result" id="call-result"></div>
         </div>
-        <div class="call-result" id="call-result"></div>
-    </div>
 
-    <!-- Theme Info -->
-    <div class="card">
-        <h2>Host Theme</h2>
-        <dl class="theme-grid">
-            <dt>Mode</dt>    <dd id="theme-mode">unknown</dd>
-            <dt>Locale</dt>  <dd id="theme-locale">unknown</dd>
-            <dt>Platform</dt><dd id="theme-platform">unknown</dd>
-        </dl>
-    </div>
+        <!-- Theme Info -->
+        <div class="card">
+            <h2>Host Theme</h2>
+            <dl class="theme-grid">
+                <dt>Mode</dt>    <dd id="theme-mode">unknown</dd>
+                <dt>Locale</dt>  <dd id="theme-locale">unknown</dd>
+                <dt>Platform</dt><dd id="theme-platform">unknown</dd>
+            </dl>
+        </div>
 
-    <!-- Event Log -->
-    <div class="card">
-        <h2>Event Log</h2>
-        <div id="event-log"></div>
+        <!-- Event Log -->
+        <div class="card">
+            <h2>Event Log</h2>
+            <div id="event-log"></div>
+        </div>
     </div>
 
     <script>
@@ -271,16 +275,16 @@
         // ---- Auto-resize ----
         function setupAutoResize() {
             if (typeof ResizeObserver === "undefined") return;
+            var appRoot = document.getElementById("app-root");
             var observer = new ResizeObserver(function() {
-                var width = document.documentElement.scrollWidth;
-                var height = document.documentElement.scrollHeight;
+                var width = appRoot.scrollWidth;
+                var height = appRoot.scrollHeight;
                 sendNotification("ui/notifications/size-changed", {
                     width: width,
                     height: height
                 });
             });
-            observer.observe(document.documentElement);
-            observer.observe(document.body);
+            observer.observe(appRoot);
         }
 
         // ---- Theme application ----
