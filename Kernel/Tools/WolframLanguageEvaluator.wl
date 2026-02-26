@@ -240,8 +240,13 @@ evaluateWolframLanguageUI[ code_String, timeConstraint_Integer ] :=
         uiResult = Quiet @ UsingFrontEnd @ makeEvaluatorUIResult[ code, result ];
         If[ MatchQ[ uiResult, KeyValuePattern[ "Content" -> { __Association } ] ],
             uiResult,
-            $line = savedLine;
-            evaluateWolframLanguage[ code, timeConstraint ]
+            (* UI result creation failed; reuse already-computed string to avoid re-evaluation *)
+            If[ StringQ @ result[ "String" ],
+                exportImages @ result[ "String" ],
+                (* String result not available; re-evaluate as last resort *)
+                $line = savedLine;
+                evaluateWolframLanguage[ code, timeConstraint ]
+            ]
         ]
     ];
 
