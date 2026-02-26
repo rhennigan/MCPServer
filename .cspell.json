@@ -17,6 +17,7 @@
         "newclient",
         "noinit",
         "noprompt",
+        "oneline",
         "opencode",
         "pacletreadonly",
         "patt",
