@@ -250,7 +250,48 @@ Detailed rules:
 }
 ```
 
-#### 1.6 Directory Structure
+#### 1.6 EnableMCPApps Option
+
+Users can disable MCP Apps at install time via an `"EnableMCPApps"` option on `InstallMCPServer`. When disabled, the server behaves as if the client does not support MCP Apps, regardless of what the client actually advertises.
+
+**Option definition:**
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `"EnableMCPApps"` | `True` | Whether to enable MCP Apps UI features for this installation |
+
+**Environment variable:**
+
+The option is communicated to the server process via the `MCP_APPS_ENABLED` environment variable in the MCP config's `"env"` block:
+
+| `"EnableMCPApps"` value | Environment variable | Server behavior |
+|-------------------------|---------------------|-----------------|
+| `True` (default) | Not set (absent) | MCP Apps enabled if client supports it |
+| `False` | `"MCP_APPS_ENABLED": "false"` | MCP Apps disabled regardless of client |
+
+When `"EnableMCPApps"` is `True` (the default), no environment variable is injected. The absence of the variable means MCP Apps are enabled, preserving backward compatibility with existing installations.
+
+**Runtime behavior:**
+
+During the `initialize` handler in `StartMCPServer.wl`, after checking client capabilities with `clientSupportsUIQ`, the server also checks `Environment["MCP_APPS_ENABLED"]`. If the value is `"false"` (case-insensitive), `$clientSupportsUI` is forced to `False`.
+
+```
+$clientSupportsUI = mcpAppsEnabled[] && clientSupportsUIQ[msg]
+```
+
+Where `mcpAppsEnabled[]` returns `False` when `Environment["MCP_APPS_ENABLED"]` is `"false"` (case-insensitive), and `True` otherwise (including when the variable is not set).
+
+**Effect cascade when disabled:**
+
+Setting `"EnableMCPApps" -> False` triggers the same non-UI code path as a client that does not advertise MCP Apps support:
+
+- `$clientSupportsUI` is `False`
+- `initialize` response omits `capabilities.extensions`
+- `tools/list` omits `_meta.ui` on all tools and excludes app-only tools
+- `resources/list` returns empty `{ "resources": [] }`
+- Tool results use standard text + base64 PNG format only (no CloudDeploy, no `notebookUrl` metadata)
+
+#### 1.7 Directory Structure
 
 ```
 Assets/
@@ -266,7 +307,7 @@ Kernel/
     Messages.wl                      -- Modified: new error messages
 ```
 
-#### 1.7 Error Messages
+#### 1.8 Error Messages
 
 New error message tags:
 
@@ -276,7 +317,7 @@ New error message tags:
 | `UIResourceLoadFailed` | Failed to load an HTML asset file |
 | `UIAppAssetsMissing` | The `Assets/Apps` directory was not found |
 
-#### 1.8 PacletInfo.wl Changes
+#### 1.9 PacletInfo.wl Changes
 
 Register the `Apps` asset location so it can be resolved via `PacletObject["Wolfram/MCPServer"]["AssetLocation", "Apps"]`.
 
@@ -854,44 +895,50 @@ Test file: `Tests/MCPApps.wlt`
 2. **Non-UI client** -- init response omits `extensions` when client does not advertise UI
 3. **UI detection** -- correctly parses various client capability formats
 
+#### EnableMCPApps Option
+
+4. **MCP Apps disabled via env var** -- `$clientSupportsUI` is `False` when `MCP_APPS_ENABLED` is `"false"`, even if client advertises UI support
+5. **MCP Apps enabled by default** -- `$clientSupportsUI` follows client capabilities when `MCP_APPS_ENABLED` is not set
+6. **Case insensitivity** -- `MCP_APPS_ENABLED` check is case-insensitive (`"False"`, `"FALSE"`, `"false"` all disable)
+
 #### Resource Registry
 
-4. **Load resource** -- loads HTML file and optional JSON metadata
-5. **Initialize resources** -- populates registry from assets directory
-6. **Missing assets** -- graceful fallback when assets directory is missing
+7. **Load resource** -- loads HTML file and optional JSON metadata
+8. **Initialize resources** -- populates registry from assets directory
+9. **Missing assets** -- graceful fallback when assets directory is missing
 
 #### Resource Handlers
 
-7. **resources/list** -- returns UI resources for UI-capable clients, empty for others
-8. **resources/read** -- returns HTML content and metadata for valid URI
-9. **resources/read unknown URI** -- returns error for unknown URI
+10. **resources/list** -- returns UI resources for UI-capable clients, empty for others
+11. **resources/read** -- returns HTML content and metadata for valid URI
+12. **resources/read unknown URI** -- returns error for unknown URI
 
 #### Tool Metadata
 
-10. **UI metadata attached** -- `_meta.ui` attached for tools with UI associations
-11. **No UI metadata** -- no `_meta` for tools without UI associations
-12. **tools/list with UI** -- includes `_meta` in tool definitions for UI clients
-13. **tools/list without UI** -- omits `_meta` for non-UI clients
+13. **UI metadata attached** -- `_meta.ui` attached for tools with UI associations
+14. **No UI metadata** -- no `_meta` for tools without UI associations
+15. **tools/list with UI** -- includes `_meta` in tool definitions for UI clients
+16. **tools/list without UI** -- omits `_meta` for non-UI clients
 
 #### App-Only Tools
 
-14. **App-only tool registration** -- app-only tools registered when UI supported
-15. **App-only tool visibility** -- visibility is `["app"]` in tool list
-16. **App-only tools absent** -- not registered when UI not supported
+17. **App-only tool registration** -- app-only tools registered when UI supported
+18. **App-only tool visibility** -- visibility is `["app"]` in tool list
+19. **App-only tools absent** -- not registered when UI not supported
 
 #### WolframAlpha Tool (UI-Aware Behavior)
 
-17. **WolframAlpha with UI** -- returns content items including a JSON metadata item with `notebookUrl` key
-18. **WolframAlpha without UI** -- returns text + base64 PNG only (backward compatibility)
-19. **WolframAlpha fallback** -- falls back to text + base64 PNG when CloudDeploy fails
-20. **Metadata item format** -- the JSON metadata item parses correctly and contains a valid wolframcloud.com URL
+20. **WolframAlpha with UI** -- returns content items including a JSON metadata item with `notebookUrl` key
+21. **WolframAlpha without UI** -- returns text + base64 PNG only (backward compatibility)
+22. **WolframAlpha fallback** -- falls back to text + base64 PNG when CloudDeploy fails
+23. **Metadata item format** -- the JSON metadata item parses correctly and contains a valid wolframcloud.com URL
 
 ### Integration Tests
 
-21. **Full initialize handshake** -- send initialize with UI extension, verify response
-22. **Full resource fetch** -- initialize -> resources/list -> resources/read
-23. **Tool call with UI metadata** -- initialize -> tools/list, verify _meta present
-24. **Backward compatibility** -- initialize without extensions, verify identical behavior to current
+24. **Full initialize handshake** -- send initialize with UI extension, verify response
+25. **Full resource fetch** -- initialize -> resources/list -> resources/read
+26. **Tool call with UI metadata** -- initialize -> tools/list, verify _meta present
+27. **Backward compatibility** -- initialize without extensions, verify identical behavior to current
 
 ---
 
@@ -904,6 +951,7 @@ Test file: `Tests/MCPApps.wlt`
 | `Kernel/CommonSymbols.wl` | Edit | New shared symbols (`$clientSupportsUI`, `$uiResourceRegistry`, `$toolUIAssociations`) |
 | `Kernel/Messages.wl` | Edit | UI-related error messages |
 | `Kernel/Tools/Tools.wl` | Edit | Register UIResources subcontext, add app-only tools |
+| `Kernel/InstallMCPServer.wl` | Edit | Add `"EnableMCPApps"` option; inject `MCP_APPS_ENABLED` env var when `False` |
 | `Kernel/Tools/WolframAlpha.wl` | Edit | UI-aware evaluation pipeline with CloudDeploy and metadata content item |
 | `PacletInfo.wl` | Edit | Register `Assets/Apps` asset location |
 | `Assets/Apps/wolframalpha-viewer.html` | Create/Edit | WolframAlpha viewer using WolframNotebookEmbedder |
@@ -923,7 +971,8 @@ Phase 1 (Infrastructure)
     ├── 1.3 Resources Handler (depends on 1.2)
     ├── 1.4 Tool Metadata (depends on 1.1)
     ├── 1.5 Graceful Degradation (verified throughout)
-    └── 1.6-1.8 Directory structure, messages, PacletInfo
+    ├── 1.6 EnableMCPApps Option (depends on 1.1; affects InstallMCPServer + StartMCPServer)
+    └── 1.7-1.9 Directory structure, messages, PacletInfo
 
 Phase 2 (WolframAlpha App)
     └── Depends on Phase 1 complete
