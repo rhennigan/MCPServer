@@ -177,7 +177,6 @@ toContentList // beginDefinition;
 toContentList[ KeyValuePattern[ "Content" -> items_List ] ] := items;
 toContentList[ items_List ] := items;
 toContentList[ str_String ] := { <| "type" -> "text", "text" -> str |> };
-(* toContentList[ other_ ] := { <| "type" -> "text", "text" -> ToString @ other |> }; *)
 toContentList // endDefinition;
 
 (* ::**************************************************************************************************************:: *)

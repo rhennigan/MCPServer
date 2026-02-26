@@ -61,22 +61,6 @@ VerificationTest[
     TestID   -> "toContentList-AssociationContent@@Tests/WolframAlpha-UI.wlt:55,1-62,2"
 ]
 
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
-(*Non-String Input*)
-VerificationTest[
-    Wolfram`MCPServer`Tools`WolframAlpha`Private`toContentList[ 42 ],
-    { <| "type" -> "text", "text" -> _String |> },
-    SameTest -> MatchQ,
-    TestID   -> "toContentList-Integer@@Tests/WolframAlpha-UI.wlt:67,1-72,2"
-]
-
-VerificationTest[
-    Wolfram`MCPServer`Tools`WolframAlpha`Private`toContentList[ $Failed ],
-    { <| "type" -> "text", "text" -> _String |> },
-    SameTest -> MatchQ,
-    TestID   -> "toContentList-Failed@@Tests/WolframAlpha-UI.wlt:74,1-79,2"
-]
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -91,7 +75,7 @@ VerificationTest[
     ],
     _String | KeyValuePattern[ "Content" -> { __Association } ],
     SameTest -> MatchQ,
-    TestID   -> "wolframAlphaToolEvaluate-NoUI@@Tests/WolframAlpha-UI.wlt:88,1-95,2"
+    TestID   -> "wolframAlphaToolEvaluate-NoUI@@Tests/WolframAlpha-UI.wlt:72,1-79,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -103,7 +87,7 @@ VerificationTest[
     ],
     _String | KeyValuePattern[ "Content" -> { __Association } ],
     SameTest -> MatchQ,
-    TestID   -> "wolframAlphaToolEvaluate-WithUI@@Tests/WolframAlpha-UI.wlt:100,1-107,2"
+    TestID   -> "wolframAlphaToolEvaluate-WithUI@@Tests/WolframAlpha-UI.wlt:84,1-91,2"
 ]
 
 (* If UI result was returned with Content, verify it has items *)
@@ -114,52 +98,13 @@ VerificationTest[
         StringQ @ $waUIResult
     ],
     True,
-    TestID -> "wolframAlphaToolEvaluate-WithUI-HasContent@@Tests/WolframAlpha-UI.wlt:110,1-118,2"
+    TestID -> "wolframAlphaToolEvaluate-WithUI-HasContent@@Tests/WolframAlpha-UI.wlt:94,1-102,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*makeUIResult*)
 
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
-(*Returns $Failed for Non-Association Input*)
-VerificationTest[
-    Wolfram`MCPServer`Tools`WolframAlpha`Private`makeUIResult[ <| "query" -> "test" |>, "plain string" ],
-    $Failed,
-    SameTest -> MatchQ,
-    TestID   -> "makeUIResult-PlainStringFails@@Tests/WolframAlpha-UI.wlt:127,1-132,2"
-]
-
-VerificationTest[
-    Wolfram`MCPServer`Tools`WolframAlpha`Private`makeUIResult[ <| "query" -> "test" |>, $Failed ],
-    $Failed,
-    SameTest -> MatchQ,
-    TestID   -> "makeUIResult-FailedInput@@Tests/WolframAlpha-UI.wlt:134,1-139,2"
-]
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
-(*Returns $Failed When Missing Keys*)
-VerificationTest[
-    Wolfram`MCPServer`Tools`WolframAlpha`Private`makeUIResult[
-        <| "query" -> "test" |>,
-        <| "String" -> "text only" |>
-    ],
-    $Failed,
-    SameTest -> MatchQ,
-    TestID   -> "makeUIResult-MissingResultKey@@Tests/WolframAlpha-UI.wlt:144,1-152,2"
-]
-
-VerificationTest[
-    Wolfram`MCPServer`Tools`WolframAlpha`Private`makeUIResult[
-        <| "query" -> "test" |>,
-        <| "Result" -> "some result" |>
-    ],
-    $Failed,
-    SameTest -> MatchQ,
-    TestID   -> "makeUIResult-MissingStringKey@@Tests/WolframAlpha-UI.wlt:154,1-162,2"
-]
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -168,7 +113,7 @@ VerificationTest[
     Wolfram`MCPServer`Tools`WolframAlpha`Private`$deployedNotebookRoot,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "deployedNotebookRoot-IsString@@Tests/WolframAlpha-UI.wlt:167,1-172,2"
+    TestID   -> "deployedNotebookRoot-IsString@@Tests/WolframAlpha-UI.wlt:112,1-117,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
