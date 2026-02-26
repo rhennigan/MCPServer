@@ -4,6 +4,7 @@
         "buildx",
         "CICD",
         "dpkg",
+        "Embedder",
         "ENTITLEMENTID",
         "Legended",
         "libgomp",
@@ -11,16 +12,19 @@
         "LOCALBASE",
         "MCPB",
         "mcpserver",
+        "modelcontextprotocol",
         "Multicolumn",
         "newclient",
         "noinit",
         "noprompt",
+        "oneline",
         "opencode",
         "pacletreadonly",
         "patt",
         "prebuild",
         "pwfile",
         "reranking",
+        "sandboxed",
         "saoudrizwan",
         "shdw",
         "Stylesheet",
@@ -34,7 +38,8 @@
         "wolframalpha",
         "wolframengine",
         "WOLFRAMINIT",
-        "wolframresearch"
+        "wolframresearch",
+        "zoomable"
     ],
     "ignoreRegExpList": [
         "\\:\\:[a-z]+", // message names

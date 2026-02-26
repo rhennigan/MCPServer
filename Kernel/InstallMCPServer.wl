@@ -10,6 +10,7 @@ Needs[ "Wolfram`MCPServer`Common`" ];
 (* ::Section::Closed:: *)
 (*Config*)
 $installClientName = None;
+$enableMCPApps     = True;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -24,6 +25,7 @@ InstallMCPServer // beginDefinition;
 InstallMCPServer // Options = {
     "ApplicationName"    -> Automatic,
     "DevelopmentMode"    -> False,
+    "EnableMCPApps"      -> True,
     "ProcessEnvironment" -> Automatic,
     "VerifyLLMKit"       -> True
 };
@@ -36,7 +38,10 @@ InstallMCPServer[ target_, Automatic, opts: OptionsPattern[ ] ] :=
 
 InstallMCPServer[ target_File? fileQ, server_, opts: OptionsPattern[ ] ] :=
     catchMine @ Block[
-        { $installClientName = validateInstallClientName[ OptionValue[ "ApplicationName" ], target ] },
+        {
+            $installClientName = validateInstallClientName[ OptionValue[ "ApplicationName" ], target ],
+            $enableMCPApps = OptionValue[ "EnableMCPApps" ]
+        },
         installMCPServer[
             target,
             ensureMCPServerExists @ MCPServerObject @ server,
@@ -450,10 +455,14 @@ mcpConfigExistsQ // endDefinition;
 (*addEnvironmentVariables*)
 addEnvironmentVariables // beginDefinition;
 
-addEnvironmentVariables[ server0_Association, extraEnv_Association ] := Enclose[
-    Module[ { server, env, newEnv },
+addEnvironmentVariables[ server0_Association, extraEnv0_Association ] := Enclose[
+    Module[ { server, env, extraEnv, newEnv },
         server = ConfirmBy[ server0, AssociationQ, "Server" ];
         env = ConfirmBy[ server[ "env" ], AssociationQ, "Environment" ];
+        extraEnv = If[ $enableMCPApps === False,
+            <| extraEnv0, "MCP_APPS_ENABLED" -> "false" |>,
+            extraEnv0
+        ];
         newEnv = ConfirmBy[ <| env, extraEnv |>, AssociationQ, "NewEnvironment" ];
         server[ "env" ] = newEnv;
         server

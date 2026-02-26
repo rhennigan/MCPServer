@@ -296,6 +296,7 @@ Include these environment variables for proper operation:
 | `WOLFRAM_BASE` | Path to Wolfram base directory (`$BaseDirectory`) |
 | `WOLFRAM_USERBASE` | Path to user's Wolfram files (`$UserBaseDirectory`) |
 | `APPDATA` | (Windows only) Path to application data (typically `ParentDirectory[$UserBaseDirectory]`) |
+| `MCP_APPS_ENABLED` | Set to `"false"` to disable [MCP Apps](mcp-apps.md) UI resources (optional) |
 
 ### Getting the Configuration
 
@@ -342,6 +343,19 @@ By default, `InstallMCPServer` includes:
 - `WOLFRAM_BASE`
 - `WOLFRAM_USERBASE`
 - `APPDATA` (Windows only)
+
+### EnableMCPApps
+
+Controls whether [MCP Apps](mcp-apps.md) UI resources are enabled for the installed server:
+
+| Value | Behavior |
+|-------|----------|
+| `True` (default) | MCP Apps are enabled; the server will negotiate UI support with compatible clients |
+| `False` | MCP Apps are disabled; sets `MCP_APPS_ENABLED=false` in the server environment |
+
+```wl
+InstallMCPServer["ClaudeDesktop", "EnableMCPApps" -> False]
+```
 
 ### VerifyLLMKit
 

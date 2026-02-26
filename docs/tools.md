@@ -92,6 +92,15 @@ $DefaultMCPTools = <|
 | `EditSymbolDoc` | Edits existing symbol documentation pages | WolframPacletDevelopment |
 | `EditSymbolDocExamples` | Edits example sections of symbol documentation | WolframPacletDevelopment |
 
+#### MCP Apps Tools
+
+| Tool | Description | Server |
+|------|-------------|--------|
+| `NotebookViewer` | Embeds interactive Wolfram Cloud notebooks inline | (available, not in default servers) |
+| `MCPAppsTest` | Diagnostic tool for testing the MCP Apps pipeline | (available, not in default servers) |
+
+> **Note:** When a client supports the `io.modelcontextprotocol/ui` extension, the `WolframAlpha` and `WolframLanguageEvaluator` tools are automatically enhanced with UI capabilities (e.g., deploying cloud notebooks and returning `_meta` with `notebookUrl`). See [mcp-apps.md](mcp-apps.md) for details.
+
 ## Tool Definition Format
 
 ### Structure
@@ -391,14 +400,18 @@ $defaultMCPTools[ "WolframAlphaContext" ] := LLMTool @ <|
 
 - `Kernel/Tools/Tools.wl` - Main tools module, defines `$DefaultMCPTools`
 - `Kernel/Tools/Context.wl` - Context tools (WolframContext, WolframAlphaContext, WolframLanguageContext)
-- `Kernel/Tools/WolframLanguageEvaluator.wl` - Code evaluation tool
-- `Kernel/Tools/WolframAlpha.wl` - Wolfram Alpha query tool
+- `Kernel/Tools/WolframLanguageEvaluator.wl` - Code evaluation tool (with UI-enhanced mode)
+- `Kernel/Tools/WolframAlpha.wl` - Wolfram Alpha query tool (with UI-enhanced mode)
+- `Kernel/Tools/NotebookViewer.wl` - Embedded notebook viewer tool (MCP Apps)
+- `Kernel/Tools/MCPAppsTest.wl` - MCP Apps diagnostic tool
 - `Kernel/Tools/SymbolDefinition.wl` - Symbol definition lookup tool
 - `Kernel/Tools/Notebooks.wl` - ReadNotebook and WriteNotebook tools
 - `Kernel/Tools/TestReport.wl` - Test runner tool
 - `Kernel/Tools/CodeInspector/` - Code inspection tool
 - `Kernel/Tools/PacletDocumentation/` - Documentation editing tools
+- `Kernel/UIResources.wl` - UI resource registry for MCP Apps
 - `Kernel/MCPServerObject.wl` - Tool validation and normalization
 - `Kernel/StartMCPServer.wl` - Protocol handling for `tools/list` and `tools/call`
 - `Kernel/DefaultServers.wl` - Server configurations with `"Tools"` settings
+- `Assets/Apps/` - HTML and JSON files for MCP Apps UI resources
 - `Tests/Tools.wlt` - Tests for tool functionality

@@ -83,4 +83,21 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `outputLogFile;
 `cleanupOldOutputLogs;
 
+(* Logging utilities: *)
+`debugPrint;
+`writeError;
+
+(* MCP Apps / UI resources: *)
+`$clientSupportsUI;
+`$uiResourceRegistry;
+`$toolUIAssociations;
+`clientSupportsUIQ;
+`mcpAppsEnabledQ;
+`initializeUIResources;
+`listUIResources;
+`loadUIResource;
+`readUIResource;
+`toolUIMetadata;
+`withToolUIMetadata;
+
 EndPackage[ ];

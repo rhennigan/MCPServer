@@ -22,6 +22,7 @@ Needs[ "DefinitionNotebookClient`" -> None ];
 DefinitionNotebookClient`$DisabledHints = <| "MessageTag" -> #, "Level" -> All, "ID" -> All |> & /@ {
     "CodeInspectionFileIssue/TopLevel",
     "HeroImageSquashed",
+    "HugeRaster",
     "InternalContextWarning"
 };
 

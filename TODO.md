@@ -21,6 +21,7 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/InstallMCPServer.wl`
 - [x] Add `"ApplicationName"` option to `InstallMCPServer` and `UninstallMCPServer` to let users specify `$installClientName` (default `Automatic` uses `guessClientName`)
   - Source: `Kernel/InstallMCPServer.wl`
+- [ ] Document the `"ApplicationName"` option in documentation pages for `InstallMCPServer` and `UninstallMCPServer`
 
 ## Server Features
 
@@ -29,6 +30,10 @@ Consolidated list of TODO/FIXME items from the codebase.
 - [ ] Add `Initialization` option to `CreateMCPServer`
   - Source: `Kernel/CreateMCPServer.wl`
 - [ ] Add `ProcessDirectory` option to `InstallMCPServer` ([See Issue #69](https://github.com/rhennigan/MCPServer/issues/69))
+- [ ] Add `EnabledTools` and `DisabledTools` options to `InstallMCPServer`
+  - Sets environment variables with lists of tool names to include/exclude for easy customization
+- [ ] Add `"DisplayName"` property to MCP servers
+  - When installing, uses the display name as the config key, but keeps the `MCP_SERVER_NAME` environment variable as the canonical name
 
 ## MCP Protocol Support
 
@@ -39,10 +44,16 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/StartMCPServer.wl`
 - [ ] Support resources capability
   - Source: `Kernel/StartMCPServer.wl`
-- [ ] Investigate MCP apps
+- [x] Investigate MCP apps
   - Spec: https://modelcontextprotocol.io/extensions/apps/overview.md
   - Can we use this to display Wolfram Alpha tool call results in an iframe?
   - How about results of the WL evaluator that produces CloudObjects (e.g. CloudDeploy)?
+  - Result: Implementation specification created at `Specs/MCPApps.md`
+- [ ] Implement MCP Apps extension (see `Specs/MCPApps.md`)
+  - Phase 1: Infrastructure (extension negotiation, UI resource registry, resource handlers, tool metadata)
+  - Phase 2: WolframAlpha Interactive Viewer
+  - Phase 3: WL Evaluator Interactive Viewer
+  - Phase 4: App-Only Tools (optional)
 
 ## Tools
 
@@ -64,6 +75,10 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Maybe just add something to the WL tool description that mentions this can be done?
 
 ### Tool Improvements
+
+- [ ] Tool options set via environment variables
+  - Example: we already have `WOLFRAM_LANGUAGE_EVALUATOR_METHOD`. We could make a nice interface for this in InstallMCPServer.
+  - We could also have a single environment variable that points to a file containing all the options for tools
 
 - [ ] Support file inputs in the evaluator tool
   - Could use the existing "code" parameter or add a new "file" parameter (only one can be used at a time)
@@ -111,6 +126,33 @@ Consolidated list of TODO/FIXME items from the codebase.
 - [ ] Show relative paths in CodeInspector output when inspecting directories
   - Source: `Kernel/Tools/CodeInspector/Formatting.wl`
 
+- [ ] New CodeInspector rules
+  - [ ] Rule for `ReadString` with `CharacterEncoding` option
+    - Bad:
+    ```wl
+    ReadString[file, CharacterEncoding -> "enc"]
+    ```
+    - Recommendation:
+    ```wl
+    ByteArrayToString[ReadByteArray[file], "enc"]
+    ```
+  - [ ] Rule for `Nothing` in associations
+    - Nothing does not get dropped from the association:
+      ```wl
+      In[9]:= <|"a" -> 1, "b" -> Nothing|>
+
+      Out[9]= <|"a" -> 1, "b" -> Nothing|>
+      ```
+  - [ ] Rule for `KeyExistsQ` with nested key paths
+    - Valid, but likely a mistake (this does not represent a nested key path):
+      ```wl
+      KeyExistsQ[assoc, {"k1", "k2", ...}]
+      ```
+    - Recommendation:
+      ```wl
+      ! MissingQ @ assoc["k1", "k2", ...]
+      ```
+
 ## Prompts
 
 - [ ] Implement `Documentation` prompt
@@ -138,6 +180,50 @@ This is effectively what the paclet currently does, but we'll run it in reverse.
 
 - [ ] Support connecting to local MCP servers
 - [ ] Support connecting to remote MCP servers
+
+## Agent Skills
+
+Create distributable agent skills that use functionality from this paclet.
+
+- [ ] Testing
+  - Instructions:
+    - writing tests
+    - running tests
+    - inspecting code
+  - Scripts:
+    - `TestReport.wls [path/to/Tests/]`
+    - `CodeInspect.wls [path/to/Code/]`
+
+- [ ] Paclet Building
+  - Instructions:
+    - checking the paclet
+    - building the paclet
+    - submitting the paclet
+  - Scripts:
+    - `CheckPaclet.wls [path/to/Paclet/]`
+    - `BuildPaclet.wls [path/to/Paclet/]`
+    - `SubmitPaclet.wls [path/to/Paclet/]`
+
+- [ ] Paclet Optimization
+  - Instructions:
+    - MX builds
+    - compiled functions
+
+- [ ] Creating New Paclets
+  - Instructions:
+    - layout guidelines
+    - naming conventions
+    - documentation guidelines
+  - Scripts:
+    - `NewPaclet.wls [path/to/NewPaclet/]`
+
+- [ ] Documentation
+  - Instructions:
+    - writing paclet documentation
+    - building paclet documentation
+  - Scripts:
+    - `CreateDocumentation.wls [path/to/Documentation/]`
+    - `BuildDocumentation.wls [path/to/Documentation/]`
 
 ## Blocked / Dependencies
 

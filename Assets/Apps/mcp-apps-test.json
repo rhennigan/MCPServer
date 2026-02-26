@@ -1,0 +1,10 @@
+{
+    "ui": {
+        "csp": {
+            "connectDomains": [],
+            "resourceDomains": [],
+            "frameDomains": []
+        },
+        "prefersBorder": true
+    }
+}

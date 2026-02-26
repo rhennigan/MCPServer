@@ -155,12 +155,15 @@ See [building.md](building.md) for details on building the paclet.
 
 ```
 MCPServer/
+├── Assets/                    # Static assets bundled with the paclet
+│   └── Apps/                  # HTML/JSON files for MCP Apps UI resources
 ├── Kernel/                    # Core implementation
 │   ├── MCPServer.wl           # Main entry point
 │   ├── Main.wl                # Package loading, exported symbols
 │   ├── Common.wl              # Utilities and [error handling](error-handling.md)
 │   ├── CreateMCPServer.wl     # Server creation
 │   ├── StartMCPServer.wl      # Server startup
+│   ├── UIResources.wl         # MCP Apps UI resource registry
 │   ├── Messages.wl            # Error messages
 │   └── Tools/                 # Predefined MCP tools
 ├── Scripts/                   # Build and utility scripts
@@ -174,8 +177,7 @@ For detailed architecture information, see [AGENTS.md](../AGENTS.md#code-archite
 ## Next Steps
 
 - Review the [Code Architecture](../AGENTS.md#code-architecture) section for understanding the codebase
-- Read the [Code Style Guidelines](../AGENTS.md#code-style-guidelines) before contributing
-- Check the [Key Development Patterns](../AGENTS.md#key-development-patterns) for function definitions
+- Check the [Key Development Patterns](../AGENTS.md#key-development-patterns) for function definitions and error handling
 - Read the [Error Handling](error-handling.md) guide for the error handling architecture
 
 ## Additional Resources

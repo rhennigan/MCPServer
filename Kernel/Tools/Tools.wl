@@ -56,6 +56,12 @@ $subcontexts = {
     (* Tools: WolframContext, WolframAlphaContext, WolframLanguageContext *)
     "Wolfram`MCPServer`Tools`Context`",
 
+    (* Tools: NotebookViewer *)
+    "Wolfram`MCPServer`Tools`NotebookViewer`",
+
+    (* Tools: MCPAppsTest *)
+    "Wolfram`MCPServer`Tools`MCPAppsTest`",
+
     (* Tools: ReadNotebook, WriteNotebook *)
     "Wolfram`MCPServer`Tools`Notebooks`",
 
