@@ -147,7 +147,7 @@ makeUIResult[ as_, KeyValuePattern[ { "Result" -> waResult_, "String" -> stringR
             FileNameJoin @ {
                 CloudObject[ $deployedNotebookRoot, Permissions -> { "All" -> { "Read", "Interact" } } ],
                 "WolframAlpha",
-                IntegerString[ Hash[ query, "SHA256"], 16 ] <> ".nb"
+                Hash[ query, Automatic, "HexString" ] <> ".nb"
             },
             _CloudObject,
             "Target"
