@@ -263,7 +263,7 @@ handleMethod // beginDefinition;
    https://modelcontextprotocol.io/specification/2025-11-25/client/roots#protocol-messages *)
 handleMethod[ "initialize", msg_, req_ ] := (
     $clientName = Replace[ msg[[ "params", "clientInfo", "name" ]], Except[ _String ] :> None ];
-    $clientSupportsUI = clientSupportsUIQ @ msg;
+    $clientSupportsUI = mcpAppsEnabledQ[ ] && clientSupportsUIQ @ msg;
     If[ ! stderrEnabledQ[ ], $Messages = { } ];
     <| req, "result" -> initResponse[ $currentMCPServer, msg ] |>
 );

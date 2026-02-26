@@ -32,6 +32,18 @@ clientSupportsUIQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*mcpAppsEnabledQ*)
+mcpAppsEnabledQ // beginDefinition;
+
+mcpAppsEnabledQ[ ] :=
+    With[ { val = Environment[ "MCP_APPS_ENABLED" ] },
+        ! StringQ[ val ] || ! StringMatchQ[ val, "false", IgnoreCase -> True ]
+    ];
+
+mcpAppsEnabledQ // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*initializeUIResources*)
 initializeUIResources // beginDefinition;
 

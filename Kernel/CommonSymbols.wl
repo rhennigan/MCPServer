@@ -92,6 +92,7 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `$uiResourceRegistry;
 `$toolUIAssociations;
 `clientSupportsUIQ;
+`mcpAppsEnabledQ;
 `initializeUIResources;
 `listUIResources;
 `loadUIResource;
