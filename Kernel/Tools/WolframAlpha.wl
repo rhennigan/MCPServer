@@ -147,14 +147,21 @@ makeUIResult[ as_, KeyValuePattern[ { "Result" -> waResult_, "String" -> stringR
             FileNameJoin @ {
                 CloudObject[ $deployedNotebookRoot, Permissions -> { "All" -> { "Read", "Interact" } } ],
                 "WolframAlpha",
-                URLEncode @ query <> ".nb"
+                IntegerString[ Hash[ query, "SHA256"], 16 ] <> ".nb"
             },
             _CloudObject,
             "Target"
         ];
 
         deployed = ConfirmMatch[
-            CloudDeploy[ nb, target, AppearanceElements -> None, AutoRemove -> True, IconRules -> { } ],
+            CloudDeploy[
+                nb,
+                target,
+                Permissions       -> { "All" -> { "Read", "Interact" } },
+                AppearanceElements -> None,
+                AutoRemove         -> True,
+                IconRules          -> { }
+            ],
             _CloudObject,
             "CloudDeploy"
         ];
