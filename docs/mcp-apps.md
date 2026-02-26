@@ -1,0 +1,213 @@
+# MCP Apps in MCPServer
+
+This document explains how MCP Apps work in MCPServer and how to extend them.
+
+## Overview
+
+[MCP Apps](https://modelcontextprotocol.io/docs/extensions/apps) is the first official MCP extension (`io.modelcontextprotocol/ui`), enabling servers to deliver interactive HTML user interfaces that render inside MCP hosts (Claude Desktop, VS Code, etc.) in sandboxed iframes.
+
+MCPServer uses MCP Apps to provide:
+
+- **Interactive Wolfram|Alpha results** displayed in an embedded notebook viewer
+- **Rich evaluation output** from `WolframLanguageEvaluator` with interactive cloud notebooks
+- **Embedded notebook viewers** for Wolfram Cloud notebooks
+
+When a client does not support MCP Apps, all tools fall back to their standard text and image output, maintaining full backward compatibility.
+
+## How It Works
+
+### Capability Negotiation
+
+MCP Apps support is negotiated during the `initialize` handshake:
+
+1. The client advertises support for the `io.modelcontextprotocol/ui` extension in its `capabilities`
+2. The server detects this and echoes the extension in its response
+3. For the rest of the session, the server enriches tool definitions and results with UI metadata
+
+The server checks two conditions before enabling MCP Apps:
+
+- The client must advertise `io.modelcontextprotocol/ui` in `capabilities.extensions`
+- The `MCP_APPS_ENABLED` environment variable must not be set to `"false"`
+
+### UI Resources
+
+UI resources are HTML apps served via the MCP `resources/read` endpoint. Each resource is identified by a `ui://` URI (e.g., `ui://wolfram/wolframalpha-viewer`).
+
+Resources are loaded from HTML files in the `Assets/Apps/` directory at server startup. Each HTML file can have an accompanying `.json` metadata file with the same base name.
+
+The server handles these MCP methods for UI resources:
+
+| Method | Description |
+|--------|-------------|
+| `resources/list` | Returns the list of available UI resources (empty if MCP Apps is not active) |
+| `resources/read` | Returns the HTML content and metadata for a specific UI resource |
+
+### Tool-UI Linkage
+
+Tools can be associated with a UI resource. When the client supports MCP Apps, the `tools/list` response includes `_meta.ui` metadata on each linked tool:
+
+```json
+{
+  "name": "WolframAlpha",
+  "description": "...",
+  "inputSchema": { ... },
+  "_meta": {
+    "ui": {
+      "resourceUri": "ui://wolfram/wolframalpha-viewer",
+      "visibility": ["model", "app"]
+    }
+  }
+}
+```
+
+The host uses this metadata to preload the HTML app and render it alongside tool results.
+
+### UI-Enhanced Tool Results
+
+When MCP Apps is active, certain tools return enhanced results with `_meta` containing a `notebookUrl`. The host forwards this metadata to the rendered app, which can then embed the notebook interactively.
+
+Tools with UI-enhanced behavior:
+
+| Tool | Enhancement |
+|------|-------------|
+| `WolframAlpha` | Deploys a cloud notebook with formatted Wolfram\|Alpha pods and returns `notebookUrl` in `_meta` |
+| `WolframLanguageEvaluator` | Deploys a cloud notebook with evaluation results and returns `notebookUrl` in `_meta` |
+
+These enhancements require both MCP Apps support and an active Wolfram Cloud connection (`$CloudConnected`). If either condition is not met, the tools fall back to their standard behavior.
+
+## Available UI Resources
+
+| URI | HTML Asset | Description |
+|-----|-----------|-------------|
+| `ui://wolfram/wolframalpha-viewer` | `wolframalpha-viewer.html` | Displays Wolfram\|Alpha results with embedded notebook viewer |
+| `ui://wolfram/evaluator-viewer` | `evaluator-viewer.html` | Displays Wolfram Language evaluation results with embedded notebook viewer |
+| `ui://wolfram/notebook-viewer` | `notebook-viewer.html` | Generic embedded Wolfram Cloud notebook viewer |
+| `ui://wolfram/mcp-apps-test` | `mcp-apps-test.html` | Diagnostic app for testing the MCP Apps pipeline |
+
+## Available MCP Apps Tools
+
+These tools are defined in `$DefaultMCPTools` but are not included in any default server configuration:
+
+| Tool | Description |
+|------|-------------|
+| `NotebookViewer` | Embeds an interactive Wolfram Cloud notebook given a URL |
+| `MCPAppsTest` | Diagnostic tool that echoes input with server metadata, useful for testing the MCP Apps pipeline |
+
+To include these tools in a custom server:
+
+```wl
+CreateMCPServer["MyServer", <|
+    "Tools" -> {
+        "WolframLanguageEvaluator",
+        "WolframAlpha",
+        "NotebookViewer"
+    }
+|>]
+```
+
+## Tool-UI Associations
+
+The mapping between tools and their UI resources is defined in `$toolUIAssociations` in `Kernel/UIResources.wl`:
+
+| Tool | UI Resource URI |
+|------|----------------|
+| `NotebookViewer` | `ui://wolfram/notebook-viewer` |
+| `MCPAppsTest` | `ui://wolfram/mcp-apps-test` |
+| `WolframAlpha` | `ui://wolfram/wolframalpha-viewer` |
+| `WolframLanguageEvaluator` | `ui://wolfram/evaluator-viewer` |
+
+## Disabling MCP Apps
+
+MCP Apps can be disabled at install time:
+
+```wl
+InstallMCPServer["ClaudeDesktop", "EnableMCPApps" -> False]
+```
+
+This sets `MCP_APPS_ENABLED=false` in the server's environment, which prevents the server from negotiating UI support regardless of client capabilities.
+
+MCP Apps are also effectively disabled when:
+
+- The client does not advertise the `io.modelcontextprotocol/ui` extension
+- The server cannot load its UI assets (graceful fallback)
+
+## Adding a New UI Resource
+
+### Step 1: Create the HTML App
+
+Create an HTML file in `Assets/Apps/`:
+
+```
+Assets/Apps/my-app.html
+```
+
+The HTML file should implement the MCP Apps host-app protocol using `postMessage`. At minimum, the app should:
+
+1. Send `ui/initialize` to the host when ready
+2. Handle `ui/notifications/tool-input` and `ui/notifications/tool-result` messages
+
+### Step 2: Add Optional Metadata
+
+Create a JSON metadata file with the same base name:
+
+```
+Assets/Apps/my-app.json
+```
+
+This file can contain CSP declarations and other metadata used by the host.
+
+### Step 3: Associate with a Tool
+
+Add the tool-to-resource mapping in `$toolUIAssociations` in `Kernel/UIResources.wl`:
+
+```wl
+$toolUIAssociations = <|
+    (* ... existing entries ... *)
+    "MyTool" -> "ui://wolfram/my-app"
+|>;
+```
+
+The URI is derived from the HTML filename: `ui://wolfram/<basename>`.
+
+### Step 4: Write Tests
+
+Add tests in `Tests/` for the new resource. See the existing test files (`Tests/MCPApps.wlt`, `Tests/MCPAppsTest.wlt`, etc.) for patterns.
+
+## Architecture
+
+### Key Files
+
+| File | Description |
+|------|-------------|
+| `Kernel/UIResources.wl` | UI resource registry, capability detection, tool-UI metadata |
+| `Kernel/StartMCPServer.wl` | Protocol handling for `resources/list`, `resources/read`, and `_meta` forwarding |
+| `Kernel/CommonSymbols.wl` | Shared symbols for MCP Apps (`$clientSupportsUI`, `$uiResourceRegistry`, etc.) |
+| `Kernel/InstallMCPServer.wl` | `"EnableMCPApps"` option and `MCP_APPS_ENABLED` environment variable |
+| `Kernel/Messages.wl` | Error messages for UI resources |
+| `Assets/Apps/` | HTML and JSON files for UI resources |
+| `Kernel/Tools/NotebookViewer.wl` | NotebookViewer tool definition |
+| `Kernel/Tools/MCPAppsTest.wl` | MCPAppsTest diagnostic tool definition |
+| `Kernel/Tools/WolframAlpha.wl` | UI-enhanced Wolfram\|Alpha evaluation |
+| `Kernel/Tools/WolframLanguageEvaluator.wl` | UI-enhanced code evaluation |
+
+### Key Symbols
+
+| Symbol | Context | Description |
+|--------|---------|-------------|
+| `$clientSupportsUI` | `Common` | Whether the current client supports MCP Apps |
+| `$uiResourceRegistry` | `Common` | Association of loaded UI resources keyed by URI |
+| `$toolUIAssociations` | `Common` | Mapping of tool names to UI resource URIs |
+| `clientSupportsUIQ` | `Common` | Checks if an `initialize` message advertises UI support |
+| `mcpAppsEnabledQ` | `Common` | Checks the `MCP_APPS_ENABLED` environment variable |
+| `initializeUIResources` | `Common` | Loads HTML assets into the resource registry |
+| `listUIResources` | `Common` | Returns the resource list for `resources/list` |
+| `readUIResource` | `Common` | Handles `resources/read` requests |
+| `toolUIMetadata` | `Common` | Returns `_meta.ui` for a tool name |
+| `withToolUIMetadata` | `Common` | Augments a tool list with UI metadata |
+
+## Related Documentation
+
+- [MCP Apps specification](https://modelcontextprotocol.io/docs/extensions/apps) - Official MCP Apps documentation
+- [tools.md](tools.md) - MCP tools system and how to add new tools
+- [servers.md](servers.md) - Predefined server configurations
+- [mcp-clients.md](mcp-clients.md) - Client support and `EnableMCPApps` option

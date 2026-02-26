@@ -49,8 +49,12 @@ See [building.md](docs/building.md) for detailed instructions.
   - `MCPServerObject.wl`: Defines the MCP server object format
   - `Messages.wl`: Definitions for error messages
   - `StartMCPServer.wl`: Implementation for starting MCP servers
+  - `UIResources.wl`: [MCP Apps](docs/mcp-apps.md) UI resource registry and client capability detection
   - `Tools/`: Contains several files defining predefined MCP tools used by default servers
   - `Prompts/`: Contains files defining predefined [MCP prompts](docs/mcp-prompts.md) used by default servers
+
+- `Assets/`: Static assets bundled with the paclet
+  - `Apps/`: HTML and JSON files for [MCP Apps](docs/mcp-apps.md) UI resources
 
 - `Scripts/`: Contains utility scripts for building, testing, and running the paclet
 
@@ -69,6 +73,7 @@ See [building.md](docs/building.md) for detailed instructions.
   - `tools.md`: MCP tools system and how to add new tools
   - `mcp-prompts.md`: MCP prompts system and how to add new prompts
   - `mcp-clients.md`: MCP client support and installation
+  - `mcp-apps.md`: MCP Apps system for interactive UI resources
 
 ### MCP Documentation
 
