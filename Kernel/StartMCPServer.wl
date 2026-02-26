@@ -297,7 +297,7 @@ handleResourceRead[ msg_Association, req_ ] :=
     Module[ { result },
         result = catchAlways @ readUIResource[ msg, req ];
         If[ FailureQ @ result,
-            <| req, "error" -> <| "code" -> -32602, "message" -> resourceReadErrorMessage[ msg ] |> |>,
+            <| req, "error" -> resourceReadError[ result, msg ] |>,
             <| req, "result" -> result |>
         ]
     ];
@@ -306,8 +306,28 @@ handleResourceRead // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*resourceReadError*)
+resourceReadError // beginDefinition;
+
+(* Resource not found: invalid params (-32602) *)
+resourceReadError[ failure: Failure[ _String? (StringEndsQ[ "::UIResourceNotFound" ]), _ ], msg_ ] :=
+    <| "code" -> -32602, "message" -> resourceReadErrorMessage[ failure, msg ] |>;
+
+(* Any other failure: internal error (-32603) *)
+resourceReadError[ failure_Failure, msg_ ] :=
+    <| "code" -> -32603, "message" -> resourceReadErrorMessage[ failure, msg ] |>;
+
+resourceReadError // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*resourceReadErrorMessage*)
 resourceReadErrorMessage // beginDefinition;
+
+resourceReadErrorMessage[ failure_Failure, msg_ ] :=
+    With[ { failureMsg = failure[ "Message" ] },
+        If[ StringQ @ failureMsg, failureMsg, resourceReadErrorMessage[ msg ] ]
+    ];
 
 resourceReadErrorMessage[ msg_Association ] :=
     resourceReadErrorMessage @ Replace[ msg[[ "params", "uri" ]], Except[ _String ] :> "unknown" ];

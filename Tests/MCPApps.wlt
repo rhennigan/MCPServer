@@ -746,7 +746,7 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
-(*Invalid Params Returns Error*)
+(*Invalid Params Returns Internal Error -32603*)
 VerificationTest[
     Quiet @ Block[ {
         Wolfram`MCPServer`Common`$clientSupportsUI = True,
@@ -757,11 +757,31 @@ VerificationTest[
             <| "params" -> <| "uri" -> 999 |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 6 |>
         ];
-        KeyExistsQ[ response, "error" ]
+        { KeyExistsQ[ response, "error" ], response[ "error", "code" ] }
     ],
-    True,
+    { True, -32603 },
+    SameTest -> MatchQ,
+    TestID   -> "HandleResourceRead-InvalidParamsReturnsInternalError@@Tests/MCPApps.wlt:750,1-765,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Missing Params Returns Internal Error -32603*)
+VerificationTest[
+    Quiet @ Block[ {
+        Wolfram`MCPServer`Common`$clientSupportsUI = True,
+        Wolfram`MCPServer`Common`$uiResourceRegistry
+    },
+        Wolfram`MCPServer`Common`initializeUIResources[ ];
+        response = Wolfram`MCPServer`StartMCPServer`Private`handleResourceRead[
+            <| "params" -> <| |> |>,
+            <| "jsonrpc" -> "2.0", "id" -> 7 |>
+        ];
+        response[ "error", "code" ]
+    ],
+    -32603,
     SameTest -> Equal,
-    TestID   -> "HandleResourceRead-InvalidParamsError@@Tests/MCPApps.wlt:750,1-765,2"
+    TestID   -> "HandleResourceRead-MissingParamsReturnsInternalError@@Tests/MCPApps.wlt:770,1-785,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -784,7 +804,7 @@ VerificationTest[
         "result" -> KeyValuePattern[ "resources" -> { __Association } ]
     } ],
     SameTest -> MatchQ,
-    TestID   -> "HandleMethod-ResourcesList-UIClient@@Tests/MCPApps.wlt:771,1-788,2"
+    TestID   -> "HandleMethod-ResourcesList-UIClient@@Tests/MCPApps.wlt:791,1-808,2"
 ]
 
 VerificationTest[
@@ -803,7 +823,7 @@ VerificationTest[
         "result" -> KeyValuePattern[ "resources" -> { } ]
     } ],
     SameTest -> MatchQ,
-    TestID   -> "HandleMethod-ResourcesList-NonUIClient@@Tests/MCPApps.wlt:790,1-807,2"
+    TestID   -> "HandleMethod-ResourcesList-NonUIClient@@Tests/MCPApps.wlt:810,1-827,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -830,7 +850,7 @@ VerificationTest[
         } ] } ]
     } ],
     SameTest -> MatchQ,
-    TestID   -> "HandleMethod-ResourcesRead-ValidURI@@Tests/MCPApps.wlt:813,1-834,2"
+    TestID   -> "HandleMethod-ResourcesRead-ValidURI@@Tests/MCPApps.wlt:833,1-854,2"
 ]
 
 VerificationTest[
@@ -852,7 +872,7 @@ VerificationTest[
         } ]
     } ],
     SameTest -> MatchQ,
-    TestID   -> "HandleMethod-ResourcesRead-UnknownURI@@Tests/MCPApps.wlt:836,1-856,2"
+    TestID   -> "HandleMethod-ResourcesRead-UnknownURI@@Tests/MCPApps.wlt:856,1-876,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -868,7 +888,7 @@ VerificationTest[
     ],
     { "_meta" -> _Association },
     SameTest -> MatchQ,
-    TestID   -> "ToolUIMetadata-KnownToolWithUI@@Tests/MCPApps.wlt:865,1-872,2"
+    TestID   -> "ToolUIMetadata-KnownToolWithUI@@Tests/MCPApps.wlt:885,1-892,2"
 ]
 
 VerificationTest[
@@ -878,7 +898,7 @@ VerificationTest[
     ],
     "ui://wolfram/wolframalpha-viewer",
     SameTest -> Equal,
-    TestID   -> "ToolUIMetadata-CorrectResourceURI@@Tests/MCPApps.wlt:874,1-882,2"
+    TestID   -> "ToolUIMetadata-CorrectResourceURI@@Tests/MCPApps.wlt:894,1-902,2"
 ]
 
 VerificationTest[
@@ -888,7 +908,7 @@ VerificationTest[
     ],
     { "model", "app" },
     SameTest -> Equal,
-    TestID   -> "ToolUIMetadata-CorrectVisibility@@Tests/MCPApps.wlt:884,1-892,2"
+    TestID   -> "ToolUIMetadata-CorrectVisibility@@Tests/MCPApps.wlt:904,1-912,2"
 ]
 
 VerificationTest[
@@ -897,7 +917,7 @@ VerificationTest[
     ],
     { "_meta" -> KeyValuePattern[ "ui" -> KeyValuePattern[ "resourceUri" -> "ui://wolfram/evaluator-viewer" ] ] },
     SameTest -> MatchQ,
-    TestID   -> "ToolUIMetadata-EvaluatorTool@@Tests/MCPApps.wlt:894,1-901,2"
+    TestID   -> "ToolUIMetadata-EvaluatorTool@@Tests/MCPApps.wlt:914,1-921,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -909,7 +929,7 @@ VerificationTest[
     ],
     { },
     SameTest -> Equal,
-    TestID   -> "ToolUIMetadata-UnknownTool@@Tests/MCPApps.wlt:906,1-913,2"
+    TestID   -> "ToolUIMetadata-UnknownTool@@Tests/MCPApps.wlt:926,1-933,2"
 ]
 
 VerificationTest[
@@ -918,7 +938,7 @@ VerificationTest[
     ],
     { },
     SameTest -> Equal,
-    TestID   -> "ToolUIMetadata-KnownToolNoUI@@Tests/MCPApps.wlt:915,1-922,2"
+    TestID   -> "ToolUIMetadata-KnownToolNoUI@@Tests/MCPApps.wlt:935,1-942,2"
 ]
 
 VerificationTest[
@@ -927,7 +947,7 @@ VerificationTest[
     ],
     { },
     SameTest -> Equal,
-    TestID   -> "ToolUIMetadata-KnownToolUIUnset@@Tests/MCPApps.wlt:924,1-931,2"
+    TestID   -> "ToolUIMetadata-KnownToolUIUnset@@Tests/MCPApps.wlt:944,1-951,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -948,7 +968,7 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "WithToolUIMetadata-AddsMetaToKnownTool@@Tests/MCPApps.wlt:940,1-952,2"
+    TestID   -> "WithToolUIMetadata-AddsMetaToKnownTool@@Tests/MCPApps.wlt:960,1-972,2"
 ]
 
 VerificationTest[
@@ -962,7 +982,7 @@ VerificationTest[
     ],
     False,
     SameTest -> Equal,
-    TestID   -> "WithToolUIMetadata-NoMetaForUnknownTool@@Tests/MCPApps.wlt:954,1-966,2"
+    TestID   -> "WithToolUIMetadata-NoMetaForUnknownTool@@Tests/MCPApps.wlt:974,1-986,2"
 ]
 
 VerificationTest[
@@ -975,7 +995,7 @@ VerificationTest[
     ],
     "ui://wolfram/wolframalpha-viewer",
     SameTest -> Equal,
-    TestID   -> "WithToolUIMetadata-CorrectMetaContent@@Tests/MCPApps.wlt:968,1-979,2"
+    TestID   -> "WithToolUIMetadata-CorrectMetaContent@@Tests/MCPApps.wlt:988,1-999,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -990,7 +1010,7 @@ VerificationTest[
     ],
     { <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |> },
     SameTest -> Equal,
-    TestID   -> "WithToolUIMetadata-NoChangesWhenNoUI@@Tests/MCPApps.wlt:984,1-994,2"
+    TestID   -> "WithToolUIMetadata-NoChangesWhenNoUI@@Tests/MCPApps.wlt:1004,1-1014,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1006,7 +1026,7 @@ VerificationTest[
     ],
     { "WolframAlpha", "WA tool", <| "type" -> "object" |> },
     SameTest -> Equal,
-    TestID   -> "WithToolUIMetadata-PreservesExistingFields@@Tests/MCPApps.wlt:999,1-1010,2"
+    TestID   -> "WithToolUIMetadata-PreservesExistingFields@@Tests/MCPApps.wlt:1019,1-1030,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1031,7 +1051,7 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "HandleMethod-ToolsList-UIMetaPresent@@Tests/MCPApps.wlt:1016,1-1035,2"
+    TestID   -> "HandleMethod-ToolsList-UIMetaPresent@@Tests/MCPApps.wlt:1036,1-1055,2"
 ]
 
 VerificationTest[
@@ -1052,7 +1072,7 @@ VerificationTest[
     ],
     False,
     SameTest -> Equal,
-    TestID   -> "HandleMethod-ToolsList-NoMetaForUnlinkedTool@@Tests/MCPApps.wlt:1037,1-1056,2"
+    TestID   -> "HandleMethod-ToolsList-NoMetaForUnlinkedTool@@Tests/MCPApps.wlt:1057,1-1076,2"
 ]
 
 VerificationTest[
@@ -1072,7 +1092,7 @@ VerificationTest[
     ],
     False,
     SameTest -> Equal,
-    TestID   -> "HandleMethod-ToolsList-NoMetaWhenNoUI@@Tests/MCPApps.wlt:1058,1-1076,2"
+    TestID   -> "HandleMethod-ToolsList-NoMetaWhenNoUI@@Tests/MCPApps.wlt:1078,1-1096,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
