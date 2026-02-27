@@ -434,7 +434,7 @@ unreachableConditionalHint[ name0_String ] :=
     Module[ { name },
         name = Last @ StringSplit[ name0, "`" ];
         "This conditional definition of ``" <> name <>
-        "`` is likely unreachable since subsequent unconditional definitions override it"
+        "`` is likely unreachable since other unconditional definitions override it"
     ];
 
 unreachableConditionalHint // endDefinition;

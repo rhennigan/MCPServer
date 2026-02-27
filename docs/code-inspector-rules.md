@@ -418,7 +418,7 @@ The following custom rules are defined in `Kernel/Tools/CodeInspector/Rules.wl`:
 | `ReadStringCharacterEncoding` | Error | 0.95 | Using `CharacterEncoding` option with `ReadString` (not supported) |
 | `NothingValueInAssociation` | Warning | 0.9 | Using `Nothing` as a value in an `Association` (not automatically removed like in `List`) |
 | `KeyExistsQNestedKeyPath` | Warning | 0.9 | Using a `List` as the second argument to `KeyExistsQ` (does not support nested key paths) |
-| `UnreachableConditionalDefinition` | Warning | 0.9 | A conditional definition (`x /; cond := val` or `f[] /; cond := val`) that is unreachable because a subsequent unconditional definition overrides it |
+| `UnreachableConditionalDefinition` | Warning | 0.9 | A conditional definition (`x /; cond := val` or `f[] /; cond := val`) that is unreachable because an unconditional definition overrides it |
 
 ### Concrete Rules
 
