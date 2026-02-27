@@ -1923,7 +1923,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    StringContainsQ[ $keyExistsQResult, "``KeyExistsQ`` does not support nested key paths via ``List``" ],
+    StringContainsQ[ $keyExistsQResult, "``KeyExistsQ`` with a ``List`` as its second argument checks for a literal list key" ],
     True,
     SameTest -> SameQ,
     TestID   -> "KeyExistsQNestedKeyPath-Basic-HasDescription@@Tests/CodeInspectorTool.wlt:1925,1-1930,2"
