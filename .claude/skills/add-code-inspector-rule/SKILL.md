@@ -5,7 +5,6 @@ description: |
   Use when asked to: "add a code inspector rule", "create an inspection rule",
   "add a lint rule", "detect [pattern] in code inspector", "add CodeInspector rule",
   "new code analysis rule".
-argument-hint: "description of the pattern to detect"
 ---
 
 # Add a Custom CodeInspector Rule
@@ -14,11 +13,11 @@ Follow this workflow to implement a new code inspection rule. The rule system li
 
 ## Step 1: Understand the Rule
 
-Clarify these details (ask the user if not provided via `$ARGUMENTS`):
+Clarify these details (ask the user if not clear):
 
 - **What code pattern should be detected?** Get an example of the problematic code.
 - **Why is it problematic?** This becomes the inspection message.
-- **Severity:** Fatal (will crash), Error (almost certainly wrong), Warning (likely wrong), Remark (suggestion), Formatting (style).
+- **Severity:** Fatal (code will not run, parse etc.), Error (almost certainly a mistake), Warning (likely a mistake), Remark (suggestion), Formatting (style).
 - **Confidence:** 0.95 for highly certain rules, 0.9 for confident, 0.7-0.9 for likely.
 
 ## Step 2: Choose the Rule Type
@@ -145,10 +144,30 @@ inspectMyNewRule[ pos_, ast_ ] :=
 inspectMyNewRule // endDefinition;
 ```
 
-### If the pattern might match inside AST metadata, add a skip clause FIRST:
+### If the pattern matches against AST metadata, add a skip clause:
+
+If you find that the pattern is producing duplicate matches, it might be matching against metadata. To verify this, try parsing the code and inspecting the metadata:
+
+```wl
+In[1]:= CodeParser`CodeParse["x = 1"]
+
+Out[1]= CodeParser`ContainerNode[String, {CodeParser`CallNode[CodeParser`LeafNode[Symbol, "Set", <||>], {CodeParser`LeafNode[Symbol, "x", <|CodeParser`Source -> {{1, 1}, {1, 2}}|>], CodeParser`LeafNode[Integer, "1", <|CodeParser`Source -> {{1, 5}, {1, 6}}|>]}, <|CodeParser`Source -> {{1, 1}, {1, 6}}, "Definitions" -> {CodeParser`LeafNode[Symbol, "x", <|CodeParser`Source -> {{1, 1}, {1, 2}}|>]}|>]}, <|CodeParser`Source -> {{1, 1}, {1, 6}}|>]
+```
+
+Note that the ``CodeParser`LeafNode[Symbol, "x", <|...|>]`` appears twice: once in the `CallNode` tree and once in the `"Definitions"` metadata.
+
+To avoid this, you can add a skip clause to the handler to skip the match:
 
 ```wl
 inspectMyNewRule[ pos_, ast_ ] /; MemberQ[ pos, _Key ] := { };
+```
+
+This works because only metadata will have `Key[...]` positions:
+
+```wl
+In[2]:= Position[CodeParser`CodeParse["x = 1"], CodeParser`LeafNode[Symbol, "x", _]]
+
+Out[2]= {{2, 1, 2, 1}, {2, 1, 3, Key["Definitions"], 1}}
 ```
 
 ### If extracting a string field (e.g., symbol name) for the message:
@@ -200,19 +219,7 @@ myPredicateQ[ ___ ] := False;
 myPredicateQ // endDefinition;
 ```
 
-## Step 8: Update MX Initialization (if needed)
-
-If the rules association uses `:=` (delayed evaluation), ensure it's in the MX init block at the bottom of Rules.wl (before `End[]`):
-
-```wl
-addToMXInitialization[
-    $customAbstractRules;
-];
-```
-
-This is already present for `$customAbstractRules`. Only add new entries if you created a new delayed variable.
-
-## Step 9: Write Tests
+## Step 8: Write Tests
 
 Add tests to `Tests/CodeInspectorTool.wlt` at the end, before the cleanup section (`Integration Tests - Cleanup`). Follow this exact pattern:
 
@@ -226,9 +233,8 @@ Add tests to `Tests/CodeInspectorTool.wlt` at the end, before the cleanup sectio
 (*inspectMyNewRule - Basic Detection*)
 VerificationTest[
     $myRuleResult = CodeInspectorToolFunction @ <|
-        "code"               -> "problematic code here",
-        "severityExclusions" -> "",
-        "confidenceLevel"    -> 0.0
+        "code" -> "problematic code here",
+        ...
     |>,
     _String,
     SameTest -> MatchQ,
@@ -236,8 +242,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    StringContainsQ[ $myRuleResult, "MyRuleTag" ],
-    True,
+    StringCount[ $myRuleResult, "Issue " ~~ DigitCharacter.. ~~ ": MyRuleTag" ],
+    1,
     SameTest -> SameQ,
     TestID   -> "MyRuleTag-Basic-HasTag"
 ]
@@ -258,33 +264,12 @@ VerificationTest[
 ```
 
 **Always include:**
-- A detection test (returns `_String` result containing the tag)
+- A detection test (returns `_String` result containing the expected number of occurrences of the tag)
 - A description test (message text appears)
 - A severity test (correct severity in output)
 - A false-positive test (clean code does NOT trigger the rule)
 
-**For text-level rules**, use `runInspection` directly:
-
-```wl
-VerificationTest[
-    $myInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
-        "test code",
-        <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.0 |>
-    ],
-    { ___InspectionObject },
-    SameTest -> MatchQ,
-    TestID   -> "MyRuleTag-ReturnsInspections"
-]
-
-VerificationTest[
-    MemberQ[ $myInspections, InspectionObject[ "MyRuleTag", _, _, _ ] ],
-    True,
-    SameTest -> SameQ,
-    TestID   -> "MyRuleTag-HasTag"
-]
-```
-
-## Step 10: Verify
+## Step 9: Verify
 
 1. **Run the tests** using the `TestReport` MCP tool on `Tests/CodeInspectorTool.wlt`
 2. **Run CodeInspector** on the modified `Kernel/Tools/CodeInspector/Rules.wl` to check for issues
@@ -292,9 +277,12 @@ VerificationTest[
 
 ## Reference: Key Aliases in Rules.wl
 
-These short aliases are used throughout the file:
-- `ci`...` = `CodeInspector`...` (e.g., `ci`InspectionObject`, `ci`CodeInspect`)
-- `cp`...` = `CodeParser`...` (e.g., `cp`CallNode`, `cp`LeafNode`, `cp`Source`)
+These context aliases are used throughout the file:
+
+| Alias | Context | Aliased Example | Target Symbol |
+| --- | --- | --- | --- |
+| `ci` | `CodeInspector` | ``ci`InspectionObject`` | ``CodeInspector`InspectionObject`` |
+| `cp` | `CodeParser` | ``cp`CallNode`` | ``CodeParser`CallNode`` |
 
 ## Reference: Section Marker Format
 
