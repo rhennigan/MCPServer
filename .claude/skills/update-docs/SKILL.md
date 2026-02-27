@@ -15,17 +15,25 @@ Review all changes on the current branch compared to a base branch and update ma
 
 ### 1. Understand the Changes
 
-Examine what changed on the current branch:
+Start by identifying what changed on the current branch:
 
 - Run `git diff <base>...HEAD --stat` to see which files changed
 - Run `git log <base>..HEAD --oneline` to understand the commit history
-- Run `git diff <base>...HEAD` on source files (not tests, not assets) to understand the actual code changes
 
-Build a mental model of:
+Then **fully read and explore every changed source file** (not just tests or assets) until you completely understand the changes. The diff alone does not provide enough context — you must read the full files to understand how the changes fit into the surrounding code, what patterns are used, and what the code actually does.
+
+For each changed source file:
+- Read the entire file (or at minimum the complete functions/sections that were modified)
+- Understand the purpose of the file and how the changes relate to its overall role
+- Follow references to other files if needed to understand dependencies or shared symbols
+- If a new file was added, read it completely
+
+Build a thorough mental model of:
 - What new features, modules, or capabilities were added
 - What existing behavior changed
 - What new files, symbols, options, or configuration were introduced
 - What was removed or renamed
+- How the changes interact with the rest of the codebase
 
 ### 2. Inventory Documentation Files
 

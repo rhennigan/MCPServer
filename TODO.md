@@ -2,27 +2,6 @@
 
 Consolidated list of TODO/FIXME items from the codebase.
 
-## Installation
-
-- [x] Rename `$installName` to `$installClientName`
-  - Source: `Kernel/InstallMCPServer.wl`
-- [x] Use `"ConfigKey"` property in `$supportedMCPClients` to determine config structure in `installMCPServer`, `readExistingMCPConfig`, and `uninstallMCPServer`
-  - Source: `Kernel/InstallMCPServer.wl`
-- [x] Implement `guessClientNameFromJSON` to guess client name based on JSON structure
-  - Source: `Kernel/InstallMCPServer.wl`
-- [x] Fix `UninstallMCPServer[All, obj]`: `mcpServerInstallations` now returns a list of associations
-  - Source: `Kernel/InstallMCPServer.wl`
-- [x] Determine if `UninstallMCPServer[target_File, obj]` should use `guessClientName` instead of checking `.toml` extension
-  - Source: `Kernel/InstallMCPServer.wl`
-- [x] Fix ambiguity in `UninstallMCPServer[targets_List, obj]`: a list could also refer to a project-level installation
-  - Source: `Kernel/InstallMCPServer.wl`
-  - Removed. It was never documented, so it's not a breaking change.
-- [x] `serverConverter` should be a property of the client rather than a hardcoded function
-  - Source: `Kernel/InstallMCPServer.wl`
-- [x] Add `"ApplicationName"` option to `InstallMCPServer` and `UninstallMCPServer` to let users specify `$installClientName` (default `Automatic` uses `guessClientName`)
-  - Source: `Kernel/InstallMCPServer.wl`
-- [ ] Document the `"ApplicationName"` option in documentation pages for `InstallMCPServer` and `UninstallMCPServer`
-
 ## Server Features
 
 - [ ] Support "Remote" type for server deployment (deploy as cloud API)
@@ -44,16 +23,6 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/StartMCPServer.wl`
 - [ ] Support resources capability
   - Source: `Kernel/StartMCPServer.wl`
-- [x] Investigate MCP apps
-  - Spec: https://modelcontextprotocol.io/extensions/apps/overview.md
-  - Can we use this to display Wolfram Alpha tool call results in an iframe?
-  - How about results of the WL evaluator that produces CloudObjects (e.g. CloudDeploy)?
-  - Result: Implementation specification created at `Specs/MCPApps.md`
-- [ ] Implement MCP Apps extension (see `Specs/MCPApps.md`)
-  - Phase 1: Infrastructure (extension negotiation, UI resource registry, resource handlers, tool metadata)
-  - Phase 2: WolframAlpha Interactive Viewer
-  - Phase 3: WL Evaluator Interactive Viewer
-  - Phase 4: App-Only Tools (optional)
 
 ## Tools
 
@@ -64,13 +33,9 @@ Consolidated list of TODO/FIXME items from the codebase.
 - [ ] Implement `EditResourceFunction` tool
   - Should edit an existing resource function definition notebook
 - [ ] Implement `BuildPaclet` tool
-  - Source: `Kernel/Tools/Tools.wl`
 - [ ] Implement `ReloadPaclet` tool
-  - Source: `Kernel/Tools/Tools.wl`
 - [ ] Implement `RestartMCPServer` tool (if possible)
-  - Source: `Kernel/Tools/Tools.wl`
 - [ ] Tool to open notebooks for the user (e.g., `UsingFrontEnd[SystemOpen[notebookPath]]`)
-  - Source: `Kernel/Tools/Tools.wl`
   - Might be redundant, since the same can be trivially done with a Bash tool or even the WL tool itself
   - Maybe just add something to the WL tool description that mentions this can be done?
 
@@ -114,20 +79,16 @@ Consolidated list of TODO/FIXME items from the codebase.
   Use `Messages[MyFunction]` to get the list of messages
 
 - [ ] Log tool calls (and generate a notebook)
-  - Source: `Kernel/Tools/Tools.wl`
-- [ ] Add optional "description" parameter to evaluator tool (maybe all tools?)
-  - Source: `Kernel/Tools/Tools.wl`
+- [ ] Add optional "caption" parameter to evaluator tool (maybe all tools?)
 - [ ] Group similar tools and have another tool to activate them when needed (to save on token usage)
-  - Source: `Kernel/Tools/Tools.wl`
 - [ ] Documentation editing tools should have examples evaluation be optional
-  - Source: `Kernel/Tools/Tools.wl`
 - [ ] Implement `ReadableForm` in this paclet for better code formatting
   - Source: `Kernel/Tools/TestReport.wl`
 - [ ] Show relative paths in CodeInspector output when inspecting directories
   - Source: `Kernel/Tools/CodeInspector/Formatting.wl`
 
 - [ ] New CodeInspector rules
-  - [ ] Rule for `ReadString` with `CharacterEncoding` option
+  - [x] Rule for `ReadString` with `CharacterEncoding` option
     - Bad:
     ```wl
     ReadString[file, CharacterEncoding -> "enc"]
@@ -136,14 +97,14 @@ Consolidated list of TODO/FIXME items from the codebase.
     ```wl
     ByteArrayToString[ReadByteArray[file], "enc"]
     ```
-  - [ ] Rule for `Nothing` in associations
+  - [x] Rule for `Nothing` in associations
     - Nothing does not get dropped from the association:
       ```wl
       In[9]:= <|"a" -> 1, "b" -> Nothing|>
 
       Out[9]= <|"a" -> 1, "b" -> Nothing|>
       ```
-  - [ ] Rule for `KeyExistsQ` with nested key paths
+  - [x] Rule for `KeyExistsQ` with nested key paths
     - Valid, but likely a mistake (this does not represent a nested key path):
       ```wl
       KeyExistsQ[assoc, {"k1", "k2", ...}]

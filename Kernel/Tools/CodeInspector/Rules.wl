@@ -30,6 +30,8 @@ $$yieldsDateObject = HoldPattern @ Alternatives[
     Yesterday
 ];
 
+$$setOrSetDelayed = "Set"|"System`Set"|"SetDelayed"|"System`SetDelayed";
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Config*)
@@ -50,11 +52,30 @@ $abstractRules := $abstractRules = <|
 |>;
 
 $customAbstractRules := $customAbstractRules = <|
+    (* Single-Argument Throw appearing without a surrounding Catch *)
     cp`CallNode[ cp`LeafNode[ Symbol, "Throw"|"System`Throw", _ ], { _ }, _ ] -> inspectSingleArgThrow,
+    (* Single-Argument Return *)
     cp`CallNode[ cp`LeafNode[ Symbol, "Return"|"System`Return", _ ], { _ }, _ ] -> inspectReturn,
+    (* Private Context Symbol *)
     cp`LeafNode[ Symbol, _String? privateContextQ, _ ] -> inspectPrivateContext,
+    (* Global Symbol *)
     cp`LeafNode[ Symbol, _String? globalSymbolQ, _ ] -> inspectGlobalSymbol,
-    astPattern[ - $$yieldsDateObject ] -> inspectNegatedDateObject
+    (* Negated Date Object *)
+    astPattern[ - $$yieldsDateObject ] -> inspectNegatedDateObject,
+    (* ReadString with Character Encoding *)
+    astPattern @ HoldPattern @ ReadString[ __, CharacterEncoding -> _String? StringQ, ___ ] ->
+        inspectReadStringWithCharacterEncoding,
+    (* Nothing as Value in Association *)
+    astPattern @ HoldPattern @ Association[ ___, (Rule|RuleDelayed)[ _, Nothing ], ___ ] ->
+        inspectNothingInAssociation,
+    (* KeyExistsQ with List as Second Argument *)
+    astPattern @ HoldPattern @ KeyExistsQ[ _, _List ] -> inspectKeyExistsQWithList,
+    (* Definitions of the form `x /; cond := value` that need ordering checked *)
+    astPattern @ HoldPattern[ Verbatim[ Condition ][ _Symbol, _ ] := _ ] ->
+        inspectConditionalOwnValueOrdering,
+    (* Definitions of the form `f[] /; cond := value` that need ordering checked *)
+    astPattern @ HoldPattern[ Verbatim[ Condition ][ _Symbol[ ], _ ] := _ ] ->
+        inspectConditionalDownValueOrdering
 |>;
 
 (* ::**************************************************************************************************************:: *)
@@ -233,6 +254,190 @@ inspectNegatedDateObject[ pos_, ast_ ] :=
     ];
 
 inspectNegatedDateObject // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectReadStringWithCharacterEncoding*)
+inspectReadStringWithCharacterEncoding // beginDefinition;
+
+inspectReadStringWithCharacterEncoding[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, as },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        ci`InspectionObject[
+            "ReadStringCharacterEncoding",
+            $readStringWithCharacterEncodingHint,
+            "Error",
+            <| as, ConfidenceLevel -> 0.95 |>
+        ]
+    ];
+
+inspectReadStringWithCharacterEncoding // endDefinition;
+
+$readStringWithCharacterEncodingHint = "\
+``ReadString`` does not support the ``CharacterEncoding`` option; \
+use ``ByteArrayToString[ReadByteArray[source], encoding]`` instead";
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectNothingInAssociation*)
+inspectNothingInAssociation // beginDefinition;
+
+inspectNothingInAssociation[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, children, nothingRules },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        children = ConfirmBy[ node[[ 2 ]], ListQ, "Children" ];
+        nothingRules = Cases[ children, $$nothingValueRule ];
+        inspectNothingRule /@ nothingRules
+    ];
+
+inspectNothingInAssociation // endDefinition;
+
+$$nothingValueRule := $$nothingValueRule = astPattern[ (Rule|RuleDelayed)[ _, Nothing ] ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*inspectNothingRule*)
+inspectNothingRule // beginDefinition;
+
+inspectNothingRule[ cp`CallNode[ _, _, as_Association ] ] :=
+    ci`InspectionObject[
+        "NothingValueInAssociation",
+        $nothingInAssociationHint,
+        "Warning",
+        <| as, ConfidenceLevel -> 0.9 |>
+    ];
+
+inspectNothingRule // endDefinition;
+
+$nothingInAssociationHint = "\
+``Nothing`` used as a value in an ``Association`` is not automatically removed; \
+the key will map to the value ``Nothing``";
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectKeyExistsQWithList*)
+inspectKeyExistsQWithList // beginDefinition;
+
+inspectKeyExistsQWithList[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, as },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        ci`InspectionObject[
+            "KeyExistsQNestedKeyPath",
+            $keyExistsQNestedKeyPathHint,
+            "Warning",
+            <| as, ConfidenceLevel -> 0.9 |>
+        ]
+    ];
+
+inspectKeyExistsQWithList // endDefinition;
+
+$keyExistsQNestedKeyPathHint = "\
+``KeyExistsQ`` with a ``List`` as its second argument checks for a literal list key in the association, \
+not a nested key path. If you intended a nested lookup, use ``!MissingQ[assoc[\"k1\", \"k2\", ...]]`` instead";
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectConditionalOwnValueOrdering*)
+inspectConditionalOwnValueOrdering // beginDefinition;
+
+(* Skip matches inside AST metadata (e.g., "Definitions" key) to avoid duplicate issues *)
+inspectConditionalOwnValueOrdering[ pos_, ast_ ] /; MemberQ[ pos, _Key ] := { };
+
+inspectConditionalOwnValueOrdering[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, name, as },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        name = ConfirmBy[ node[[ 2, 1, 2, 1, 2 ]], StringQ, "Name" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        If[ hasUnconditionalOwnValueQ[ ast, name ],
+            ci`InspectionObject[
+                "UnreachableConditionalDefinition",
+                unreachableConditionalHint @ name,
+                "Warning",
+                <| as, ConfidenceLevel -> 0.9 |>
+            ],
+            { }
+        ]
+    ];
+
+inspectConditionalOwnValueOrdering // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*hasUnconditionalOwnValueQ*)
+hasUnconditionalOwnValueQ // beginDefinition;
+
+hasUnconditionalOwnValueQ[ ast_, name_String ] :=
+    MemberQ[
+        ast,
+        cp`CallNode[
+            cp`LeafNode[ Symbol, $$setOrSetDelayed, _ ],
+            { cp`LeafNode[ Symbol, name, _ ], _ },
+            _
+        ],
+        Infinity
+    ];
+
+hasUnconditionalOwnValueQ // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectConditionalDownValueOrdering*)
+inspectConditionalDownValueOrdering // beginDefinition;
+
+(* Skip matches inside AST metadata (e.g., "Definitions" key) to avoid duplicate issues *)
+inspectConditionalDownValueOrdering[ pos_, ast_ ] /; MemberQ[ pos, _Key ] := { };
+
+inspectConditionalDownValueOrdering[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, name, as },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        name = ConfirmBy[ node[[ 2, 1, 2, 1, 1, 2 ]], StringQ, "Name" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        If[ hasUnconditionalDownValue[ ast, name ],
+            ci`InspectionObject[
+                "UnreachableConditionalDefinition",
+                unreachableConditionalHint @ name,
+                "Warning",
+                <| as, ConfidenceLevel -> 0.9 |>
+            ],
+            { }
+        ]
+    ];
+
+inspectConditionalDownValueOrdering // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*hasUnconditionalDownValue*)
+hasUnconditionalDownValue // beginDefinition;
+
+hasUnconditionalDownValue[ ast_, name_String ] :=
+    MemberQ[
+        ast,
+        cp`CallNode[
+            cp`LeafNode[ Symbol, $$setOrSetDelayed, _ ],
+            { cp`CallNode[ cp`LeafNode[ Symbol, name, _ ], { }, _ ], _ },
+            _
+        ],
+        Infinity
+    ];
+
+hasUnconditionalDownValue // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*unreachableConditionalHint*)
+unreachableConditionalHint // beginDefinition;
+
+unreachableConditionalHint[ name0_String ] :=
+    Module[ { name },
+        name = Last @ StringSplit[ name0, "`" ];
+        "This conditional definition of ``" <> name <>
+        "`` is likely unreachable since other unconditional definitions override it"
+    ];
+
+unreachableConditionalHint // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

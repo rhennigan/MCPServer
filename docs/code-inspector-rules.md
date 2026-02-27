@@ -402,6 +402,37 @@ x = -Now
 y = -Today
 ```
 
+## Current Custom Rules
+
+The following custom rules are defined in `Kernel/Tools/CodeInspector/Rules.wl`:
+
+### Abstract Rules
+
+| Tag | Severity | Confidence | Description |
+|-----|----------|------------|-------------|
+| `NoSurroundingCatch` | Error | 0.9 | Single-argument `Throw` without a surrounding `Catch` |
+| `ReturnAmbiguous` | Warning | 0.9 | Single-argument `Return` (ambiguous return point) |
+| `PrivateContextSymbol` | Warning | 0.9 | Reference to a symbol in a `Private` or `PackagePrivate` context |
+| `GlobalSymbol` | Warning | 0.9 | Reference to a symbol in `Global` context |
+| `NegatedDateObject` | Error | 0.95 | Negating a date-yielding expression (e.g., `-Now`, `-FileDate[...]`) |
+| `ReadStringCharacterEncoding` | Error | 0.95 | Using `CharacterEncoding` option with `ReadString` (not supported) |
+| `NothingValueInAssociation` | Warning | 0.9 | Using `Nothing` as a value in an `Association` (not automatically removed like in `List`) |
+| `KeyExistsQNestedKeyPath` | Warning | 0.9 | Using a `List` as the second argument to `KeyExistsQ` (does not support nested key paths) |
+| `UnreachableConditionalDefinition` | Warning | 0.9 | A conditional definition (`x /; cond := val` or `f[] /; cond := val`) that is unreachable because an unconditional definition overrides it |
+
+### Concrete Rules
+
+| Tag | Severity | Confidence | Description |
+|-----|----------|------------|-------------|
+| `FixMeComment` | Warning | 0.9 | `(* FIXME: ... *)` comments flagged as action items |
+
+### Text-Level Rules
+
+| Tag | Severity | Confidence | Description |
+|-----|----------|------------|-------------|
+| `ExcessiveLineLength` | Formatting | 0.95 | Lines exceeding 200 characters |
+| `ExcessiveFileLength` | Formatting | 0.95 | Files exceeding 10,000 lines |
+
 ## Related Files
 
 | File | Purpose |
