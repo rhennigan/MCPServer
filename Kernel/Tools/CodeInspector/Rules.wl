@@ -30,6 +30,8 @@ $$yieldsDateObject = HoldPattern @ Alternatives[
     Yesterday
 ];
 
+$$setOrSetDelayed = "Set"|"System`Set"|"SetDelayed"|"System`SetDelayed";
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Config*)
@@ -67,7 +69,13 @@ $customAbstractRules := $customAbstractRules = <|
     astPattern @ HoldPattern @ Association[ ___, (Rule|RuleDelayed)[ _, Nothing ], ___ ] ->
         inspectNothingInAssociation,
     (* KeyExistsQ with List as Second Argument *)
-    astPattern @ HoldPattern @ KeyExistsQ[ _, _List ] -> inspectKeyExistsQWithList
+    astPattern @ HoldPattern @ KeyExistsQ[ _, _List ] -> inspectKeyExistsQWithList,
+    (* Definitions of the form `x /; cond := value` that need ordering checked *)
+    astPattern @ HoldPattern[ Verbatim[ Condition ][ _Symbol, _ ] := _ ] ->
+        inspectConditionalOwnValueOrdering,
+    (* Definitions of the form `f[] /; cond := value` that need ordering checked *)
+    astPattern @ HoldPattern[ Verbatim[ Condition ][ _Symbol[ ], _ ] := _ ] ->
+        inspectConditionalDownValueOrdering
 |>;
 
 (* ::**************************************************************************************************************:: *)
@@ -328,6 +336,108 @@ inspectKeyExistsQWithList // endDefinition;
 $keyExistsQNestedKeyPathHint = "\
 ``KeyExistsQ`` does not support nested key paths via ``List``; \
 use ``!MissingQ[assoc[\"k1\", \"k2\", ...]]`` instead";
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectConditionalOwnValueOrdering*)
+inspectConditionalOwnValueOrdering // beginDefinition;
+
+(* Skip matches inside AST metadata (e.g., "Definitions" key) to avoid duplicate issues *)
+inspectConditionalOwnValueOrdering[ pos_, ast_ ] /; MemberQ[ pos, _Key ] := { };
+
+inspectConditionalOwnValueOrdering[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, name, as },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        name = ConfirmBy[ node[[ 2, 1, 2, 1, 2 ]], StringQ, "Name" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        If[ hasUnconditionalOwnValueQ[ ast, name ],
+            ci`InspectionObject[
+                "UnreachableConditionalDefinition",
+                unreachableConditionalHint @ name,
+                "Warning",
+                <| as, ConfidenceLevel -> 0.9 |>
+            ],
+            { }
+        ]
+    ];
+
+inspectConditionalOwnValueOrdering // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*hasUnconditionalOwnValueQ*)
+hasUnconditionalOwnValueQ // beginDefinition;
+
+hasUnconditionalOwnValueQ[ ast_, name_String ] :=
+    MemberQ[
+        ast,
+        cp`CallNode[
+            cp`LeafNode[ Symbol, $$setOrSetDelayed, _ ],
+            { cp`LeafNode[ Symbol, name, _ ], _ },
+            _
+        ],
+        Infinity
+    ];
+
+hasUnconditionalOwnValueQ // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectConditionalDownValueOrdering*)
+inspectConditionalDownValueOrdering // beginDefinition;
+
+(* Skip matches inside AST metadata (e.g., "Definitions" key) to avoid duplicate issues *)
+inspectConditionalDownValueOrdering[ pos_, ast_ ] /; MemberQ[ pos, _Key ] := { };
+
+inspectConditionalDownValueOrdering[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, name, as },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        name = ConfirmBy[ node[[ 2, 1, 2, 1, 1, 2 ]], StringQ, "Name" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        If[ hasUnconditionalDownValue[ ast, name ],
+            ci`InspectionObject[
+                "UnreachableConditionalDefinition",
+                unreachableConditionalHint @ name,
+                "Warning",
+                <| as, ConfidenceLevel -> 0.9 |>
+            ],
+            { }
+        ]
+    ];
+
+inspectConditionalDownValueOrdering // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*hasUnconditionalDownValue*)
+hasUnconditionalDownValue // beginDefinition;
+
+hasUnconditionalDownValue[ ast_, name_String ] :=
+    MemberQ[
+        ast,
+        cp`CallNode[
+            cp`LeafNode[ Symbol, $$setOrSetDelayed, _ ],
+            { cp`CallNode[ cp`LeafNode[ Symbol, name, _ ], { }, _ ], _ },
+            _
+        ],
+        Infinity
+    ];
+
+hasUnconditionalDownValue // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*unreachableConditionalHint*)
+unreachableConditionalHint // beginDefinition;
+
+unreachableConditionalHint[ name0_String ] :=
+    Module[ { name },
+        name = Last @ StringSplit[ name0, "`" ];
+        "This conditional definition of ``" <> name <>
+        "`` is likely unreachable since subsequent unconditional definitions override it"
+    ];
+
+unreachableConditionalHint // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

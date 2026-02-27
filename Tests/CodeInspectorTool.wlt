@@ -2001,13 +2001,159 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Custom Rules - UnreachableConditionalDefinition*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectConditionalOwnValueOrdering - Basic Detection*)
+VerificationTest[
+    $ownValueCondResult = CodeInspectorToolFunction @ <|
+        "code"               -> "x /; True := 1;\nx := 2",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "UnreachableConditionalDefinition-OwnValue-ReturnsString@@Tests/CodeInspectorTool.wlt:2009,1-2018,2"
+]
+
+VerificationTest[
+    StringCount[ $ownValueCondResult, "Issue " ~~ DigitCharacter.. ~~ ": UnreachableConditionalDefinition" ],
+    1,
+    SameTest -> SameQ,
+    TestID   -> "UnreachableConditionalDefinition-OwnValue-HasTag@@Tests/CodeInspectorTool.wlt:2020,1-2025,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $ownValueCondResult, "conditional definition of" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "UnreachableConditionalDefinition-OwnValue-HasDescription@@Tests/CodeInspectorTool.wlt:2027,1-2032,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $ownValueCondResult, "(Warning" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "UnreachableConditionalDefinition-OwnValue-HasSeverity@@Tests/CodeInspectorTool.wlt:2034,1-2039,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectConditionalDownValueOrdering - Basic Detection*)
+VerificationTest[
+    $downValueCondResult = CodeInspectorToolFunction @ <|
+        "code" -> "f[] /; True := 1;\nf[] := 2"
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "UnreachableConditionalDefinition-DownValue-ReturnsString@@Tests/CodeInspectorTool.wlt:2044,1-2051,2"
+]
+
+VerificationTest[
+    StringCount[ $downValueCondResult, "Issue " ~~ DigitCharacter.. ~~ ": UnreachableConditionalDefinition" ],
+    1,
+    SameTest -> SameQ,
+    TestID   -> "UnreachableConditionalDefinition-DownValue-HasTag@@Tests/CodeInspectorTool.wlt:2053,1-2058,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $downValueCondResult, "conditional definition of" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "UnreachableConditionalDefinition-DownValue-HasDescription@@Tests/CodeInspectorTool.wlt:2060,1-2065,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $downValueCondResult, "(Warning" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "UnreachableConditionalDefinition-DownValue-HasSeverity@@Tests/CodeInspectorTool.wlt:2067,1-2072,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectConditionalDownValueOrdering - Code Between Definitions*)
+VerificationTest[
+    $betweenDefsResult = CodeInspectorToolFunction @ <|
+        "code" -> "f[] /; cond := a;\n\nf[x_] := x + 1;\n\nf[] := b"
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "UnreachableConditionalDefinition-BetweenDefs-ReturnsString@@Tests/CodeInspectorTool.wlt:2077,1-2084,2"
+]
+
+VerificationTest[
+    StringCount[ $betweenDefsResult, "Issue " ~~ DigitCharacter.. ~~ ": UnreachableConditionalDefinition" ],
+    1,
+    SameTest -> SameQ,
+    TestID   -> "UnreachableConditionalDefinition-BetweenDefs-HasTag@@Tests/CodeInspectorTool.wlt:2086,1-2091,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectConditionalOwnValueOrdering - No False Positives*)
+
+(* Standalone conditional definition without an unconditional counterpart should not trigger *)
+VerificationTest[
+    $standaloneCondResult = CodeInspectorToolFunction @ <|
+        "code" -> "x /; cond := 1"
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "UnreachableConditionalDefinition-Standalone-ReturnsString@@Tests/CodeInspectorTool.wlt:2098,1-2105,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $standaloneCondResult, "UnreachableConditionalDefinition" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "UnreachableConditionalDefinition-Standalone-NoTag@@Tests/CodeInspectorTool.wlt:2107,1-2112,2"
+]
+
+(* All-conditional definitions should not trigger *)
+VerificationTest[
+    $allCondResult = CodeInspectorToolFunction @ <|
+        "code" -> "g[] /; True := 1;\ng[] /; False := 2"
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "UnreachableConditionalDefinition-AllConditional-ReturnsString@@Tests/CodeInspectorTool.wlt:2115,1-2122,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $allCondResult, "UnreachableConditionalDefinition" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "UnreachableConditionalDefinition-AllConditional-NoTag@@Tests/CodeInspectorTool.wlt:2124,1-2129,2"
+]
+
+(* Definitions with patterns in arguments should not trigger *)
+VerificationTest[
+    $patternArgsResult = CodeInspectorToolFunction @ <|
+        "code" -> "h[_] /; True := 1;\nh[_] := 2"
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "UnreachableConditionalDefinition-PatternArgs-ReturnsString@@Tests/CodeInspectorTool.wlt:2132,1-2139,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $patternArgsResult, "UnreachableConditionalDefinition" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "UnreachableConditionalDefinition-PatternArgs-NoTag@@Tests/CodeInspectorTool.wlt:2141,1-2146,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Integration Tests - Cleanup*)
 VerificationTest[
     DeleteDirectory[ $integrationTempDir, DeleteContents -> True ];
     ! DirectoryQ @ $integrationTempDir,
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:2005,1-2011,2"
+    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:2151,1-2157,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
