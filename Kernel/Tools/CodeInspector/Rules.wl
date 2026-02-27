@@ -62,7 +62,10 @@ $customAbstractRules := $customAbstractRules = <|
     astPattern[ - $$yieldsDateObject ] -> inspectNegatedDateObject,
     (* ReadString with Character Encoding *)
     astPattern @ HoldPattern @ ReadString[ __, CharacterEncoding -> _String? StringQ, ___ ] ->
-        inspectReadStringWithCharacterEncoding
+        inspectReadStringWithCharacterEncoding,
+    (* Nothing as Value in Association *)
+    astPattern @ HoldPattern @ Association[ ___, (Rule|RuleDelayed)[ _, Nothing ], ___ ] ->
+        inspectNothingInAssociation
 |>;
 
 (* ::**************************************************************************************************************:: *)
@@ -264,6 +267,42 @@ inspectReadStringWithCharacterEncoding // endDefinition;
 $readStringWithCharacterEncodingHint = "\
 ``ReadString`` does not support the ``CharacterEncoding`` option; \
 use ``ByteArrayToString[ReadByteArray[source], encoding]`` instead";
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectNothingInAssociation*)
+inspectNothingInAssociation // beginDefinition;
+
+inspectNothingInAssociation[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, children, nothingRules },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        children = ConfirmBy[ node[[ 2 ]], ListQ, "Children" ];
+        nothingRules = Cases[ children, $$nothingValueRule ];
+        inspectNothingRule /@ nothingRules
+    ];
+
+inspectNothingInAssociation // endDefinition;
+
+$$nothingValueRule := $$nothingValueRule = astPattern[ (Rule|RuleDelayed)[ _, Nothing ] ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*inspectNothingRule*)
+inspectNothingRule // beginDefinition;
+
+inspectNothingRule[ cp`CallNode[ _, _, as_Association ] ] :=
+    ci`InspectionObject[
+        "NothingValueInAssociation",
+        $nothingInAssociationHint,
+        "Warning",
+        <| as, ConfidenceLevel -> 0.9 |>
+    ];
+
+inspectNothingRule // endDefinition;
+
+$nothingInAssociationHint = "\
+``Nothing`` used as a value in an ``Association`` is not automatically removed; \
+the key will map to the value ``Nothing``";
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

@@ -97,7 +97,7 @@ Consolidated list of TODO/FIXME items from the codebase.
     ```wl
     ByteArrayToString[ReadByteArray[file], "enc"]
     ```
-  - [ ] Rule for `Nothing` in associations
+  - [x] Rule for `Nothing` in associations
     - Nothing does not get dropped from the association:
       ```wl
       In[9]:= <|"a" -> 1, "b" -> Nothing|>

@@ -1740,13 +1740,172 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Custom Rules - NothingValueInAssociation*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectNothingInAssociation - Basic Detection*)
+VerificationTest[
+    $nothingAssocResult = CodeInspectorToolFunction @ <|
+        "code"               -> "<|\"a\" -> 1, \"b\" -> Nothing|>",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "NothingValueInAssociation-Basic-ReturnsString@@Tests/CodeInspectorTool.wlt:1748,1-1757,2"
+]
+
+VerificationTest[
+    StringCount[ $nothingAssocResult, "Issue " ~~ DigitCharacter.. ~~ ": NothingValueInAssociation" ],
+    1,
+    SameTest -> SameQ,
+    TestID   -> "NothingValueInAssociation-Basic-HasTag@@Tests/CodeInspectorTool.wlt:1759,1-1764,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $nothingAssocResult, "``Nothing`` used as a value in an ``Association`` is not automatically removed" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "NothingValueInAssociation-Basic-HasDescription@@Tests/CodeInspectorTool.wlt:1766,1-1771,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $nothingAssocResult, "(Warning" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "NothingValueInAssociation-Basic-HasSeverity@@Tests/CodeInspectorTool.wlt:1773,1-1778,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectNothingInAssociation - RuleDelayed*)
+VerificationTest[
+    $nothingAssocDelayedResult = CodeInspectorToolFunction @ <|
+        "code"               -> "<|\"a\" -> 1, \"b\" :> Nothing|>",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "NothingValueInAssociation-RuleDelayed-ReturnsString@@Tests/CodeInspectorTool.wlt:1783,1-1792,2"
+]
+
+VerificationTest[
+    StringCount[ $nothingAssocDelayedResult, "Issue " ~~ DigitCharacter.. ~~ ": NothingValueInAssociation" ],
+    1,
+    SameTest -> SameQ,
+    TestID   -> "NothingValueInAssociation-RuleDelayed-HasTag@@Tests/CodeInspectorTool.wlt:1794,1-1799,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectNothingInAssociation - Multiple Nothing Values*)
+VerificationTest[
+    $nothingAssocMultiResult = CodeInspectorToolFunction @ <|
+        "code"               -> "<|\"a\" -> Nothing, \"b\" -> Nothing, \"c\" :> Nothing|>",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "NothingValueInAssociation-Multiple-ReturnsString@@Tests/CodeInspectorTool.wlt:1804,1-1813,2"
+]
+
+VerificationTest[
+    StringCount[ $nothingAssocMultiResult, "Issue " ~~ DigitCharacter.. ~~ ": NothingValueInAssociation" ],
+    3,
+    SameTest -> SameQ,
+    TestID   -> "NothingValueInAssociation-Multiple-FindsAllThree@@Tests/CodeInspectorTool.wlt:1815,1-1820,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectNothingInAssociation - No False Positives*)
+VerificationTest[
+    $nothingAssocCleanResult = CodeInspectorToolFunction @ <|
+        "code"               -> "<|\"a\" -> 1, \"b\" -> 2|>",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "NothingValueInAssociation-NoFalsePositive-Clean-ReturnsString@@Tests/CodeInspectorTool.wlt:1825,1-1834,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $nothingAssocCleanResult, "NothingValueInAssociation" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "NothingValueInAssociation-NoFalsePositive-Clean-NoTag@@Tests/CodeInspectorTool.wlt:1836,1-1841,2"
+]
+
+(* Nothing as standalone element in Association is fine *)
+VerificationTest[
+    $nothingStandaloneResult = CodeInspectorToolFunction @ <|
+        "code"               -> "<|\"a\" -> 1, Nothing|>",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "NothingValueInAssociation-NoFalsePositive-Standalone-ReturnsString@@Tests/CodeInspectorTool.wlt:1844,1-1853,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $nothingStandaloneResult, "NothingValueInAssociation" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "NothingValueInAssociation-NoFalsePositive-Standalone-NoTag@@Tests/CodeInspectorTool.wlt:1855,1-1860,2"
+]
+
+(* Nothing in a regular list rule is fine *)
+VerificationTest[
+    $nothingListRuleResult = CodeInspectorToolFunction @ <|
+        "code"               -> "{a -> Nothing}",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "NothingValueInAssociation-NoFalsePositive-ListRule-ReturnsString@@Tests/CodeInspectorTool.wlt:1863,1-1872,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $nothingListRuleResult, "NothingValueInAssociation" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "NothingValueInAssociation-NoFalsePositive-ListRule-NoTag@@Tests/CodeInspectorTool.wlt:1874,1-1879,2"
+]
+
+(* Nothing as argument inside a value is fine *)
+VerificationTest[
+    $nothingArgResult = CodeInspectorToolFunction @ <|
+        "code"               -> "<|\"a\" -> f[Nothing]|>",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "NothingValueInAssociation-NoFalsePositive-AsArgument-ReturnsString@@Tests/CodeInspectorTool.wlt:1882,1-1891,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $nothingArgResult, "NothingValueInAssociation" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "NothingValueInAssociation-NoFalsePositive-AsArgument-NoTag@@Tests/CodeInspectorTool.wlt:1893,1-1898,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Integration Tests - Cleanup*)
 VerificationTest[
     DeleteDirectory[ $integrationTempDir, DeleteContents -> True ];
     ! DirectoryQ @ $integrationTempDir,
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:1744,1-1750,2"
+    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:1903,1-1909,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
