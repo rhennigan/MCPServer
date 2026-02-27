@@ -74,6 +74,7 @@ See [building.md](docs/building.md) for detailed instructions.
   - `mcp-prompts.md`: MCP prompts system and how to add new prompts
   - `mcp-clients.md`: MCP client support and installation
   - `mcp-apps.md`: MCP Apps system for interactive UI resources
+  - `code-inspector-rules.md`: Adding custom CodeInspector rules
 
 ### MCP Documentation
 

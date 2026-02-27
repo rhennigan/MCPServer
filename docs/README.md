@@ -19,6 +19,7 @@ This is the developer documentation for contributing to MCPServer. For user docu
 - **[MCP Apps](mcp-apps.md)** - Interactive UI resources for supported clients
 - **[Predefined Servers](servers.md)** - Available server configurations and how to choose the right one
 - **[MCP Clients](mcp-clients.md)** - Supported client applications and configuration
+- **[CodeInspector Rules](code-inspector-rules.md)** - Adding custom CodeInspector rules and current rule catalog
 
 ## Development Workflow
 
