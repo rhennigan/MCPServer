@@ -5,6 +5,7 @@ description: |
   Use when asked to: "add a code inspector rule", "create an inspection rule",
   "add a lint rule", "detect [pattern] in code inspector", "add CodeInspector rule",
   "new code analysis rule".
+argument-hint: "description of the rule to add"
 ---
 
 # Add a Custom CodeInspector Rule
@@ -12,6 +13,8 @@ description: |
 Follow this workflow to implement a new code inspection rule. The rule system lives in `Kernel/Tools/CodeInspector/Rules.wl` with tests in `Tests/CodeInspectorTool.wlt`.
 
 ## Step 1: Understand the Rule
+
+$ARGUMENTS
 
 Clarify these details (ask the user if not clear):
 
@@ -242,7 +245,7 @@ Add tests to `Tests/CodeInspectorTool.wlt` at the end, before the cleanup sectio
 VerificationTest[
     $myRuleResult = CodeInspectorToolFunction @ <|
         "code" -> "problematic code here",
-        ...
+        (* only include additional parameters if needed for the test *)
     |>,
     _String,
     SameTest -> MatchQ,
