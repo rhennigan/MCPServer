@@ -1617,6 +1617,72 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Custom Rules - ReadStringCharacterEncoding*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectReadStringWithCharacterEncoding - Basic Detection*)
+VerificationTest[
+    $readStringResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> "ReadString[\"file.txt\", CharacterEncoding -> \"UTF-8\"]",
+        "file"               -> Missing[ "KeyAbsent" ],
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0,
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "ReadStringCharacterEncoding-Basic-ReturnsString@@Tests/CodeInspectorTool.wlt:1625,1-1637,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $readStringResult, "ReadStringCharacterEncoding" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "ReadStringCharacterEncoding-Basic-HasTag@@Tests/CodeInspectorTool.wlt:1639,1-1644,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $readStringResult, "``ReadString`` does not support the ``CharacterEncoding`` option" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "ReadStringCharacterEncoding-Basic-HasDescription@@Tests/CodeInspectorTool.wlt:1646,1-1651,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $readStringResult, "(Error" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "ReadStringCharacterEncoding-Basic-IsError@@Tests/CodeInspectorTool.wlt:1653,1-1658,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectReadStringWithCharacterEncoding - No False Positive*)
+VerificationTest[
+    $readStringCleanResult = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+        "code"               -> "ReadString[\"file.txt\"]",
+        "file"               -> Missing[ "KeyAbsent" ],
+        "tagExclusions"      -> Missing[ "KeyAbsent" ],
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0,
+        "limit"              -> Missing[ "KeyAbsent" ]
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "ReadStringCharacterEncoding-NoFalsePositive-ReturnsString@@Tests/CodeInspectorTool.wlt:1663,1-1675,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $readStringCleanResult, "ReadStringCharacterEncoding" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "ReadStringCharacterEncoding-NoFalsePositive-NoTag@@Tests/CodeInspectorTool.wlt:1677,1-1682,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Custom Rules - ExcessiveLineLength*)
 
 (* ::**************************************************************************************************************:: *)
@@ -1630,21 +1696,21 @@ VerificationTest[
     ],
     { __InspectionObject },
     SameTest -> MatchQ,
-    TestID   -> "ExcessiveLineLength-Detected-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1625,1-1634,2"
+    TestID   -> "ExcessiveLineLength-Detected-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1691,1-1700,2"
 ]
 
 VerificationTest[
     MemberQ[ $longLineInspections, InspectionObject[ "ExcessiveLineLength", _, _, _ ] ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ExcessiveLineLength-Detected-HasTag@@Tests/CodeInspectorTool.wlt:1636,1-1641,2"
+    TestID   -> "ExcessiveLineLength-Detected-HasTag@@Tests/CodeInspectorTool.wlt:1702,1-1707,2"
 ]
 
 VerificationTest[
     MemberQ[ $longLineInspections, InspectionObject[ "ExcessiveLineLength", _, "Formatting", _ ] ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ExcessiveLineLength-Detected-IsFormatting@@Tests/CodeInspectorTool.wlt:1643,1-1648,2"
+    TestID   -> "ExcessiveLineLength-Detected-IsFormatting@@Tests/CodeInspectorTool.wlt:1709,1-1714,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1657,14 +1723,14 @@ VerificationTest[
     ],
     { ___InspectionObject },
     SameTest -> MatchQ,
-    TestID   -> "ExcessiveLineLength-ExactLimit-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1653,1-1661,2"
+    TestID   -> "ExcessiveLineLength-ExactLimit-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1719,1-1727,2"
 ]
 
 VerificationTest[
     MemberQ[ $exactLineInspections, InspectionObject[ "ExcessiveLineLength", _, _, _ ] ],
     False,
     SameTest -> SameQ,
-    TestID   -> "ExcessiveLineLength-ExactLimit-NotDetected@@Tests/CodeInspectorTool.wlt:1663,1-1668,2"
+    TestID   -> "ExcessiveLineLength-ExactLimit-NotDetected@@Tests/CodeInspectorTool.wlt:1729,1-1734,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1677,14 +1743,14 @@ VerificationTest[
     ],
     { ___InspectionObject },
     SameTest -> MatchQ,
-    TestID   -> "ExcessiveLineLength-ShortLines-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1673,1-1681,2"
+    TestID   -> "ExcessiveLineLength-ShortLines-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1739,1-1747,2"
 ]
 
 VerificationTest[
     MemberQ[ $shortLineInspections, InspectionObject[ "ExcessiveLineLength", _, _, _ ] ],
     False,
     SameTest -> SameQ,
-    TestID   -> "ExcessiveLineLength-ShortLines-NotDetected@@Tests/CodeInspectorTool.wlt:1683,1-1688,2"
+    TestID   -> "ExcessiveLineLength-ShortLines-NotDetected@@Tests/CodeInspectorTool.wlt:1749,1-1754,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1702,21 +1768,21 @@ VerificationTest[
     ],
     { __InspectionObject },
     SameTest -> MatchQ,
-    TestID   -> "ExcessiveFileLength-Detected-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1697,1-1706,2"
+    TestID   -> "ExcessiveFileLength-Detected-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1763,1-1772,2"
 ]
 
 VerificationTest[
     MemberQ[ $longFileInspections, InspectionObject[ "ExcessiveFileLength", _, _, _ ] ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ExcessiveFileLength-Detected-HasTag@@Tests/CodeInspectorTool.wlt:1708,1-1713,2"
+    TestID   -> "ExcessiveFileLength-Detected-HasTag@@Tests/CodeInspectorTool.wlt:1774,1-1779,2"
 ]
 
 VerificationTest[
     MemberQ[ $longFileInspections, InspectionObject[ "ExcessiveFileLength", _, "Formatting", _ ] ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ExcessiveFileLength-Detected-IsFormatting@@Tests/CodeInspectorTool.wlt:1715,1-1720,2"
+    TestID   -> "ExcessiveFileLength-Detected-IsFormatting@@Tests/CodeInspectorTool.wlt:1781,1-1786,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1729,14 +1795,14 @@ VerificationTest[
     ],
     { ___InspectionObject },
     SameTest -> MatchQ,
-    TestID   -> "ExcessiveFileLength-ShortFile-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1725,1-1733,2"
+    TestID   -> "ExcessiveFileLength-ShortFile-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1791,1-1799,2"
 ]
 
 VerificationTest[
     MemberQ[ $shortFileInspections, InspectionObject[ "ExcessiveFileLength", _, _, _ ] ],
     False,
     SameTest -> SameQ,
-    TestID   -> "ExcessiveFileLength-ShortFile-NotDetected@@Tests/CodeInspectorTool.wlt:1735,1-1740,2"
+    TestID   -> "ExcessiveFileLength-ShortFile-NotDetected@@Tests/CodeInspectorTool.wlt:1801,1-1806,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1749,21 +1815,21 @@ VerificationTest[
     ],
     { ___InspectionObject },
     SameTest -> MatchQ,
-    TestID   -> "FormattingExclusion-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1745,1-1753,2"
+    TestID   -> "FormattingExclusion-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1811,1-1819,2"
 ]
 
 VerificationTest[
     MemberQ[ $formattingExcludedInspections, InspectionObject[ "ExcessiveLineLength", _, _, _ ] ],
     False,
     SameTest -> SameQ,
-    TestID   -> "FormattingExclusion-SuppressesLineLength@@Tests/CodeInspectorTool.wlt:1755,1-1760,2"
+    TestID   -> "FormattingExclusion-SuppressesLineLength@@Tests/CodeInspectorTool.wlt:1821,1-1826,2"
 ]
 
 VerificationTest[
     MemberQ[ $formattingExcludedInspections, InspectionObject[ "ExcessiveFileLength", _, _, _ ] ],
     False,
     SameTest -> SameQ,
-    TestID   -> "FormattingExclusion-SuppressesFileLength@@Tests/CodeInspectorTool.wlt:1762,1-1767,2"
+    TestID   -> "FormattingExclusion-SuppressesFileLength@@Tests/CodeInspectorTool.wlt:1828,1-1833,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1774,7 +1840,7 @@ VerificationTest[
     ! DirectoryQ @ $integrationTempDir,
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:1772,1-1778,2"
+    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:1838,1-1844,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

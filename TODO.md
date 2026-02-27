@@ -88,7 +88,7 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/Tools/CodeInspector/Formatting.wl`
 
 - [ ] New CodeInspector rules
-  - [ ] Rule for `ReadString` with `CharacterEncoding` option
+  - [x] Rule for `ReadString` with `CharacterEncoding` option
     - Bad:
     ```wl
     ReadString[file, CharacterEncoding -> "enc"]

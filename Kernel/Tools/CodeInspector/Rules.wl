@@ -50,11 +50,19 @@ $abstractRules := $abstractRules = <|
 |>;
 
 $customAbstractRules := $customAbstractRules = <|
+    (* Single-Argument Throw appearing without a surrounding Catch *)
     cp`CallNode[ cp`LeafNode[ Symbol, "Throw"|"System`Throw", _ ], { _ }, _ ] -> inspectSingleArgThrow,
+    (* Single-Argument Return *)
     cp`CallNode[ cp`LeafNode[ Symbol, "Return"|"System`Return", _ ], { _ }, _ ] -> inspectReturn,
+    (* Private Context Symbol *)
     cp`LeafNode[ Symbol, _String? privateContextQ, _ ] -> inspectPrivateContext,
+    (* Global Symbol *)
     cp`LeafNode[ Symbol, _String? globalSymbolQ, _ ] -> inspectGlobalSymbol,
-    astPattern[ - $$yieldsDateObject ] -> inspectNegatedDateObject
+    (* Negated Date Object *)
+    astPattern[ - $$yieldsDateObject ] -> inspectNegatedDateObject,
+    (* ReadString with Character Encoding *)
+    astPattern @ HoldPattern @ ReadString[ __, CharacterEncoding -> _String? StringQ, ___ ] ->
+        inspectReadStringWithCharacterEncoding
 |>;
 
 (* ::**************************************************************************************************************:: *)
@@ -233,6 +241,29 @@ inspectNegatedDateObject[ pos_, ast_ ] :=
     ];
 
 inspectNegatedDateObject // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectReadStringWithCharacterEncoding*)
+inspectReadStringWithCharacterEncoding // beginDefinition;
+
+inspectReadStringWithCharacterEncoding[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, as },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        ci`InspectionObject[
+            "ReadStringCharacterEncoding",
+            $readStringWithCharacterEncodingHint,
+            "Error",
+            <| as, ConfidenceLevel -> 0.95 |>
+        ]
+    ];
+
+inspectReadStringWithCharacterEncoding // endDefinition;
+
+$readStringWithCharacterEncodingHint = "\
+``ReadString`` does not support the ``CharacterEncoding`` option; \
+use ``ByteArrayToString[ReadByteArray[source], encoding]`` instead";
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
