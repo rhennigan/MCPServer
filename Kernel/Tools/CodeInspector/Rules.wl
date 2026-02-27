@@ -65,7 +65,9 @@ $customAbstractRules := $customAbstractRules = <|
         inspectReadStringWithCharacterEncoding,
     (* Nothing as Value in Association *)
     astPattern @ HoldPattern @ Association[ ___, (Rule|RuleDelayed)[ _, Nothing ], ___ ] ->
-        inspectNothingInAssociation
+        inspectNothingInAssociation,
+    (* KeyExistsQ with List as Second Argument *)
+    astPattern @ HoldPattern @ KeyExistsQ[ _, _List ] -> inspectKeyExistsQWithList
 |>;
 
 (* ::**************************************************************************************************************:: *)
@@ -303,6 +305,29 @@ inspectNothingRule // endDefinition;
 $nothingInAssociationHint = "\
 ``Nothing`` used as a value in an ``Association`` is not automatically removed; \
 the key will map to the value ``Nothing``";
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectKeyExistsQWithList*)
+inspectKeyExistsQWithList // beginDefinition;
+
+inspectKeyExistsQWithList[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, as },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        ci`InspectionObject[
+            "KeyExistsQNestedKeyPath",
+            $keyExistsQNestedKeyPathHint,
+            "Warning",
+            <| as, ConfidenceLevel -> 0.9 |>
+        ]
+    ];
+
+inspectKeyExistsQWithList // endDefinition;
+
+$keyExistsQNestedKeyPathHint = "\
+``KeyExistsQ`` does not support nested key paths via ``List``; \
+use ``!MissingQ[assoc[\"k1\", \"k2\", ...]]`` instead";
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

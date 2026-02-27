@@ -104,7 +104,7 @@ Consolidated list of TODO/FIXME items from the codebase.
 
       Out[9]= <|"a" -> 1, "b" -> Nothing|>
       ```
-  - [ ] Rule for `KeyExistsQ` with nested key paths
+  - [x] Rule for `KeyExistsQ` with nested key paths
     - Valid, but likely a mistake (this does not represent a nested key path):
       ```wl
       KeyExistsQ[assoc, {"k1", "k2", ...}]

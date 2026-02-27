@@ -1899,13 +1899,115 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Custom Rules - KeyExistsQNestedKeyPath*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectKeyExistsQWithList - Basic Detection*)
+VerificationTest[
+    $keyExistsQResult = CodeInspectorToolFunction @ <|
+        "code"               -> "KeyExistsQ[assoc, {\"k1\", \"k2\"}]",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "KeyExistsQNestedKeyPath-Basic-ReturnsString@@Tests/CodeInspectorTool.wlt:1907,1-1916,2"
+]
+
+VerificationTest[
+    StringCount[ $keyExistsQResult, "Issue " ~~ DigitCharacter.. ~~ ": KeyExistsQNestedKeyPath" ],
+    1,
+    SameTest -> SameQ,
+    TestID   -> "KeyExistsQNestedKeyPath-Basic-HasTag@@Tests/CodeInspectorTool.wlt:1918,1-1923,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $keyExistsQResult, "``KeyExistsQ`` does not support nested key paths via ``List``" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "KeyExistsQNestedKeyPath-Basic-HasDescription@@Tests/CodeInspectorTool.wlt:1925,1-1930,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $keyExistsQResult, "(Warning" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "KeyExistsQNestedKeyPath-Basic-HasSeverity@@Tests/CodeInspectorTool.wlt:1932,1-1937,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectKeyExistsQWithList - Single Key in List*)
+VerificationTest[
+    $keyExistsQSingleResult = CodeInspectorToolFunction @ <|
+        "code"               -> "KeyExistsQ[assoc, {\"key\"}]",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "KeyExistsQNestedKeyPath-SingleKey-ReturnsString@@Tests/CodeInspectorTool.wlt:1942,1-1951,2"
+]
+
+VerificationTest[
+    StringCount[ $keyExistsQSingleResult, "Issue " ~~ DigitCharacter.. ~~ ": KeyExistsQNestedKeyPath" ],
+    1,
+    SameTest -> SameQ,
+    TestID   -> "KeyExistsQNestedKeyPath-SingleKey-HasTag@@Tests/CodeInspectorTool.wlt:1953,1-1958,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectKeyExistsQWithList - No False Positives*)
+
+(* KeyExistsQ with a plain string key should not trigger *)
+VerificationTest[
+    $keyExistsQCleanResult = CodeInspectorToolFunction @ <|
+        "code"               -> "KeyExistsQ[assoc, \"key\"]",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "KeyExistsQNestedKeyPath-NoFalsePositive-StringKey-ReturnsString@@Tests/CodeInspectorTool.wlt:1965,1-1974,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $keyExistsQCleanResult, "KeyExistsQNestedKeyPath" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "KeyExistsQNestedKeyPath-NoFalsePositive-StringKey-NoTag@@Tests/CodeInspectorTool.wlt:1976,1-1981,2"
+]
+
+(* KeyExistsQ with a symbol key should not trigger *)
+VerificationTest[
+    $keyExistsQSymbolResult = CodeInspectorToolFunction @ <|
+        "code"               -> "KeyExistsQ[assoc, key]",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "KeyExistsQNestedKeyPath-NoFalsePositive-SymbolKey-ReturnsString@@Tests/CodeInspectorTool.wlt:1984,1-1993,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $keyExistsQSymbolResult, "KeyExistsQNestedKeyPath" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "KeyExistsQNestedKeyPath-NoFalsePositive-SymbolKey-NoTag@@Tests/CodeInspectorTool.wlt:1995,1-2000,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Integration Tests - Cleanup*)
 VerificationTest[
     DeleteDirectory[ $integrationTempDir, DeleteContents -> True ];
     ! DirectoryQ @ $integrationTempDir,
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:1903,1-1909,2"
+    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:2005,1-2011,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
