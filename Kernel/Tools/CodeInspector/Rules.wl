@@ -334,8 +334,8 @@ inspectKeyExistsQWithList[ pos_, ast_ ] :=
 inspectKeyExistsQWithList // endDefinition;
 
 $keyExistsQNestedKeyPathHint = "\
-``KeyExistsQ`` does not support nested key paths via ``List``; \
-use ``!MissingQ[assoc[\"k1\", \"k2\", ...]]`` instead";
+``KeyExistsQ`` with a ``List`` as its second argument checks for a literal list key in the association, \
+not a nested key path. If you intended a nested lookup, use ``!MissingQ[assoc[\"k1\", \"k2\", ...]]`` instead";
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
