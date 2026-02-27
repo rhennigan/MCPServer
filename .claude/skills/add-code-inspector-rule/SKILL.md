@@ -47,6 +47,14 @@ Study the output to determine which node types and patterns to match. Key node t
 - ``CodeParser`InfixNode`` — infix ops like `a + b`
 - ``CodeParser`PrefixNode`` — prefix ops like `-x`
 
+**Note:** If you want to use symbols defined in `Rules.wl` in the WolframLanguageEvaluator tool during your exploration, you'll need to use their fully qualified names:
+
+```wl
+PacletDirectoryLoad["path/to/MCPServer"];
+Get["Wolfram`MCPServer`"];
+Wolfram`MCPServer`Tools`CodeInspector`Private`astPattern[...]
+```
+
 ## Step 4: Read the Current Rules File
 
 Read `Kernel/Tools/CodeInspector/Rules.wl` to understand the current state and find the right insertion points.
