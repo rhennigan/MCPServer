@@ -49,6 +49,49 @@ stealthCatchTop // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*parseToolOptions*)
+parseToolOptions // beginDefinition;
+
+parseToolOptions[ env_String ] := parseToolOptions[ env, Quiet @ Developer`ReadRawJSONString @ env ];
+parseToolOptions[ _String, opts_Association? AssociationQ ] := migrateLegacyEnvVars @ opts;
+parseToolOptions[ _String, _ ] := migrateLegacyEnvVars @ <| |>;
+parseToolOptions[ _ ] := migrateLegacyEnvVars @ <| |>;
+
+parseToolOptions // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*migrateLegacyEnvVars*)
+migrateLegacyEnvVars // beginDefinition;
+
+migrateLegacyEnvVars[ opts_Association ] :=
+    Module[ { result, evalOpts, method, imageMethod },
+        result = opts;
+        evalOpts = Lookup[ result, "WolframLanguageEvaluator", <| |> ];
+
+        method = Environment[ "WOLFRAM_LANGUAGE_EVALUATOR_METHOD" ];
+        If[ StringQ @ method && method =!= "" && ! KeyExistsQ[ evalOpts, "Method" ],
+            debugPrint[ "Legacy env var detected: WOLFRAM_LANGUAGE_EVALUATOR_METHOD=", method ];
+            evalOpts[ "Method" ] = method
+        ];
+
+        imageMethod = Environment[ "WOLFRAM_LANGUAGE_EVALUATOR_IMAGE_EXPORT_METHOD" ];
+        If[ StringQ @ imageMethod && imageMethod =!= "" && ! KeyExistsQ[ evalOpts, "ImageExportMethod" ],
+            debugPrint[ "Legacy env var detected: WOLFRAM_LANGUAGE_EVALUATOR_IMAGE_EXPORT_METHOD=", imageMethod ];
+            evalOpts[ "ImageExportMethod" ] = imageMethod
+        ];
+
+        If[ evalOpts =!= <| |>,
+            result[ "WolframLanguageEvaluator" ] = evalOpts
+        ];
+
+        result
+    ];
+
+migrateLegacyEnvVars // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*startMCPServer*)
 startMCPServer // beginDefinition;
 
@@ -83,6 +126,7 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
         promptLookup = ConfirmBy[ makePromptLookup @ obj[ "PromptData" ], AssociationQ, "PromptLookup" ];
 
         initializeUIResources[ ];
+        $toolOptions = parseToolOptions @ Environment[ "MCP_TOOL_OPTIONS" ];
 
         Block[
             {
@@ -90,7 +134,8 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
                 $llmTools     = llmTools,
                 $promptList   = promptList,
                 $promptLookup = promptLookup,
-                $logFile      = logFile
+                $logFile      = logFile,
+                $toolOptions  = $toolOptions
             },
             While[ True,
                 If[
