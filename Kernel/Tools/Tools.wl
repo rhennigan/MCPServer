@@ -37,8 +37,28 @@ $DefaultMCPTools := WithCleanup[
 ];
 
 (* $defaultMCPTools is an Association mapping tool names to LLMTool definitions. *)
-(* Tool definitions are added in subcontext files loaded below.                  *)
-$defaultMCPTools = <| |>;
+(* Tool definitions and default options are added in subcontext files loaded below. *)
+$defaultMCPTools    = <| |>;
+$defaultToolOptions = <| |>;
+
+(* Set at server startup from MCP_TOOL_OPTIONS environment variable: *)
+$toolOptions = <| |>;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*toolOptionValue*)
+toolOptionValue // beginDefinition;
+
+toolOptionValue[ toolName_String, optionName_String ] :=
+    Catch @ Module[ { value },
+        value = $toolOptions[ toolName, optionName ];
+        If[ ! MissingQ @ value, Throw @ value ];
+        value = $defaultToolOptions[ toolName, optionName ];
+        If[ ! MissingQ @ value, Throw @ value ];
+        Missing[ "ToolOption", { toolName, optionName } ]
+    ];
+
+toolOptionValue // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

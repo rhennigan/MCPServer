@@ -100,4 +100,9 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `toolUIMetadata;
 `withToolUIMetadata;
 
+(* Tool options: *)
+`$toolOptions;
+`$defaultToolOptions;
+`toolOptionValue;
+
 EndPackage[ ];
