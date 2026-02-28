@@ -255,7 +255,7 @@ fileResultsMarkdown[ file_String, report_TestReportObject ] := Enclose[
             "| **Time** | ", formatTime @ time, " |"
         ];
 
-        failedTests = DeleteCases[ report[ "TestsFailed" ], <||> ];
+        failedTests = DeleteCases[ report[ "TestsFailed" ], <| |> ];
 
         If[ Length @ Flatten @ Values @ failedTests === 0,
             summaryTable,
@@ -280,7 +280,7 @@ fileResultsMarkdown // endDefinition;
 (*failedTestsSection*)
 failedTestsSection // beginDefinition;
 
-failedTestsSection[ _, { } | <||> | _Missing ] := Nothing;
+failedTestsSection[ _, { } | <| |> | _Missing ] := Nothing;
 
 failedTestsSection[ title_String, tests_Association ] :=
     failedTestsSection[ title, Values @ tests ];

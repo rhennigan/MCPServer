@@ -399,7 +399,7 @@ normalizePromptData // endDefinition;
 determinePromptType // beginDefinition;
 determinePromptType[ KeyValuePattern[ "Type" -> "Function" ] ] := "Function";
 determinePromptType[ KeyValuePattern[ "Type" -> "Text" ] ] := "Text";
-determinePromptType[ KeyValuePattern[ "Type" -> Automatic ] ] := determinePromptType @ <||>;
+determinePromptType[ KeyValuePattern[ "Type" -> Automatic ] ] := determinePromptType @ <| |>;
 determinePromptType[ KeyValuePattern[ "Content" -> _String ] ] := "Text";
 determinePromptType[ KeyValuePattern[ "Content" -> _TemplateObject ] ] := "Text";
 determinePromptType[ KeyValuePattern[ "Content" -> _ ] ] := "Function";
