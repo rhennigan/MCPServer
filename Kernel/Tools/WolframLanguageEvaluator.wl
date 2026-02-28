@@ -25,16 +25,9 @@ $outputSizeLimit      = 100000;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*Environment Variable Configuration*)
-$evaluatorMethod := $evaluatorMethod =
-    With[ { method = Environment[ "WOLFRAM_LANGUAGE_EVALUATOR_METHOD" ] },
-        If[ StringQ @ method && method =!= "", method, "Session" ]
-    ];
-
-$imageExportMethod := $imageExportMethod =
-    With[ { method = Environment[ "WOLFRAM_LANGUAGE_EVALUATOR_IMAGE_EXPORT_METHOD" ] },
-        If[ StringQ @ method && method =!= "", method, "None" ]
-    ];
+(*Tool Option Configuration*)
+$evaluatorMethod   := toolOptionValue[ "WolframLanguageEvaluator", "Method" ];
+$imageExportMethod := toolOptionValue[ "WolframLanguageEvaluator", "ImageExportMethod" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -74,10 +67,19 @@ $defaultMCPTools[ "WolframLanguageEvaluator" ] := LLMTool @ <|
         |>,
         "timeConstraint" -> <|
             "Interpreter" -> "Integer",
-            "Help"        -> "The time constraint for the evaluation (default is 60 seconds).",
+            "Help"        -> "The time constraint for the evaluation. Uses the server's configured default if not specified.",
             "Required"    -> False
         |>
     }
+|>;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Default Tool Options*)
+$defaultToolOptions[ "WolframLanguageEvaluator" ] = <|
+    "Method"            -> "Session",
+    "ImageExportMethod" -> "None",
+    "TimeConstraint"    -> 60
 |>;
 
 (* ::**************************************************************************************************************:: *)
@@ -96,7 +98,7 @@ evaluateWolframLanguage[ KeyValuePattern @ { "code" -> code_, "timeConstraint" -
     ];
 
 evaluateWolframLanguage[ code_String, _Missing ] :=
-    evaluateWolframLanguage[ code, 60 ];
+    evaluateWolframLanguage[ code, toolOptionValue[ "WolframLanguageEvaluator", "TimeConstraint" ] ];
 
 evaluateWolframLanguage[ code_String, timeConstraint_Integer ] := Enclose[
     Module[ { string, exported },
@@ -231,7 +233,8 @@ exportImage // endDefinition;
 (*evaluateWolframLanguageUI*)
 evaluateWolframLanguageUI // beginDefinition;
 
-evaluateWolframLanguageUI[ code_String, _Missing ] := evaluateWolframLanguageUI[ code, 60 ];
+evaluateWolframLanguageUI[ code_String, _Missing ] :=
+    evaluateWolframLanguageUI[ code, toolOptionValue[ "WolframLanguageEvaluator", "TimeConstraint" ] ];
 
 evaluateWolframLanguageUI[ code_String, timeConstraint_Integer ] :=
     Module[ { savedLine, result, uiResult },
