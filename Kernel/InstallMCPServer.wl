@@ -9,8 +9,9 @@ Needs[ "Wolfram`MCPServer`Common`" ];
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Config*)
-$installClientName = None;
-$enableMCPApps     = True;
+$installClientName  = None;
+$enableMCPApps      = True;
+$installToolOptions = <| |>;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -27,6 +28,7 @@ InstallMCPServer // Options = {
     "DevelopmentMode"    -> False,
     "EnableMCPApps"      -> True,
     "ProcessEnvironment" -> Automatic,
+    "ToolOptions"        -> <| |>,
     "VerifyLLMKit"       -> True
 };
 
@@ -36,18 +38,21 @@ InstallMCPServer[ target_, opts: OptionsPattern[ ] ] :=
 InstallMCPServer[ target_, Automatic, opts: OptionsPattern[ ] ] :=
     catchMine @ InstallMCPServer[ target, $defaultMCPServer, opts ];
 
-InstallMCPServer[ target_File? fileQ, server_, opts: OptionsPattern[ ] ] :=
-    catchMine @ Block[
-        {
-            $installClientName = validateInstallClientName[ OptionValue[ "ApplicationName" ], target ],
-            $enableMCPApps = OptionValue[ "EnableMCPApps" ]
-        },
-        installMCPServer[
-            target,
-            ensureMCPServerExists @ MCPServerObject @ server,
-            OptionValue @ ProcessEnvironment,
-            OptionValue @ VerifyLLMKit,
-            OptionValue[ "DevelopmentMode" ]
+InstallMCPServer[ target_File? fileQ, server0_, opts: OptionsPattern[ ] ] :=
+    catchMine @ With[ { server = ensureMCPServerExists @ MCPServerObject @ server0 },
+        Block[
+            {
+                $installClientName  = validateInstallClientName[ OptionValue[ "ApplicationName" ], target ],
+                $enableMCPApps      = OptionValue[ "EnableMCPApps" ],
+                $installToolOptions = validateToolOptions[ OptionValue[ "ToolOptions" ], server ]
+            },
+            installMCPServer[
+                target,
+                server,
+                OptionValue @ ProcessEnvironment,
+                OptionValue @ VerifyLLMKit,
+                OptionValue[ "DevelopmentMode" ]
+            ]
         ]
     ];
 
@@ -452,17 +457,65 @@ mcpConfigExistsQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*validateToolOptions*)
+validateToolOptions // beginDefinition;
+
+validateToolOptions[ <| |>, _ ] := <| |>;
+
+validateToolOptions[ opts_Association? AssociationQ, server_MCPServerObject ] := Enclose[
+    Module[ { toolNames, knownToolNames, knownQ },
+        toolNames = ConfirmMatch[ #[ "Name" ] & /@ server[ "Tools" ], { ___String }, "ToolNames" ];
+        knownToolNames = ConfirmMatch[ Union[ Keys @ $defaultToolOptions, toolNames ], { ___String }, "KnownNames" ];
+        knownQ = AssociationMap[ True &, knownToolNames ];
+
+        KeyValueMap[
+            Function[ { toolName, toolOpts },
+                If[ ! TrueQ @ knownQ @ toolName, messagePrint[ "UnrecognizedToolOption", toolName ] ];
+                If[ AssociationQ @ toolOpts && KeyExistsQ[ $defaultToolOptions, toolName ],
+                    Scan[
+                        Function[ optName,
+                            If[ ! KeyExistsQ[ $defaultToolOptions[ toolName ], optName ],
+                                messagePrint[ "UnrecognizedToolOptionName", optName, toolName ]
+                            ]
+                        ],
+                        Keys @ toolOpts
+                    ]
+                ]
+            ],
+            opts
+        ];
+
+        opts
+    ],
+    throwInternalFailure
+];
+
+validateToolOptions[ other_, _ ] := (
+    messagePrint[ "InvalidToolOptions", other ];
+    <| |>
+);
+
+validateToolOptions // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*addEnvironmentVariables*)
 addEnvironmentVariables // beginDefinition;
 
 addEnvironmentVariables[ server0_Association, extraEnv0_Association ] := Enclose[
     Module[ { server, env, extraEnv, newEnv },
+
         server = ConfirmBy[ server0, AssociationQ, "Server" ];
         env = ConfirmBy[ server[ "env" ], AssociationQ, "Environment" ];
-        extraEnv = If[ $enableMCPApps === False,
-            <| extraEnv0, "MCP_APPS_ENABLED" -> "false" |>,
-            extraEnv0
+        extraEnv = If[ $enableMCPApps === False, <| extraEnv0, "MCP_APPS_ENABLED" -> "false" |>, extraEnv0 ];
+
+        If[ AssociationQ @ $installToolOptions && $installToolOptions =!= <| |>,
+            extraEnv = <|
+                extraEnv,
+                "MCP_TOOL_OPTIONS" -> Developer`WriteRawJSONString[ $installToolOptions, "Compact" -> True ]
+            |>
         ];
+
         newEnv = ConfirmBy[ <| env, extraEnv |>, AssociationQ, "NewEnvironment" ];
         server[ "env" ] = newEnv;
         server

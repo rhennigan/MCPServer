@@ -65,4 +65,9 @@ MCPServer::CodeInspectorNoFilesFound       = "No .wl, .m, or .wls files found in
 MCPServer::CodeInspectorFailed             = "CodeInspector failed: `1`.";
 MCPServer::CodeInspectorInvalidConfidence  = "Confidence level must be between 0 and 1, got `1`.";
 
+(* ToolOptions messages *)
+MCPServer::InvalidToolOptions             = "Invalid value for ToolOptions: `1`. Expected an Association.";
+MCPServer::UnrecognizedToolOption         = "Warning: Unrecognized tool name in ToolOptions: \"`1`\".";
+MCPServer::UnrecognizedToolOptionName     = "Warning: Unrecognized option \"`1`\" for tool \"`2`\" in ToolOptions.";
+
 EndPackage[ ];
