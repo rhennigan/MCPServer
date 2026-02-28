@@ -41,9 +41,8 @@ Consolidated list of TODO/FIXME items from the codebase.
 
 ### Tool Improvements
 
-- [ ] Tool options set via environment variables
-  - Example: we already have `WOLFRAM_LANGUAGE_EVALUATOR_METHOD`. We could make a nice interface for this in InstallMCPServer.
-  - We could also have a single environment variable that points to a file containing all the options for tools
+- [x] Tool options set via environment variables
+  - Implemented: `"ToolOptions"` option in `InstallMCPServer`, `MCP_TOOL_OPTIONS` env var (JSON), `toolOptionValue` lookup, legacy env var migration
 
 - [ ] Support file inputs in the evaluator tool
   - Could use the existing "code" parameter or add a new "file" parameter (only one can be used at a time)
