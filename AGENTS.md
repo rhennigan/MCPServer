@@ -72,7 +72,7 @@ See [building.md](docs/building.md) for detailed instructions.
   - `building.md`: Building the paclet for distribution
   - `error-handling.md`: Error handling architecture and patterns
   - `servers.md`: Predefined MCP servers and choosing the right one
-  - `tools.md`: MCP tools system and how to add new tools
+  - `tools.md`: MCP tools system, tool options, and how to add new tools
   - `mcp-prompts.md`: MCP prompts system and how to add new prompts
   - `mcp-clients.md`: MCP client support and installation
   - `mcp-apps.md`: MCP Apps system for interactive UI resources

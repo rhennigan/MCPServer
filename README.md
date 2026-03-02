@@ -263,6 +263,7 @@ CreateMCPServer["My MCP Server", <|
 |--------|-------------|
 | `$DefaultMCPServers` | Association of predefined server configurations |
 | `$DefaultMCPTools` | Association of available tool definitions |
+| `$DefaultMCPToolOptions` | Association of default tool option values |
 | `$DefaultMCPPrompts` | Association of available prompt definitions |
 
 ### Options
