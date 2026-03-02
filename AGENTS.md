@@ -65,6 +65,8 @@ See [building.md](docs/building.md) for detailed instructions.
 
 - `Tests/`: Contains test files (.wlt)
 
+- `Specs/`: Design specifications for features
+
 - `docs/`: Developer documentation
   - `testing.md`: Writing and running tests
   - `building.md`: Building the paclet for distribution

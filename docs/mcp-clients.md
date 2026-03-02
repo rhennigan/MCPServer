@@ -297,6 +297,7 @@ Include these environment variables for proper operation:
 | `WOLFRAM_USERBASE` | Path to user's Wolfram files (`$UserBaseDirectory`) |
 | `APPDATA` | (Windows only) Path to application data (typically `ParentDirectory[$UserBaseDirectory]`) |
 | `MCP_APPS_ENABLED` | Set to `"false"` to disable [MCP Apps](mcp-apps.md) UI resources (optional) |
+| `MCP_TOOL_OPTIONS` | JSON string of tool option overrides, set automatically by `"ToolOptions"` (optional) |
 
 ### Getting the Configuration
 
@@ -356,6 +357,23 @@ Controls whether [MCP Apps](mcp-apps.md) UI resources are enabled for the instal
 ```wl
 InstallMCPServer["ClaudeDesktop", "EnableMCPApps" -> False]
 ```
+
+### ToolOptions
+
+Customizes the behavior of built-in MCP tools at install time. The value is an association mapping tool names to their option overrides:
+
+```wl
+InstallMCPServer["ClaudeCode", "WolframLanguage",
+    "ToolOptions" -> <|
+        "WolframLanguageEvaluator" -> <|"Method" -> "Local", "TimeConstraint" -> 120|>,
+        "WolframLanguageContext"   -> <|"MaxItems" -> 20|>
+    |>
+]
+```
+
+Options are serialized to the `MCP_TOOL_OPTIONS` environment variable and read by the server at startup. See [tools.md](tools.md#tool-options) for the full list of per-tool options.
+
+Unrecognized tool names or option names generate warnings but do not prevent installation (for forward compatibility).
 
 ### VerifyLLMKit
 
