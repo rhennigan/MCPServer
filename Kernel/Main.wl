@@ -7,10 +7,11 @@ BeginPackage[ "Wolfram`MCPServer`" ];
 (*Exported Symbols*)
 `$DefaultMCPPrompts;
 `$DefaultMCPServers;
+`$DefaultMCPToolOptions;
 `$DefaultMCPTools;
 `$LastMCPServerFailure;
-`$SupportedMCPClients;
 `$LastMCPServerFailureText;
+`$SupportedMCPClients;
 `CodeInspectorToolFunction;
 `CreateMCPServer;
 `InstallMCPServer;
@@ -82,6 +83,7 @@ $MCPServerSymbolNames = $MCPServerSymbolNames =
 $MCPServerProtectedNames = "Wolfram`MCPServer`" <> # & /@ {
     "$DefaultMCPPrompts",
     "$DefaultMCPServers",
+    "$DefaultMCPToolOptions",
     "$DefaultMCPTools",
     "$LastMCPServerFailure",
     "$LastMCPServerFailureText",

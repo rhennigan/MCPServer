@@ -20,6 +20,7 @@ PacletObject[ <|
             "Symbols" -> {
                 "Wolfram`MCPServer`$DefaultMCPPrompts",
                 "Wolfram`MCPServer`$DefaultMCPServers",
+                "Wolfram`MCPServer`$DefaultMCPToolOptions",
                 "Wolfram`MCPServer`$DefaultMCPTools",
                 "Wolfram`MCPServer`$LastMCPServerFailure",
                 "Wolfram`MCPServer`$LastMCPServerFailureText",

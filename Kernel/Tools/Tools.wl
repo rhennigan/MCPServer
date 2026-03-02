@@ -29,11 +29,17 @@ Needs[ "Wolfram`MCPServer`Common`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*Default Tools*)
+(*Default Tools and Options*)
 $DefaultMCPTools := WithCleanup[
     Unprotect @ $DefaultMCPTools,
     $DefaultMCPTools = KeySort @ AssociationMap[ Apply @ Rule, $defaultMCPTools ],
     Protect @ $DefaultMCPTools
+];
+
+$DefaultMCPToolOptions := WithCleanup[
+    Unprotect @ $DefaultMCPToolOptions,
+    $DefaultMCPToolOptions = KeySort @ AssociationMap[ Apply @ Rule, $defaultToolOptions ],
+    Protect @ $DefaultMCPToolOptions
 ];
 
 (* $defaultMCPTools is an Association mapping tool names to LLMTool definitions. *)
