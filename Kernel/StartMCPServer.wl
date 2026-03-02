@@ -109,17 +109,8 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
         If[ FileExistsQ @ logFile, DeleteFile @ logFile ];
         writeLog[ "LogFile" -> logFile ];
 
-        llmTools = Association[ #[ "Name" ] -> # & /@ ConfirmMatch[ obj[ "Tools" ], { ___LLMTool }, "Tools" ] ];
-
-        toolList = Map[
-            <|
-                "name"        -> safeString @ #[ "Name"        ],
-                "description" -> safeString @ #[ "Description" ],
-                "inputSchema" -> #[ "JSONSchema" ]
-            |> &,
-            Values @ llmTools
-        ];
-
+        llmTools     = Association[ #[ "Name" ] -> # & /@ ConfirmMatch[ obj[ "Tools" ], { ___LLMTool }, "Tools" ] ];
+        toolList     = ConfirmMatch[ createMCPToolData /@ Values @ llmTools, { ___Association }, "ToolList" ];
         promptList   = ConfirmMatch[ makePromptData @ obj[ "PromptData" ], { ___Association }, "PromptData" ];
         promptLookup = ConfirmBy[ makePromptLookup @ obj[ "PromptData" ], AssociationQ, "PromptLookup" ];
 
@@ -159,6 +150,37 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
 (* :!CodeAnalysis::EndBlock:: *)
 
 startMCPServer // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*createMCPToolData*)
+createMCPToolData // beginDefinition;
+
+createMCPToolData[ tool: HoldPattern[ _LLMTool ] ] := Enclose[
+    Module[ { data, name, description, inputSchema, title, annotations },
+
+        data = ConfirmBy[ tool[ "Data" ], AssociationQ, "Data" ];
+        name = safeString @ ConfirmBy[ tool[ "Name" ], StringQ, "Name" ];
+        description = safeString @ ConfirmBy[ tool[ "Description" ], StringQ, "Description" ];
+        inputSchema = ConfirmBy[ tool[ "JSONSchema" ], AssociationQ, "InputSchema" ];
+
+        title = Lookup[ data, "DisplayName", Missing[ ] ];
+        If[ StringQ @ title, title = safeString @ title ];
+
+        annotations = If[ StringQ @ title, <| "title" -> title |>, Missing[ ] ];
+
+        DeleteMissing @ <|
+            "name"        -> name,
+            "title"       -> title,
+            "description" -> description,
+            "inputSchema" -> inputSchema,
+            "annotations" -> annotations
+        |>
+    ],
+    throwInternalFailure
+];
+
+createMCPToolData // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
