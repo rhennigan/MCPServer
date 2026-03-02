@@ -444,7 +444,7 @@ $myOption := toolOptionValue[ "YourTool", "OptionName" ];
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `"Method"` | String | `"Session"` | Evaluation method. `"Session"` uses the server kernel; `"Local"` spawns a separate kernel. |
-| `"ImageExportMethod"` | String | `"None"` | How to export graphics. `"None"`, `"Local"`, `"Cloud"`, or `"CloudPublic"`. |
+| `"ImageExportMethod"` | String | `None` | How to export graphics. `None`, `"Local"`, `"Cloud"`, or `"CloudPublic"`. |
 | `"TimeConstraint"` | Integer | `60` | Default time limit (seconds) when the LLM doesn't specify `timeConstraint`. The LLM can still override this per-call. |
 
 #### WolframLanguageContext
