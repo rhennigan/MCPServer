@@ -39,7 +39,7 @@ VerificationTest[
     Wolfram`MCPServer`Common`$defaultToolOptions[ "WolframLanguageEvaluator" ],
     KeyValuePattern @ {
         "Method"            -> "Session",
-        "ImageExportMethod" -> "None",
+        "ImageExportMethod" -> None,
         "TimeConstraint"    -> 60
     },
     SameTest -> MatchQ,
@@ -194,6 +194,26 @@ VerificationTest[
     TestID   -> "ParseToolOptions-ValidJSON@@Tests/ToolOptions.wlt:188,1-195,2"
 ]
 
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`parseToolOptions[
+        "{\"WolframLanguageEvaluator\":{\"ImageExportMethod\":\"None\",\"Method\":\"Automatic\"}}"
+    ],
+    KeyValuePattern[
+        "WolframLanguageEvaluator" -> KeyValuePattern @ { "ImageExportMethod" -> None, "Method" -> Automatic }
+    ],
+    SameTest -> MatchQ,
+    TestID   -> "ParseToolOptions-SymbolConversion@@Tests/ToolOptions.wlt:197,1-206,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`parseToolOptions[
+        "{\"WolframLanguageEvaluator\":123,\"WolframAlphaContext\":{\"MaxItems\":3}}"
+    ],
+    <| "WolframAlphaContext" -> <| "MaxItems" -> 3 |> |>,
+    SameTest -> MatchQ,
+    TestID   -> "ParseToolOptions-Non-AssociationValues@@Tests/ToolOptions.wlt:208,1-215,2"
+]
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Serialization Round-Trip*)
@@ -207,7 +227,7 @@ VerificationTest[
         ]
     ],
     "Local",
-    TestID -> "RoundTrip-MethodPreserved@@Tests/ToolOptions.wlt:200,1-211,2"
+    TestID -> "RoundTrip-MethodPreserved@@Tests/ToolOptions.wlt:220,1-231,2"
 ]
 
 VerificationTest[
@@ -220,7 +240,7 @@ VerificationTest[
         ]
     ],
     120,
-    TestID -> "RoundTrip-TimeConstraintPreserved@@Tests/ToolOptions.wlt:213,1-224,2"
+    TestID -> "RoundTrip-TimeConstraintPreserved@@Tests/ToolOptions.wlt:233,1-244,2"
 ]
 
 VerificationTest[
@@ -233,7 +253,7 @@ VerificationTest[
         ]
     ],
     5,
-    TestID -> "RoundTrip-MaxItemsPreserved@@Tests/ToolOptions.wlt:226,1-237,2"
+    TestID -> "RoundTrip-MaxItemsPreserved@@Tests/ToolOptions.wlt:246,1-257,2"
 ]
 
 VerificationTest[
@@ -253,52 +273,8 @@ VerificationTest[
             }
         ]
     ],
-    { "Local", 20, "None" },
-    TestID -> "RoundTrip-MultipleToolsPreserved@@Tests/ToolOptions.wlt:239,1-258,2"
-]
-
-(* ::**************************************************************************************************************:: *)
-(* ::Section::Closed:: *)
-(*Legacy Environment Variable Migration*)
-VerificationTest[
-    Block[ { $Environment },
-        $Environment = <||>;
-        SetEnvironment[ "WOLFRAM_LANGUAGE_EVALUATOR_METHOD" -> "Local" ];
-        Module[ { parsed },
-            parsed = Wolfram`MCPServer`StartMCPServer`Private`parseToolOptions[ $Failed ];
-            parsed[ "WolframLanguageEvaluator", "Method" ]
-        ]
-    ],
-    "Local",
-    TestID -> "LegacyMigration-MethodEnvVar@@Tests/ToolOptions.wlt:263,1-274,2"
-]
-
-VerificationTest[
-    Block[ { $Environment },
-        $Environment = <||>;
-        SetEnvironment[ "WOLFRAM_LANGUAGE_EVALUATOR_IMAGE_EXPORT_METHOD" -> "Cloud" ];
-        Module[ { parsed },
-            parsed = Wolfram`MCPServer`StartMCPServer`Private`parseToolOptions[ $Failed ];
-            parsed[ "WolframLanguageEvaluator", "ImageExportMethod" ]
-        ]
-    ],
-    "Cloud",
-    TestID -> "LegacyMigration-ImageExportMethodEnvVar@@Tests/ToolOptions.wlt:276,1-287,2"
-]
-
-VerificationTest[
-    Block[ { $Environment },
-        $Environment = <||>;
-        SetEnvironment[ "WOLFRAM_LANGUAGE_EVALUATOR_METHOD" -> "Local" ];
-        Module[ { json, parsed },
-            (* MCP_TOOL_OPTIONS takes priority over legacy env var *)
-            json = "{\"WolframLanguageEvaluator\":{\"Method\":\"Session\"}}";
-            parsed = Wolfram`MCPServer`StartMCPServer`Private`parseToolOptions @ json;
-            parsed[ "WolframLanguageEvaluator", "Method" ]
-        ]
-    ],
-    "Session",
-    TestID -> "LegacyMigration-ToolOptionsHasPriority@@Tests/ToolOptions.wlt:289,1-302,2"
+    { "Local", 20, None },
+    TestID -> "RoundTrip-MultipleToolsPreserved@@Tests/ToolOptions.wlt:259,1-278,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -323,7 +299,7 @@ VerificationTest[
         KeyExistsQ[ env, "MCP_TOOL_OPTIONS" ]
     ],
     True,
-    TestID -> "InstallMCPServer-ToolOptionsEnvVarExists@@Tests/ToolOptions.wlt:307,1-327,2"
+    TestID -> "InstallMCPServer-ToolOptionsEnvVarExists@@Tests/ToolOptions.wlt:283,1-303,2"
 ]
 
 VerificationTest[
@@ -347,7 +323,7 @@ VerificationTest[
     ],
     KeyValuePattern @ { "Method" -> "Local", "TimeConstraint" -> 120 },
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-ToolOptionsRoundTrip@@Tests/ToolOptions.wlt:329,1-351,2"
+    TestID   -> "InstallMCPServer-ToolOptionsRoundTrip@@Tests/ToolOptions.wlt:305,1-327,2"
 ]
 
 VerificationTest[
@@ -369,7 +345,7 @@ VerificationTest[
         KeyExistsQ[ env, "MCP_TOOL_OPTIONS" ]
     ],
     False,
-    TestID -> "InstallMCPServer-EmptyToolOptionsNoEnvVar@@Tests/ToolOptions.wlt:353,1-373,2"
+    TestID -> "InstallMCPServer-EmptyToolOptionsNoEnvVar@@Tests/ToolOptions.wlt:329,1-349,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -378,7 +354,7 @@ VerificationTest[
 VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`validateToolOptions[ <| |>, MCPServerObject[ "Wolfram" ] ],
     <| |>,
-    TestID -> "ValidateToolOptions-Empty@@Tests/ToolOptions.wlt:378,1-382,2"
+    TestID -> "ValidateToolOptions-Empty@@Tests/ToolOptions.wlt:354,1-358,2"
 ]
 
 VerificationTest[
@@ -388,7 +364,7 @@ VerificationTest[
     ],
     KeyValuePattern[ "WolframLanguageEvaluator" -> KeyValuePattern[ "Method" -> "Local" ] ],
     SameTest -> MatchQ,
-    TestID   -> "ValidateToolOptions-ValidOptions@@Tests/ToolOptions.wlt:384,1-392,2"
+    TestID   -> "ValidateToolOptions-ValidOptions@@Tests/ToolOptions.wlt:360,1-368,2"
 ]
 
 VerificationTest[
@@ -396,7 +372,7 @@ VerificationTest[
     <| |>,
     { MCPServer::InvalidToolOptions },
     SameTest -> MatchQ,
-    TestID   -> "ValidateToolOptions-InvalidType@@Tests/ToolOptions.wlt:394,1-400,2"
+    TestID   -> "ValidateToolOptions-InvalidType@@Tests/ToolOptions.wlt:370,1-376,2"
 ]
 
 VerificationTest[
@@ -407,7 +383,7 @@ VerificationTest[
     KeyValuePattern[ "NonexistentTool" -> KeyValuePattern[ "Foo" -> "Bar" ] ],
     { MCPServer::UnrecognizedToolOption },
     SameTest -> MatchQ,
-    TestID   -> "ValidateToolOptions-UnrecognizedToolName@@Tests/ToolOptions.wlt:402,1-411,2"
+    TestID   -> "ValidateToolOptions-UnrecognizedToolName@@Tests/ToolOptions.wlt:378,1-387,2"
 ]
 
 VerificationTest[
@@ -418,7 +394,7 @@ VerificationTest[
     KeyValuePattern[ "WolframLanguageEvaluator" -> KeyValuePattern[ "NonexistentOption" -> "value" ] ],
     { MCPServer::UnrecognizedToolOptionName },
     SameTest -> MatchQ,
-    TestID   -> "ValidateToolOptions-UnrecognizedOptionName@@Tests/ToolOptions.wlt:413,1-422,2"
+    TestID   -> "ValidateToolOptions-UnrecognizedOptionName@@Tests/ToolOptions.wlt:389,1-398,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -428,7 +404,7 @@ VerificationTest[
     Wolfram`MCPServer`Common`$toolOptions,
     _Association? AssociationQ,
     SameTest -> MatchQ,
-    TestID   -> "ToolOptionsInitialized@@Tests/ToolOptions.wlt:427,1-432,2"
+    TestID   -> "ToolOptionsInitialized@@Tests/ToolOptions.wlt:403,1-408,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

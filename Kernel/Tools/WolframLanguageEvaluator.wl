@@ -78,7 +78,7 @@ $defaultMCPTools[ "WolframLanguageEvaluator" ] := LLMTool @ <|
 (*Default Tool Options*)
 $defaultToolOptions[ "WolframLanguageEvaluator" ] = <|
     "Method"            -> "Session",
-    "ImageExportMethod" -> "None",
+    "ImageExportMethod" -> None,
     "TimeConstraint"    -> 60
 |>;
 
@@ -165,7 +165,7 @@ exportImages[ str_String ] := Enclose[
         ];
 
         (* Append the image hint reminder if there were images *)
-        If[ TrueQ @ hasImages && $imageExportMethod =!= "None",
+        If[ TrueQ @ hasImages && $imageExportMethod =!= None,
             AppendTo[ contentItems, <| "type" -> "text", "text" -> "\n\n" <> $markdownImageHint |> ]
         ];
 

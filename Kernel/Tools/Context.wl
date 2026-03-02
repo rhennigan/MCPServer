@@ -322,7 +322,7 @@ relatedDocumentation0[ context_, max: $$maxItemsSpec, subscribed: True|False ] :
             "Prompt",
             "PromptHeader"  -> False,
             "FilterResults" -> subscribed,
-            "FilteredCount" -> max,
+            "FilteredCount" -> max, (* Ignored when "FilterResults" is False *)
             MaxItems        -> If[ subscribed, max * 5, max ]
         ]
     ];

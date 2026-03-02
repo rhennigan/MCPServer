@@ -52,44 +52,41 @@ stealthCatchTop // endDefinition;
 (* ::Subsection::Closed:: *)
 (*parseToolOptions*)
 parseToolOptions // beginDefinition;
-
-parseToolOptions[ env_String ] := parseToolOptions[ env, Quiet @ Developer`ReadRawJSONString @ env ];
-parseToolOptions[ _String, opts_Association? AssociationQ ] := migrateLegacyEnvVars @ opts;
-parseToolOptions[ _String, _ ] := migrateLegacyEnvVars @ <| |>;
-parseToolOptions[ _ ] := migrateLegacyEnvVars @ <| |>;
-
+parseToolOptions[ env_String ] := parseToolOptions0 @ Quiet @ Developer`ReadRawJSONString @ env;
+parseToolOptions[ _ ] := <| |>;
 parseToolOptions // endDefinition;
 
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
-(*migrateLegacyEnvVars*)
-migrateLegacyEnvVars // beginDefinition;
 
-migrateLegacyEnvVars[ opts_Association ] :=
-    Module[ { result, evalOpts, method, imageMethod },
-        result = opts;
-        evalOpts = Lookup[ result, "WolframLanguageEvaluator", <| |> ];
+parseToolOptions0 // beginDefinition;
 
-        method = Environment[ "WOLFRAM_LANGUAGE_EVALUATOR_METHOD" ];
-        If[ StringQ @ method && method =!= "" && ! KeyExistsQ[ evalOpts, "Method" ],
-            debugPrint[ "Legacy env var detected: WOLFRAM_LANGUAGE_EVALUATOR_METHOD=", method ];
-            evalOpts[ "Method" ] = method
-        ];
+parseToolOptions0[ options_ ] := Enclose[
+    If[ AssociationQ @ options,
+        ConfirmBy[ Association @ KeyValueMap[ parseToolOptions0, options ], AssociationQ, "ToolOptions" ],
+        <| |>
+    ],
+    throwInternalFailure
+];
 
-        imageMethod = Environment[ "WOLFRAM_LANGUAGE_EVALUATOR_IMAGE_EXPORT_METHOD" ];
-        If[ StringQ @ imageMethod && imageMethod =!= "" && ! KeyExistsQ[ evalOpts, "ImageExportMethod" ],
-            debugPrint[ "Legacy env var detected: WOLFRAM_LANGUAGE_EVALUATOR_IMAGE_EXPORT_METHOD=", imageMethod ];
-            evalOpts[ "ImageExportMethod" ] = imageMethod
-        ];
+parseToolOptions0[ tool_String, opts_ ] := Enclose[
+    If[ AssociationQ @ opts,
+        tool -> ConfirmBy[
+            DeleteMissing @ Association @ KeyValueMap[ parseToolOptions0[ tool, #1, #2 ] &, opts ],
+            AssociationQ,
+            "ToolOptions"
+        ],
+        Nothing
+    ],
+    throwInternalFailure
+];
 
-        If[ evalOpts =!= <| |>,
-            result[ "WolframLanguageEvaluator" ] = evalOpts
-        ];
-
-        result
+parseToolOptions0[ tool_String, optionName_String, optionValue_ ] :=
+    optionName -> ReplaceAll[
+        optionValue,
+        (* Symbols that don't have a corresponding JSON representation: *)
+        { "Automatic" -> Automatic, "None" -> None }
     ];
 
-migrateLegacyEnvVars // endDefinition;
+parseToolOptions0 // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)

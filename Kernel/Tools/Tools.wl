@@ -55,14 +55,21 @@ $toolOptions = <| |>;
 (*toolOptionValue*)
 toolOptionValue // beginDefinition;
 
-toolOptionValue[ toolName_String, optionName_String ] :=
-    Catch @ Module[ { value },
-        value = $toolOptions[ toolName, optionName ];
-        If[ ! MissingQ @ value, Throw @ value ];
-        value = $defaultToolOptions[ toolName, optionName ];
-        If[ ! MissingQ @ value, Throw @ value ];
-        Missing[ "ToolOption", { toolName, optionName } ]
-    ];
+toolOptionValue[ toolName_String, optionName_String ] := Enclose[
+    Catch @ Module[ { options },
+        options = ConfirmBy[ Lookup[ $toolOptions, toolName, <| |> ], AssociationQ, "ToolOptions" ];
+        Lookup[
+            options,
+            optionName,
+            Lookup[
+                ConfirmBy[ Lookup[ $defaultToolOptions, toolName, <| |> ], AssociationQ, "Defaults" ],
+                optionName,
+                Missing[ "ToolOption", { toolName, optionName } ]
+            ]
+        ]
+    ],
+    throwInternalFailure
+];
 
 toolOptionValue // endDefinition;
 
@@ -115,7 +122,8 @@ $MCPServerContexts = Union[ $MCPServerContexts, $subcontexts ];
 (* ::Section::Closed:: *)
 (*Package Footer*)
 addToMXInitialization[
-    $DefaultMCPTools
+    $DefaultMCPTools;
+    $DefaultMCPToolOptions;
 ];
 
 End[ ];
