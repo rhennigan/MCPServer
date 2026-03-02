@@ -9,7 +9,7 @@ Tool Options is a mechanism for users to customize the behavior of built-in MCP 
 - Allow users to customize tool behavior (e.g., MaxItems, evaluator Method) via `InstallMCPServer`
 - Persist options through environment variables so they're available at server runtime
 - Provide a clean `toolOptionValue` API for tool implementations to read options with fallback to defaults
-- Deprecate the existing per-tool environment variables (`WOLFRAM_LANGUAGE_EVALUATOR_METHOD`, `WOLFRAM_LANGUAGE_EVALUATOR_IMAGE_EXPORT_METHOD`)
+- ~~Deprecate the existing per-tool environment variables~~ (removed — legacy env vars are no longer supported)
 
 ---
 
@@ -73,7 +73,12 @@ The environment variable value is a flat JSON object of the form:
 
 ### Value Mapping (Wolfram Language → JSON)
 
-At runtime, the JSON is read with ``Developer`ReadRawJSONString`` and string values like `"Automatic"` are converted back to the symbol `Automatic` where appropriate by `toolOptionValue`.
+At runtime, the JSON is read with ``Developer`ReadRawJSONString`` and then processed by `parseToolOptions0`, which converts string values to their corresponding Wolfram Language symbols during parsing:
+
+- `"Automatic"` → `Automatic`
+- `"None"` → `None`
+
+This conversion happens at parse time (in `parseToolOptions0`), not at lookup time.
 
 ### Size Considerations
 
@@ -103,7 +108,12 @@ $toolOptions = parseToolOptions @ Environment["MCP_TOOL_OPTIONS"];
 
 Where `parseToolOptions` handles:
 - `$Failed` or non-string → `<||>` (no options set)
-- Valid JSON string → parsed association
+- Valid JSON string → parsed and validated association (via `parseToolOptions0`)
+
+`parseToolOptions0` recursively processes the parsed JSON:
+1. At the top level, validates that the result is an `Association` (returns `<||>` otherwise)
+2. For each tool entry, validates that the options value is an `Association` (drops non-association values via `Nothing`)
+3. For each individual option value, converts symbol strings (`"Automatic"` → `Automatic`, `"None"` → `None`)
 
 ### $defaultToolOptions
 
@@ -113,7 +123,7 @@ Define default values alongside `$defaultMCPTools` in `Kernel/Tools/Tools.wl`:
 $defaultToolOptions = <|
     "WolframLanguageEvaluator" -> <|
         "Method"            -> "Session",
-        "ImageExportMethod" -> "None",
+        "ImageExportMethod" -> None,
         "TimeConstraint"    -> 60
     |>,
     "WolframLanguageContext" -> <|
@@ -133,19 +143,24 @@ $defaultToolOptions = <|
 ### toolOptionValue
 
 ```wl
-toolOptionValue[toolName_String, optionName_String] :=
-    Lookup[
-        Lookup[$toolOptions, toolName, <||>],
-        optionName,
+toolOptionValue[ toolName_String, optionName_String ] := Enclose[
+    Catch @ Module[ { options },
+        options = ConfirmBy[ Lookup[ $toolOptions, toolName, <| |> ], AssociationQ, "ToolOptions" ];
         Lookup[
-            Lookup[$defaultToolOptions, toolName, <||>],
+            options,
             optionName,
-            Missing["ToolOption", {toolName, optionName}]
+            Lookup[
+                ConfirmBy[ Lookup[ $defaultToolOptions, toolName, <| |> ], AssociationQ, "Defaults" ],
+                optionName,
+                Missing[ "ToolOption", { toolName, optionName } ]
+            ]
         ]
-    ];
+    ],
+    throwInternalFailure
+];
 ```
 
-This provides a two-level fallback: user-specified → default → `Missing`.
+This provides a two-level fallback: user-specified → default → `Missing`. The `ConfirmBy` calls validate that the looked-up values are associations, following the project's error handling patterns.
 
 ---
 
@@ -156,7 +171,7 @@ This provides a two-level fallback: user-specified → default → `Missing`.
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `Method` | `String` | `"Session"` | Evaluation method. `"Session"` uses the server kernel; `"Local"` spawns a separate kernel. |
-| `ImageExportMethod` | `String` | `"None"` | How to export graphics. `"None"`, `"Local"`, `"Cloud"`, or `"CloudPublic"`. |
+| `ImageExportMethod` | `String` or `None` | `None` | How to export graphics. `None`, `"Local"`, `"Cloud"`, or `"CloudPublic"`. |
 | `TimeConstraint` | `Integer` | `60` | Default time limit (seconds) when the LLM doesn't specify `timeConstraint`. The LLM can still override this per-call via the `timeConstraint` parameter. |
 
 **Implementation notes:**
@@ -173,24 +188,14 @@ This provides a two-level fallback: user-specified → default → `Missing`.
 
 `MaxItems` maps differently depending on LLMKit subscription status:
 
-When subscribed (`llmKitSubscribedQ[] === True`):
+Both subscribed and unsubscribed paths use the same call signature:
 ```wl
 cb`RelatedDocumentation[
     context, "Prompt",
     "PromptHeader"    -> False,
-    "FilterResults"   -> True,
-    "FilteredCount"   -> max,
-    "MaxItems"        -> max * 5
-]
-```
-
-When not subscribed:
-```wl
-cb`RelatedDocumentation[
-    context, "Prompt",
-    "PromptHeader"    -> False,
-    "FilterResults"   -> False,
-    "MaxItems"        -> max
+    "FilterResults"   -> subscribed,
+    "FilteredCount"   -> max,       (* Ignored when "FilterResults" is False *)
+    MaxItems          -> If[ subscribed, max * 5, max ]
 ]
 ```
 
@@ -243,29 +248,23 @@ The following tools have no configurable options in Phase 1:
 
 ## Backward Compatibility
 
-### Deprecated Environment Variables
+### Removed: Legacy Environment Variables
 
-The following environment variables are deprecated and will be removed in a future version:
+The following environment variables have been **removed** and are no longer supported:
 
-| Deprecated Variable | Replaced By |
+| Removed Variable | Replaced By |
 |---|---|
 | `WOLFRAM_LANGUAGE_EVALUATOR_METHOD` | `"WolframLanguageEvaluator" -> <\|"Method" -> ...\|>` |
 | `WOLFRAM_LANGUAGE_EVALUATOR_IMAGE_EXPORT_METHOD` | `"WolframLanguageEvaluator" -> <\|"ImageExportMethod" -> ...\|>` |
 
 ### Resolution Priority
 
-When determining the value for `Method` or `ImageExportMethod`:
+When determining the value for any tool option:
 
 1. `$toolOptions` (from `MCP_TOOL_OPTIONS` env var) — highest priority
-2. Legacy environment variable (e.g., `WOLFRAM_LANGUAGE_EVALUATOR_METHOD`)
-3. `$defaultToolOptions` — lowest priority
+2. `$defaultToolOptions` — lowest priority
 
-This means `toolOptionValue` for these two specific options needs to check the legacy env vars as a middle fallback. This can be handled by setting up `$toolOptions` at startup: if `MCP_TOOL_OPTIONS` doesn't define these options but the legacy env vars are set, populate `$toolOptions` from them.
-
-### Transition Plan
-
-1. **Current release**: Support both mechanisms. Emit a warning to the log when legacy env vars are detected.
-2. **Future release**: Remove legacy env var support entirely.
+The previously planned three-level fallback (user option → legacy env var → default) was simplified to a two-level fallback, since the legacy `migrateLegacyEnvVars` mechanism was removed before release.
 
 ---
 
@@ -303,8 +302,8 @@ Add the following to `Kernel/CommonSymbols.wl`:
 |---|---|
 | `Kernel/CommonSymbols.wl` | Declare `$toolOptions`, `$defaultToolOptions`, `toolOptionValue` |
 | `Kernel/InstallMCPServer.wl` | Add `"ToolOptions"` option; serialize to `MCP_TOOL_OPTIONS` env var; add validation |
-| `Kernel/StartMCPServer.wl` | Parse `MCP_TOOL_OPTIONS` at startup; populate `$toolOptions`; handle legacy env var migration |
-| `Kernel/Tools/Tools.wl` | Define `$defaultToolOptions`; define `toolOptionValue` |
+| `Kernel/StartMCPServer.wl` | Parse `MCP_TOOL_OPTIONS` at startup; populate `$toolOptions` via `parseToolOptions`/`parseToolOptions0` with validation and symbol conversion |
+| `Kernel/Tools/Tools.wl` | Define `$defaultToolOptions`; define `toolOptionValue`; add `$DefaultMCPToolOptions` to MX initialization |
 | `Kernel/Tools/WolframLanguageEvaluator.wl` | Replace `$evaluatorMethod`/`$imageExportMethod` with `toolOptionValue` calls; use `toolOptionValue` for `TimeConstraint` default |
 | `Kernel/Tools/Context.wl` | Use `toolOptionValue` in `relatedDocumentation0`, `relatedWolframAlphaResults`, and `relatedWolframContext`; pass options through to `cb` functions |
 
@@ -342,13 +341,14 @@ Example:
 ### Unit Tests
 
 1. **Serialization round-trip**: Verify that tool options survive `Association → JSON → Association` conversion.
-2. **toolOptionValue fallback**: Verify the three-level priority (user option → legacy env var → default).
+2. **toolOptionValue fallback**: Verify the two-level priority (user option → default).
 3. **WolframLanguageEvaluator**: Verify that `Method`, `ImageExportMethod`, and `TimeConstraint` are read from tool options.
 4. **WolframLanguageContext MaxItems**: Verify subscribed vs unsubscribed mapping with custom `MaxItems`.
 5. **WolframAlphaContext**: Verify `MaxItems` and `IncludeWolframLanguageResults` are passed through.
 6. **WolframContext**: Verify `WolframLanguageMaxItems` and `WolframAlphaMaxItems` are used independently of individual tool settings.
 7. **Validation warnings**: Verify warnings are issued for unrecognized tool names and option names.
-8. **Legacy env var migration**: Verify that `WOLFRAM_LANGUAGE_EVALUATOR_METHOD` is honored when `MCP_TOOL_OPTIONS` doesn't override it.
+8. **Symbol conversion**: Verify that `parseToolOptions` converts `"Automatic"` → `Automatic` and `"None"` → `None` during parsing.
+9. **Non-association value handling**: Verify that `parseToolOptions` drops tool entries whose values are not associations (e.g., `"WolframLanguageEvaluator": 123` is silently discarded).
 
 ### Integration Test
 
