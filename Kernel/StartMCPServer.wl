@@ -17,6 +17,7 @@ $toolWarmupDelay    = 5; (* seconds *)
 $clientName         = None;
 $clientSupportsUI   = False;
 $currentMCPServer   = None;
+$mcpEvaluation      = False;
 
 $logTimeStamp := DateString[
     {
@@ -101,7 +102,7 @@ startMCPServer[ obj_ ] /; $Notebooks :=
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
 startMCPServer[ obj_MCPServerObject ] := Enclose[
-    Block[ { $currentMCPServer = obj },
+    Block[ { $currentMCPServer = obj, $mcpEvaluation = True },
         superQuiet @ Module[ { logFile, llmTools, toolList, promptList, promptLookup, response },
 
         SetOptions[ First @ Streams[ "stdout" ], CharacterEncoding -> "UTF-8" ];
@@ -520,6 +521,9 @@ $$waImageURLPattern = Shortest[
 ];
 
 extractWolframAlphaImages // beginDefinition;
+
+(* When not running as an MCP server, we don't want to format for MCP outputs: *)
+extractWolframAlphaImages[ str_String ] /; ! $mcpEvaluation := str;
 
 extractWolframAlphaImages[ str_String ] := Enclose[
     Catch @ Module[ { parts, hasImages, contentItems },

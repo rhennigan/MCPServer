@@ -7,6 +7,7 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `$debug;
 `$defaultMCPServer;
 `$imagePath;
+`$mcpEvaluation;
 `$objectVersion;
 `$pacletVersion;
 `$rootPath;
