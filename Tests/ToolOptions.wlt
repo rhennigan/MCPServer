@@ -397,6 +397,39 @@ VerificationTest[
     TestID   -> "ValidateToolOptions-UnrecognizedOptionName@@Tests/ToolOptions.wlt:389,1-398,2"
 ]
 
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`validateToolOptions[
+        <| "WolframLanguageEvaluator" -> 123 |>,
+        MCPServerObject[ "Wolfram" ]
+    ],
+    <| |>,
+    { MCPServer::InvalidToolOptionValue },
+    SameTest -> MatchQ,
+    TestID   -> "ValidateToolOptions-NonAssociationValue@@Tests/ToolOptions.wlt:400,1-409,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`validateToolOptions[
+        <| "WolframLanguageEvaluator" -> "not an association", "WolframLanguageContext" -> <| "MaxItems" -> 5 |> |>,
+        MCPServerObject[ "Wolfram" ]
+    ],
+    <| "WolframLanguageContext" -> <| "MaxItems" -> 5 |> |>,
+    { MCPServer::InvalidToolOptionValue },
+    SameTest -> MatchQ,
+    TestID   -> "ValidateToolOptions-MixedValidAndInvalid@@Tests/ToolOptions.wlt:411,1-420,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`InstallMCPServer`Private`validateToolOptions[
+        <| "WolframLanguageEvaluator" -> True |>,
+        MCPServerObject[ "Wolfram" ]
+    ],
+    <| |>,
+    { MCPServer::InvalidToolOptionValue },
+    SameTest -> MatchQ,
+    TestID   -> "ValidateToolOptions-BooleanValue@@Tests/ToolOptions.wlt:422,1-431,2"
+]
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*$toolOptions Initialization*)
@@ -404,7 +437,7 @@ VerificationTest[
     Wolfram`MCPServer`Common`$toolOptions,
     _Association? AssociationQ,
     SameTest -> MatchQ,
-    TestID   -> "ToolOptionsInitialized@@Tests/ToolOptions.wlt:403,1-408,2"
+    TestID   -> "ToolOptionsInitialized@@Tests/ToolOptions.wlt:436,1-441,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

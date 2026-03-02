@@ -463,29 +463,35 @@ validateToolOptions // beginDefinition;
 validateToolOptions[ <| |>, _ ] := <| |>;
 
 validateToolOptions[ opts_Association? AssociationQ, server_MCPServerObject ] := Enclose[
-    Module[ { toolNames, knownToolNames, knownQ },
+    Module[ { toolNames, knownToolNames, knownQ, validated },
         toolNames = ConfirmMatch[ #[ "Name" ] & /@ server[ "Tools" ], { ___String }, "ToolNames" ];
         knownToolNames = ConfirmMatch[ Union[ Keys @ $defaultToolOptions, toolNames ], { ___String }, "KnownNames" ];
         knownQ = AssociationMap[ True &, knownToolNames ];
 
-        KeyValueMap[
+        validated = KeyValueMap[
             Function[ { toolName, toolOpts },
                 If[ ! TrueQ @ knownQ @ toolName, messagePrint[ "UnrecognizedToolOption", toolName ] ];
-                If[ AssociationQ @ toolOpts && KeyExistsQ[ $defaultToolOptions, toolName ],
-                    Scan[
-                        Function[ optName,
-                            If[ ! KeyExistsQ[ $defaultToolOptions[ toolName ], optName ],
-                                messagePrint[ "UnrecognizedToolOptionName", optName, toolName ]
-                            ]
-                        ],
-                        Keys @ toolOpts
-                    ]
+                If[ ! AssociationQ @ toolOpts,
+                    messagePrint[ "InvalidToolOptionValue", toolName, toolOpts ];
+                    Nothing,
+                    (* else: valid Association *)
+                    If[ KeyExistsQ[ $defaultToolOptions, toolName ],
+                        Scan[
+                            Function[ optName,
+                                If[ ! KeyExistsQ[ $defaultToolOptions[ toolName ], optName ],
+                                    messagePrint[ "UnrecognizedToolOptionName", optName, toolName ]
+                                ]
+                            ],
+                            Keys @ toolOpts
+                        ]
+                    ];
+                    toolName -> toolOpts
                 ]
             ],
             opts
         ];
 
-        opts
+        Association @ validated
     ],
     throwInternalFailure
 ];
