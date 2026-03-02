@@ -17,6 +17,7 @@ $toolWarmupDelay    = 5; (* seconds *)
 $clientName         = None;
 $clientSupportsUI   = False;
 $currentMCPServer   = None;
+$mcpEvaluation      = False;
 
 $logTimeStamp := DateString[
     {
@@ -49,6 +50,46 @@ stealthCatchTop // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*parseToolOptions*)
+parseToolOptions // beginDefinition;
+parseToolOptions[ env_String ] := parseToolOptions0 @ Quiet @ Developer`ReadRawJSONString @ env;
+parseToolOptions[ _ ] := <| |>;
+parseToolOptions // endDefinition;
+
+
+parseToolOptions0 // beginDefinition;
+
+parseToolOptions0[ options_ ] := Enclose[
+    If[ AssociationQ @ options,
+        ConfirmBy[ Association @ KeyValueMap[ parseToolOptions0, options ], AssociationQ, "ToolOptions" ],
+        <| |>
+    ],
+    throwInternalFailure
+];
+
+parseToolOptions0[ tool_String, opts_ ] := Enclose[
+    If[ AssociationQ @ opts,
+        tool -> ConfirmBy[
+            DeleteMissing @ Association @ KeyValueMap[ parseToolOptions0[ tool, #1, #2 ] &, opts ],
+            AssociationQ,
+            "ToolOptions"
+        ],
+        Nothing
+    ],
+    throwInternalFailure
+];
+
+parseToolOptions0[ tool_String, optionName_String, optionValue_ ] :=
+    optionName -> ReplaceAll[
+        optionValue,
+        (* Symbols that don't have a corresponding JSON representation: *)
+        { "Automatic" -> Automatic, "None" -> None }
+    ];
+
+parseToolOptions0 // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*startMCPServer*)
 startMCPServer // beginDefinition;
 
@@ -58,7 +99,7 @@ startMCPServer[ obj_ ] /; $Notebooks :=
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
 startMCPServer[ obj_MCPServerObject ] := Enclose[
-    Block[ { $currentMCPServer = obj },
+    Block[ { $currentMCPServer = obj, $mcpEvaluation = True },
         superQuiet @ Module[ { logFile, llmTools, toolList, promptList, promptLookup, response },
 
         SetOptions[ First @ Streams[ "stdout" ], CharacterEncoding -> "UTF-8" ];
@@ -68,21 +109,13 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
         If[ FileExistsQ @ logFile, DeleteFile @ logFile ];
         writeLog[ "LogFile" -> logFile ];
 
-        llmTools = Association[ #[ "Name" ] -> # & /@ ConfirmMatch[ obj[ "Tools" ], { ___LLMTool }, "Tools" ] ];
-
-        toolList = Map[
-            <|
-                "name"        -> safeString @ #[ "Name"        ],
-                "description" -> safeString @ #[ "Description" ],
-                "inputSchema" -> #[ "JSONSchema" ]
-            |> &,
-            Values @ llmTools
-        ];
-
+        llmTools     = Association[ #[ "Name" ] -> # & /@ ConfirmMatch[ obj[ "Tools" ], { ___LLMTool }, "Tools" ] ];
+        toolList     = ConfirmMatch[ createMCPToolData /@ Values @ llmTools, { ___Association }, "ToolList" ];
         promptList   = ConfirmMatch[ makePromptData @ obj[ "PromptData" ], { ___Association }, "PromptData" ];
         promptLookup = ConfirmBy[ makePromptLookup @ obj[ "PromptData" ], AssociationQ, "PromptLookup" ];
 
         initializeUIResources[ ];
+        $toolOptions = parseToolOptions @ Environment[ "MCP_TOOL_OPTIONS" ];
 
         Block[
             {
@@ -90,7 +123,8 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
                 $llmTools     = llmTools,
                 $promptList   = promptList,
                 $promptLookup = promptLookup,
-                $logFile      = logFile
+                $logFile      = logFile,
+                $toolOptions  = $toolOptions
             },
             While[ True,
                 If[
@@ -116,6 +150,37 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
 (* :!CodeAnalysis::EndBlock:: *)
 
 startMCPServer // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*createMCPToolData*)
+createMCPToolData // beginDefinition;
+
+createMCPToolData[ tool: HoldPattern[ _LLMTool ] ] := Enclose[
+    Module[ { data, name, description, inputSchema, title, annotations },
+
+        data = ConfirmBy[ tool[ "Data" ], AssociationQ, "Data" ];
+        name = safeString @ ConfirmBy[ tool[ "Name" ], StringQ, "Name" ];
+        description = safeString @ ConfirmBy[ tool[ "Description" ], StringQ, "Description" ];
+        inputSchema = ConfirmBy[ tool[ "JSONSchema" ], AssociationQ, "InputSchema" ];
+
+        title = Lookup[ data, "DisplayName", Missing[ ] ];
+        If[ StringQ @ title, title = safeString @ title ];
+
+        annotations = If[ StringQ @ title, <| "title" -> title |>, Missing[ ] ];
+
+        DeleteMissing @ <|
+            "name"        -> name,
+            "title"       -> title,
+            "description" -> description,
+            "inputSchema" -> inputSchema,
+            "annotations" -> annotations
+        |>
+    ],
+    throwInternalFailure
+];
+
+createMCPToolData // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -475,6 +540,9 @@ $$waImageURLPattern = Shortest[
 ];
 
 extractWolframAlphaImages // beginDefinition;
+
+(* When not running as an MCP server, we don't want to format for MCP outputs: *)
+extractWolframAlphaImages[ str_String ] /; ! $mcpEvaluation := str;
 
 extractWolframAlphaImages[ str_String ] := Enclose[
     Catch @ Module[ { parts, hasImages, contentItems },

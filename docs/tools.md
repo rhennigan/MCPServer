@@ -396,6 +396,92 @@ $defaultMCPTools[ "WolframAlphaContext" ] := LLMTool @ <|
 |>
 ```
 
+## Tool Options
+
+Tools can define configurable options that users can customize at install time via the `"ToolOptions"` option on `InstallMCPServer`. This allows controlling tool behavior without modifying source code.
+
+### How Tool Options Work
+
+1. **Default values** are defined per-tool in `$defaultToolOptions` (alongside tool definitions in `Kernel/Tools/`)
+2. **User overrides** are passed via `"ToolOptions"` when calling `InstallMCPServer`
+3. **At install time**, options are serialized to the `MCP_TOOL_OPTIONS` environment variable in the server configuration
+4. **At runtime**, `$toolOptions` is populated from this environment variable at server startup
+5. **Tool code** reads options via `toolOptionValue[toolName, optionName]`, which falls back from user override to default
+
+### Defining Default Options
+
+Default options are defined alongside the tool definition using `$defaultToolOptions`:
+
+```wl
+$defaultToolOptions[ "YourTool" ] = <|
+    "OptionName" -> defaultValue
+|>;
+```
+
+### Reading Options in Tool Code
+
+Use `toolOptionValue` to read an option with automatic fallback:
+
+```wl
+toolOptionValue[ "YourTool", "OptionName" ]
+```
+
+The lookup priority is:
+1. `$toolOptions` (user-specified via `MCP_TOOL_OPTIONS`) — highest priority
+2. `$defaultToolOptions` — lowest priority
+3. `Missing["ToolOption", ...]` if not found
+
+A common pattern is to define a file-scoped variable that reads the option lazily:
+
+```wl
+$myOption := toolOptionValue[ "YourTool", "OptionName" ];
+```
+
+### Per-Tool Option Reference
+
+#### WolframLanguageEvaluator
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `"Method"` | String | `"Session"` | Evaluation method. `"Session"` uses the server kernel; `"Local"` spawns a separate kernel. |
+| `"ImageExportMethod"` | String | `None` | How to export graphics. `None`, `"Local"`, `"Cloud"`, or `"CloudPublic"`. |
+| `"TimeConstraint"` | Integer | `60` | Default time limit (seconds) when the LLM doesn't specify `timeConstraint`. The LLM can still override this per-call. |
+
+#### WolframLanguageContext
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `"MaxItems"` | Integer | `10` | Number of documentation results to return. |
+
+#### WolframAlphaContext
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `"MaxItems"` | Integer or `Automatic` | `Automatic` | Maximum number of Wolfram\|Alpha results. `Automatic` uses internal defaults. |
+| `"IncludeWolframLanguageResults"` | Boolean or `Automatic` | `Automatic` | Whether to include Wolfram Language code results. |
+
+#### WolframContext
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `"WolframLanguageMaxItems"` | Integer | `10` | Max documentation results (independent of `WolframLanguageContext` options). |
+| `"WolframAlphaMaxItems"` | Integer or `Automatic` | `Automatic` | Max Wolfram\|Alpha results (independent of `WolframAlphaContext` options). |
+
+### User-Facing Usage
+
+Users customize tool options when installing an MCP server:
+
+```wl
+InstallMCPServer[
+    "ClaudeCode",
+    "WolframLanguage",
+    "ToolOptions" -> <|
+        "WolframLanguageEvaluator" -> <|"Method" -> "Local", "TimeConstraint" -> 120|>,
+        "WolframLanguageContext"   -> <|"MaxItems" -> 20|>
+    |>
+]
+```
+
 ## Related Files
 
 - `Kernel/Tools/Tools.wl` - Main tools module, defines `$DefaultMCPTools`
@@ -415,3 +501,5 @@ $defaultMCPTools[ "WolframAlphaContext" ] := LLMTool @ <|
 - `Kernel/DefaultServers.wl` - Server configurations with `"Tools"` settings
 - `Assets/Apps/` - HTML and JSON files for MCP Apps UI resources
 - `Tests/Tools.wlt` - Tests for tool functionality
+- `Tests/ToolOptions.wlt` - Tests for tool options system
+- `Specs/ToolOptions.md` - Design specification for tool options

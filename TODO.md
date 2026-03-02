@@ -41,9 +41,8 @@ Consolidated list of TODO/FIXME items from the codebase.
 
 ### Tool Improvements
 
-- [ ] Tool options set via environment variables
-  - Example: we already have `WOLFRAM_LANGUAGE_EVALUATOR_METHOD`. We could make a nice interface for this in InstallMCPServer.
-  - We could also have a single environment variable that points to a file containing all the options for tools
+- [x] Tool options set via environment variables
+  - Implemented: `"ToolOptions"` option in `InstallMCPServer`, `MCP_TOOL_OPTIONS` env var (JSON), `toolOptionValue` lookup, legacy env var migration
 
 - [ ] Support file inputs in the evaluator tool
   - Could use the existing "code" parameter or add a new "file" parameter (only one can be used at a time)
@@ -86,33 +85,6 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/Tools/TestReport.wl`
 - [ ] Show relative paths in CodeInspector output when inspecting directories
   - Source: `Kernel/Tools/CodeInspector/Formatting.wl`
-
-- [ ] New CodeInspector rules
-  - [x] Rule for `ReadString` with `CharacterEncoding` option
-    - Bad:
-    ```wl
-    ReadString[file, CharacterEncoding -> "enc"]
-    ```
-    - Recommendation:
-    ```wl
-    ByteArrayToString[ReadByteArray[file], "enc"]
-    ```
-  - [x] Rule for `Nothing` in associations
-    - Nothing does not get dropped from the association:
-      ```wl
-      In[9]:= <|"a" -> 1, "b" -> Nothing|>
-
-      Out[9]= <|"a" -> 1, "b" -> Nothing|>
-      ```
-  - [x] Rule for `KeyExistsQ` with nested key paths
-    - Valid, but likely a mistake (this does not represent a nested key path):
-      ```wl
-      KeyExistsQ[assoc, {"k1", "k2", ...}]
-      ```
-    - Recommendation:
-      ```wl
-      ! MissingQ @ assoc["k1", "k2", ...]
-      ```
 
 ## Prompts
 

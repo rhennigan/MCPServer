@@ -92,9 +92,9 @@ Notebook[
         Cell[
          BoxData[
           ButtonBox[
-           "$DefaultMCPServers",
+           "CreateMCPServer",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/$DefaultMCPServers"
+           ButtonData -> "paclet:Wolfram/MCPServer/ref/CreateMCPServer"
           ]
          ],
          "InlineSeeAlsoFunction",
@@ -104,9 +104,21 @@ Notebook[
         Cell[
          BoxData[
           ButtonBox[
-           "CreateMCPServer",
+           "$DefaultMCPToolOptions",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/CreateMCPServer"
+           ButtonData -> "paclet:Wolfram/MCPServer/ref/$DefaultMCPToolOptions"
+          ]
+         ],
+         "InlineSeeAlsoFunction",
+         TaggingRules -> {"PageType" -> "Function"}
+        ],
+        StyleBox[" \[FilledVerySmallSquare] ", "InlineSeparator"],
+        Cell[
+         BoxData[
+          ButtonBox[
+           "$DefaultMCPServers",
+           BaseStyle -> "Link",
+           ButtonData -> "paclet:Wolfram/MCPServer/ref/$DefaultMCPServers"
           ]
          ],
          "InlineSeeAlsoFunction",
@@ -125,13 +137,13 @@ Notebook[
              {
               nbobj$$ = 
                NotebookObject[
-                "61594902-fdd1-5b4a-9450-f2d731a4a18c",
-                "6f91d429-1174-4440-ae5d-3d68b42980fd"
+                "9672a885-0ccc-3740-973b-148266e90ec6",
+                "47754bd1-e5e3-234c-9458-f9418870e022"
                ],
               cellobj$$ = 
                CellObject[
-                "7dce9740-cfb2-d040-a706-99521115359c",
-                "b0b51416-a632-e247-9e07-231b44f41fb8"
+                "39985915-d2bc-934a-880c-cf87f82419af",
+                "fe665dae-f96c-174e-a981-90c5b490241d"
                ]
              },
              TemplateBox[
@@ -213,7 +225,17 @@ Notebook[
       "TechNotesSection",
       CellID -> 329478364
      ],
-     Cell["XXXX", "Tutorials", CellID -> 79453925]
+     Cell[
+      TextData[
+       ButtonBox[
+        "Default Tools",
+        BaseStyle -> "Link",
+        ButtonData -> "paclet:Wolfram/MCPServer/tutorial/DefaultTools"
+       ]
+      ],
+      "Tutorials",
+      CellID -> 79453925
+     ]
     },
     Open
    ]
@@ -2849,11 +2871,7 @@ Notebook[
                 TrackedSymbols :> {TypeSystem`NestedGrid`PackagePrivate`mouseAnnotation$$}
                ],
               TypeSystem`NestedGrid`PackagePrivate`mouseAnnotation$$ = 
-               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker["1fa192d1-0c29-4d31-a07e-a1a8e41acd69"][
-                {Key["EditSymbolDoc"]},
-                "Item",
-                False
-               ]
+               Null
              },
              DynamicWrapperBox[
               DynamicBox[

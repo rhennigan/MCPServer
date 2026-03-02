@@ -7,6 +7,7 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `$debug;
 `$defaultMCPServer;
 `$imagePath;
+`$mcpEvaluation;
 `$objectVersion;
 `$pacletVersion;
 `$rootPath;
@@ -99,5 +100,10 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `readUIResource;
 `toolUIMetadata;
 `withToolUIMetadata;
+
+(* Tool options: *)
+`$toolOptions;
+`$defaultToolOptions;
+`toolOptionValue;
 
 EndPackage[ ];

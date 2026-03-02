@@ -168,6 +168,7 @@ MCPServer/
 │   └── Tools/                 # Predefined MCP tools
 ├── Scripts/                   # Build and utility scripts
 ├── Tests/                     # Test files (.wlt)
+├── Specs/                     # Design specifications for features
 ├── Documentation/             # Paclet documentation notebooks
 └── docs/                      # Developer documentation
 ```

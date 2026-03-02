@@ -29,16 +29,49 @@ Needs[ "Wolfram`MCPServer`Common`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*Default Tools*)
+(*Default Tools and Options*)
 $DefaultMCPTools := WithCleanup[
     Unprotect @ $DefaultMCPTools,
     $DefaultMCPTools = KeySort @ AssociationMap[ Apply @ Rule, $defaultMCPTools ],
     Protect @ $DefaultMCPTools
 ];
 
+$DefaultMCPToolOptions := WithCleanup[
+    Unprotect @ $DefaultMCPToolOptions,
+    $DefaultMCPToolOptions = KeySort @ AssociationMap[ Apply @ Rule, $defaultToolOptions ],
+    Protect @ $DefaultMCPToolOptions
+];
+
 (* $defaultMCPTools is an Association mapping tool names to LLMTool definitions. *)
-(* Tool definitions are added in subcontext files loaded below.                  *)
-$defaultMCPTools = <| |>;
+(* Tool definitions and default options are added in subcontext files loaded below. *)
+$defaultMCPTools    = <| |>;
+$defaultToolOptions = <| |>;
+
+(* Set at server startup from MCP_TOOL_OPTIONS environment variable: *)
+$toolOptions = <| |>;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*toolOptionValue*)
+toolOptionValue // beginDefinition;
+
+toolOptionValue[ toolName_String, optionName_String ] := Enclose[
+    Catch @ Module[ { options },
+        options = ConfirmBy[ Lookup[ $toolOptions, toolName, <| |> ], AssociationQ, "ToolOptions" ];
+        Lookup[
+            options,
+            optionName,
+            Lookup[
+                ConfirmBy[ Lookup[ $defaultToolOptions, toolName, <| |> ], AssociationQ, "Defaults" ],
+                optionName,
+                Missing[ "ToolOption", { toolName, optionName } ]
+            ]
+        ]
+    ],
+    throwInternalFailure
+];
+
+toolOptionValue // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -89,7 +122,8 @@ $MCPServerContexts = Union[ $MCPServerContexts, $subcontexts ];
 (* ::Section::Closed:: *)
 (*Package Footer*)
 addToMXInitialization[
-    $DefaultMCPTools
+    $DefaultMCPTools;
+    $DefaultMCPToolOptions;
 ];
 
 End[ ];

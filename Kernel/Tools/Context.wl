@@ -12,6 +12,20 @@ Needs[ "Wolfram`Chatbook`" -> "cb`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Option Values*)
+$waMaxItems         := toolOptionValue[ "WolframAlphaContext", "MaxItems" ];
+$waIncludeWLResults := toolOptionValue[ "WolframAlphaContext", "IncludeWolframLanguageResults" ];
+$wlMaxItems         := toolOptionValue[ "WolframLanguageContext", "MaxItems" ];
+$wcMaxItemsWL       := toolOptionValue[ "WolframContext", "WolframLanguageMaxItems" ];
+$wcMaxItemsWA       := toolOptionValue[ "WolframContext", "WolframAlphaMaxItems" ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Argument Patterns*)
+$$maxItemsSpec = Automatic | _Integer? Positive;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Prompts*)
 
 (* ::**************************************************************************************************************:: *)
@@ -80,6 +94,14 @@ $defaultMCPTools[ "WolframContext" ] := LLMTool @ <|
 |>;
 
 (* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Default Tool Options*)
+$defaultToolOptions[ "WolframContext" ] = <|
+    "WolframLanguageMaxItems" -> 10,
+    "WolframAlphaMaxItems"    -> Automatic
+|>;
+
+(* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*WolframAlphaContext*)
 $defaultMCPTools[ "WolframAlphaContext" ] := LLMTool @ <|
@@ -97,6 +119,14 @@ $defaultMCPTools[ "WolframAlphaContext" ] := LLMTool @ <|
             "Required"    -> True
         |>
     }
+|>;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Default Tool Options*)
+$defaultToolOptions[ "WolframAlphaContext" ] = <|
+    "MaxItems"                      -> Automatic,
+    "IncludeWolframLanguageResults" -> Automatic
 |>;
 
 (* ::**************************************************************************************************************:: *)
@@ -120,8 +150,23 @@ $defaultMCPTools[ "WolframLanguageContext" ] := LLMTool @ <|
 |>;
 
 (* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Default Tool Options*)
+$defaultToolOptions[ "WolframLanguageContext" ] = <|
+    "MaxItems" -> 10
+|>;
+
+(* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Definitions*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*toMaxItems*)
+toMaxItems // beginDefinition;
+toMaxItems[ max_Integer? Positive ] := max;
+toMaxItems[ other_ ] := Automatic;
+toMaxItems // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -132,14 +177,31 @@ relatedWolframContext[ KeyValuePattern[ "context" -> context_ ] ] :=
     relatedWolframContext @ context;
 
 relatedWolframContext[ context_String ] := Enclose[
-    Module[ { waPrompt, wlPrompt, combined },
-        waPrompt = ConfirmBy[ relatedWolframAlphaPrompt[ context, "Warning" ], StringQ, "WolframAlphaPrompt" ];
-        wlPrompt = ConfirmBy[ relatedDocumentation @ context, StringQ, "WolframLanguagePrompt" ];
+    Module[ { wlMaxItems, waMaxItems, waPrompt, wlPrompt, combined },
+
+        wlMaxItems = ConfirmMatch[ toMaxItems @ $wcMaxItemsWL, $$maxItemsSpec, "WolframLanguageMaxItems" ];
+        waMaxItems = ConfirmMatch[ toMaxItems @ $wcMaxItemsWA, $$maxItemsSpec, "WolframAlphaMaxItems" ];
+
+        waPrompt = ConfirmBy[
+            Block[ { $waMaxItems = waMaxItems, $waIncludeWLResults = True },
+                relatedWolframAlphaPrompt[ context, "Warning", llmKitSubscribedQ[ ] ]
+            ],
+            StringQ,
+            "WolframAlphaPrompt"
+        ];
+
+        wlPrompt = ConfirmBy[
+            Block[ { $wlMaxItems = wlMaxItems }, relatedDocumentation @ context ],
+            StringQ,
+            "WolframLanguagePrompt"
+        ];
+
         combined = ConfirmBy[
             StringRiffle[ DeleteCases[ StringTrim @ { waPrompt, wlPrompt }, "" ], "\n\n======\n\n" ],
             StringQ,
             "Combined"
         ];
+
         (* Extract any WolframAlpha images from the combined result *)
         extractWolframAlphaImages @ combined
     ],
@@ -192,9 +254,24 @@ relatedWolframAlphaResults[ KeyValuePattern[ "context" -> context_ ] ] :=
     relatedWolframAlphaResults @ context;
 
 relatedWolframAlphaResults[ context_String ] := Enclose[
-    Module[ { prompt },
+    Module[ { maxItems, includeWLResults, prompt },
+
         ConfirmMatch[ chatbookVersionCheck[ ], True, "ChatbookVersionCheck" ];
-        prompt = ConfirmBy[ cb`RelatedWolframAlphaResults[ context, "Prompt" ], StringQ, "Prompt" ];
+
+        maxItems = ConfirmMatch[ toMaxItems @ $waMaxItems, $$maxItemsSpec, "WolframAlphaMaxItems" ];
+        includeWLResults = Replace[ $waIncludeWLResults, Except[ True|False ] :> Automatic ];
+
+        prompt = ConfirmBy[
+            cb`RelatedWolframAlphaResults[
+                context,
+                "Prompt",
+                "MaxItems"         -> maxItems,
+                "IncludeWLResults" -> includeWLResults
+            ],
+            StringQ,
+            "Prompt"
+        ];
+
         StringTrim @ prompt
     ],
     throwInternalFailure
@@ -233,16 +310,21 @@ relatedDocumentation // endDefinition;
 relatedDocumentation0 // beginDefinition;
 
 relatedDocumentation0[ context_ ] :=
-    relatedDocumentation0[ context, llmKitSubscribedQ[ ] ];
+    relatedDocumentation0[ context, toMaxItems @ $wlMaxItems ];
 
-relatedDocumentation0[ context_, True ] :=
-    Block[ { $EvaluationEnvironment = "Script" },
-        cb`RelatedDocumentation[ context, "Prompt", "PromptHeader" -> False, "FilterResults" -> True, MaxItems -> 50 ]
-    ];
+relatedDocumentation0[ context_, max: $$maxItemsSpec ] :=
+    relatedDocumentation0[ context, max, llmKitSubscribedQ[ ] ];
 
-relatedDocumentation0[ context_, False ] :=
+relatedDocumentation0[ context_, max: $$maxItemsSpec, subscribed: True|False ] :=
     Block[ { $EvaluationEnvironment = "Script" },
-        cb`RelatedDocumentation[ context, "Prompt", "PromptHeader" -> False, "FilterResults" -> False, MaxItems -> 10 ]
+        cb`RelatedDocumentation[
+            context,
+            "Prompt",
+            "PromptHeader"  -> False,
+            "FilterResults" -> subscribed,
+            "FilteredCount" -> max, (* Ignored when "FilterResults" is False *)
+            MaxItems        -> If[ subscribed && IntegerQ @ max, max * 5, max ]
+        ]
     ];
 
 relatedDocumentation0 // endDefinition;

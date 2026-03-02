@@ -263,14 +263,18 @@ CreateMCPServer["My MCP Server", <|
 |--------|-------------|
 | `$DefaultMCPServers` | Association of predefined server configurations |
 | `$DefaultMCPTools` | Association of available tool definitions |
+| `$DefaultMCPToolOptions` | Association of default tool option values |
 | `$DefaultMCPPrompts` | Association of available prompt definitions |
 
 ### Options
+
+#### `InstallMCPServer`
 
 | Option | Default | Description |
 |--------|---------|-------------|
 | `"EnableMCPApps"` | `True` | Enable or disable [MCP Apps](docs/mcp-apps.md) UI resources |
 | `"DevelopmentMode"` | `False` | Use local source files instead of installed paclet |
+| `"ToolOptions"` | `<\|\|>` | Customize built-in tool behavior (see [docs/tools.md](docs/tools.md#tool-options)) |
 | `"VerifyLLMKit"` | `True` | Check LLMKit subscription requirements |
 
 ## Development
