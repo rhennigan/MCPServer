@@ -76,7 +76,7 @@ generateUsageCode[ toolName_String, reqNames_List, optNames_List ] := Module[
         Map[ "<" <> # <> ">" &, reqNames ],
         Map[ "[--" <> # <> " value]" &, optNames ]
     ];
-    usageStr = "wolframscript -script " <> toolName <> ".wls " <> StringRiffle[ usageParts, " " ];
+    usageStr = "wolframscript -f " <> toolName <> ".wls " <> StringRiffle[ usageParts, " " ];
     "$usage = \"" <> StringReplace[ usageStr, "\"" -> "\\\"" ] <> "\";"
 ];
 

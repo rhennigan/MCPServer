@@ -9,7 +9,7 @@
 (*Argument Parsing*)
 
 (* Usage and help text *)
-$usage = "wolframscript -script CodeInspector.wls [--code value] [--file value] [--tagExclusions value] [--severityExclusions value] [--confidenceLevel value] [--limit value]";
+$usage = "wolframscript -f CodeInspector.wls [--code value] [--file value] [--tagExclusions value] [--severityExclusions value] [--confidenceLevel value] [--limit value]";
 
 $helpText = StringJoin[
     "Usage: ", $usage, "\n\n",
@@ -23,8 +23,8 @@ $helpText = StringJoin[
     "  --limit: Maximum number of issues to display. Default: 100.\n"
 ];
 
-(* Check for --help flag *)
-If[ MemberQ[ $ScriptCommandLine, "--help" | "-h" ],
+(* Check for --usage flag *)
+If[ MemberQ[ $ScriptCommandLine, "--usage" ],
     WriteString[ "stdout", $helpText ];
     Exit[ 0 ]
 ];

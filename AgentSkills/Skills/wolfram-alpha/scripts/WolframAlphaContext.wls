@@ -9,7 +9,7 @@
 (*Argument Parsing*)
 
 (* Usage and help text *)
-$usage = "wolframscript -script WolframAlphaContext.wls <context>";
+$usage = "wolframscript -f WolframAlphaContext.wls <context>";
 
 $helpText = StringJoin[
     "Usage: ", $usage, "\n\n",
@@ -18,8 +18,8 @@ $helpText = StringJoin[
     "  context (required): A detailed summary of what the user is trying to achieve or learn about.\n"
 ];
 
-(* Check for --help flag *)
-If[ MemberQ[ $ScriptCommandLine, "--help" | "-h" ],
+(* Check for --usage flag *)
+If[ MemberQ[ $ScriptCommandLine, "--usage" ],
     WriteString[ "stdout", $helpText ];
     Exit[ 0 ]
 ];

@@ -9,7 +9,7 @@
 (*Argument Parsing*)
 
 (* Usage and help text *)
-$usage = "wolframscript -script WolframAlpha.wls <query>";
+$usage = "wolframscript -f WolframAlpha.wls <query>";
 
 $helpText = StringJoin[
     "Usage: ", $usage, "\n\n",
@@ -18,8 +18,8 @@ $helpText = StringJoin[
     "  query (required): The query to send to Wolfram|Alpha.\n"
 ];
 
-(* Check for --help flag *)
-If[ MemberQ[ $ScriptCommandLine, "--help" | "-h" ],
+(* Check for --usage flag *)
+If[ MemberQ[ $ScriptCommandLine, "--usage" ],
     WriteString[ "stdout", $helpText ];
     Exit[ 0 ]
 ];

@@ -50,3 +50,15 @@ Use the following format incrementing the session number from the latest entry:
 - Minor cosmetic note: The `\[FreeformPrompt]` Unicode character (U+F351) in the WolframLanguageEvaluator description doesn't render in plain text. This is a pre-existing issue with the tool's description, not the build script.
 - Next up: Task 5 (write wolfram-language SKILL.md).
 
+## Session 4
+
+- Changed `--help` / `-h` flag to `--usage` in generated skill scripts.
+- **Problem:** Session 3 switched from `wolframscript -f` to `wolframscript -script` to avoid wolframscript intercepting `--help`. However, `-script` does not support relative paths, which is a major usability issue for agents invoking the scripts.
+- **Solution:** Switched the flag from `--help` to `--usage` (which wolframscript does not intercept), allowing us to go back to `wolframscript -f` for relative path support.
+- Files modified:
+  - `Scripts/Resources/SkillScriptTemplate.wls`: `--help | "-h"` → `--usage`
+  - `Scripts/BuildAgentSkills.wls`: usage string changed from `-script` to `-f`
+  - `Specs/AgentSkills.md`: updated two references from `--help` to `--usage`
+- Regenerated all 9 scripts successfully via `BuildAgentSkills.wls`.
+- Verified generated scripts contain `wolframscript -f` in usage strings and check for `--usage` flag.
+

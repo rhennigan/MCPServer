@@ -9,7 +9,7 @@
 (*Argument Parsing*)
 
 (* Usage and help text *)
-$usage = "wolframscript -script SymbolDefinition.wls <symbols> [--includeContextDetails value] [--maxLength value]";
+$usage = "wolframscript -f SymbolDefinition.wls <symbols> [--includeContextDetails value] [--maxLength value]";
 
 $helpText = StringJoin[
     "Usage: ", $usage, "\n\n",
@@ -20,8 +20,8 @@ $helpText = StringJoin[
     "  --maxLength: Maximum character length for output before truncation (default: 10000).\n"
 ];
 
-(* Check for --help flag *)
-If[ MemberQ[ $ScriptCommandLine, "--help" | "-h" ],
+(* Check for --usage flag *)
+If[ MemberQ[ $ScriptCommandLine, "--usage" ],
     WriteString[ "stdout", $helpText ];
     Exit[ 0 ]
 ];

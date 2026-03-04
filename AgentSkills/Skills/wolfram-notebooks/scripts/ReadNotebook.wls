@@ -9,7 +9,7 @@
 (*Argument Parsing*)
 
 (* Usage and help text *)
-$usage = "wolframscript -script ReadNotebook.wls <notebook>";
+$usage = "wolframscript -f ReadNotebook.wls <notebook>";
 
 $helpText = StringJoin[
     "Usage: ", $usage, "\n\n",
@@ -18,8 +18,8 @@ $helpText = StringJoin[
     "  notebook (required): The Wolfram notebook to read, specified as a file path or a NotebookObject[...]\n"
 ];
 
-(* Check for --help flag *)
-If[ MemberQ[ $ScriptCommandLine, "--help" | "-h" ],
+(* Check for --usage flag *)
+If[ MemberQ[ $ScriptCommandLine, "--usage" ],
     WriteString[ "stdout", $helpText ];
     Exit[ 0 ]
 ];

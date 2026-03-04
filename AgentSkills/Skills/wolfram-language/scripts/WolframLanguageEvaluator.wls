@@ -9,7 +9,7 @@
 (*Argument Parsing*)
 
 (* Usage and help text *)
-$usage = "wolframscript -script WolframLanguageEvaluator.wls <code> [--timeConstraint value]";
+$usage = "wolframscript -f WolframLanguageEvaluator.wls <code> [--timeConstraint value]";
 
 $helpText = StringJoin[
     "Usage: ", $usage, "\n\n",
@@ -19,8 +19,8 @@ $helpText = StringJoin[
     "  --timeConstraint: The time constraint for the evaluation. Uses the server's configured default if not specified.\n"
 ];
 
-(* Check for --help flag *)
-If[ MemberQ[ $ScriptCommandLine, "--help" | "-h" ],
+(* Check for --usage flag *)
+If[ MemberQ[ $ScriptCommandLine, "--usage" ],
     WriteString[ "stdout", $helpText ];
     Exit[ 0 ]
 ];

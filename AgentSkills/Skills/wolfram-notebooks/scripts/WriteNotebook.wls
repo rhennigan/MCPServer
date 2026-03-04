@@ -9,7 +9,7 @@
 (*Argument Parsing*)
 
 (* Usage and help text *)
-$usage = "wolframscript -script WriteNotebook.wls <file> <markdown> [--overwrite value]";
+$usage = "wolframscript -f WriteNotebook.wls <file> <markdown> [--overwrite value]";
 
 $helpText = StringJoin[
     "Usage: ", $usage, "\n\n",
@@ -20,8 +20,8 @@ $helpText = StringJoin[
     "  --overwrite: Whether to overwrite an existing file (default is False).\n"
 ];
 
-(* Check for --help flag *)
-If[ MemberQ[ $ScriptCommandLine, "--help" | "-h" ],
+(* Check for --usage flag *)
+If[ MemberQ[ $ScriptCommandLine, "--usage" ],
     WriteString[ "stdout", $helpText ];
     Exit[ 0 ]
 ];

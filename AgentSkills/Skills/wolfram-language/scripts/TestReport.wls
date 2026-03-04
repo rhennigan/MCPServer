@@ -9,7 +9,7 @@
 (*Argument Parsing*)
 
 (* Usage and help text *)
-$usage = "wolframscript -script TestReport.wls <paths> [--timeConstraint value] [--memoryConstraint value] [--newKernel value]";
+$usage = "wolframscript -f TestReport.wls <paths> [--timeConstraint value] [--memoryConstraint value] [--newKernel value]";
 
 $helpText = StringJoin[
     "Usage: ", $usage, "\n\n",
@@ -21,8 +21,8 @@ $helpText = StringJoin[
     "  --newKernel: Whether to use a fresh kernel for running tests (default is true)\n"
 ];
 
-(* Check for --help flag *)
-If[ MemberQ[ $ScriptCommandLine, "--help" | "-h" ],
+(* Check for --usage flag *)
+If[ MemberQ[ $ScriptCommandLine, "--usage" ],
     WriteString[ "stdout", $helpText ];
     Exit[ 0 ]
 ];

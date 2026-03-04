@@ -207,7 +207,7 @@ Here is the rough structure for the generated scripts:
 (* Parse CLI arguments into an Association matching the tool's parameter schema *)
 args = <argument-parsing-logic>;
 
-(* If `--help` argument is present: issue usage message and `Exit[0]` *)
+(* If `--usage` argument is present: issue usage message and `Exit[0]` *)
 (* If arguments invalid: issue usage message and `Exit[1]` *)
 
 PacletInstall["Wolfram/MCPServer"];
@@ -426,7 +426,7 @@ Eval definitions live in `AgentSkills/Evals/` and can be run manually during dev
 
 The [`skill-creator`](https://github.com/anthropics/skills/tree/main/skills/skill-creator) skill by Anthropic can be used as a good reference for how to write evals.
 
-Script correctness (valid output, error handling, `--help` flag) is covered by separate tests, not evals.
+Script correctness (valid output, error handling, `--usage` flag) is covered by separate tests, not evals.
 
 ---
 
