@@ -36,5 +36,5 @@ wolframscript -f scripts/WolframAlpha.wls <query>
 
 | Argument | Required | Description |
 | --- | --- | --- |
-| `query` | Yes | The query to send to Wolfram|Alpha. |
+| `query` | Yes | The query to send to Wolfram\|Alpha. |
 
