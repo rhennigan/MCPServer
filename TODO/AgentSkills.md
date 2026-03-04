@@ -4,7 +4,7 @@ Tasks for implementing the [Agent Skills specification](../Specs/AgentSkills.md)
 
 ---
 
-- [ ] **1. Fix Manifest.wl: add missing SymbolDefinition script**
+- [x] **1. Fix Manifest.wl: add missing SymbolDefinition script**
 
   The spec lists `SymbolDefinition` under `wolfram-language`, but `AgentSkills/Skills/Manifest.wl` omits it. Add `"SymbolDefinition"` to the `"Scripts"` list for `wolfram-language`.
 
@@ -12,7 +12,7 @@ Tasks for implementing the [Agent Skills specification](../Specs/AgentSkills.md)
 
 ---
 
-- [ ] **2. Write GetWolframEngine.md reference**
+- [x] **2. Write GetWolframEngine.md reference**
 
   `AgentSkills/References/GetWolframEngine.md` is a placeholder ("TODO"). Write platform-specific installation instructions for `wolframscript` (macOS via Homebrew, Linux/Windows downloads, verifying installation).
 

@@ -11,3 +11,9 @@ Use the following format incrementing the session number from the latest entry:
 
 {your notes}
 
+## Session 1
+
+- Completed Task 1: Added missing `"SymbolDefinition"` to the `"Scripts"` list for `wolfram-language` in `AgentSkills/Skills/Manifest.wl`.
+- Completed Task 2: Wrote `AgentSkills/References/GetWolframEngine.md` with platform-specific installation instructions (macOS via Homebrew + manual, Linux Debian/other, Windows), activation steps, and troubleshooting.
+- Next up: Task 3 (implement script generation in `BuildAgentSkills.wls`) — the core build logic. Reference `Notes/generating-scripts-from-tools.md` for extracting tool parameters from `$DefaultMCPTools`.
+

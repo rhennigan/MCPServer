@@ -17,6 +17,7 @@
         "Scripts" -> {
             "WolframLanguageContext",
             "WolframLanguageEvaluator",
+            "SymbolDefinition",
             "TestReport",
             "CodeInspector"
         }
