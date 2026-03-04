@@ -51,12 +51,21 @@ getToolMetadata[ toolName_String ] := Module[ { tool, data, params },
     data = tool[ "Data" ];
     params = Association @ data[ "Parameters" ];
     <|
-        "Name"        -> data[ "Name" ],
-        "Description" -> data[ "Description" ],
+        "Name"        -> convertPUACharacters @ data[ "Name" ],
+        "Description" -> convertPUACharacters @ data[ "Description" ],
         "Required"    -> Select[ params, TrueQ @ #[ "Required" ] & ],
         "Optional"    -> Select[ params, ! TrueQ @ #[ "Required" ] & ]
     |>
 ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Convert Private Use Area Characters to Printable ASCII*)
+convertPUACharacters[ str_String ] := StringJoin[ convertPUACharacters /@ ToCharacterCode @ str ];
+convertPUACharacters[ n_Integer ] /; 57344 <= n <= 63743 := toPrintableASCII @ FromCharacterCode @ n;
+convertPUACharacters[ n_Integer ] := FromCharacterCode @ n;
+
+toPrintableASCII[ expr_ ] := ToString[ Unevaluated @ expr, CharacterEncoding -> "PrintableASCII" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
