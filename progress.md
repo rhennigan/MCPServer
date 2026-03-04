@@ -93,3 +93,12 @@ Use the following format incrementing the session number from the latest entry:
 - Included guidance on when to use each tool, query style tips, and the relationship between `WolframAlphaContext` and `WolframContext`.
 - Next up: Task 7 (write wolfram-notebooks SKILL.md).
 
+## Session 8
+
+- Completed Task 7: Wrote `AgentSkills/Skills/wolfram-notebooks/SKILL.md`.
+- YAML frontmatter includes `name`, `description`, `compatibility`, and `metadata` (author + version) per spec.
+- Content follows the same structure as wolfram-language and wolfram-alpha: Prerequisites → Usage (MCP preferred, scripts fallback) → Available Tools → Tips.
+- Documented both scripts: `ReadNotebook` (read .nb files as markdown) and `WriteNotebook` (convert markdown to .nb files).
+- Included guidance on when to use each tool, practical use cases, and cross-skill integration tip (using with wolfram-language skill).
+- Next up: Task 8 (add plugin packaging to the build).
+

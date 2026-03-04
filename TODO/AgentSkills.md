@@ -82,7 +82,7 @@ Tasks for implementing the [Agent Skills specification](../Specs/AgentSkills.md)
 
 ---
 
-- [ ] **7. Write wolfram-notebooks SKILL.md**
+- [x] **7. Write wolfram-notebooks SKILL.md**
 
   Same structure as above for the `wolfram-notebooks` skill, documenting `ReadNotebook.wls` and `WriteNotebook.wls`.
 
