@@ -198,19 +198,21 @@ scriptUsageLine[ toolName_String, reqNames_List, optNames_List ] := Module[ { pa
 ];
 
 (* Build a markdown argument table for a single tool *)
+escapeMdTableCell[ s_String ] := StringReplace[ s, "|" -> "\\|" ];
+
 scriptArgTable[ meta_Association, reqNames_List, optNames_List ] := Module[ { rows },
     rows = Join[
         Map[
             Function[ name,
                 "| `" <> name <> "` | Yes | " <>
-                    Replace[ meta[ "Required" ][ name ][ "Help" ], Except[ _String ] -> "No description" ] <> " |"
+                    escapeMdTableCell @ Replace[ meta[ "Required" ][ name ][ "Help" ], Except[ _String ] -> "No description" ] <> " |"
             ],
             reqNames
         ],
         Map[
             Function[ name,
                 "| `--" <> name <> "` | No | " <>
-                    Replace[ meta[ "Optional" ][ name ][ "Help" ], Except[ _String ] -> "No description" ] <> " |"
+                    escapeMdTableCell @ Replace[ meta[ "Optional" ][ name ][ "Help" ], Except[ _String ] -> "No description" ] <> " |"
             ],
             optNames
         ]
