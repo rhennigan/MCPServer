@@ -1,7 +1,8 @@
 <|
     "wolfram-alpha" -> <|
         "References" -> {
-            "GetWolframEngine"
+            "GetWolframEngine",
+            "SetUpWolframMCPServer"
         },
         "Scripts" -> {
             "WolframAlphaContext",
@@ -10,7 +11,8 @@
     |>,
     "wolfram-language" -> <|
         "References" -> {
-            "GetWolframEngine"
+            "GetWolframEngine",
+            "SetUpWolframMCPServer"
         },
         "Scripts" -> {
             "WolframLanguageContext",
@@ -21,7 +23,8 @@
     |>,
     "wolfram-notebooks" -> <|
         "References" -> {
-            "GetWolframEngine"
+            "GetWolframEngine",
+            "SetUpWolframMCPServer"
         },
         "Scripts" -> {
             "ReadNotebook",

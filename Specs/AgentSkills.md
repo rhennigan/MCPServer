@@ -29,7 +29,7 @@ Three skills are defined in `AgentSkills/Skills/Manifest.wl`:
 Full Wolfram Language development environment.
 
 | Script | Source Tool | Description |
-|--------|-----------|-------------|
+| --- | --- | --- |
 | `WolframLanguageContext.wls` | WolframLanguageContext | Semantic search for Wolfram Language documentation |
 | `WolframLanguageEvaluator.wls` | WolframLanguageEvaluator | Evaluate Wolfram Language code |
 | `SymbolDefinition.wls` | SymbolDefinition | Retrieve readable symbol definitions |
@@ -41,16 +41,16 @@ Full Wolfram Language development environment.
 Wolfram|Alpha queries and context retrieval.
 
 | Script | Source Tool | Description |
-|--------|-----------|-------------|
-| `WolframAlphaContext.wls` | WolframAlphaContext | Semantic search using Wolfram|Alpha |
-| `WolframAlpha.wls` | WolframAlpha | Query Wolfram|Alpha |
+| --- | --- | --- |
+| `WolframAlphaContext.wls` | WolframAlphaContext | Semantic search using Wolfram | Alpha |
+| `WolframAlpha.wls` | WolframAlpha | Query Wolfram | Alpha |
 
 ### wolfram-notebooks
 
 Read and write Wolfram notebook (`.nb`) files.
 
 | Script | Source Tool | Description |
-|--------|-----------|-------------|
+| --- | --- | --- |
 | `ReadNotebook.wls` | ReadNotebook | Read a notebook file as markdown |
 | `WriteNotebook.wls` | WriteNotebook | Convert markdown to a notebook file |
 
@@ -107,6 +107,9 @@ If you have Wolfram Language MCP tools available (check your tool list for
 tools like `mcp__WolframLanguage__*`), use them directly. They provide
 richer integration and better performance.
 
+If you do not have Wolfram MCP tools but would like to set them up,
+see `references/SetUpWolframMCPServer.md` for instructions.
+
 ### With Bundled Scripts
 
 If no MCP tools are available, use the bundled scripts:
@@ -131,6 +134,23 @@ skill directory) for installation instructions.
 ```
 
 The source `references/GetWolframEngine.md` file is hand-authored and contains platform-specific installation instructions (macOS via Homebrew, Linux/Windows downloads, etc.).
+
+### MCP Server Setup Reference
+
+A second shared reference file at `AgentSkills/References/SetUpWolframMCPServer.md` explains how to set up the Wolfram MCP server. This is relevant for the dual-mode detection described below — when MCP tools are not available, the agent can direct the user to set up the MCP server for a better experience.
+
+The file covers two paths:
+
+1. **Local server via `InstallMCPServer`** — If `wolframscript` is available, the user can install the Wolfram MCP server paclet and run `InstallMCPServer["<ClientName>", "<ServerName>"]` from a Wolfram Language session. This configures the MCP server for any supported client (Claude Code, Claude Desktop, Cursor, VS Code, Gemini CLI, etc.).
+2. **Remote Wolfram MCP Service** — If no local Wolfram Engine is available, the user can subscribe to the [Wolfram MCP Service](https://www.wolfram.com/artificial-intelligence/mcp-service) and configure their client to connect to the remote server at `https://services.wolfram.com/api/mcp` using streamable HTTP transport with an API key.
+
+The build system copies this file into each skill's `references/` subdirectory alongside `GetWolframEngine.md`. Each SKILL.md includes a note directing the agent to this file:
+
+```markdown
+For a richer experience, consider setting up the Wolfram MCP server.
+See `references/SetUpWolframMCPServer.md` (relative to this skill
+directory) for instructions.
+```
 
 ### Dual-Mode Detection
 
@@ -258,12 +278,12 @@ See [generating-scripts-from-tools](../Notes/generating-scripts-from-tools.md) f
    - Write to a temporary build directory.
 4. **Distribute to skills** — For each skill in the manifest:
    - Copy the relevant generated scripts into `AgentSkills/Skills/<skill-name>/scripts/`.
-   - Copy `AgentSkills/References/GetWolframEngine.md` into `AgentSkills/Skills/<skill-name>/references/`.
+   - Copy shared reference files from `AgentSkills/References/` into `AgentSkills/Skills/<skill-name>/references/`.
 5. **Clean up** — Remove the temporary build directory.
 
 ### Outputs
 
-Generated scripts are placed in each skill's `scripts/` directory, and the shared `GetWolframEngine.md` reference is copied into each skill's `references/` directory. SKILL.md files are **not** generated — they are hand-authored.
+Generated scripts are placed in each skill's `scripts/` directory, and the shared reference files (`GetWolframEngine.md`, `SetUpWolframMCPServer.md`) are copied into each skill's `references/` directory. SKILL.md files are **not** generated — they are hand-authored.
 
 ### What the Build Script Does NOT Do
 
@@ -287,7 +307,8 @@ wolfram/
     ├── wolfram-language/
     │   ├── SKILL.md
     │   ├── references/
-    │   │   └── GetWolframEngine.md
+    │   │   ├── GetWolframEngine.md
+    │   │   └── SetUpWolframMCPServer.md
     │   └── scripts/
     │       ├── WolframLanguageContext.wls
     │       ├── WolframLanguageEvaluator.wls
@@ -297,14 +318,16 @@ wolfram/
     ├── wolfram-alpha/
     │   ├── SKILL.md
     │   ├── references/
-    │   │   └── GetWolframEngine.md
+    │   │   ├── GetWolframEngine.md
+    │   │   └── SetUpWolframMCPServer.md
     │   └── scripts/
     │       ├── WolframAlphaContext.wls
     │       └── WolframAlpha.wls
     └── wolfram-notebooks/
         ├── SKILL.md
         ├── references/
-        │   └── GetWolframEngine.md
+        │   ├── GetWolframEngine.md
+        │   └── SetUpWolframMCPServer.md
         └── scripts/
             ├── ReadNotebook.wls
             └── WriteNotebook.wls
@@ -349,14 +372,16 @@ Within the MCPServer repository:
 
 ```
 AgentSkills/
-├── references/
-│   └── GetWolframEngine.md             # Single source (hand-authored)
+├── References/
+│   ├── GetWolframEngine.md             # Single source (hand-authored)
+│   └── SetUpWolframMCPServer.md        # Single source (hand-authored)
 ├── Skills/
 │   ├── Manifest.wl                       # Tool-to-skill mapping
 │   ├── wolfram-language/
 │   │   ├── SKILL.md                      # Hand-authored
 │   │   ├── references/                   # Copied by build from AgentSkills/References/
-│   │   │   └── GetWolframEngine.md
+│   │   │   ├── GetWolframEngine.md
+│   │   │   └── SetUpWolframMCPServer.md
 │   │   └── scripts/                      # Generated by build
 │   │       ├── WolframLanguageContext.wls
 │   │       ├── WolframLanguageEvaluator.wls
@@ -366,14 +391,16 @@ AgentSkills/
 │   ├── wolfram-alpha/
 │   │   ├── SKILL.md                      # Hand-authored
 │   │   ├── references/                   # Copied by build
-│   │   │   └── GetWolframEngine.md
+│   │   │   ├── GetWolframEngine.md
+│   │   │   └── SetUpWolframMCPServer.md
 │   │   └── scripts/                      # Generated by build
 │   │       ├── WolframAlphaContext.wls
 │   │       └── WolframAlpha.wls
 │   └── wolfram-notebooks/
 │       ├── SKILL.md                      # Hand-authored
 │       ├── references/                   # Copied by build
-│       │   └── GetWolframEngine.md
+│       │   ├── GetWolframEngine.md
+│       │   └── SetUpWolframMCPServer.md
 │       └── scripts/                      # Generated by build
 │           ├── ReadNotebook.wls
 │           └── WriteNotebook.wls
