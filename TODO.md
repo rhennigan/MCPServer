@@ -131,7 +131,7 @@ Create distributable agent skills that use functionality from this paclet.
 - [x] Wolfram Language Development skills
 - [x] Wolfram|Alpha skills
 - [x] Plugin marketplace
-- [ ] Add new documentation page for adding skills
+- [x] Add new documentation page for adding skills
 - [ ] Create and run agent-level evals
 - [ ] Investigate using hooks instead of instructions to use CodeInspector
 

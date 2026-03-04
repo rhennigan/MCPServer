@@ -20,6 +20,7 @@ This is the developer documentation for contributing to MCPServer. For user docu
 - **[Predefined Servers](servers.md)** - Available server configurations and how to choose the right one
 - **[MCP Clients](mcp-clients.md)** - Supported client applications and configuration
 - **[CodeInspector Rules](code-inspector-rules.md)** - Adding custom CodeInspector rules and current rule catalog
+- **[Agent Skills](agent-skills.md)** - Distributable agent skills, dual-mode architecture, and how to add new skills
 
 ## Development Workflow
 
