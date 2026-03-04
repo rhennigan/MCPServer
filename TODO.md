@@ -80,6 +80,8 @@ Consolidated list of TODO/FIXME items from the codebase.
 - [ ] Log tool calls (and generate a notebook)
 - [ ] Add optional "caption" parameter to evaluator tool (maybe all tools?)
 - [ ] Group similar tools and have another tool to activate them when needed (to save on token usage)
+- [ ] WriteNotebook improvements: support Append/Prepend/Insert modes (not just Overwrite), option to evaluate input cells, or create a separate EditNotebook tool
+  - Source: `Kernel/Tools/Notebooks.wl`
 - [ ] Documentation editing tools should have examples evaluation be optional
 - [ ] Implement `ReadableForm` in this paclet for better code formatting
   - Source: `Kernel/Tools/TestReport.wl`
