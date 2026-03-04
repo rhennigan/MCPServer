@@ -44,7 +44,7 @@ Module[ { rawArgs, positional, flags, i, key, value },
     ];
 
     $parsedArgs = <| |>;
-    (*<<ArgumentParsing>>*)
+(*<<ArgumentParsing>>*)
 ];
 
 (* ::Section:: *)
