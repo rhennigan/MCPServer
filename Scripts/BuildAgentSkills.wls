@@ -344,7 +344,9 @@ marketplaceData = cicd`ScriptConfirmBy[ Import[ marketplaceFile, "RawJSON" ], As
 paclet = cicd`ScriptConfirmBy[ PacletObject @ File @ pacletDir, PacletObjectQ ];
 version = cicd`ScriptConfirmBy[ paclet[ "Version" ], StringQ ];
 marketplaceData[ "metadata", "version" ] = version;
-Export[ marketplaceFile, marketplaceData, "RawJSON" ];
+json = StringReplace[ cicd`ScriptConfirmBy[ Developer`WriteRawJSONString @ marketplaceData, StringQ ], "\\/" -> "/" ];
+cicd`ScriptConfirmBy[ Export[ marketplaceFile, StringToByteArray @ json, "Binary" ], FileExistsQ ];
+cicd`ScriptConfirmAssert[ Import[ marketplaceFile, "RawJSON" ] === marketplaceData ];
 cicd`ConsoleLog[ "Marketplace version updated." ];
 
 (* ::**************************************************************************************************************:: *)
