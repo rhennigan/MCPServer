@@ -411,6 +411,25 @@ AgentSkills/
 
 ---
 
+## Evaluation
+
+After implementation, create evals to verify that skills work correctly end-to-end. Evals should cover two layers:
+
+Agent-level evals verify that an agent following the SKILL.md instructions can successfully use each skill. A test harness presents the skill to an agent and checks that it:
+
+- **Detects MCP tools** — When MCP tools are available, the agent uses them instead of the bundled scripts.
+- **Falls back to scripts** — When MCP tools are not available, the agent invokes the bundled scripts correctly via `wolframscript`.
+- **Handles missing prerequisites** — When `wolframscript` is not on PATH, the agent directs the user to the `references/GetWolframEngine.md` instructions rather than failing silently.
+- **Produces correct results** — For representative tasks (e.g., "evaluate `Solve[x^2 == 4, x]`", "search documentation for Plot options"), the agent returns accurate output.
+
+Eval definitions live in `AgentSkills/Evals/` and can be run manually during development. The specific eval framework and file format will be determined during implementation, but evals should be repeatable and produce a clear pass/fail summary.
+
+The [`skill-creator`](https://github.com/anthropics/skills/tree/main/skills/skill-creator) skill by Anthropic can be used as a good reference for how to write evals.
+
+Script correctness (valid output, error handling, `--help` flag) is covered by separate tests, not evals.
+
+---
+
 ## Future Considerations
 
 - **wolfram-paclet-development skill** — A fourth skill bundling CreateSymbolDoc, EditSymbolDoc, and EditSymbolDocExamples alongside the wolfram-language tools. Deferred to a later phase.
