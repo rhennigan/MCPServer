@@ -286,16 +286,18 @@ See [generating-scripts-from-tools](../Notes/generating-scripts-from-tools.md) f
    - Copy the relevant generated scripts into `AgentSkills/Skills/<skill-name>/scripts/`.
    - Copy shared reference files from `AgentSkills/References/` into `AgentSkills/Skills/<skill-name>/references/`.
    - Generate a `Scripts.md` reference from the skill's tool metadata and write it to `AgentSkills/Skills/<skill-name>/references/Scripts.md`.
-5. **Clean up** — Remove the temporary build directory.
+5. **Update marketplace version** — Update the `metadata.version` field in `.claude-plugin/marketplace.json` to match the current paclet version.
+6. **Update skill versions** — Update the `version` field in each `SKILL.md` frontmatter to match the current paclet version.
+7. **Clean up** — Remove the temporary build directory.
 
 ### Outputs
 
-Generated scripts are placed in each skill's `scripts/` directory. The shared reference files (`GetWolframEngine.md`, `SetUpWolframMCPServer.md`) are copied into each skill's `references/` directory, and a `Scripts.md` reference is generated into each skill's `references/` directory from tool metadata. SKILL.md files are **not** generated — they are hand-authored.
+Generated scripts are placed in each skill's `scripts/` directory. The shared reference files (`GetWolframEngine.md`, `SetUpWolframMCPServer.md`) are copied into each skill's `references/` directory, and a `Scripts.md` reference is generated into each skill's `references/` directory from tool metadata. SKILL.md files are **not** generated — they are hand-authored. However, the build script does update the `version` field in each SKILL.md frontmatter and the `metadata.version` field in `.claude-plugin/marketplace.json` to match the current paclet version.
 
 ### What the Build Script Does NOT Do
 
-- Does not generate or modify SKILL.md files.
-- Does not create plugin packaging (marketplace.json, etc.) — that is a separate step.
+- Does not generate or modify SKILL.md content — those are hand-authored. (It does update the `version` field in the frontmatter.)
+- Does not create new plugins or restructure `marketplace.json` — it only updates the version field.
 - Does not install or publish skills.
 
 ---
