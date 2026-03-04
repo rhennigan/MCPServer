@@ -35,7 +35,7 @@ Wolfram|Alpha queries and context retrieval.
 | Script | Source Tool | Description |
 | --- | --- | --- |
 | `WolframAlphaContext.wls` | WolframAlphaContext | Semantic search using Wolfram|Alpha |
-| `WolframAlpha.wls` | WolframAlpha | Query Wolfram|Alpha |
+| `WolframAlpha.wls` | WolframAlpha | Query Wolfram\|Alpha |
 
 ### wolfram-notebooks
 
