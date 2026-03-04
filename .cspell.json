@@ -6,6 +6,7 @@
         "dpkg",
         "Embedder",
         "ENTITLEMENTID",
+        "frontmatter",
         "Legended",
         "libgomp",
         "llmkit",
