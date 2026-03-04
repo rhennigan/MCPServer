@@ -62,3 +62,13 @@ Use the following format incrementing the session number from the latest entry:
 - Regenerated all 9 scripts successfully via `BuildAgentSkills.wls`.
 - Verified generated scripts contain `wolframscript -f` in usage strings and check for `--usage` flag.
 
+## Session 5
+
+- Completed Task 5: Wrote `AgentSkills/Skills/wolfram-language/SKILL.md`.
+- YAML frontmatter includes `name`, `description`, `compatibility`, and `metadata` (author + version) per spec.
+- Content structure follows the spec: Prerequisites → Usage (MCP preferred, scripts fallback) → Tool Reference.
+- Documented all 5 scripts with their exact CLI interfaces: WolframLanguageContext, WolframLanguageEvaluator, SymbolDefinition, TestReport, CodeInspector.
+- Each script section includes usage syntax, argument table (required/optional), and example invocations.
+- Referenced `references/GetWolframEngine.md` for prerequisites and `references/SetUpWolframMCPServer.md` for MCP server setup.
+- Next up: Task 6 (write wolfram-alpha SKILL.md).
+

@@ -60,7 +60,7 @@ Tasks for implementing the [Agent Skills specification](../Specs/AgentSkills.md)
 
 ---
 
-- [ ] **5. Write wolfram-language SKILL.md**
+- [x] **5. Write wolfram-language SKILL.md**
 
   Author the full SKILL.md for the `wolfram-language` skill following the spec's content structure:
 
