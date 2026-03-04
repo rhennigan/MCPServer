@@ -81,14 +81,33 @@ result = Quiet[
     { General::messages }
 ];
 
-(* Handle image content: replace with text placeholder *)
-result = StringReplace[
-    Replace[ result, Except[ _String ] :> ToString[ result, InputForm ] ],
-    RegularExpression[ "!\\[([^]]*)\\]\\(data:image[^)]+\\)" ] -> "[Image: $1]"
+
+(* Post-process result *)
+postProcessResult[ result_String ] := result;
+postProcessResult[ KeyValuePattern[ "String" -> result_String ] ] := result;
+postProcessResult[ KeyValuePattern[ "Content" -> result_ ] ] := postProcessResult @ result;
+postProcessResult[ content: { KeyValuePattern[ "type" -> _String ]... } ] := StringJoin @ Flatten[ postProcessResult /@ content ];
+postProcessResult[ KeyValuePattern @ { "type" -> "text", "text" -> result_String } ] := result;
+postProcessResult[ KeyValuePattern[ "type" -> "image" ] ] := "<image>";
+
+postProcessResult[ failure_Failure ] := (
+    WriteString[ "stderr", "[Error] " <> ToString @ failure[ "Message" ] ];
+    Exit[ 1 ];
+);
+
+postProcessResult[ other___ ] := (
+    WriteString[ "stderr", "[Error] Unexpected result: " <> ToString @ HoldCompleteForm @ other ];
+    Exit[ 1 ];
+);
+
+result = postProcessResult @ result;
+
+If[ ! TrueQ @ StringQ @ result,
+    WriteString[ "stderr", "[Error] Unexpected result: " <> ToString @ result ];
+    Exit[ 1 ];
 ];
 
 WriteString[ "stdout", result ];
-
-If[ FailureQ @ result, Exit[ 1 ], Exit[ 0 ] ];
+Exit[ 0 ];
 
 (* :!CodeAnalysis::EndBlock:: *)
