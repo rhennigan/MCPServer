@@ -351,6 +351,33 @@ cicd`ConsoleLog[ "Marketplace version updated." ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Update Skill Versions*)
+cicd`ConsoleLog[ "Updating skill versions..." ];
+
+Map[
+    Function[ skillName,
+        Module[ { skillMdFile, content, updated },
+            skillMdFile = FileNameJoin @ { skillsDir, skillName, "SKILL.md" };
+            If[ ! FileExistsQ @ skillMdFile,
+                cicd`ConsoleError @ SequenceForm[ "  Missing SKILL.md: ", skillMdFile ];
+                Exit[ 1 ]
+            ];
+            content = ReadString @ skillMdFile;
+            updated = StringReplace[ content, "  version: " ~~ Except[ "\n" ].. ~~ "\n" :> "  version: " <> version <> "\n", 1 ];
+            If[ updated === content,
+                cicd`ConsoleLog @ SequenceForm[ "  ", skillName, "/SKILL.md (already up to date)" ],
+                Export[ skillMdFile, updated, "String" ];
+                cicd`ConsoleLog @ SequenceForm[ "  ", skillName, "/SKILL.md -> ", version ]
+            ]
+        ]
+    ],
+    Keys @ manifest
+];
+
+cicd`ConsoleLog[ "Skill versions updated." ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Cleanup*)
 cicd`ConsoleLog[ "Cleaning up temporary build directory..." ];
 DeleteDirectory[ tempBuildDir, DeleteContents -> True ];
