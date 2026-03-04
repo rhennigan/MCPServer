@@ -6,9 +6,9 @@ Tasks for implementing the [Agent Skills specification](../Specs/AgentSkills.md)
 
 - [x] **1. Fix Manifest.wl: add missing SymbolDefinition script**
 
-  The spec lists `SymbolDefinition` under `wolfram-language`, but `AgentSkills/Skills/Manifest.wl` omits it. Add `"SymbolDefinition"` to the `"Scripts"` list for `wolfram-language`.
+  The spec lists `SymbolDefinition` under `wolfram-language`, but `AgentSkills/Manifest.wl` omits it. Add `"SymbolDefinition"` to the `"Scripts"` list for `wolfram-language`.
 
-  **Files:** `AgentSkills/Skills/Manifest.wl`
+  **Files:** `AgentSkills/Manifest.wl`
 
 ---
 
