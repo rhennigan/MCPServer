@@ -84,3 +84,12 @@ Use the following format incrementing the session number from the latest entry:
 - Build runs successfully — `Scripts.md` generated for all 3 skills from `$DefaultMCPTools` metadata.
 - `Scripts.md` is a build artifact (not in manifest's References), generated per-skill since each has different tools.
 
+## Session 7
+
+- Completed Task 6: Wrote `AgentSkills/Skills/wolfram-alpha/SKILL.md`.
+- YAML frontmatter includes `name`, `description`, `compatibility`, and `metadata` (author + version) per spec.
+- Content follows the same structure as wolfram-language: Prerequisites → Usage (MCP preferred, scripts fallback) → Available Tools → Tips.
+- Documented both scripts: `WolframAlphaContext` (semantic search for context) and `WolframAlpha` (natural language queries).
+- Included guidance on when to use each tool, query style tips, and the relationship between `WolframAlphaContext` and `WolframContext`.
+- Next up: Task 7 (write wolfram-notebooks SKILL.md).
+

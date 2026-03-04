@@ -74,7 +74,7 @@ Tasks for implementing the [Agent Skills specification](../Specs/AgentSkills.md)
 
 ---
 
-- [ ] **6. Write wolfram-alpha SKILL.md**
+- [x] **6. Write wolfram-alpha SKILL.md**
 
   Same structure as above for the `wolfram-alpha` skill, documenting `WolframAlphaContext.wls` and `WolframAlpha.wls`.
 
