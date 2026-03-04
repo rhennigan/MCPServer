@@ -1,7 +1,7 @@
 <|
     "wolfram-alpha" -> <|
         "References" -> {
-            "get-wolfram-engine"
+            "GetWolframEngine"
         },
         "Scripts" -> {
             "WolframAlphaContext",
@@ -10,7 +10,7 @@
     |>,
     "wolfram-language" -> <|
         "References" -> {
-            "get-wolfram-engine"
+            "GetWolframEngine"
         },
         "Scripts" -> {
             "WolframLanguageContext",
@@ -21,7 +21,7 @@
     |>,
     "wolfram-notebooks" -> <|
         "References" -> {
-            "get-wolfram-engine"
+            "GetWolframEngine"
         },
         "Scripts" -> {
             "ReadNotebook",
