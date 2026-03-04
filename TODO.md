@@ -85,6 +85,12 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/Tools/TestReport.wl`
 - [ ] Show relative paths in CodeInspector output when inspecting directories
   - Source: `Kernel/Tools/CodeInspector/Formatting.wl`
+- [ ] Add CodeInspector rule: suggest `StringDelete[string, StartOfString ~~ pattern..]` instead of `StringTrimLeft`
+  - `StringTrimLeft` is not a System symbol
+  - Source: `Kernel/Tools/CodeInspector/Rules.wl`
+- [ ] Add CodeInspector rule: suggest `StringDelete[string, pattern.. ~~ EndOfString]` instead of `StringTrimRight`
+  - `StringTrimRight` is not a System symbol
+  - Source: `Kernel/Tools/CodeInspector/Rules.wl`
 
 ## Prompts
 
