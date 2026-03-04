@@ -38,3 +38,15 @@ Use the following format incrementing the session number from the latest entry:
 - The build script has NOT been run yet — Task 4 covers running it and verifying the output.
 - Key insight: `$DefaultMCPTools` is in the `Wolfram`MCPServer`` context. In the running MCP kernel, you need `Needs["Wolfram`MCPServer`"]` before accessing it. The build script handles this via `Get["Wolfram`MCPServer`"]`.
 
+## Session 3
+
+- Completed Task 4: Verified and fixed the build script.
+- Ran `BuildAgentSkills.wls` end-to-end — all 9 scripts generated, distributed to 3 skills, references copied.
+- Verified output structure: all scripts and reference files present in correct locations.
+- Spot-checked generated scripts (TestReport, CodeInspector, SymbolDefinition, WolframAlpha, WolframLanguageEvaluator, WolframLanguageContext, WriteNotebook).
+- **Bug found and fixed:** `wolframscript -f` intercepts `--help`/`-h` flags before passing them to the script. Changed usage strings from `-f` to `-script`, which correctly passes all arguments through `$ScriptCommandLine`.
+- **Bug found and fixed:** Tool descriptions containing newlines (SymbolDefinition, WolframAlpha, WolframLanguageEvaluator) produced multi-line string literals in generated code. Added proper escaping for `\n`, `\\`, and `"` characters in description and help text strings.
+- Verified real invocations work: `SymbolDefinition "Plus"`, `CodeInspector --code "x=1;x+1"`, `WolframLanguageEvaluator "1+1"` all produce correct output.
+- Minor cosmetic note: The `\[FreeformPrompt]` Unicode character (U+F351) in the WolframLanguageEvaluator description doesn't render in plain text. This is a pre-existing issue with the tool's description, not the build script.
+- Next up: Task 5 (write wolfram-language SKILL.md).
+

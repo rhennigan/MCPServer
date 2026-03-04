@@ -71,7 +71,7 @@ generateScript[ toolName_String ] := Module[
         Map[ "<" <> # <> ">" &, reqNames ],
         Map[ "[--" <> # <> " value]" &, optNames ]
     ];
-    usageStr = "wolframscript -f " <> toolName <> ".wls " <> StringRiffle[ usageParts, " " ];
+    usageStr = "wolframscript -script " <> toolName <> ".wls " <> StringRiffle[ usageParts, " " ];
 
     (* Build help text lines *)
     helpLines = Join[
@@ -108,12 +108,12 @@ generateScript[ toolName_String ] := Module[
         "\n",
         "$helpText = StringJoin[\n",
         "    \"Usage: \", $usage, \"\\n\\n\",\n",
-        "    \"" <> StringReplace[ meta[ "Description" ], "\"" -> "\\\"" ] <> "\\n\\n\",\n",
+        "    \"" <> StringReplace[ meta[ "Description" ], { "\\" -> "\\\\", "\"" -> "\\\"", "\n" -> "\\n" } ] <> "\\n\\n\",\n",
         If[ helpLines === {},
             "    \"No arguments.\\n\"\n",
             "    \"Arguments:\\n\",\n" <>
             StringRiffle[
-                Map[ "    \"" <> StringReplace[ #, "\"" -> "\\\"" ] <> "\\n\"" &, helpLines ],
+                Map[ "    \"" <> StringReplace[ #, { "\\" -> "\\\\", "\"" -> "\\\"", "\n" -> "\\n" } ] <> "\\n\"" &, helpLines ],
                 ",\n"
             ] <> "\n"
         ],

@@ -41,7 +41,7 @@ Tasks for implementing the [Agent Skills specification](../Specs/AgentSkills.md)
 
 ---
 
-- [ ] **4. Verify and fix the build script**
+- [x] **4. Verify and fix the build script**
 
   Run `BuildAgentSkills.wls` and validate the generated output:
 
