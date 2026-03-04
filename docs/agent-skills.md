@@ -343,7 +343,9 @@ If the skill should be distributed via Claude Code plugins, update `.claude-plug
    - Copies generated scripts into `Skills/<name>/scripts/`
    - Copies shared reference files from `AgentSkills/References/` into `Skills/<name>/references/`
    - Generates `Scripts.md` from tool metadata into `Skills/<name>/references/`
-5. **Clean up** — Removes the temporary build directory.
+5. **Update marketplace version** — Updates the version in `.claude-plugin/marketplace.json` to match the current paclet version.
+6. **Update skill versions** — Updates the `version` field in each `SKILL.md` frontmatter to match the current paclet version.
+7. **Clean up** — Removes the temporary build directory.
 
 ### Running the Build
 
@@ -353,8 +355,8 @@ wolframscript -f Scripts/BuildAgentSkills.wls
 
 ### What It Does NOT Do
 
-- Does not generate or modify `SKILL.md` files — those are hand-authored.
-- Does not create or update plugin packaging (`marketplace.json`).
+- Does not generate or modify `SKILL.md` content — those are hand-authored. (It does update the `version` field in the frontmatter.)
+- Does not create new plugins or restructure `marketplace.json` — it only updates the version field.
 - Does not install or publish skills.
 
 ### Generated Script Structure

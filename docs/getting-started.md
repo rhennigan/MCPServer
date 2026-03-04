@@ -167,8 +167,13 @@ MCPServer/
 │   ├── Messages.wl            # Error messages
 │   └── Tools/                 # Predefined MCP tools
 ├── Scripts/                   # Build and utility scripts
+├── AgentSkills/               # Distributable agent skills (see [agent-skills.md](agent-skills.md))
+│   ├── Manifest.wl            # Tool-to-skill mapping
+│   ├── References/            # Shared reference files
+│   └── Skills/                # Generated skill directories
 ├── Tests/                     # Test files (.wlt)
 ├── Specs/                     # Design specifications for features
+├── Notes/                     # Development notes and design explorations
 ├── Documentation/             # Paclet documentation notebooks
 └── docs/                      # Developer documentation
 ```

@@ -29,6 +29,7 @@ Implements a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) ser
 - **Wide client support** including Claude Desktop, Cursor, VS Code, and more
 - **MCP prompts** for enhanced context and workflows
 - **MCP Apps** for interactive UI resources in supported clients (e.g., embedded notebook viewers, Wolfram\|Alpha result displays)
+- **Agent Skills** for distributing Wolfram tools as portable skills to AI coding agents (Claude Code, Cursor, Gemini CLI, VS Code, and [more](https://agentskills.io/))
 
 ## Requirements
 
@@ -285,6 +286,7 @@ See the [developer documentation](docs/README.md) for information on:
 - [Writing and running tests](docs/testing.md)
 - [Building the paclet](docs/building.md)
 - [Adding new tools](docs/tools.md)
+- [Agent skills](docs/agent-skills.md) for distributing tools to AI coding agents
 - [Error handling](docs/error-handling.md)
 
 For AI agents working on this codebase, see [AGENTS.md](AGENTS.md).
