@@ -72,3 +72,15 @@ Use the following format incrementing the session number from the latest entry:
 - Referenced `references/GetWolframEngine.md` for prerequisites and `references/SetUpWolframMCPServer.md` for MCP server setup.
 - Next up: Task 6 (write wolfram-alpha SKILL.md).
 
+## Session 6
+
+- Restructured SKILL.md to separate high-level guidance from detailed script reference.
+- **Problem:** The wolfram-language SKILL.md had ~150 lines of per-script documentation (usage, arguments, examples) that was redundant when the MCP server is available and duplicated what scripts provide via `--usage`.
+- **Solution:** Added auto-generated `references/Scripts.md` to the build system, moved detailed script docs there, and refocused SKILL.md on when/why to use each tool.
+- Changes:
+  - `Scripts/BuildAgentSkills.wls`: Added `generateScriptsMd` and helpers (`scriptUsageLine`, `scriptArgTable`, `scriptMdSection`) that produce a markdown reference from tool metadata. Integrated into the distribution loop to write `Scripts.md` for each skill.
+  - `AgentSkills/Skills/wolfram-language/SKILL.md`: Replaced "Tool Reference" section with concise "Available Tools" table, pointer to `references/Scripts.md`, and "Tips" section with high-level agent guidance.
+  - `Specs/AgentSkills.md`: Updated SKILL.md content structure template, build process/outputs docs, and both directory structure diagrams to include `Scripts.md`.
+- Build runs successfully — `Scripts.md` generated for all 3 skills from `$DefaultMCPTools` metadata.
+- `Scripts.md` is a build artifact (not in manifest's References), generated per-skill since each has different tools.
+

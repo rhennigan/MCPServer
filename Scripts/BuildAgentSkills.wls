@@ -185,6 +185,73 @@ generateScript[ toolName_String ] := Module[
 ];
 
 (* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Generate Scripts.md Reference*)
+
+(* Build a usage line for markdown display *)
+scriptUsageLine[ toolName_String, reqNames_List, optNames_List ] := Module[ { parts },
+    parts = Join[
+        Map[ "<" <> # <> ">" &, reqNames ],
+        Map[ "[--" <> # <> " value]" &, optNames ]
+    ];
+    "wolframscript -f scripts/" <> toolName <> ".wls " <> StringRiffle[ parts, " " ]
+];
+
+(* Build a markdown argument table for a single tool *)
+scriptArgTable[ meta_Association, reqNames_List, optNames_List ] := Module[ { rows },
+    rows = Join[
+        Map[
+            Function[ name,
+                "| `" <> name <> "` | Yes | " <>
+                    Replace[ meta[ "Required" ][ name ][ "Help" ], Except[ _String ] -> "No description" ] <> " |"
+            ],
+            reqNames
+        ],
+        Map[
+            Function[ name,
+                "| `--" <> name <> "` | No | " <>
+                    Replace[ meta[ "Optional" ][ name ][ "Help" ], Except[ _String ] -> "No description" ] <> " |"
+            ],
+            optNames
+        ]
+    ];
+    If[ rows === {},
+        "This script has no arguments.\n",
+        StringJoin[
+            "| Argument | Required | Description |\n",
+            "| --- | --- | --- |\n",
+            StringRiffle[ rows, "\n" ], "\n"
+        ]
+    ]
+];
+
+(* Build a markdown section for a single tool *)
+scriptMdSection[ toolName_String ] := Module[ { meta, reqNames, optNames },
+    meta     = getToolMetadata[ toolName ];
+    reqNames = Keys @ meta[ "Required" ];
+    optNames = Keys @ meta[ "Optional" ];
+    StringJoin[
+        "## ", toolName, ".wls\n\n",
+        meta[ "Description" ], "\n\n",
+        "**Usage:**\n\n",
+        "```\n",
+        scriptUsageLine[ toolName, reqNames, optNames ], "\n",
+        "```\n\n",
+        "**Arguments:**\n\n",
+        scriptArgTable[ meta, reqNames, optNames ]
+    ]
+];
+
+(* Build the full Scripts.md content for a skill *)
+generateScriptsMd[ scriptNames_List ] := StringJoin[
+    "# Script Reference\n\n",
+    "Auto-generated reference for bundled scripts. Pass `--usage` to any\n",
+    "script for the latest argument documentation.\n\n",
+    StringRiffle[ Map[ scriptMdSection, scriptNames ], "\n---\n\n" ],
+    "\n"
+];
+
+(* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Build Agent Skill Scripts*)
 
@@ -252,6 +319,14 @@ KeyValueMap[
                     ]
                 ],
                 refNames
+            ];
+
+            (* Generate Scripts.md reference *)
+            Module[ { scriptsMd, scriptsMdFile },
+                scriptsMd = generateScriptsMd[ scriptNames ];
+                scriptsMdFile = FileNameJoin @ { refDir, "Scripts.md" };
+                Export[ scriptsMdFile, scriptsMd, "String" ];
+                cicd`ConsoleNotice @ SequenceForm[ "  ", skillName, "/references/Scripts.md" ];
             ];
 
             cicd`ConsoleNotice @ SequenceForm[ "  Completed skill: ", skillName ];
