@@ -6,7 +6,7 @@ Agent skills package Wolfram MCP tools as distributable skills following the ope
 
 When the Wolfram MCP server is available, skills instruct the agent to prefer the MCP tools. When it is not, the agent falls back to executing the bundled scripts via `wolframscript`.
 
-For distribution via Claude Code specifically, all skills are packaged as a single plugin called **wolfram**.
+For distribution via Claude Code specifically, skills are packaged as two plugins (**wolfram-language-development** and **wolfram-alpha**) within a single marketplace called **wolfram-agent-skills**.
 
 ---
 
