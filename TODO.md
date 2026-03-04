@@ -32,7 +32,9 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Should create a new resource function definition notebook
 - [ ] Implement `EditResourceFunction` tool
   - Should edit an existing resource function definition notebook
+- [ ] Implement `CheckPaclet` tool
 - [ ] Implement `BuildPaclet` tool
+- [ ] Implement `PublishPaclet` tool
 - [ ] Implement `ReloadPaclet` tool
 - [ ] Implement `RestartMCPServer` tool (if possible)
 - [ ] Tool to open notebooks for the user (e.g., `UsingFrontEnd[SystemOpen[notebookPath]]`)
@@ -126,45 +128,17 @@ This is effectively what the paclet currently does, but we'll run it in reverse.
 
 Create distributable agent skills that use functionality from this paclet.
 
-- [ ] Testing
-  - Instructions:
-    - writing tests
-    - running tests
-    - inspecting code
-  - Scripts:
-    - `TestReport.wls [path/to/Tests/]`
-    - `CodeInspect.wls [path/to/Code/]`
+- [x] Wolfram Language Development skills
+- [x] Wolfram|Alpha skills
+- [x] Plugin marketplace
+- [ ] Add new documentation page for adding skills
+- [ ] Create and run agent-level evals
+- [ ] Investigate using hooks instead of instructions to use CodeInspector
 
-- [ ] Paclet Building
-  - Instructions:
-    - checking the paclet
-    - building the paclet
-    - submitting the paclet
-  - Scripts:
-    - `CheckPaclet.wls [path/to/Paclet/]`
-    - `BuildPaclet.wls [path/to/Paclet/]`
-    - `SubmitPaclet.wls [path/to/Paclet/]`
+### More Skill Ideas
 
-- [ ] Paclet Optimization
-  - Instructions:
-    - MX builds
-    - compiled functions
-
-- [ ] Creating New Paclets
-  - Instructions:
-    - layout guidelines
-    - naming conventions
-    - documentation guidelines
-  - Scripts:
-    - `NewPaclet.wls [path/to/NewPaclet/]`
-
-- [ ] Documentation
-  - Instructions:
-    - writing paclet documentation
-    - building paclet documentation
-  - Scripts:
-    - `CreateDocumentation.wls [path/to/Documentation/]`
-    - `BuildDocumentation.wls [path/to/Documentation/]`
+- [ ] Skill for exploring definitions to find source code
+- [ ] Debugging skills (message handlers, stack traces, etc.)
 
 ## Blocked / Dependencies
 
