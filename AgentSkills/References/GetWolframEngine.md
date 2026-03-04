@@ -37,20 +37,6 @@ After installation, `wolframscript` should be available on your PATH automatical
 
 ## Linux
 
-### Debian/Ubuntu
-
-1. Download the `.deb` installer from <https://www.wolfram.com/engine/>.
-2. Install:
-   ```bash
-   sudo dpkg -i WolframEngine_*.deb
-   ```
-3. Activate:
-   ```bash
-   wolframscript -activate
-   ```
-
-### Other distributions
-
 1. Download the `.sh` installer from <https://www.wolfram.com/engine/>.
 2. Run:
    ```bash
@@ -58,7 +44,7 @@ After installation, `wolframscript` should be available on your PATH automatical
    ```
 3. Follow the prompts and activate when complete.
 
-After installation, `wolframscript` is typically at `/usr/local/bin/wolframscript`.
+After installation, `wolframscript` is typically at `/usr/bin/wolframscript`.
 
 ---
 
@@ -90,7 +76,7 @@ wolframscript -activate
 
 - **`wolframscript` not found** — Ensure the install directory is on your PATH. You can check the location with `which wolframscript` (macOS/Linux) or `where wolframscript` (Windows).
 - **Activation fails** — Check your internet connection and verify your Wolfram Account credentials at <https://account.wolfram.com>.
-- **License issues** — The free Wolfram Engine license covers non-production development use. For production or commercial use, see <https://www.wolfram.com/engine/pricing/>.
+- **License issues** — The free Wolfram Engine license covers non-production development use. For production or commercial use, see <https://www.wolfram.com/engine/commercial-options/>.
 
 ---
 
