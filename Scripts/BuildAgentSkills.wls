@@ -37,7 +37,7 @@ cicd`ScriptConfirmMatch[ Get[ "Wolfram`MCPServer`" ], Null ];
 (* ::Subsection::Closed:: *)
 (*Collect Unique Tool Names*)
 allToolNames = Union @@ Map[ Lookup[ "Scripts" ], Values @ manifest ];
-cicd`ConsoleNotice @ SequenceForm[ "Tools to generate scripts for: ", allToolNames ];
+cicd`ConsoleLog @ SequenceForm[ "Tools to generate scripts for: ", allToolNames ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -258,7 +258,7 @@ generateScriptsMd[ scriptNames_List ] := StringJoin[
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Generate All Scripts to Temp Directory*)
-cicd`ConsoleNotice[ "Generating scripts..." ];
+cicd`ConsoleLog[ "Generating scripts..." ];
 
 Map[
     Function[ toolName,
@@ -266,7 +266,7 @@ Map[
             source  = generateScript[ toolName ];
             outFile = FileNameJoin @ { tempBuildDir, toolName <> ".wls" };
             Export[ outFile, source, "String" ];
-            cicd`ConsoleNotice @ SequenceForm[ "  Generated: ", toolName <> ".wls" ];
+            cicd`ConsoleLog @ SequenceForm[ "  Generated: ", toolName <> ".wls" ];
         ]
     ],
     allToolNames
@@ -275,7 +275,7 @@ Map[
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Distribute Scripts and References to Each Skill*)
-cicd`ConsoleNotice[ "Distributing scripts and references to skills..." ];
+cicd`ConsoleLog[ "Distributing scripts and references to skills..." ];
 
 KeyValueMap[
     Function[ { skillName, skillDef },
@@ -294,7 +294,7 @@ KeyValueMap[
                         dst = FileNameJoin @ { scriptDir, scriptName <> ".wls" };
                         If[ FileExistsQ @ src,
                             CopyFile[ src, dst, OverwriteTarget -> True ];
-                            cicd`ConsoleNotice @ SequenceForm[ "  ", skillName, "/scripts/", scriptName <> ".wls" ],
+                            cicd`ConsoleLog @ SequenceForm[ "  ", skillName, "/scripts/", scriptName <> ".wls" ],
                             cicd`ConsoleError @ SequenceForm[ "  Missing script: ", src ];
                             Exit[ 1 ]
                         ]
@@ -312,7 +312,7 @@ KeyValueMap[
                         dst = FileNameJoin @ { refDir, refName <> ".md" };
                         If[ FileExistsQ @ src,
                             CopyFile[ src, dst, OverwriteTarget -> True ];
-                            cicd`ConsoleNotice @ SequenceForm[ "  ", skillName, "/references/", refName <> ".md" ],
+                            cicd`ConsoleLog @ SequenceForm[ "  ", skillName, "/references/", refName <> ".md" ],
                             cicd`ConsoleError @ SequenceForm[ "  Missing reference: ", src ];
                             Exit[ 1 ]
                         ]
@@ -326,10 +326,10 @@ KeyValueMap[
                 scriptsMd = generateScriptsMd[ scriptNames ];
                 scriptsMdFile = FileNameJoin @ { refDir, "Scripts.md" };
                 Export[ scriptsMdFile, scriptsMd, "String" ];
-                cicd`ConsoleNotice @ SequenceForm[ "  ", skillName, "/references/Scripts.md" ];
+                cicd`ConsoleLog @ SequenceForm[ "  ", skillName, "/references/Scripts.md" ];
             ];
 
-            cicd`ConsoleNotice @ SequenceForm[ "  Completed skill: ", skillName ];
+            cicd`ConsoleLog @ SequenceForm[ "  Completed skill: ", skillName ];
         ]
     ],
     manifest
@@ -337,10 +337,22 @@ KeyValueMap[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Update Marketplace Version*)
+cicd`ConsoleLog[ "Updating marketplace version..." ];
+marketplaceFile = cicd`ScriptConfirmBy[ FileNameJoin @ { pacletDir, ".claude-plugin", "marketplace.json" }, FileExistsQ ];
+marketplaceData = cicd`ScriptConfirmBy[ Import[ marketplaceFile, "RawJSON" ], AssociationQ ];
+paclet = cicd`ScriptConfirmBy[ PacletObject @ File @ pacletDir, PacletObjectQ ];
+version = cicd`ScriptConfirmBy[ paclet[ "Version" ], StringQ ];
+marketplaceData[ "metadata", "version" ] = version;
+Export[ marketplaceFile, marketplaceData, "RawJSON" ];
+cicd`ConsoleLog[ "Marketplace version updated." ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Cleanup*)
-cicd`ConsoleNotice[ "Cleaning up temporary build directory..." ];
+cicd`ConsoleLog[ "Cleaning up temporary build directory..." ];
 DeleteDirectory[ tempBuildDir, DeleteContents -> True ];
 
-cicd`ConsoleNotice[ "Build complete." ];
+cicd`ConsoleLog[ "Build complete." ];
 
 (* :!CodeAnalysis::EndBlock:: *)
