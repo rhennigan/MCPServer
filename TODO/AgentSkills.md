@@ -20,7 +20,7 @@ Tasks for implementing the [Agent Skills specification](../Specs/AgentSkills.md)
 
 ---
 
-- [ ] **3. Implement script generation in BuildAgentSkills.wls**
+- [x] **3. Implement script generation in BuildAgentSkills.wls**
 
   This is the core build logic. Implement the TODO sections:
 
