@@ -41,7 +41,26 @@ Tasks for implementing the [Agent Skills specification](../Specs/AgentSkills.md)
 
 ---
 
-- [ ] **4. Write wolfram-language SKILL.md**
+- [ ] **4. Verify and fix the build script**
+
+  Run `BuildAgentSkills.wls` and validate the generated output:
+
+  1. Execute the build script end-to-end and confirm it completes without errors.
+  2. Verify that every tool listed in the manifest has a corresponding `.wls` script in each skill's `scripts/` directory.
+  3. Verify that reference files are copied into each skill's `references/` directory.
+  4. Spot-check generated scripts for correctness:
+     - `--help` flag produces usage information.
+     - Required/optional argument parsing works as expected.
+     - Tool invocation returns sensible output for a simple test case.
+  5. Fix any bugs found in the build logic or generated script templates.
+
+  This task is intentionally narrower than the full test pass in task #9 — the goal here is to catch implementation mistakes early before writing the SKILL.md files that depend on knowing the exact script interfaces.
+
+  **Files:** `Scripts/BuildAgentSkills.wls`, generated scripts
+
+---
+
+- [ ] **5. Write wolfram-language SKILL.md**
 
   Author the full SKILL.md for the `wolfram-language` skill following the spec's content structure:
 
@@ -55,7 +74,7 @@ Tasks for implementing the [Agent Skills specification](../Specs/AgentSkills.md)
 
 ---
 
-- [ ] **5. Write wolfram-alpha SKILL.md**
+- [ ] **6. Write wolfram-alpha SKILL.md**
 
   Same structure as above for the `wolfram-alpha` skill, documenting `WolframAlphaContext.wls` and `WolframAlpha.wls`.
 
@@ -63,7 +82,7 @@ Tasks for implementing the [Agent Skills specification](../Specs/AgentSkills.md)
 
 ---
 
-- [ ] **6. Write wolfram-notebooks SKILL.md**
+- [ ] **7. Write wolfram-notebooks SKILL.md**
 
   Same structure as above for the `wolfram-notebooks` skill, documenting `ReadNotebook.wls` and `WriteNotebook.wls`.
 
@@ -71,7 +90,7 @@ Tasks for implementing the [Agent Skills specification](../Specs/AgentSkills.md)
 
 ---
 
-- [ ] **7. Add plugin packaging to the build**
+- [ ] **8. Add plugin packaging to the build**
 
   After skills are generated, create the Claude Code plugin structure:
 
@@ -94,7 +113,7 @@ Tasks for implementing the [Agent Skills specification](../Specs/AgentSkills.md)
 
 ---
 
-- [ ] **8. Test the build script and generated scripts**
+- [ ] **9. Test the build script and generated scripts**
 
   Run `BuildAgentSkills.wls` end-to-end and verify:
 
@@ -110,7 +129,7 @@ Tasks for implementing the [Agent Skills specification](../Specs/AgentSkills.md)
 
 ---
 
-- [ ] **9. Create agent-level evals**
+- [ ] **10. Create agent-level evals**
 
   Create `AgentSkills/Evals/` with eval definitions that verify:
 
