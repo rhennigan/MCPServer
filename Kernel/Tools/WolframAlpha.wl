@@ -113,7 +113,7 @@ wolframAlphaToolEvaluateUI // endDefinition;
 makeUIResult // beginDefinition;
 
 makeUIResult[ as_, KeyValuePattern[ { "Result" -> waResult_, "String" -> stringResult_String } ] ] := Enclose[
-    Module[ { textContent, formatted, nb, query, target, deployed, notebookUrl, metadataItem },
+    Module[ { textContent, formatted, nb, query, target, deployed, notebookUrl },
 
         textContent = ConfirmMatch[
             toContentList @ extractWolframAlphaImages @ stringResult,
@@ -168,9 +168,7 @@ makeUIResult[ as_, KeyValuePattern[ { "Result" -> waResult_, "String" -> stringR
 
         notebookUrl = ConfirmBy[ First @ deployed, StringQ, "NotebookURL" ];
 
-        metadataItem = <| "type" -> "text", "text" -> "", "_meta" -> <| "notebookUrl" -> notebookUrl |> |>;
-
-        <| "Content" -> Prepend[ textContent, metadataItem ], "_meta" -> <| "notebookUrl" -> notebookUrl |> |>
+        <| "Content" -> textContent, "_meta" -> <| "notebookUrl" -> notebookUrl |> |>
     ],
     throwInternalFailure
 ];

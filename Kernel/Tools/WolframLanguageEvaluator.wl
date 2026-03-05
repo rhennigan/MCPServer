@@ -286,7 +286,7 @@ makeEvaluatorUIResult[
     code0_String,
     KeyValuePattern[ { "Result" -> heldResult_, "String" -> stringResult_String } ]
 ] := Enclose[
-    Module[ { code, textContent, outLabel, inLabel, inputCell, outputCell, nb, hash, target, deployed, notebookUrl, metadataItem },
+    Module[ { code, textContent, outLabel, inLabel, inputCell, outputCell, nb, hash, target, deployed, notebookUrl },
 
         code = StringTrim @ code0;
 
@@ -350,10 +350,9 @@ makeEvaluatorUIResult[
             "CloudDeploy"
         ];
 
-        notebookUrl  = ConfirmBy[ First @ deployed, StringQ, "NotebookURL" ];
-        metadataItem = <| "type" -> "text", "text" -> "", "_meta" -> <| "notebookUrl" -> notebookUrl |> |>;
+        notebookUrl = ConfirmBy[ First @ deployed, StringQ, "NotebookURL" ];
 
-        <| "Content" -> Prepend[ textContent, metadataItem ], "_meta" -> <| "notebookUrl" -> notebookUrl |> |>
+        <| "Content" -> textContent, "_meta" -> <| "notebookUrl" -> notebookUrl |> |>
     ],
     throwInternalFailure
 ];
