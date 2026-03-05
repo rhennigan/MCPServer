@@ -16,7 +16,7 @@ For distribution via Claude Code specifically, skills are packaged as two plugin
 - Follow the open [Agent Skills specification](https://agentskills.io/specification) for maximum portability across agent products.
 - Support dual-mode operation: prefer MCP tools when available, fall back to bundled scripts.
 - Generate standalone `.wls` scripts automatically from existing `$DefaultMCPTools` definitions.
-- Package skills as a single installable Claude Code plugin (other distribution methods can be added later).
+- Package skills as installable Claude Code plugins (other distribution methods can be added later).
 
 ---
 
@@ -42,7 +42,7 @@ Wolfram|Alpha queries and context retrieval.
 
 | Script | Source Tool | Description |
 | --- | --- | --- |
-| `WolframAlphaContext.wls` | WolframAlphaContext | Semantic search using Wolfram | Alpha |
+| `WolframAlphaContext.wls` | WolframAlphaContext | Semantic search using Wolfram\|Alpha |
 | `WolframAlpha.wls` | WolframAlpha | Query Wolfram\|Alpha |
 
 ### wolfram-notebooks
