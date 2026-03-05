@@ -169,7 +169,7 @@ Quiet[
 ];
 
 cicd`ScriptConfirmAssert[ Names[ "Wolfram`MCPServer`*" ] === Names[ "Wolfram`MCPServer`*`*" ] === { }, "Names" ];
-cicd`ScriptConfirm @ CheckAbort[ Get[ "Wolfram`MCPServer`" ], $Failed ];
+cicd`ScriptConfirm @ CheckAbort[ Quiet[ Get[ "Wolfram`MCPServer`" ], { LLMFunctions::llmrstrt } ], $Failed ];
 
 cicd`ScriptConfirmMatch[ DeleteDirectory[ tmp, DeleteContents -> True ], Null ];
 
