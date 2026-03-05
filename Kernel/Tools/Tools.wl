@@ -32,7 +32,7 @@ Needs[ "Wolfram`MCPServer`Common`" ];
 (*Default Tools and Options*)
 $DefaultMCPTools := WithCleanup[
     Unprotect @ $DefaultMCPTools,
-    $DefaultMCPTools = KeySort @ AssociationMap[ Apply @ Rule, $defaultMCPTools ],
+    $DefaultMCPTools = insertCatchTop @ KeySort @ AssociationMap[ Apply @ Rule, $defaultMCPTools ],
     Protect @ $DefaultMCPTools
 ];
 
@@ -49,6 +49,20 @@ $defaultToolOptions = <| |>;
 
 (* Set at server startup from MCP_TOOL_OPTIONS environment variable: *)
 $toolOptions = <| |>;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*insertCatchTop*)
+(* Ensures tool function calls are wrapped in `catchTop` in case they are evaluated separately *)
+insertCatchTop // beginDefinition;
+
+insertCatchTop[ tools_Association ] :=
+    insertCatchTop /@ tools;
+
+insertCatchTop[ HoldPattern @ LLMTool[ as: KeyValuePattern[ "Function" -> f_ ], rest___ ] ] :=
+    LLMTool[ <| as, "Function" -> Function[ args, catchTop @ f @ args, HoldAllComplete ] |>, rest ];
+
+insertCatchTop // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
