@@ -709,8 +709,17 @@ readExistingMCPConfig[ file_ ] := Enclose[
     Catch @ Module[ { path, data },
         path = ConfirmMatch[ configKeyPath[ ], { __String }, "ConfigKeyPath" ];
         If[ ! FileExistsQ @ file, Throw @ emptyConfigForPath @ path ];
-        data = readRawJSONFile @ ExpandFileName @ file;
+
+        (* Quiet any parsing errors, because we'll be issuing our own `InvalidMCPConfiguration` message if it fails *)
+        data = Quiet @ readRawJSONFile @ ExpandFileName @ file;
+
+        (* Handle empty files *)
+        If[ data === Missing[ "EmptyFile" ], Throw @ emptyConfigForPath @ path ];
+
+        (* Throw a failure for any other unexpected result*)
         If[ ! AssociationQ @ data, throwFailure[ "InvalidMCPConfiguration", file ] ];
+
+        (* Create the nested key structure *)
         ensureNestedKey[ data, path ]
     ],
     throwInternalFailure

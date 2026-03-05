@@ -202,8 +202,28 @@ writeWXFFile // endDefinition;
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*readRawJSONFile*)
+(* Effectively equivalent to Developer`ReadRawJSONFile, but it returns Missing[ "EmptyFile" ] if the file is empty. *)
 readRawJSONFile // beginDefinition;
-readRawJSONFile[ file_, opts: OptionsPattern[ ] ] := Developer`ReadRawJSONFile[ ExpandFileName @ file, opts ];
+
+readRawJSONFile[ file0_, opts: OptionsPattern[ ] ] := Enclose[
+    Catch @ Module[ { file, bytes, string },
+        file = ConfirmBy[ ExpandFileName @ file0, StringQ, "File" ];
+
+        (* Let ReadByteArray issue the appropriate messages *)
+        bytes = ReadByteArray @ file;
+        If[ bytes === EndOfFile, Throw @ Missing[ "EmptyFile" ] ];
+        If[ ! ByteArrayQ @ bytes, Throw @ $Failed ];
+
+        (* Return Missing[ "EmptyFile" ] if the file is empty *)
+        string = ConfirmBy[ ByteArrayToString[ bytes, "UTF8" ], StringQ, "String" ];
+        If[ StringMatchQ[ string, WhitespaceCharacter... ], Throw @ Missing[ "EmptyFile" ] ];
+
+        (* Otherwise, parse the string as JSON *)
+        Developer`ReadRawJSONString[ string, opts ]
+    ],
+    throwInternalFailure
+];
+
 readRawJSONFile // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
