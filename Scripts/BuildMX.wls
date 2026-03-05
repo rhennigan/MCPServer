@@ -3,9 +3,6 @@
 BeginPackage[ "Wolfram`MCPServerScripts`" ];
 If[ ! TrueQ @ $loadedDefinitions, Get @ FileNameJoin @ { DirectoryName @ $InputFileName, "Common.wl" } ];
 
-(* :!CodeAnalysis::BeginBlock:: *)
-(* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
-
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Initialization*)
@@ -169,7 +166,15 @@ Quiet[
 ];
 
 cicd`ScriptConfirmAssert[ Names[ "Wolfram`MCPServer`*" ] === Names[ "Wolfram`MCPServer`*`*" ] === { }, "Names" ];
-cicd`ScriptConfirm @ CheckAbort[ Quiet[ Get[ "Wolfram`MCPServer`" ], { LLMFunctions::llmrstrt } ], $Failed ];
+Quiet[
+    cicd`ScriptConfirm @ CheckAbort[ Get[ "Wolfram`MCPServer`" ], $Failed ],
+    {
+        (* :!CodeAnalysis::BeginBlock:: *)
+        (* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
+        LLMServices`Defaults`Private`LLMFunctions::llmrstrt
+        (* :!CodeAnalysis::EndBlock:: *)
+    }
+];
 
 cicd`ScriptConfirmMatch[ DeleteDirectory[ tmp, DeleteContents -> True ], Null ];
 
@@ -186,8 +191,6 @@ result = If[ ! FileExistsQ @ $mxFile,
              cicd`ConsoleError[ "Failed to build MX file!", "Fatal" -> True ],
              $mxFile
          ];
-
-(* :!CodeAnalysis::EndBlock:: *)
 
 EndPackage[ ];
 

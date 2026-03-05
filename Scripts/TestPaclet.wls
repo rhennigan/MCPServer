@@ -11,9 +11,6 @@ Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
 (* ::Section::Closed:: *)
 (*Configure TestReport Output*)
 
-(* :!CodeAnalysis::BeginBlock:: *)
-(* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
-
 (* Improve readability of GitHub Actions output by writing some test events to stdout: *)
 $stdOut = First @ Streams[ "stdout" ];
 SetOptions[ $stdOut, PageWidth -> Infinity ];
@@ -98,12 +95,22 @@ runTests[ testFiles_List ] :=
         markdown = cStr @ mcp`TestReportToolFunction[ args, "External" -> False ];
         writeLine[ "\n<test-results>\n" <> markdown <> "\n</test-results>\n" ];
         outcome = cStr @ First @ StringCases[ markdown, "| **Overall Result** | " ~~ o: Except[ "|" ].. ~~ " |" :> o ];
+        (* :!CodeAnalysis::BeginBlock:: *)
+        (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
         If[ outcome =!= "Success", Exit[ 1 ] ];
+        (* :!CodeAnalysis::EndBlock:: *)
         markdown
     ];
 
-result = Quiet[ Block[ { messageHandler }, runTests @ $testFiles ], { LLMFunctions::llmrstrt } ];
-(* :!CodeAnalysis::EndBlock:: *)
+result = Quiet[
+    Block[ { messageHandler }, runTests @ $testFiles ],
+    {
+        (* :!CodeAnalysis::BeginBlock:: *)
+        (* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
+        LLMServices`Defaults`Private`LLMFunctions::llmrstrt
+        (* :!CodeAnalysis::EndBlock:: *)
+    }
+];
 
 EndPackage[ ];
 
