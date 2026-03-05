@@ -88,10 +88,8 @@ $testFiles = Flatten[ If[ DirectoryQ[ # ], FileNames[ "*.wlt", # ], { # } ] & /@
 (* ::Section::Closed:: *)
 (*Run Tests*)
 (* When running tests in a GitHub Actions workflow, use the `TestPaclet` tool to generate proper GitHub annotations *)
-runTests[ ___ ] /; StringQ @ Environment[ "GITHUB_ACTIONS" ] := Quiet[
-    UsingFrontEnd @ checkResult @ cicd`TestPaclet @ FileNameJoin @ { $pacletDir, "Tests" },
-    { LLMFunctions::llmrstrt }
-];
+runTests[ ___ ] /; StringQ @ Environment[ "GITHUB_ACTIONS" ] :=
+    UsingFrontEnd @ checkResult @ cicd`TestPaclet @ FileNameJoin @ { $pacletDir, "Tests" };
 
 (* Use the `TestReportToolFunction` to generate nice readable markdown when running tests locally *)
 runTests[ testFiles_List ] :=
@@ -104,7 +102,7 @@ runTests[ testFiles_List ] :=
         markdown
     ];
 
-result = Block[ { messagePrint }, runTests @ $testFiles ];
+result = Quiet[ Block[ { messageHandler }, runTests @ $testFiles ], { LLMFunctions::llmrstrt } ];
 (* :!CodeAnalysis::EndBlock:: *)
 
 EndPackage[ ];
