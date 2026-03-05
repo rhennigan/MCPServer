@@ -425,6 +425,7 @@ The following custom rules are defined in `Kernel/Tools/CodeInspector/Rules.wl`:
 | Tag | Severity | Confidence | Description |
 |-----|----------|------------|-------------|
 | `FixMeComment` | Warning | 0.9 | `(* FIXME: ... *)` comments flagged as action items |
+| `AmbiguousMapSyntax` | Warning | 0.95 | Precedence-sensitive concrete syntax like `f @ g /@ x`, with rewrites that make the intended grouping explicit |
 
 ### Text-Level Rules
 

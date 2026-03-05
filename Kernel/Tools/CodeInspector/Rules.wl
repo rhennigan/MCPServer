@@ -37,6 +37,31 @@ $$yieldsDateObject = HoldPattern @ Alternatives[
 
 $$setOrSetDelayed = "Set"|"System`Set"|"SetDelayed"|"System`SetDelayed";
 
+$$concreteWhitespace = cp`LeafNode[ Whitespace, __, _ ]...;
+$$concreteMappableExpression = _cp`LeafNode | _cp`CallNode | _cp`GroupNode;
+$$ambiguousAtMapSyntax =
+    cp`BinaryNode[
+        Map,
+        {
+            cp`BinaryNode[
+                cp`BinaryAt,
+                {
+                    cp`LeafNode[ Symbol, _String, _ ],
+                    $$concreteWhitespace,
+                    cp`LeafNode[ Token`At, "@", _ ],
+                    $$concreteWhitespace,
+                    $$concreteMappableExpression
+                },
+                _
+            ],
+            $$concreteWhitespace,
+            cp`LeafNode[ Token`SlashAt, "/@", _ ],
+            $$concreteWhitespace,
+            _
+        },
+        _
+    ];
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Config*)
@@ -100,7 +125,8 @@ $concreteRules := $concreteRules = <|
         Token`Comment,
         _String? (StringStartsQ[ "(*"~~WhitespaceCharacter...~~"FIXME:" ]),
         _
-    ] -> inspectFixMeComment
+    ] -> inspectFixMeComment,
+    $$ambiguousAtMapSyntax -> inspectAmbiguousMapSyntax
 |>;
 
 (* ::**************************************************************************************************************:: *)
@@ -240,6 +266,184 @@ inspectFixMeComment[ pos_, ast_ ] :=
     ];
 
 inspectFixMeComment // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectAmbiguousMapSyntax*)
+inspectAmbiguousMapSyntax // beginDefinition;
+
+inspectAmbiguousMapSyntax[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, as, parts, original, parsed, mapInsideApply, explicitCurrentParse },
+        node = ConfirmMatch[ Extract[ ast, pos ], _cp`BinaryNode, "Node" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        parts = ConfirmBy[ ambiguousMapSyntaxParts @ node, AssociationQ, "Parts" ];
+
+        original = concreteNodeString @ node;
+        parsed = explicitMapParseString[ parts[ "left" ], parts[ "right" ], parts[ "mapArg" ] ];
+        mapInsideApply = wrapMapInsideApplyString[ parts[ "left" ], parts[ "right" ], parts[ "mapArg" ] ];
+        explicitCurrentParse = explicitCurrentMapParseString[ parts[ "left" ], parts[ "right" ], parts[ "mapArg" ] ];
+
+        ci`InspectionObject[
+            "AmbiguousMapSyntax",
+            ambiguousMapSyntaxHint[ original, parsed, mapInsideApply, explicitCurrentParse ],
+            "Warning",
+            <|
+                as,
+                ConfidenceLevel -> 0.95,
+                cp`CodeActions -> ambiguousMapSyntaxCodeActions[ as, mapInsideApply, explicitCurrentParse ]
+            |>
+        ]
+    ];
+
+inspectAmbiguousMapSyntax // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*ambiguousMapSyntaxParts*)
+ambiguousMapSyntaxParts // beginDefinition;
+
+ambiguousMapSyntaxParts[
+    cp`BinaryNode[
+        Map,
+        {
+            cp`BinaryNode[
+                cp`BinaryAt,
+                {
+                    left_,
+                    $$concreteWhitespace,
+                    cp`LeafNode[ Token`At, "@", _ ],
+                    $$concreteWhitespace,
+                    right_
+                },
+                _
+            ],
+            $$concreteWhitespace,
+            cp`LeafNode[ Token`SlashAt, "/@", _ ],
+            $$concreteWhitespace,
+            mapArg_
+        },
+        _
+    ]
+] :=
+    <|
+        "left"   -> left,
+        "right"  -> right,
+        "mapArg" -> mapArg
+    |>;
+
+ambiguousMapSyntaxParts[ ___ ] := Missing[ "NoMatch" ];
+
+ambiguousMapSyntaxParts // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*concreteNodeString*)
+concreteNodeString // beginDefinition;
+
+concreteNodeString[ text_String ] := text;
+
+concreteNodeString[ cp`LeafNode[ _, text_String, _ ] ] := text;
+
+concreteNodeString[ node_ ] :=
+    StringJoin @ Cases[ node, cp`LeafNode[ _, text_String, _ ] :> text, Infinity ];
+
+concreteNodeString // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*explicitMapParseString*)
+explicitMapParseString // beginDefinition;
+
+explicitMapParseString[ left_, right_, mapArg_ ] :=
+    "Map[" <> bracketApplyString[ left, right ] <> ", " <> (concreteNodeString @ mapArg) <> "]";
+
+explicitMapParseString // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*wrapMapInsideApplyString*)
+wrapMapInsideApplyString // beginDefinition;
+
+wrapMapInsideApplyString[ left_, right_, mapArg_ ] :=
+    bracketApplyString[
+        left,
+        (concreteNodeString @ right) <> " /@ " <> (concreteNodeString @ mapArg)
+    ];
+
+wrapMapInsideApplyString // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*explicitCurrentMapParseString*)
+explicitCurrentMapParseString // beginDefinition;
+
+explicitCurrentMapParseString[ left_, right_, mapArg_ ] :=
+    bracketApplyString[ left, right ] <> " /@ " <> (concreteNodeString @ mapArg);
+
+explicitCurrentMapParseString // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*bracketApplyString*)
+bracketApplyString // beginDefinition;
+
+bracketApplyString[ left_, right_ ] :=
+    (concreteNodeString @ left) <> "[" <> (concreteNodeString @ right) <> "]";
+
+bracketApplyString // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*ambiguousMapSyntaxHint*)
+ambiguousMapSyntaxHint // beginDefinition;
+
+ambiguousMapSyntaxHint[
+    original_String,
+    parsed_String,
+    mapInsideApply_String,
+    explicitCurrentParse_String
+] :=
+    "``" <> original <> "`` is parsed as ``" <> parsed <>
+    "``. Use ``" <> mapInsideApply <>
+    "`` if you want to apply the outer function after mapping, or ``" <>
+    explicitCurrentParse <> "`` to make the current parse explicit";
+
+ambiguousMapSyntaxHint // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*ambiguousMapSyntaxCodeActions*)
+ambiguousMapSyntaxCodeActions // beginDefinition;
+
+ambiguousMapSyntaxCodeActions[ as_Association, mapInsideApply_String, explicitCurrentParse_String ] :=
+    DeleteCases[
+        {
+            ambiguousMapSyntaxCodeAction[ Lookup[ as, cp`Source, Missing[ "NotAvailable" ] ], mapInsideApply ],
+            ambiguousMapSyntaxCodeAction[ Lookup[ as, cp`Source, Missing[ "NotAvailable" ] ], explicitCurrentParse ]
+        },
+        Nothing
+    ];
+
+ambiguousMapSyntaxCodeActions // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*ambiguousMapSyntaxCodeAction*)
+ambiguousMapSyntaxCodeAction // beginDefinition;
+
+ambiguousMapSyntaxCodeAction[
+    source: { { _Integer, _Integer }, { _Integer, _Integer } },
+    replacement_String
+] :=
+    cp`CodeAction[
+        "Replace with ``" <> replacement <> "``",
+        cp`ReplaceText,
+        <| cp`Source -> source, "ReplacementText" -> replacement |>
+    ];
+
+ambiguousMapSyntaxCodeAction[ _, _ ] := Nothing;
+
+ambiguousMapSyntaxCodeAction // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
