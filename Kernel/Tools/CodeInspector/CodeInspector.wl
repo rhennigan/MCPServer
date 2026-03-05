@@ -179,7 +179,7 @@ parseExclusions // beginDefinition;
 parseExclusions[ _Missing ] := { };
 parseExclusions[ _Missing, default_List ] := default;
 parseExclusions[ "" ] := { };
-parseExclusions[ "", default_List ] := default;
+parseExclusions[ "", _List ] := { };
 parseExclusions[ str_String ] := DeleteCases[ StringTrim @ StringSplit[ str, "," ], "" ];
 parseExclusions[ str_String, _List ] := parseExclusions @ str;
 parseExclusions // endDefinition;
