@@ -105,6 +105,8 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
         SetOptions[ First @ Streams[ "stdout" ], CharacterEncoding -> "UTF-8" ];
         SetOptions[ First @ Streams[ "stderr" ], CharacterEncoding -> "UTF-8" ];
 
+        cleanupOldOutputLogs[ ];
+
         logFile = ConfirmBy[ ensureFilePath @ mcpServerLogFile @ obj, fileQ, "LogFile" ];
         If[ FileExistsQ @ logFile, DeleteFile @ logFile ];
         writeLog[ "LogFile" -> logFile ];
@@ -724,9 +726,9 @@ superQuiet[ eval_ ] :=
             $Failed
         ];
 
-        If[ MatchQ[ logStream, OutputStream[ _, _ ] ],
+        If[ MatchQ[ logStream, _OutputStream ],
             (* Success: redirect to log file *)
-            cleanupOldOutputLogs[ ];
+
             WithCleanup[
                 Block[
                     {
