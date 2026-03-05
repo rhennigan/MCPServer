@@ -529,6 +529,40 @@ VerificationTest[
 ]
 
 (* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Error Cases*)
+
+(* GH#65: Nonexistent path should produce TestFileNotFound, not an internal failure *)
+VerificationTest[
+    $testReportTool[ <| "paths" -> CreateUUID[] <> "/does/not/exist.wlt" |> ],
+    Failure[ "MCPServer::TestFileNotFound", _Association ],
+    { MCPServer::TestFileNotFound },
+    SameTest -> MatchQ,
+    TestID   -> "TestReport-NonexistentFile-GH#65@@Tests/Tools.wlt:536,1-542,2"
+]
+
+VerificationTest[
+    $testReportTool[ <| "paths" -> CreateUUID[] <> "/does/not/exist.wlt" |> ],
+    _? (FreeQ[ "MCPServer::Internal" ]),
+    { MCPServer::TestFileNotFound },
+    SameTest -> MatchQ,
+    TestID   -> "TestReport-NoInternalFailure-GH#65@@Tests/Tools.wlt:544,1-550,2"
+]
+
+VerificationTest[
+    $testReportTool @ <|
+        "paths" -> StringJoin[
+            FileNameJoin @ { $testResourceDirectory, "TestFile1.wlt" },
+            ", " <> CreateUUID[] <> "/does/not/exist.wlt"
+        ]
+    |>,
+    _? (FreeQ[ "MCPServer::Internal" ]),
+    { MCPServer::TestFileNotFound },
+    SameTest -> MatchQ,
+    TestID   -> "TestReport-MixedValidInvalidPaths-GH#65@@Tests/Tools.wlt:552,1-563,2"
+]
+
+(* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Tool Properties*)
 
@@ -542,7 +576,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveNames@@Tests/Tools.wlt:538,1-546,2"
+    TestID   -> "ToolProperties-AllHaveNames@@Tests/Tools.wlt:572,1-580,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -555,7 +589,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveDescriptions@@Tests/Tools.wlt:551,1-559,2"
+    TestID   -> "ToolProperties-AllHaveDescriptions@@Tests/Tools.wlt:585,1-593,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -568,5 +602,5 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveParameters@@Tests/Tools.wlt:564,1-572,2"
+    TestID   -> "ToolProperties-AllHaveParameters@@Tests/Tools.wlt:598,1-606,2"
 ]
