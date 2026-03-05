@@ -1,0 +1,32 @@
+{
+	"name":"wolfram-agent-skills",
+	"owner":{
+		"name":"Richard Hennigan",
+		"email":"richardh@wolfram.com"
+	},
+	"metadata":{
+		"description":"A collection of Wolfram agent skills",
+		"version":"1.7.21"
+	},
+	"plugins":[
+		{
+			"name":"wolfram-language-development",
+			"description":"A full Wolfram Language development environment with code evaluation, documentation search, symbol inspection, static analysis, and test execution.",
+			"source":"./AgentSkills/Skills",
+			"strict":false,
+			"skills":[
+				"./wolfram-language",
+				"./wolfram-notebooks"
+			]
+		},
+		{
+			"name":"wolfram-alpha",
+			"description":"Wolfram|Alpha queries and context retrieval.",
+			"source":"./AgentSkills/Skills",
+			"strict":false,
+			"skills":[
+				"./wolfram-alpha"
+			]
+		}
+	]
+}

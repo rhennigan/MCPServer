@@ -10,6 +10,11 @@ Needs[ "Wolfram`MCPServer`Tools`"  ];
 Needs[ "CodeInspector`" -> "ci`"   ];
 Needs[ "CodeParser`"    -> "cp`"   ];
 
+(* TODO:
+  `StringTrimLeft` is not a System symbol - suggest `StringDelete[ string, StartOfString ~~ pattern.. ]`
+  `StringTrimRight` is not a System symbol - suggest `StringDelete[ string, pattern.. ~~ EndOfString ]`
+*)
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Argument Patterns*)

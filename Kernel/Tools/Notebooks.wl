@@ -60,6 +60,19 @@ $defaultMCPTools[ "WriteNotebook" ] := LLMTool @ <|
     }
 |>;
 
+(* TODO: We should make the following changes to the WriteNotebook tool:
+
+- For files that already exist, there should be the following options for writing content:
+  - Overwrite (all we currently do)
+  - Append
+  - Prepend
+  - Insert
+
+- We should also have an option to evaluate new input cells to generate outputs when writing
+
+- Alternatively, we could make an EditNotebook tool that does these things.
+*)
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Definitions*)

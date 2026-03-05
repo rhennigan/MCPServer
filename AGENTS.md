@@ -57,6 +57,18 @@ See [building.md](docs/building.md) for detailed instructions.
   - `Apps/`: HTML and JSON files for [MCP Apps](docs/mcp-apps.md) UI resources
 
 - `Scripts/`: Contains utility scripts for building, testing, and running the paclet
+  - `BuildAgentSkills.wls`: Generates agent skill scripts from MCP tool definitions (see [agent-skills.md](docs/agent-skills.md))
+  - `Resources/SkillScriptTemplate.wls`: Template used to generate `.wls` scripts for agent skills
+
+- `AgentSkills/`: Agent skills for distributing Wolfram tools to AI coding agents (see [agent-skills.md](docs/agent-skills.md))
+  - `Manifest.wl`: Maps skill names to their MCP tools and shared references
+  - `References/`: Single-source shared reference files copied into every skill at build time
+  - `Skills/`: Generated skill directories (wolfram-language, wolfram-alpha, wolfram-notebooks)
+
+- `.claude-plugin/`: Claude Code plugin packaging
+  - `marketplace.json`: Plugin marketplace definition for distributing agent skills via Claude Code
+
+- `Notes/`: Development notes and design explorations
 
 - `Documentation/`: Contains documentation notebooks
   - `English/`: English documentation
@@ -77,6 +89,7 @@ See [building.md](docs/building.md) for detailed instructions.
   - `mcp-clients.md`: MCP client support and installation
   - `mcp-apps.md`: MCP Apps system for interactive UI resources
   - `code-inspector-rules.md`: Adding custom CodeInspector rules
+  - `agent-skills.md`: Agent skills system, build process, and how to add new skills
 
 ### MCP Documentation
 

@@ -32,7 +32,9 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Should create a new resource function definition notebook
 - [ ] Implement `EditResourceFunction` tool
   - Should edit an existing resource function definition notebook
+- [ ] Implement `CheckPaclet` tool
 - [ ] Implement `BuildPaclet` tool
+- [ ] Implement `PublishPaclet` tool
 - [ ] Implement `ReloadPaclet` tool
 - [ ] Implement `RestartMCPServer` tool (if possible)
 - [ ] Tool to open notebooks for the user (e.g., `UsingFrontEnd[SystemOpen[notebookPath]]`)
@@ -80,11 +82,19 @@ Consolidated list of TODO/FIXME items from the codebase.
 - [ ] Log tool calls (and generate a notebook)
 - [ ] Add optional "caption" parameter to evaluator tool (maybe all tools?)
 - [ ] Group similar tools and have another tool to activate them when needed (to save on token usage)
+- [ ] WriteNotebook improvements: support Append/Prepend/Insert modes (not just Overwrite), option to evaluate input cells, or create a separate EditNotebook tool
+  - Source: `Kernel/Tools/Notebooks.wl`
 - [ ] Documentation editing tools should have examples evaluation be optional
 - [ ] Implement `ReadableForm` in this paclet for better code formatting
   - Source: `Kernel/Tools/TestReport.wl`
 - [ ] Show relative paths in CodeInspector output when inspecting directories
   - Source: `Kernel/Tools/CodeInspector/Formatting.wl`
+- [ ] Add CodeInspector rule: suggest `StringDelete[string, StartOfString ~~ pattern..]` instead of `StringTrimLeft`
+  - `StringTrimLeft` is not a System symbol
+  - Source: `Kernel/Tools/CodeInspector/Rules.wl`
+- [ ] Add CodeInspector rule: suggest `StringDelete[string, pattern.. ~~ EndOfString]` instead of `StringTrimRight`
+  - `StringTrimRight` is not a System symbol
+  - Source: `Kernel/Tools/CodeInspector/Rules.wl`
 
 ## Prompts
 
@@ -118,45 +128,17 @@ This is effectively what the paclet currently does, but we'll run it in reverse.
 
 Create distributable agent skills that use functionality from this paclet.
 
-- [ ] Testing
-  - Instructions:
-    - writing tests
-    - running tests
-    - inspecting code
-  - Scripts:
-    - `TestReport.wls [path/to/Tests/]`
-    - `CodeInspect.wls [path/to/Code/]`
+- [x] Wolfram Language Development skills
+- [x] Wolfram|Alpha skills
+- [x] Plugin marketplace
+- [x] Add new documentation page for adding skills
+- [ ] Create and run agent-level evals
+- [ ] Investigate using hooks instead of instructions to use CodeInspector
 
-- [ ] Paclet Building
-  - Instructions:
-    - checking the paclet
-    - building the paclet
-    - submitting the paclet
-  - Scripts:
-    - `CheckPaclet.wls [path/to/Paclet/]`
-    - `BuildPaclet.wls [path/to/Paclet/]`
-    - `SubmitPaclet.wls [path/to/Paclet/]`
+### More Skill Ideas
 
-- [ ] Paclet Optimization
-  - Instructions:
-    - MX builds
-    - compiled functions
-
-- [ ] Creating New Paclets
-  - Instructions:
-    - layout guidelines
-    - naming conventions
-    - documentation guidelines
-  - Scripts:
-    - `NewPaclet.wls [path/to/NewPaclet/]`
-
-- [ ] Documentation
-  - Instructions:
-    - writing paclet documentation
-    - building paclet documentation
-  - Scripts:
-    - `CreateDocumentation.wls [path/to/Documentation/]`
-    - `BuildDocumentation.wls [path/to/Documentation/]`
+- [ ] Skill for exploring definitions to find source code
+- [ ] Debugging skills (message handlers, stack traces, etc.)
 
 ## Blocked / Dependencies
 
