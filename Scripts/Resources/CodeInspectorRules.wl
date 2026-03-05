@@ -11,6 +11,11 @@ $inGitHub := $inGitHub = StringQ @ Environment[ "GITHUB_ACTIONS" ];
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Custom Rules*)
+
+$$ws = cp`LeafNode[ Whitespace, __ ]...;
+$$symbolAtSymbol = cp`BinaryNode[ cp`BinaryAt, { cp`LeafNode[ Symbol, _, _ ], $$ws, cp`LeafNode[ Token`At, __ ], $$ws, cp`LeafNode[ Symbol, _, _ ] }, _ ];
+$$badSymbolMapPrecedence = cp`BinaryNode[ Map, { $$symbolAtSymbol, $$ws, cp`LeafNode[ Token`SlashAt, __ ], $$ws, _cp`LeafNode | _cp`CallNode }, _ ];
+
 CodeInspector`AbstractRules`$DefaultAbstractRules = <|
     CodeInspector`AbstractRules`$DefaultAbstractRules,
     cp`CallNode[ cp`LeafNode[ Symbol, "Throw", _ ], { _ }, _ ] -> scanSingleArgThrow,
@@ -25,7 +30,8 @@ CodeInspector`ConcreteRules`$DefaultConcreteRules = <|
         Token`Comment,
         _String? (StringStartsQ[ "(*"~~WhitespaceCharacter...~~"FIXME:" ]),
         _
-    ] -> scanFixMeComment
+    ] -> scanFixMeComment,
+    $$badSymbolMapPrecedence -> scanAmbiguousMapSyntax
 |>;
 
 (* ::**************************************************************************************************************:: *)
@@ -139,5 +145,34 @@ scanFixMeComment[ pos_, ast_ ] /; $inGitHub :=
     ];
 
 scanFixMeComment[ pos_, ast_ ] := { };
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*scanAmbiguousMapSyntax*)
+scanAmbiguousMapSyntax // ClearAll;
+
+scanAmbiguousMapSyntax[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, as, fNode, gNode, xNode },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+
+        fNode = ConfirmMatch[ node[[ 2, 1, 2, 1 ]], _[ _, _, __ ], "FNode" ];
+        gNode = ConfirmMatch[ node[[ 2, 1, 2, 5 ]], _[ _, _, __ ], "GNode" ];
+        xNode = ConfirmMatch[ node[[ 2, 5 ]], _[ _, _, __ ], "XNode" ];
+
+        With[ {
+            fStr = cp`ToSourceCharacterString @ fNode,
+            gStr = cp`ToSourceCharacterString @ gNode,
+            xStr = cp`ToSourceCharacterString @ xNode
+        },
+            ci`InspectionObject[
+                "AmbiguousMapSyntax",
+                "``" <> fStr <> " @ " <> gStr <> " /@ " <> xStr <> "`` is parsed as ``Map[" <> fStr <> "[" <> gStr <> "], " <> xStr <> "]``. \
+Suggestions: ``" <> fStr <> "[" <> gStr <> " /@ " <> xStr <> "]`` or ``" <> fStr <> "[" <> gStr <> "] /@ " <> xStr <> "``.",
+                "Warning",
+                <| as, ConfidenceLevel -> 0.95 |>
+            ]
+        ]
+    ];
 
 EndPackage[ ];

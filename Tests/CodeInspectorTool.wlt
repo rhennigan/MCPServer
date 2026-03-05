@@ -2153,13 +2153,70 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Custom Rules - AmbiguousMapSyntax*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectAmbiguousMapSyntax - Basic Detection*)
+VerificationTest[
+    $ambiguousMapResult = CodeInspectorToolFunction @ <|
+        "code" -> "f @ g /@ x"
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "AmbiguousMapSyntax-ReturnsString@@Tests/CodeInspectorTool.wlt:2161,1-2168,2"
+]
+
+VerificationTest[
+    StringCount[ $ambiguousMapResult, "Issue " ~~ DigitCharacter.. ~~ ": AmbiguousMapSyntax" ],
+    1,
+    SameTest -> SameQ,
+    TestID   -> "AmbiguousMapSyntax-HasTag@@Tests/CodeInspectorTool.wlt:2170,1-2175,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $ambiguousMapResult, "is parsed as" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "AmbiguousMapSyntax-HasDescription@@Tests/CodeInspectorTool.wlt:2177,1-2182,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $ambiguousMapResult, "(Warning" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "AmbiguousMapSyntax-HasSeverity@@Tests/CodeInspectorTool.wlt:2184,1-2189,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectAmbiguousMapSyntax - No False Positives*)
+
+VerificationTest[
+    $normalMapResult = CodeInspectorToolFunction @ <|
+        "code" -> "f[g /@ x]"
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "AmbiguousMapSyntax-NormalMap-ReturnsString@@Tests/CodeInspectorTool.wlt:2195,1-2202,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $normalMapResult, "AmbiguousMapSyntax" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "AmbiguousMapSyntax-NormalMap-NoTag@@Tests/CodeInspectorTool.wlt:2204,1-2209,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Integration Tests - Cleanup*)
 VerificationTest[
     DeleteDirectory[ $integrationTempDir, DeleteContents -> True ];
     ! DirectoryQ @ $integrationTempDir,
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:2157,1-2163,2"
+    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:2214,1-2220,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

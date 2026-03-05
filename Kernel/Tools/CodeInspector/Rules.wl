@@ -37,6 +37,11 @@ $$yieldsDateObject = HoldPattern @ Alternatives[
 
 $$setOrSetDelayed = "Set"|"System`Set"|"SetDelayed"|"System`SetDelayed";
 
+$$ws = cp`LeafNode[ Whitespace, __ ]...;
+$$symbolAtSymbol = cp`BinaryNode[ cp`BinaryAt, { cp`LeafNode[ Symbol, _, _ ], $$ws, cp`LeafNode[ Token`At, __ ], $$ws, cp`LeafNode[ Symbol, _, _ ] }, _ ];
+$$badSymbolMapPrecedence = cp`BinaryNode[ Map, { $$symbolAtSymbol, $$ws, cp`LeafNode[ Token`SlashAt, __ ], $$ws, _cp`LeafNode | _cp`CallNode }, _ ];
+
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Config*)
@@ -100,7 +105,8 @@ $concreteRules := $concreteRules = <|
         Token`Comment,
         _String? (StringStartsQ[ "(*"~~WhitespaceCharacter...~~"FIXME:" ]),
         _
-    ] -> inspectFixMeComment
+    ] -> inspectFixMeComment,
+    $$badSymbolMapPrecedence -> inspectAmbiguousMapSyntax
 |>;
 
 (* ::**************************************************************************************************************:: *)
@@ -514,6 +520,37 @@ inspectFileLength[ lines_List ] /; Length @ lines > $maxFileLines :=
 inspectFileLength[ _List ] := { };
 
 inspectFileLength // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectAmbiguousMapSyntax*)
+inspectAmbiguousMapSyntax // beginDefinition;
+
+inspectAmbiguousMapSyntax[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, as, fNode, gNode, xNode },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+
+        fNode = ConfirmMatch[ node[[ 2, 1, 2, 1 ]], _[ _, _, __ ], "FNode" ];
+        gNode = ConfirmMatch[ node[[ 2, 1, 2, 5 ]], _[ _, _, __ ], "GNode" ];
+        xNode = ConfirmMatch[ node[[ 2, 5 ]], _[ _, _, __ ], "XNode" ];
+
+        With[ {
+            fStr = cp`ToSourceCharacterString @ fNode,
+            gStr = cp`ToSourceCharacterString @ gNode,
+            xStr = cp`ToSourceCharacterString @ xNode
+        },
+            ci`InspectionObject[
+                "AmbiguousMapSyntax",
+                "``" <> fStr <> " @ " <> gStr <> " /@ " <> xStr <> "`` is parsed as ``Map[" <> fStr <> "[" <> gStr <> "], " <> xStr <> "]``. \
+Suggestions: ``" <> fStr <> "[" <> gStr <> " /@ " <> xStr <> "]`` or ``" <> fStr <> "[" <> gStr <> "] /@ " <> xStr <> "``.",
+                "Warning",
+                <| as, ConfidenceLevel -> 0.95 |>
+            ]
+        ]
+    ];
+
+inspectAmbiguousMapSyntax // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
