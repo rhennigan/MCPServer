@@ -2153,13 +2153,134 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Custom Rules - AmbiguousMapPrecedence*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectAmbiguousMapPrecedence - Basic Detection*)
+VerificationTest[
+    $ambigMapResult = CodeInspectorToolFunction @ <|
+        "code"               -> "f @ g /@ x",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "AmbiguousMapPrecedence-Basic-ReturnsString@@Tests/CodeInspectorTool.wlt:2161,1-2170,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $ambigMapResult, "AmbiguousMapPrecedence" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "AmbiguousMapPrecedence-Basic-HasTag@@Tests/CodeInspectorTool.wlt:2172,1-2177,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $ambigMapResult, "(Warning" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "AmbiguousMapPrecedence-Basic-IsWarning@@Tests/CodeInspectorTool.wlt:2179,1-2184,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectAmbiguousMapPrecedence - Motivating Example*)
+VerificationTest[
+    $ambigMapQuietResult = CodeInspectorToolFunction @ <|
+        "code"               -> "Quiet @ DeleteFile /@ files",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "AmbiguousMapPrecedence-QuietDeleteFile-ReturnsString@@Tests/CodeInspectorTool.wlt:2189,1-2198,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $ambigMapQuietResult, "AmbiguousMapPrecedence" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "AmbiguousMapPrecedence-QuietDeleteFile-HasTag@@Tests/CodeInspectorTool.wlt:2200,1-2205,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $ambigMapQuietResult, "Quiet" ] && StringContainsQ[ $ambigMapQuietResult, "DeleteFile" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "AmbiguousMapPrecedence-QuietDeleteFile-HasSymbolNames@@Tests/CodeInspectorTool.wlt:2207,1-2212,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectAmbiguousMapPrecedence - No False Positives*)
+
+(* Bracket application should not trigger *)
+VerificationTest[
+    $ambigMapBracketResult = CodeInspectorToolFunction @ <|
+        "code"               -> "f[g /@ x]",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "AmbiguousMapPrecedence-BracketApp-ReturnsString@@Tests/CodeInspectorTool.wlt:2219,1-2228,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $ambigMapBracketResult, "AmbiguousMapPrecedence" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "AmbiguousMapPrecedence-BracketApp-NoTag@@Tests/CodeInspectorTool.wlt:2230,1-2235,2"
+]
+
+(* Explicit Map should not trigger *)
+VerificationTest[
+    $ambigMapExplicitResult = CodeInspectorToolFunction @ <|
+        "code"               -> "Map[f @ g, x]",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "AmbiguousMapPrecedence-ExplicitMap-ReturnsString@@Tests/CodeInspectorTool.wlt:2238,1-2247,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $ambigMapExplicitResult, "AmbiguousMapPrecedence" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "AmbiguousMapPrecedence-ExplicitMap-NoTag@@Tests/CodeInspectorTool.wlt:2249,1-2254,2"
+]
+
+(* Plain prefix application without Map should not trigger *)
+VerificationTest[
+    $ambigMapNoMapResult = CodeInspectorToolFunction @ <|
+        "code"               -> "f @ g",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "AmbiguousMapPrecedence-NoMap-ReturnsString@@Tests/CodeInspectorTool.wlt:2257,1-2266,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $ambigMapNoMapResult, "AmbiguousMapPrecedence" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "AmbiguousMapPrecedence-NoMap-NoTag@@Tests/CodeInspectorTool.wlt:2268,1-2273,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Integration Tests - Cleanup*)
 VerificationTest[
     DeleteDirectory[ $integrationTempDir, DeleteContents -> True ];
     ! DirectoryQ @ $integrationTempDir,
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:2157,1-2163,2"
+    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:2278,1-2284,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

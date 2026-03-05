@@ -37,6 +37,18 @@ $$yieldsDateObject = HoldPattern @ Alternatives[
 
 $$setOrSetDelayed = "Set"|"System`Set"|"SetDelayed"|"System`SetDelayed";
 
+$$concreteWS = cp`LeafNode[ Whitespace, __ ]...;
+$$symbolAtSymbol = cp`BinaryNode[
+    cp`BinaryAt,
+    { cp`LeafNode[ Symbol, _, _ ], $$concreteWS, cp`LeafNode[ Token`At, __, _ ], $$concreteWS, cp`LeafNode[ Symbol, _, _ ] },
+    _
+];
+$$ambiguousMapPrecedence = cp`BinaryNode[
+    Map,
+    { $$symbolAtSymbol, $$concreteWS, cp`LeafNode[ Token`SlashAt, __, _ ], $$concreteWS, _cp`LeafNode | _cp`CallNode },
+    _
+];
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Config*)
@@ -100,7 +112,9 @@ $concreteRules := $concreteRules = <|
         Token`Comment,
         _String? (StringStartsQ[ "(*"~~WhitespaceCharacter...~~"FIXME:" ]),
         _
-    ] -> inspectFixMeComment
+    ] -> inspectFixMeComment,
+    (* Ambiguous Map Precedence: f @ g /@ x *)
+    $$ambiguousMapPrecedence -> inspectAmbiguousMapPrecedence
 |>;
 
 (* ::**************************************************************************************************************:: *)
@@ -445,6 +459,53 @@ unreachableConditionalHint[ name0_String ] :=
 unreachableConditionalHint // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectAmbiguousMapPrecedence*)
+inspectAmbiguousMapPrecedence // beginDefinition;
+
+inspectAmbiguousMapPrecedence[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, as, symbols, fName, gName, xCode },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        symbols = ConfirmMatch[
+            Cases[ node[[ 2, 1, 2 ]], cp`LeafNode[ Symbol, name_String, _ ] :> name ],
+            { _String, _String },
+            "Symbols"
+        ];
+        { fName, gName } = symbols;
+        xCode = concreteNodeToString @ Last @ node[[ 2 ]];
+        ci`InspectionObject[
+            "AmbiguousMapPrecedence",
+            ambiguousMapPrecedenceHint[ fName, gName, xCode ],
+            "Warning",
+            <| as, ConfidenceLevel -> 0.9 |>
+        ]
+    ];
+
+inspectAmbiguousMapPrecedence // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*concreteNodeToString*)
+concreteNodeToString // beginDefinition;
+concreteNodeToString[ cp`LeafNode[ _, s_String, _ ] ] := s;
+concreteNodeToString[ _[ _, children_List, _ ] ] := StringJoin[ concreteNodeToString /@ children ];
+concreteNodeToString // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*ambiguousMapPrecedenceHint*)
+ambiguousMapPrecedenceHint // beginDefinition;
+
+ambiguousMapPrecedenceHint[ f_String, g_String, x_String ] :=
+    StringJoin[
+        "``", f, " @ ", g, " /@ ", x, "`` is parsed as ``Map[", f, "[", g, "], ", x, "]``.",
+        " Suggestions: ``", f, "[", g, " /@ ", x, "]`` or ``", f, "[", g, "] /@ ", x, "``"
+    ];
+
+ambiguousMapPrecedenceHint // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Text-Level Inspections*)
 
@@ -520,6 +581,7 @@ inspectFileLength // endDefinition;
 (*Package Footer*)
 addToMXInitialization[
     $customAbstractRules;
+    $concreteRules;
 ];
 
 End[ ];
