@@ -856,13 +856,16 @@ cleanupOldOutputLogs[ maxFiles_Integer ] :=
         dir = $outputLogDirectory;
         If[ ! DirectoryQ @ dir, Throw @ Null ];
         files = FileNames[ "*.log", dir ];
-        If[ Length @ files <= maxFiles, Throw @ Null ];
         (* Sort by modification time, newest first *)
         dates = ReverseSort @ AssociationMap[ FileDate[ #, "Modification" ] &, files ];
         (* Empty log files older than 7 days *)
-        empty = Keys @ Select[ KeySelect[ dates, FileByteCount[ # ] === 0 & ], # > Now - Quantity[ 7, "Days" ] & ];
-        toDelete = Union[ Keys @ Drop[ dates, maxFiles ], empty ];
-        Quiet[ DeleteFile /@ toDelete ];
+        empty = Keys @ Select[ KeySelect[ dates, FileByteCount[ # ] === 0 & ], # < Now - Quantity[ 7, "Days" ] & ];
+        (* Oldest files beyond maxFiles limit *)
+        toDelete = If[ Length @ files > maxFiles,
+            Union[ Keys @ Drop[ dates, maxFiles ], empty ],
+            empty
+        ];
+        If[ toDelete =!= { }, Quiet[ DeleteFile /@ toDelete ] ];
     ];
 
 cleanupOldOutputLogs // endDefinition;
