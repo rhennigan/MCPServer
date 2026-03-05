@@ -34,8 +34,8 @@ Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Build*)
-result = checkResult @ Quiet[
-    cicd`BuildPaclet[
+result = Quiet[
+    checkResult @ cicd`BuildPaclet[
         $defNB,
         "Check"      -> $check,
         "ExitOnFail" -> True,
