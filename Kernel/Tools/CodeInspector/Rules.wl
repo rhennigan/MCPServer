@@ -37,7 +37,7 @@ $$yieldsDateObject = HoldPattern @ Alternatives[
 
 $$setOrSetDelayed = "Set"|"System`Set"|"SetDelayed"|"System`SetDelayed";
 
-$$concreteWS = cp`LeafNode[ Whitespace, __ ]...;
+$$concreteWS = cp`LeafNode[ Whitespace | Token`Newline, __ ]...;
 $$symbolAtSymbol = cp`BinaryNode[
     cp`BinaryAt,
     { cp`LeafNode[ Symbol, _, _ ], $$concreteWS, cp`LeafNode[ Token`At, __, _ ], $$concreteWS, cp`LeafNode[ Symbol, _, _ ] },
@@ -489,6 +489,7 @@ inspectAmbiguousMapPrecedence // endDefinition;
 (*concreteNodeToString*)
 concreteNodeToString // beginDefinition;
 concreteNodeToString[ cp`LeafNode[ _, s_String, _ ] ] := s;
+concreteNodeToString[ cp`CallNode[ head_List, group_, _ ] ] := StringJoin[ concreteNodeToString /@ head, concreteNodeToString @ group ];
 concreteNodeToString[ _[ _, children_List, _ ] ] := StringJoin[ concreteNodeToString /@ children ];
 concreteNodeToString // endDefinition;
 
