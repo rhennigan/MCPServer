@@ -2273,6 +2273,23 @@ VerificationTest[
 ]
 
 (* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Regression Tests*)
+VerificationTest[
+    CodeInspectorToolFunction @ <| "code" -> "f @ g /@ h[x]" |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "AmbiguousMapPrecedence-NonLeafNode@@Tests/CodeInspectorTool.wlt:2278,1-2283,2"
+]
+
+VerificationTest[
+    CodeInspectorToolFunction @ <| "code" -> "f@   g\t/@\nx" |>,
+    _String? (StringContainsQ[ "AmbiguousMapPrecedence" ]),
+    SameTest -> MatchQ,
+    TestID   -> "AmbiguousMapPrecedence-Whitespace@@Tests/CodeInspectorTool.wlt:2285,1-2290,2"
+]
+
+(* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Integration Tests - Cleanup*)
 VerificationTest[
@@ -2280,7 +2297,7 @@ VerificationTest[
     ! DirectoryQ @ $integrationTempDir,
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:2278,1-2284,2"
+    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:2295,1-2301,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
