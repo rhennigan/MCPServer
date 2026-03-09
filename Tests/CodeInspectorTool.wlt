@@ -2289,6 +2289,22 @@ VerificationTest[
     TestID   -> "AmbiguousMapPrecedence-Whitespace@@Tests/CodeInspectorTool.wlt:2285,1-2290,2"
 ]
 
+(* List RHS: f @ g /@ {x} should trigger *)
+VerificationTest[
+    CodeInspectorToolFunction @ <| "code" -> "f @ g /@ {x}" |>,
+    _String? (StringContainsQ[ "AmbiguousMapPrecedence" ]),
+    SameTest -> MatchQ,
+    TestID   -> "AmbiguousMapPrecedence-ListRHS@@Tests/CodeInspectorTool.wlt:2293,1-2298,2"
+]
+
+(* Parenthesized RHS: f @ g /@ (x + y) should trigger *)
+VerificationTest[
+    CodeInspectorToolFunction @ <| "code" -> "f @ g /@ (x + y)" |>,
+    _String? (StringContainsQ[ "AmbiguousMapPrecedence" ]),
+    SameTest -> MatchQ,
+    TestID   -> "AmbiguousMapPrecedence-ParenRHS@@Tests/CodeInspectorTool.wlt:2301,1-2306,2"
+]
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Integration Tests - Cleanup*)
@@ -2297,7 +2313,7 @@ VerificationTest[
     ! DirectoryQ @ $integrationTempDir,
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:2295,1-2301,2"
+    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:2311,1-2317,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

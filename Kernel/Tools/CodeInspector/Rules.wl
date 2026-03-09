@@ -45,7 +45,7 @@ $$symbolAtSymbol = cp`BinaryNode[
 ];
 $$ambiguousMapPrecedence = cp`BinaryNode[
     Map,
-    { $$symbolAtSymbol, $$concreteWS, cp`LeafNode[ Token`SlashAt, __, _ ], $$concreteWS, _cp`LeafNode | _cp`CallNode },
+    { $$symbolAtSymbol, $$concreteWS, cp`LeafNode[ Token`SlashAt, __, _ ], $$concreteWS, _ },
     _
 ];
 
