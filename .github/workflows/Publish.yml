@@ -12,6 +12,9 @@ concurrency:
   group: submit-${{ inputs.tag }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 jobs:
 
   Publish:
@@ -25,7 +28,9 @@ jobs:
 
     env:
       WOLFRAM_SYSTEM_ID: Linux-x86-64
+      WOLFRAMINIT: -lmverbose
       GH_INSTALL_URL: https://github.com/cli/cli/releases/download/v2.33.0/gh_2.33.0_linux_amd64.deb
+      GH_INSTALL_SHA256: ea18a92a3e0a2a8edbca8d5ef368829ec8ced37571e0eb9d2c074917b0c5faae
 
     steps:
     - name: Update Git
@@ -34,6 +39,7 @@ jobs:
         add-apt-repository ppa:git-core/ppa -y
         apt-get update && apt-get install git -y
         wget ${{ env.GH_INSTALL_URL }} -O gh.deb
+        echo "${{ env.GH_INSTALL_SHA256 }}  gh.deb" | sha256sum --check
         dpkg -i gh.deb
 
     - name: Checkout
@@ -44,14 +50,12 @@ jobs:
     - name: Build
       env:
         WOLFRAMSCRIPT_ENTITLEMENTID: ${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
-        WOLFRAMINIT: -lmverbose
       run: wolframscript -f Scripts/BuildPaclet.wls --check=false
 
     - name: Submit
       env:
         WOLFRAMSCRIPT_ENTITLEMENTID: ${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
         RESOURCE_PUBLISHER_TOKEN: ${{ secrets.RESOURCE_PUBLISHER_TOKEN }}
-        WOLFRAMINIT: -lmverbose
       run: wolframscript -f Scripts/SubmitPaclet.wls
 
     - name: Promote Release
