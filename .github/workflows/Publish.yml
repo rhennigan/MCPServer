@@ -12,11 +12,6 @@ concurrency:
   group: submit-${{ inputs.tag }}
   cancel-in-progress: true
 
-env:
-  RESOURCE_PUBLISHER_TOKEN: ${{ secrets.RESOURCE_PUBLISHER_TOKEN }}
-  WOLFRAMSCRIPT_ENTITLEMENTID: ${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
-  WOLFRAMINIT: -lmverbose
-
 jobs:
 
   Publish:
@@ -47,9 +42,16 @@ jobs:
         ref: ${{ inputs.tag }}
 
     - name: Build
+      env:
+        WOLFRAMSCRIPT_ENTITLEMENTID: ${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
+        WOLFRAMINIT: -lmverbose
       run: wolframscript -f Scripts/BuildPaclet.wls --check=false
 
     - name: Submit
+      env:
+        WOLFRAMSCRIPT_ENTITLEMENTID: ${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
+        RESOURCE_PUBLISHER_TOKEN: ${{ secrets.RESOURCE_PUBLISHER_TOKEN }}
+        WOLFRAMINIT: -lmverbose
       run: wolframscript -f Scripts/SubmitPaclet.wls
 
     - name: Promote Release
