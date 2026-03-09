@@ -4,7 +4,7 @@ description: Evaluates Wolfram Language code, searches documentation, inspects c
 compatibility: Requires the Wolfram MCP server or wolframscript on PATH
 metadata:
   author: Wolfram Research
-  version: 1.7.21
+  version: 1.8.0
 ---
 
 # Wolfram Language
