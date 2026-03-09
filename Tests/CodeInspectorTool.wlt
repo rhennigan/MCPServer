@@ -2159,7 +2159,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*inspectAmbiguousMapPrecedence - Basic Detection*)
 VerificationTest[
-    $ambigMapResult = CodeInspectorToolFunction @ <|
+    $ambiguousMapResult = CodeInspectorToolFunction @ <|
         "code"               -> "f @ g /@ x",
         "severityExclusions" -> "",
         "confidenceLevel"    -> 0.0
@@ -2170,14 +2170,14 @@ VerificationTest[
 ]
 
 VerificationTest[
-    StringContainsQ[ $ambigMapResult, "AmbiguousMapPrecedence" ],
+    StringContainsQ[ $ambiguousMapResult, "AmbiguousMapPrecedence" ],
     True,
     SameTest -> SameQ,
     TestID   -> "AmbiguousMapPrecedence-Basic-HasTag@@Tests/CodeInspectorTool.wlt:2172,1-2177,2"
 ]
 
 VerificationTest[
-    StringContainsQ[ $ambigMapResult, "(Warning" ],
+    StringContainsQ[ $ambiguousMapResult, "(Warning" ],
     True,
     SameTest -> SameQ,
     TestID   -> "AmbiguousMapPrecedence-Basic-IsWarning@@Tests/CodeInspectorTool.wlt:2179,1-2184,2"
@@ -2187,7 +2187,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*inspectAmbiguousMapPrecedence - Motivating Example*)
 VerificationTest[
-    $ambigMapQuietResult = CodeInspectorToolFunction @ <|
+    $ambiguousMapQuietResult = CodeInspectorToolFunction @ <|
         "code"               -> "Quiet @ DeleteFile /@ files",
         "severityExclusions" -> "",
         "confidenceLevel"    -> 0.0
@@ -2198,14 +2198,14 @@ VerificationTest[
 ]
 
 VerificationTest[
-    StringContainsQ[ $ambigMapQuietResult, "AmbiguousMapPrecedence" ],
+    StringContainsQ[ $ambiguousMapQuietResult, "AmbiguousMapPrecedence" ],
     True,
     SameTest -> SameQ,
     TestID   -> "AmbiguousMapPrecedence-QuietDeleteFile-HasTag@@Tests/CodeInspectorTool.wlt:2200,1-2205,2"
 ]
 
 VerificationTest[
-    StringContainsQ[ $ambigMapQuietResult, "Quiet" ] && StringContainsQ[ $ambigMapQuietResult, "DeleteFile" ],
+    StringContainsQ[ $ambiguousMapQuietResult, "Quiet" ] && StringContainsQ[ $ambiguousMapQuietResult, "DeleteFile" ],
     True,
     SameTest -> SameQ,
     TestID   -> "AmbiguousMapPrecedence-QuietDeleteFile-HasSymbolNames@@Tests/CodeInspectorTool.wlt:2207,1-2212,2"
@@ -2217,7 +2217,7 @@ VerificationTest[
 
 (* Bracket application should not trigger *)
 VerificationTest[
-    $ambigMapBracketResult = CodeInspectorToolFunction @ <|
+    $ambiguousMapBracketResult = CodeInspectorToolFunction @ <|
         "code"               -> "f[g /@ x]",
         "severityExclusions" -> "",
         "confidenceLevel"    -> 0.0
@@ -2228,7 +2228,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    StringContainsQ[ $ambigMapBracketResult, "AmbiguousMapPrecedence" ],
+    StringContainsQ[ $ambiguousMapBracketResult, "AmbiguousMapPrecedence" ],
     False,
     SameTest -> SameQ,
     TestID   -> "AmbiguousMapPrecedence-BracketApp-NoTag@@Tests/CodeInspectorTool.wlt:2230,1-2235,2"
@@ -2236,7 +2236,7 @@ VerificationTest[
 
 (* Explicit Map should not trigger *)
 VerificationTest[
-    $ambigMapExplicitResult = CodeInspectorToolFunction @ <|
+    $ambiguousMapExplicitResult = CodeInspectorToolFunction @ <|
         "code"               -> "Map[f @ g, x]",
         "severityExclusions" -> "",
         "confidenceLevel"    -> 0.0
@@ -2247,7 +2247,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    StringContainsQ[ $ambigMapExplicitResult, "AmbiguousMapPrecedence" ],
+    StringContainsQ[ $ambiguousMapExplicitResult, "AmbiguousMapPrecedence" ],
     False,
     SameTest -> SameQ,
     TestID   -> "AmbiguousMapPrecedence-ExplicitMap-NoTag@@Tests/CodeInspectorTool.wlt:2249,1-2254,2"
@@ -2255,7 +2255,7 @@ VerificationTest[
 
 (* Plain prefix application without Map should not trigger *)
 VerificationTest[
-    $ambigMapNoMapResult = CodeInspectorToolFunction @ <|
+    $ambiguousMapNoMapResult = CodeInspectorToolFunction @ <|
         "code"               -> "f @ g",
         "severityExclusions" -> "",
         "confidenceLevel"    -> 0.0
@@ -2266,7 +2266,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    StringContainsQ[ $ambigMapNoMapResult, "AmbiguousMapPrecedence" ],
+    StringContainsQ[ $ambiguousMapNoMapResult, "AmbiguousMapPrecedence" ],
     False,
     SameTest -> SameQ,
     TestID   -> "AmbiguousMapPrecedence-NoMap-NoTag@@Tests/CodeInspectorTool.wlt:2268,1-2273,2"
