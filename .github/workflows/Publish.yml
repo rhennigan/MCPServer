@@ -1,0 +1,62 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to submit (e.g. v1.7.31)'
+        required: true
+        type: string
+
+concurrency:
+  group: submit-${{ inputs.tag }}
+  cancel-in-progress: true
+
+env:
+  RESOURCE_PUBLISHER_TOKEN: ${{ secrets.RESOURCE_PUBLISHER_TOKEN }}
+  WOLFRAMSCRIPT_ENTITLEMENTID: ${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
+  WOLFRAMINIT: -lmverbose
+
+jobs:
+
+  Publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    container:
+      image: wolframresearch/wolframengine:14.2
+      options: --user root
+
+    env:
+      WOLFRAM_SYSTEM_ID: Linux-x86-64
+      GH_INSTALL_URL: https://github.com/cli/cli/releases/download/v2.33.0/gh_2.33.0_linux_amd64.deb
+
+    steps:
+    - name: Update Git
+      run: |
+        apt-get update && apt-get install software-properties-common -y
+        add-apt-repository ppa:git-core/ppa -y
+        apt-get update && apt-get install git -y
+        wget ${{ env.GH_INSTALL_URL }} -O gh.deb
+        dpkg -i gh.deb
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.tag }}
+
+    - name: Build
+      run: wolframscript -f Scripts/BuildPaclet.wls --check=false
+
+    - name: Submit
+      run: wolframscript -f Scripts/SubmitPaclet.wls
+
+    - name: Promote Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git config --global --add safe.directory $(pwd)
+        gh release edit "${{ inputs.tag }}" \
+            --prerelease=false \
+            --repo="${{ github.repository }}"

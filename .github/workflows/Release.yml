@@ -84,27 +84,5 @@ jobs:
             --target="${{ github.ref }}" \
             --repo="${{ env.GITHUB_REPOSITORY }}" \
             --title="Release ${{ env.PACLET_RELEASE_TAG }}" \
-            --generate-notes
-
-  Submit:
-    name: Submit
-    needs: [Check]
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    container:
-      image: wolframresearch/wolframengine:14.2
-      options: --user root
-
-    env:
-      WOLFRAM_SYSTEM_ID: Linux-x86-64
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Build
-      run: wolframscript -f Scripts/BuildPaclet.wls --check=false
-
-    - name: Submit
-      run: wolframscript -f Scripts/SubmitPaclet.wls
+            --generate-notes \
+            --prerelease
