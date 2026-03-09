@@ -501,7 +501,7 @@ ambiguousMapPrecedenceHint // beginDefinition;
 ambiguousMapPrecedenceHint[ f_String, g_String, x_String ] :=
     StringJoin[
         "``", f, " @ ", g, " /@ ", x, "`` is parsed as ``Map[", f, "[", g, "], ", x, "]``.",
-        " Suggestions: ``", f, "[", g, " /@ ", x, "]`` or ``", f, "[", g, "] /@ ", x, "``"
+        " Suggestions: ``(", f, " @ ", g, ") /@ ", x, "`` or ``", f, " @ (", g, " /@ ", x, ")``"
     ];
 
 ambiguousMapPrecedenceHint // endDefinition;
