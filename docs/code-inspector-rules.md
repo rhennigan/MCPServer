@@ -425,7 +425,7 @@ The following custom rules are defined in `Kernel/Tools/CodeInspector/Rules.wl`:
 | Tag | Severity | Confidence | Description |
 |-----|----------|------------|-------------|
 | `FixMeComment` | Warning | 0.9 | `(* FIXME: ... *)` comments flagged as action items |
-| `AmbiguousMapPrecedence` | Warning | 0.9 | `f @ g /@ x` is parsed as `Map[f[g], x]` due to operator precedence — suggest `f[g /@ x]` or `f[g] /@ x` |
+| `AmbiguousMapPrecedence` | Warning | 0.9 | `f @ g /@ x` is parsed as `Map[f[g], x]` due to operator precedence — suggest `(f @ g) /@ x` or `f @ (g /@ x)` |
 
 ### Text-Level Rules
 
