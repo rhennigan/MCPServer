@@ -45,7 +45,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
       with:
-        ref: ${{ inputs.tag }}
+        ref: refs/tags/${{ inputs.tag }}
 
     - name: Build
       env:
