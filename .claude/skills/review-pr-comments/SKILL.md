@@ -97,7 +97,7 @@ Read the relevant source files to determine whether the issue is accurate:
 
 ### 4. Reply and resolve
 
-Reply to every actionable comment, whether you fixed it or not. Use the REST API to reply on the same review thread (use the `databaseId` of the root comment in the thread):
+Reply to every actionable comment, whether you fixed it or not. Use the REST API to reply on the same review thread. Use the `databaseId` of the **first** comment in the thread's `comments` array (this is the root comment that started the thread):
 
 ```bash
 gh api -X POST repos/<owner>/<repo>/pulls/<pr-number>/comments/<comment-database-id>/replies \
