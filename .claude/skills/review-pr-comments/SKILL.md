@@ -57,7 +57,7 @@ This returns a JSON array of unresolved threads. Each thread contains:
 Also check for top-level issue-style comments (these live in a separate API and aren't part of review threads):
 
 ```bash
-gh pr view {number} --comments --json comments
+gh pr view <pr-number> --comments --json comments
 ```
 
 Skip bot-generated overview comments that list changed files without raising specific issues. Focus on comments that raise an actionable concern.
@@ -98,7 +98,7 @@ Read the relevant source files to determine whether the issue is accurate:
 Reply to every actionable comment, whether you fixed it or not. Use the REST API to reply on the same review thread (use the `databaseId` of the root comment in the thread):
 
 ```bash
-gh api -X POST repos/{owner}/{repo}/pulls/{number}/comments/{comment_database_id}/replies \
+gh api -X POST repos/<owner>/<repo>/pulls/<pr-number>/comments/<comment-database-id>/replies \
   -f body="<your reply>"
 ```
 
