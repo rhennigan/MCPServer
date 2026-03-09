@@ -98,7 +98,7 @@ jobs:
             "${{ env.PACLET_PATH }}#${{ env.PACLET_FILE }}" \
             "${{ env.MCPB_PATH }}#${{ env.MCPB_FILE }}" \
             --target="${{ github.ref }}" \
-            --repo="${{ env.GITHUB_REPOSITORY }}" \
+            --repo="${{ github.repository }}" \
             --title="Release ${{ env.PACLET_RELEASE_TAG }}" \
             --generate-notes \
             --prerelease
