@@ -50,6 +50,7 @@ jobs:
     - name: Build
       env:
         WOLFRAMSCRIPT_ENTITLEMENTID: ${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
+        RESOURCE_PUBLISHER_TOKEN: ${{ secrets.RESOURCE_PUBLISHER_TOKEN }}
       run: wolframscript -f Scripts/BuildPaclet.wls --check=false
 
     - name: Submit
