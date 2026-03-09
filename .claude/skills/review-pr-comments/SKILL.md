@@ -79,6 +79,8 @@ Read the relevant source files to determine whether the issue is accurate:
 - **Valid issue**: The reviewer identified a real problem (bug, inconsistency, missing case, stale docs, etc.)
 - **Not valid**: The reviewer misread the code, or the concern doesn't apply given context they may not have seen
 
+**Important:** Do not automatically assume that the commenter is correct, even if it appears that way at first glance. Think carefully and review the relevant code to determine if the comment is valid.
+
 ### 3. Act on it
 
 **If valid and fixable:**
