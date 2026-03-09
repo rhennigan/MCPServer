@@ -2277,7 +2277,7 @@ VerificationTest[
 (*Regression Tests*)
 VerificationTest[
     CodeInspectorToolFunction @ <| "code" -> "f @ g /@ h[x]" |>,
-    _String,
+    _String? (StringContainsQ[ "AmbiguousMapPrecedence" ]),
     SameTest -> MatchQ,
     TestID   -> "AmbiguousMapPrecedence-NonLeafNode@@Tests/CodeInspectorTool.wlt:2278,1-2283,2"
 ]
