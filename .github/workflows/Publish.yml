@@ -1,0 +1,69 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to submit (e.g. v1.8.0)'
+        required: true
+        type: string
+
+concurrency:
+  group: submit-${{ inputs.tag }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+
+  Publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    container:
+      image: wolframresearch/wolframengine:14.2
+      options: --user root
+
+    env:
+      WOLFRAM_SYSTEM_ID: Linux-x86-64
+      WOLFRAMINIT: -lmverbose
+      GH_INSTALL_URL: https://github.com/cli/cli/releases/download/v2.33.0/gh_2.33.0_linux_amd64.deb
+      GH_INSTALL_SHA256: ea18a92a3e0a2a8edbca8d5ef368829ec8ced37571e0eb9d2c074917b0c5faae
+
+    steps:
+    - name: Update Git
+      run: |
+        apt-get update && apt-get install software-properties-common -y
+        add-apt-repository ppa:git-core/ppa -y
+        apt-get update && apt-get install git -y
+        wget ${{ env.GH_INSTALL_URL }} -O gh.deb
+        echo "${{ env.GH_INSTALL_SHA256 }}  gh.deb" | sha256sum --check
+        dpkg -i gh.deb
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        ref: refs/tags/${{ inputs.tag }}
+
+    - name: Build
+      env:
+        WOLFRAMSCRIPT_ENTITLEMENTID: ${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
+        RESOURCE_PUBLISHER_TOKEN: ${{ secrets.RESOURCE_PUBLISHER_TOKEN }}
+      run: wolframscript -f Scripts/BuildPaclet.wls --check=false
+
+    - name: Submit
+      env:
+        WOLFRAMSCRIPT_ENTITLEMENTID: ${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
+        RESOURCE_PUBLISHER_TOKEN: ${{ secrets.RESOURCE_PUBLISHER_TOKEN }}
+      run: wolframscript -f Scripts/SubmitPaclet.wls
+
+    - name: Promote Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git config --global --add safe.directory $(pwd)
+        gh release edit "${{ inputs.tag }}" \
+            --prerelease=false \
+            --repo="${{ github.repository }}"

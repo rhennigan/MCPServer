@@ -240,9 +240,20 @@ Some tools require an [LLMKit subscription](https://www.wolfram.com/llmkit/) for
 
 The context tools use semantic search powered by LLMKit. Without a subscription, these tools will not function. Code execution tools (`WolframLanguageEvaluator`, `WolframAlpha`) work without LLMKit.
 
+## MCP Apps Support
+
+All predefined servers support [MCP Apps](mcp-apps.md) when the client advertises the `io.modelcontextprotocol/ui` extension. When active, the `WolframAlpha` and `WolframLanguageEvaluator` tools are automatically enhanced with interactive UI (e.g., embedded cloud notebook viewers). No server configuration changes are needed; capability negotiation happens automatically during `initialize`.
+
+To disable MCP Apps for a specific installation, use:
+
+```wl
+InstallMCPServer["ClaudeDesktop", "EnableMCPApps" -> False]
+```
+
 ## Related Documentation
 
-- [tools.md](tools.md) - Detailed tool documentation and creating custom tools
+- [tools.md](tools.md) - Detailed tool documentation, [tool options](tools.md#tool-options), and creating custom tools
 - [mcp-prompts.md](mcp-prompts.md) - Prompt system and creating custom prompts
+- [mcp-apps.md](mcp-apps.md) - MCP Apps system for interactive UI resources
 - [mcp-clients.md](mcp-clients.md) - Client installation and configuration
 - [getting-started.md](getting-started.md) - Development setup

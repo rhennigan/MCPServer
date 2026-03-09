@@ -1,36 +1,3 @@
 {
-    "cSpell.words": [
-        "CICD",
-        "dpkg",
-        "ENTITLEMENTID",
-        "libgomp",
-        "llmkit",
-        "LOCALBASE",
-        "MCPB",
-        "Multicolumn",
-        "newclient",
-        "noinit",
-        "noprompt",
-        "opencode",
-        "patt",
-        "reranking",
-        "shdw",
-        "Stylesheet",
-        "subcontext",
-        "subcontexts",
-        "Subsubsubsection",
-        "unbuilt",
-        "unformat",
-        "USERBASE",
-        "wolframengine",
-        "WOLFRAMINIT",
-        "wolframresearch"
-    ],
-    "cSpell.ignoreRegExpList": [
-        "\\:\\:[a-z]+",             // message names
-        "\\\\:[0-9a-f]+",           // unicode characters
-        "%[0-9A-F]{2}\\w+",         // url encoded characters
-        "1\\:eJ.+"                  // compressed data
-    ],
     "files.trimTrailingWhitespace": true
 }

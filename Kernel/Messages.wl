@@ -8,6 +8,7 @@ MCPServer::InvalidDevelopmentMode        = "Invalid value for DevelopmentMode op
 MCPServer::InstallMCPServer              = "Successfully installed MCP server \"`1`\".";
 MCPServer::InstallMCPServerNamed         = "Successfully installed MCP server \"`1`\" for `2`.";
 MCPServer::Internal                      = "An unexpected error occurred. `1`";
+MCPServer::InvalidApplicationName        = "Invalid value given for ApplicationName: `1`. Expected a string or Automatic.";
 MCPServer::InvalidArguments              = "Invalid arguments given for `1` in `2`.";
 MCPServer::InvalidMCPConfiguration       = "Invalid MCP configuration file: `1`.";
 MCPServer::InvalidMCPServerFile          = "Invalid MCPServerObject file: \"`1`\".";
@@ -30,7 +31,11 @@ MCPServer::UninstallMCPServer            = "Successfully uninstalled MCP server 
 MCPServer::UninstallMCPServerNamed       = "Successfully uninstalled MCP server \"`1`\" for `2`.";
 MCPServer::UnknownInstallLocation        = "Unable to determine install location for `1` on `2`. Use File[\[Ellipsis]] to specify a custom location.";
 MCPServer::UnknownProjectInstallLocation = "Unable to determine project install location for `1`. Use File[\[Ellipsis]] to specify a custom location.";
+MCPServer::UnsupportedMCPClient          = "No automatic installation support for MCP client `1`.";
+MCPServer::UnsupportedMCPClientProject   = "No automatic project-level installation support for MCP client `1`.";
 MCPServer::UnsupportedOperatingSystem    = "Unsupported operating system: `1`.";
+MCPServer::MCPTimeout                    = "MCP request `1` timed out after `2` seconds.";
+MCPServer::UnknownTool                   = "Unknown tool: `1`.";
 MCPServer::InvalidTOMLFormat             = "Invalid TOML format in file `1` at line `2`: `3`.";
 
 (* PacletDocumentation messages *)
@@ -47,6 +52,11 @@ MCPServer::InvalidMCPPromptsSpecification = "Invalid MCP prompts specification: 
 MCPServer::PromptNameNotFound             = "No prompt named \"`1`\" found in $DefaultMCPPrompts.";
 MCPServer::DeprecatedPromptData           = "The \"PromptData\" property is deprecated. Use \"MCPPrompts\" instead.";
 
+(* MCP Apps / UI resource messages *)
+MCPServer::UIResourceNotFound              = "UI resource not found: `1`.";
+MCPServer::UIResourceLoadFailed            = "Failed to load UI resource from `1`.";
+MCPServer::UIAppAssetsMissing              = "UI app assets directory not found. MCP Apps will be disabled.";
+
 (* CodeInspector messages *)
 MCPServer::CodeInspectorNoInput            = "Either 'code' or 'file' parameter must be provided.";
 MCPServer::CodeInspectorAmbiguousInput     = "Provide either 'code' or 'file', not both.";
@@ -54,5 +64,11 @@ MCPServer::CodeInspectorFileNotFound       = "File or directory not found: `1`."
 MCPServer::CodeInspectorNoFilesFound       = "No .wl, .m, or .wls files found in directory: `1`.";
 MCPServer::CodeInspectorFailed             = "CodeInspector failed: `1`.";
 MCPServer::CodeInspectorInvalidConfidence  = "Confidence level must be between 0 and 1, got `1`.";
+
+(* ToolOptions messages *)
+MCPServer::InvalidToolOptions             = "Invalid value for ToolOptions: `1`. Expected an Association.";
+MCPServer::UnrecognizedToolOption         = "Warning: Unrecognized tool name in ToolOptions: \"`1`\".";
+MCPServer::UnrecognizedToolOptionName     = "Warning: Unrecognized option \"`1`\" for tool \"`2`\" in ToolOptions.";
+MCPServer::InvalidToolOptionValue         = "Warning: Invalid value for tool \"`1`\" in ToolOptions: `2`. Expected an Association. This entry will be ignored.";
 
 EndPackage[ ];

@@ -2,7 +2,7 @@ PacletObject[ <|
     "Name"             -> "Wolfram/MCPServer",
     "Description"      -> "Implements a model context protocol server using Wolfram Language",
     "Creator"          -> "Richard Hennigan (Wolfram Research)",
-    "Version"          -> "1.7.0",
+    "Version"          -> "1.8.0",
     "WolframVersion"   -> "14.2+",
     "PublisherID"      -> "Wolfram",
     "License"          -> "MIT",
@@ -20,6 +20,7 @@ PacletObject[ <|
             "Symbols" -> {
                 "Wolfram`MCPServer`$DefaultMCPPrompts",
                 "Wolfram`MCPServer`$DefaultMCPServers",
+                "Wolfram`MCPServer`$DefaultMCPToolOptions",
                 "Wolfram`MCPServer`$DefaultMCPTools",
                 "Wolfram`MCPServer`$LastMCPServerFailure",
                 "Wolfram`MCPServer`$LastMCPServerFailureText",
@@ -43,9 +44,10 @@ PacletObject[ <|
         },
         { "Asset",
             "Assets" -> {
-                { "SymbolPageTemplate", "Assets/Templates/SymbolPage.wl" },
-                { "TestReportScript"  , "Assets/TestReport.wls"          },
-                { "AGENTS.md"         , "AGENTS.md"                      }
+                { "Apps"               , "Assets/Apps"                    },
+                { "SymbolPageTemplate" , "Assets/Templates/SymbolPage.wl"},
+                { "TestReportScript"   , "Assets/TestReport.wls"         },
+                { "AGENTS.md"          , "AGENTS.md"                     }
             }
         }
     }

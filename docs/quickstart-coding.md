@@ -188,6 +188,10 @@ The AI should list tools like `WolframLanguageEvaluator`, `WolframLanguageContex
 
 AI coding tools start each session with no memory of previous conversations. An `AGENTS.md` file (or similar project-level instructions file) at the root of your project gives the AI essential context about your codebase, conventions, and how to use the Wolfram Language tools effectively.
 
+> **Note for Claude Code users:** Claude Code uses a `CLAUDE.md` file for project instructions rather than `AGENTS.md`. If your project only uses Claude Code, you can name your instructions file `CLAUDE.md` instead. If you use multiple AI coding tools and want to maintain a single source of truth, you have two options:
+> - Put `@AGENTS.md` in your `CLAUDE.md` file to automatically include the contents of `AGENTS.md`
+> - Create `CLAUDE.md` as a symlink to `AGENTS.md` (e.g., `ln -s AGENTS.md CLAUDE.md`)
+
 ### Why AGENTS.md Matters
 
 Without guidance, the AI will:

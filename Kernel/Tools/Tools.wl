@@ -29,16 +29,63 @@ Needs[ "Wolfram`MCPServer`Common`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*Default Tools*)
+(*Default Tools and Options*)
 $DefaultMCPTools := WithCleanup[
     Unprotect @ $DefaultMCPTools,
-    $DefaultMCPTools = KeySort @ AssociationMap[ Apply @ Rule, $defaultMCPTools ],
+    $DefaultMCPTools = insertCatchTop @ KeySort @ AssociationMap[ Apply @ Rule, $defaultMCPTools ],
     Protect @ $DefaultMCPTools
 ];
 
+$DefaultMCPToolOptions := WithCleanup[
+    Unprotect @ $DefaultMCPToolOptions,
+    $DefaultMCPToolOptions = KeySort @ AssociationMap[ Apply @ Rule, $defaultToolOptions ],
+    Protect @ $DefaultMCPToolOptions
+];
+
 (* $defaultMCPTools is an Association mapping tool names to LLMTool definitions. *)
-(* Tool definitions are added in subcontext files loaded below.                  *)
-$defaultMCPTools = <| |>;
+(* Tool definitions and default options are added in subcontext files loaded below. *)
+$defaultMCPTools    = <| |>;
+$defaultToolOptions = <| |>;
+
+(* Set at server startup from MCP_TOOL_OPTIONS environment variable: *)
+$toolOptions = <| |>;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*insertCatchTop*)
+(* Ensures tool function calls are wrapped in `catchTop` in case they are evaluated separately *)
+insertCatchTop // beginDefinition;
+
+insertCatchTop[ tools_Association ] :=
+    insertCatchTop /@ tools;
+
+insertCatchTop[ HoldPattern @ LLMTool[ as: KeyValuePattern[ "Function" -> f_ ], rest___ ] ] :=
+    LLMTool[ <| as, "Function" -> Function[ args, catchTop @ f @ args, HoldAllComplete ] |>, rest ];
+
+insertCatchTop // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*toolOptionValue*)
+toolOptionValue // beginDefinition;
+
+toolOptionValue[ toolName_String, optionName_String ] := Enclose[
+    Catch @ Module[ { options },
+        options = ConfirmBy[ Lookup[ $toolOptions, toolName, <| |> ], AssociationQ, "ToolOptions" ];
+        Lookup[
+            options,
+            optionName,
+            Lookup[
+                ConfirmBy[ Lookup[ $defaultToolOptions, toolName, <| |> ], AssociationQ, "Defaults" ],
+                optionName,
+                Missing[ "ToolOption", { toolName, optionName } ]
+            ]
+        ]
+    ],
+    throwInternalFailure
+];
+
+toolOptionValue // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -55,6 +102,12 @@ $subcontexts = {
 
     (* Tools: WolframContext, WolframAlphaContext, WolframLanguageContext *)
     "Wolfram`MCPServer`Tools`Context`",
+
+    (* Tools: NotebookViewer *)
+    "Wolfram`MCPServer`Tools`NotebookViewer`",
+
+    (* Tools: MCPAppsTest *)
+    "Wolfram`MCPServer`Tools`MCPAppsTest`",
 
     (* Tools: ReadNotebook, WriteNotebook *)
     "Wolfram`MCPServer`Tools`Notebooks`",
@@ -83,7 +136,8 @@ $MCPServerContexts = Union[ $MCPServerContexts, $subcontexts ];
 (* ::Section::Closed:: *)
 (*Package Footer*)
 addToMXInitialization[
-    $DefaultMCPTools
+    $DefaultMCPTools;
+    $DefaultMCPToolOptions;
 ];
 
 End[ ];

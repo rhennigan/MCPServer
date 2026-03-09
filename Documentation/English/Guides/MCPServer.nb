@@ -207,13 +207,13 @@ Notebook[
                 {
                  nbobj$$ = 
                   NotebookObject[
-                   "9240be77-f6f2-0d46-9dce-86d829416a33",
-                   "80182f1c-dcf9-a649-ae02-048474d7a49a"
+                   "f0b4e3b1-e321-8241-a72e-2cb8f2790686",
+                   "a1f9c05a-c020-014f-af47-d3ec2a916899"
                   ],
                  cellobj$$ = 
                   CellObject[
-                   "3c4993ce-8053-9e40-9d65-5af8fc94e34f",
-                   "72f9aabb-a16c-5941-8a54-fd27a3ee9c8e"
+                   "70a20691-70a6-df40-917e-3c462adb60e1",
+                   "d5f9ad04-7a97-0346-8976-ef160fe1b064"
                   ]
                 },
                 TemplateBox[
@@ -297,6 +297,17 @@ Notebook[
       ],
       "GuideTutorial",
       CellID -> 65981070
+     ],
+     Cell[
+      TextData[
+       ButtonBox[
+        "Default Tools",
+        BaseStyle -> "Link",
+        ButtonData -> "paclet:Wolfram/MCPServer/tutorial/DefaultTools"
+       ]
+      ],
+      "GuideTutorial",
+      CellID -> 56397439
      ]
     },
     Open

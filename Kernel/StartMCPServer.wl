@@ -3,17 +3,21 @@
 BeginPackage[ "Wolfram`MCPServer`StartMCPServer`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
+Needs[ "Wolfram`MCPServer`"          ];
+Needs[ "Wolfram`MCPServer`Common`"   ];
+Needs[ "Wolfram`MCPServer`Graphics`" ];
 
 Needs[ "Wolfram`Chatbook`" -> "cb`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Configuration*)
-$protocolVersion = "2024-11-05";
-$toolWarmupDelay = 5; (* seconds *)
-$clientName      = None;
+$protocolVersion    = "2024-11-05";
+$toolWarmupDelay    = 5; (* seconds *)
+$clientName         = None;
+$clientSupportsUI   = False;
+$currentMCPServer   = None;
+$mcpEvaluation      = False;
 
 $logTimeStamp := DateString[
     {
@@ -46,6 +50,46 @@ stealthCatchTop // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*parseToolOptions*)
+parseToolOptions // beginDefinition;
+parseToolOptions[ env_String ] := parseToolOptions0 @ Quiet @ Developer`ReadRawJSONString @ env;
+parseToolOptions[ _ ] := <| |>;
+parseToolOptions // endDefinition;
+
+
+parseToolOptions0 // beginDefinition;
+
+parseToolOptions0[ options_ ] := Enclose[
+    If[ AssociationQ @ options,
+        ConfirmBy[ Association @ KeyValueMap[ parseToolOptions0, options ], AssociationQ, "ToolOptions" ],
+        <| |>
+    ],
+    throwInternalFailure
+];
+
+parseToolOptions0[ tool_String, opts_ ] := Enclose[
+    If[ AssociationQ @ opts,
+        tool -> ConfirmBy[
+            DeleteMissing @ Association @ KeyValueMap[ parseToolOptions0[ tool, #1, #2 ] &, opts ],
+            AssociationQ,
+            "ToolOptions"
+        ],
+        Nothing
+    ],
+    throwInternalFailure
+];
+
+parseToolOptions0[ tool_String, optionName_String, optionValue_ ] :=
+    optionName -> ReplaceAll[
+        optionValue,
+        (* Symbols that don't have a corresponding JSON representation: *)
+        { "Automatic" -> Automatic, "None" -> None }
+    ];
+
+parseToolOptions0 // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*startMCPServer*)
 startMCPServer // beginDefinition;
 
@@ -55,38 +99,34 @@ startMCPServer[ obj_ ] /; $Notebooks :=
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
 startMCPServer[ obj_MCPServerObject ] := Enclose[
-    superQuiet @ Module[ { logFile, llmTools, toolList, promptList, promptLookup, init, response },
+    Block[ { $currentMCPServer = obj, $mcpEvaluation = True },
+        superQuiet @ Module[ { logFile, llmTools, toolList, promptList, promptLookup, response },
 
         SetOptions[ First @ Streams[ "stdout" ], CharacterEncoding -> "UTF-8" ];
         SetOptions[ First @ Streams[ "stderr" ], CharacterEncoding -> "UTF-8" ];
+
+        cleanupOldOutputLogs[ ];
 
         logFile = ConfirmBy[ ensureFilePath @ mcpServerLogFile @ obj, fileQ, "LogFile" ];
         If[ FileExistsQ @ logFile, DeleteFile @ logFile ];
         writeLog[ "LogFile" -> logFile ];
 
-        llmTools = Association[ #[ "Name" ] -> # & /@ ConfirmMatch[ obj[ "Tools" ], { ___LLMTool }, "Tools" ] ];
-
-        toolList = Map[
-            <|
-                "name"        -> safeString @ #[ "Name"        ],
-                "description" -> safeString @ #[ "Description" ],
-                "inputSchema" -> #[ "JSONSchema" ]
-            |> &,
-            Values @ llmTools
-        ];
-
+        llmTools     = Association[ #[ "Name" ] -> # & /@ ConfirmMatch[ obj[ "Tools" ], { ___LLMTool }, "Tools" ] ];
+        toolList     = ConfirmMatch[ createMCPToolData /@ Values @ llmTools, { ___Association }, "ToolList" ];
         promptList   = ConfirmMatch[ makePromptData @ obj[ "PromptData" ], { ___Association }, "PromptData" ];
         promptLookup = ConfirmBy[ makePromptLookup @ obj[ "PromptData" ], AssociationQ, "PromptLookup" ];
-        init         = ConfirmBy[ initResponse @ obj, AssociationQ, "InitResponse" ];
+
+        initializeUIResources[ ];
+        $toolOptions = parseToolOptions @ Environment[ "MCP_TOOL_OPTIONS" ];
 
         Block[
             {
-                $initResult   = init,
                 $toolList     = toolList,
                 $llmTools     = llmTools,
                 $promptList   = promptList,
                 $promptLookup = promptLookup,
-                $logFile      = logFile
+                $logFile      = logFile,
+                $toolOptions  = $toolOptions
             },
             While[ True,
                 If[
@@ -105,12 +145,44 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
                 ]
             ]
         ]
+    ]
     ],
     throwInternalFailure
 ];
 (* :!CodeAnalysis::EndBlock:: *)
 
 startMCPServer // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*createMCPToolData*)
+createMCPToolData // beginDefinition;
+
+createMCPToolData[ tool: HoldPattern[ _LLMTool ] ] := Enclose[
+    Module[ { data, name, description, inputSchema, title, annotations },
+
+        data = ConfirmBy[ tool[ "Data" ], AssociationQ, "Data" ];
+        name = safeString @ ConfirmBy[ tool[ "Name" ], StringQ, "Name" ];
+        description = safeString @ ConfirmBy[ tool[ "Description" ], StringQ, "Description" ];
+        inputSchema = ConfirmBy[ tool[ "JSONSchema" ], AssociationQ, "InputSchema" ];
+
+        title = Lookup[ data, "DisplayName", Missing[ ] ];
+        If[ StringQ @ title, title = safeString @ title ];
+
+        annotations = If[ StringQ @ title, <| "title" -> title |>, Missing[ ] ];
+
+        DeleteMissing @ <|
+            "name"        -> name,
+            "title"       -> title,
+            "description" -> description,
+            "inputSchema" -> inputSchema,
+            "annotations" -> annotations
+        |>
+    ],
+    throwInternalFailure
+];
+
+createMCPToolData // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -139,6 +211,7 @@ preinstallVectorDatabases // endDefinition;
 (* Test messages:
 
 ```
+{"method":"initialize","params":{"clientInfo":{"name":"test-client"},"protocolVersion":"2024-11-05"},"jsonrpc":"2.0","id":0}
 {"method":"tools/list","params":{},"jsonrpc":"2.0","id":1}
 {"method":"tools/call","params":{"name":"WolframContext","arguments":{"context":"What's the 123456789th prime?"}},"jsonrpc":"2.0","id":2}
 ```
@@ -230,7 +303,7 @@ processRequest[ ] :=
     Catch @ Enclose @ Module[ { stdin, message, method, id, req, response },
         stdin = InputString[ "" ];
         If[ stdin === "Quit", Exit[ 0 ] ];
-        If[ ! StringQ @ stdin, Throw @ EndOfFile ];
+        If[ ! StringQ @ stdin || StringTrim @ stdin === "", Throw @ EndOfFile ];
         message = ConfirmBy[ Developer`ReadRawJSONString @ stdin, AssociationQ ];
         writeLog[ "Request" -> message ];
         method = Lookup[ message, "method", None ];
@@ -257,15 +330,17 @@ handleMethod // beginDefinition;
    https://modelcontextprotocol.io/specification/2025-11-25/client/roots#protocol-messages *)
 handleMethod[ "initialize", msg_, req_ ] := (
     $clientName = Replace[ msg[[ "params", "clientInfo", "name" ]], Except[ _String ] :> None ];
+    $clientSupportsUI = mcpAppsEnabledQ[ ] && clientSupportsUIQ @ msg;
     If[ ! stderrEnabledQ[ ], $Messages = { } ];
-    <| req, "result" -> $initResult |>
+    <| req, "result" -> initResponse[ $currentMCPServer, msg ] |>
 );
 
 handleMethod[ "ping"          , msg_, req_ ] := <| req, "result" -> <| |> |>;
-handleMethod[ "resources/list", msg_, req_ ] := <| req, "result" -> <| "resources" -> { } |> |>;
+handleMethod[ "resources/list", msg_, req_ ] := <| req, "result" -> <| "resources" -> listUIResources[ ] |> |>;
+handleMethod[ "resources/read", msg_, req_ ] := handleResourceRead[ msg, req ];
 handleMethod[ "prompts/list"  , msg_, req_ ] := <| req, "result" -> <| "prompts" -> $promptList |> |>;
 handleMethod[ "prompts/get"   , msg_, req_ ] := <| req, "result" -> getPrompt[ msg, req ] |>;
-handleMethod[ "tools/list"    , msg_, req_ ] := <| req, "result" -> <| "tools" -> $toolList |> |>;
+handleMethod[ "tools/list"    , msg_, req_ ] := <| req, "result" -> <| "tools" -> withToolUIMetadata @ $toolList |> |>;
 handleMethod[ "tools/call"    , msg_, req_ ] := <| req, "result" -> evaluateTool[ msg, req ] |>;
 
 (* Ignored *)
@@ -279,6 +354,55 @@ e: handleMethod[ method_, msg_, req_ ] := (
 );
 
 handleMethod // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*handleResourceRead*)
+handleResourceRead // beginDefinition;
+
+handleResourceRead[ msg_Association, req_ ] :=
+    Module[ { result },
+        result = catchAlways @ readUIResource[ msg, req ];
+        If[ FailureQ @ result,
+            <| req, "error" -> resourceReadError[ result, msg ] |>,
+            <| req, "result" -> result |>
+        ]
+    ];
+
+handleResourceRead // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*resourceReadError*)
+resourceReadError // beginDefinition;
+
+(* Resource not found: invalid params (-32602) *)
+resourceReadError[ failure: Failure[ _String? (StringEndsQ[ "::UIResourceNotFound" ]), _ ], msg_ ] :=
+    <| "code" -> -32602, "message" -> resourceReadErrorMessage[ failure, msg ] |>;
+
+(* Any other failure: internal error (-32603) *)
+resourceReadError[ failure_Failure, msg_ ] :=
+    <| "code" -> -32603, "message" -> resourceReadErrorMessage[ failure, msg ] |>;
+
+resourceReadError // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*resourceReadErrorMessage*)
+resourceReadErrorMessage // beginDefinition;
+
+resourceReadErrorMessage[ failure_Failure, msg_ ] :=
+    With[ { failureMsg = failure[ "Message" ] },
+        If[ StringQ @ failureMsg, failureMsg, resourceReadErrorMessage[ msg ] ]
+    ];
+
+resourceReadErrorMessage[ msg_Association ] :=
+    resourceReadErrorMessage @ Replace[ msg[[ "params", "uri" ]], Except[ _String ] :> "unknown" ];
+
+resourceReadErrorMessage[ uri_String ] :=
+    "UI resource not found: " <> uri;
+
+resourceReadErrorMessage // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -304,12 +428,38 @@ getPrompt // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*consolidateTextContent*)
+
+(* Consolidates content arrays into a single text object for client compatibility.
+   Extracts all text items and merges them. Non-text items (images) are dropped
+   since many MCP clients don't support multimodal prompt responses. *)
+consolidateTextContent // beginDefinition;
+
+consolidateTextContent[ content: { __Association } ] :=
+    Module[ { textItems },
+        textItems = Select[ content, MatchQ[ #, KeyValuePattern[ "type" -> "text" ] ] & ];
+        <| "type" -> "text", "text" -> StringJoin @ Lookup[ textItems, "text", "" ] |>
+    ];
+
+consolidateTextContent // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*makePromptContent*)
 makePromptContent // beginDefinition;
 
 (* Handle Function type - call the function with arguments *)
 makePromptContent[ KeyValuePattern[ { "Type" -> "Function", "Content" -> func_ } ], arguments_ ] :=
     makePromptContent[ catchPromptFunction[ func, arguments ], arguments ];
+
+(* Handle multimodal content - list of content items *)
+(* Consolidate text-only arrays into a single text object for client compatibility *)
+makePromptContent[ content: { __Association }, arguments_ ] :=
+    consolidateTextContent @ content;
+
+(* Handle structured content with "Content" key containing multimodal content *)
+makePromptContent[ KeyValuePattern[ "Content" -> content: { __Association } ], arguments_ ] :=
+    consolidateTextContent @ content;
 
 (* Handle Text type with Content *)
 makePromptContent[ KeyValuePattern[ "Content" -> content_ ], arguments_ ] :=
@@ -363,25 +513,167 @@ formatPromptError // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*graphicsToImageContent*)
+graphicsToImageContent // beginDefinition;
+
+graphicsToImageContent[ g_ ] := Enclose[
+    Module[ { img, png, base64 },
+        (* Ensure it's an image, otherwise ExportByteArray may try to export an animated PNG, which is not desired *)
+        img = If[ ImageQ @ g, g, Rasterize @ g ];
+        png = ConfirmBy[ Quiet @ ExportByteArray[ img, "PNG" ], ByteArrayQ, "PNG" ];
+        base64 = ConfirmBy[ BaseEncode @ png, StringQ, "Base64" ];
+        <| "type" -> "image", "data" -> base64, "mimeType" -> "image/png" |>
+    ],
+    $Failed &  (* Return $Failed on failure *)
+];
+
+graphicsToImageContent // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*extractWolframAlphaImages*)
+
+(* Pattern for WolframAlpha image URLs in markdown *)
+(* Matches: public6.wolframalpha.com, www6.wolframalpha.com, etc. *)
+$$waImageURLPattern = Shortest[
+    "![" ~~ Except[ "]" ]... ~~ "](" ~~
+    url: ("https://" ~~ __ ~~ "wolframalpha.com/files/" ~~ __ ~~ (".gif" | ".png" | ".jpg" | ".jpeg")) ~~
+    ")"
+];
+
+extractWolframAlphaImages // beginDefinition;
+
+(* When not running as an MCP server, we don't want to format for MCP outputs: *)
+extractWolframAlphaImages[ str_String ] /; ! $mcpEvaluation := str;
+
+extractWolframAlphaImages[ str_String ] := Enclose[
+    Catch @ Module[ { parts, hasImages, contentItems },
+
+        (* Split string into text segments and URLs *)
+        parts = StringSplit[ str, $$waImageURLPattern :> url ];
+
+        (* If no images found, return plain text *)
+        If[ Length @ parts === 1 && StringQ @ First @ parts,
+            Throw @ str  (* Return plain string for backward compatibility *)
+        ];
+
+        hasImages = False;
+        contentItems = Flatten @ Map[
+            Function[ item,
+                If[ StringQ @ item && ! StringStartsQ[ item, "https://" ],
+                    (* Text segment: create text content *)
+                    If[ StringLength @ item > 0,
+                        { <| "type" -> "text", "text" -> item |> },
+                        { }
+                    ],
+                    (* URL: import image and create both text + image content *)
+                    hasImages = True;
+                    Module[ { img, imageContent },
+                        img = Quiet @ Import[ item, "Image" ];
+                        imageContent = If[ ImageQ @ img, graphicsToImageContent @ img, $Failed ];
+                        Flatten @ {
+                            (* Always include the markdown link as text *)
+                            <| "type" -> "text", "text" -> "![Image](" <> item <> ")" |>,
+                            (* Add base64 image if import succeeded *)
+                            If[ AssociationQ @ imageContent, imageContent, Nothing ]
+                        }
+                    ]
+                ]
+            ],
+            parts
+        ];
+
+        (* If we successfully extracted images, return structured content *)
+        If[ TrueQ @ hasImages && MatchQ[ contentItems, { __Association } ],
+            <| "Content" -> contentItems |>,
+            str  (* Fallback to plain string *)
+        ]
+    ],
+    str &  (* On any error, return original string *)
+];
+
+extractWolframAlphaImages // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*extractImageContent*)
+extractImageContent // beginDefinition;
+
+extractImageContent[ g_? graphicsQ ] :=
+    With[ { img = graphicsToImageContent @ g },
+        If[ AssociationQ @ img, { img }, { } ]
+    ];
+
+extractImageContent[ list_List ] := Flatten[ extractImageContent /@ list, 1 ];
+extractImageContent[ as_Association ] := extractImageContent @ Values @ as;
+extractImageContent[ _Failure ] := { };
+extractImageContent[ _String  ] := { };
+extractImageContent[ _        ] := { };
+
+extractImageContent // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*resultToContent*)
+resultToContent // beginDefinition;
+
+resultToContent[ result_ ] := Enclose[
+    Module[ { textContent, imageContents },
+        textContent = <| "type" -> "text", "text" -> ConfirmBy[ safeString @ result, StringQ ] |>;
+        imageContents = ConfirmMatch[ extractImageContent @ result, { ___Association } ];
+        Flatten @ { textContent, imageContents }
+    ],
+    throwInternalFailure
+];
+
+resultToContent // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*evaluateTool*)
 evaluateTool // beginDefinition;
 
 evaluateTool[ msg_, req_ ] := Enclose[
-    Catch @ Module[ { params, toolName, args, result, string },
+    Catch @ Module[ { params, toolName, args, tool, result, content, toolResultAssoc },
         Quiet @ TaskRemove @ $warmupTask; (* We're in a tool call, so it no longer makes sense to warm up tools *)
         writeLog[ "ToolCall" -> msg ];
         params = ConfirmBy[ Lookup[ msg, "params", <| |> ], AssociationQ ];
         toolName = ConfirmBy[ Lookup[ params, "name" ], StringQ ];
         args = Lookup[ params, "arguments", <| |> ];
-        result = stealthCatchTop @ $llmTools[ toolName ][ args ];
-        If[ StringQ @ result[ "String" ], result = result[ "String" ] ];
-        (* TODO: return multimodal content here when appropriate *)
-        (* TODO: convert internal errors to more useful text *)
-        string = ConfirmBy[ safeString @ result, StringQ, "String" ];
-        <|
-            "content" -> { <| "type" -> "text", "text" -> string |> },
-            "isError" -> FailureQ @ result
-        |>
+
+        (* Check if the tool exists before calling it *)
+        tool = Lookup[ $llmTools, toolName, Missing[ "UnknownTool", toolName ] ];
+        If[ MissingQ @ tool,
+            Throw @ <|
+                "content" -> { <| "type" -> "text", "text" -> "[Error] Unknown tool: " <> toolName |> },
+                "isError" -> True
+            |>
+        ];
+
+        result = stealthCatchTop @ tool @ args;
+
+        content = Which[
+            (* Structured result with Content key (from WolframLanguageEvaluator) *)
+            AssociationQ @ result && KeyExistsQ[ result, "Content" ],
+                result[ "Content" ],
+
+            (* Legacy: result has String key *)
+            StringQ @ result[ "String" ],
+                resultToContent @ result[ "String" ],
+
+            (* Default: auto-detect graphics *)
+            True,
+                resultToContent @ result
+        ];
+
+        toolResultAssoc = <| "content" -> ConfirmMatch[ content, { __Association } ], "isError" -> FailureQ @ result |>;
+
+        (* Forward _meta from structured tool results (e.g. notebookUrl for MCP Apps) *)
+        If[ AssociationQ @ result && AssociationQ @ result[ "_meta" ],
+            toolResultAssoc[ "_meta" ] = result[ "_meta" ]
+        ];
+
+        toolResultAssoc
     ],
     throwInternalFailure
 ];
@@ -423,22 +715,46 @@ toPrintableASCII // endDefinition;
 (* ::Subsection::Closed:: *)
 (*superQuiet*)
 (* Nothing can be written to stdout while running as an MCP server, so we aggressively suppress output. *)
-(* TODO: add message handler to log messages to a file *)
 superQuiet // beginDefinition;
 superQuiet // Attributes = { HoldFirst };
-(* :!CodeAnalysis::BeginBlock:: *)
-(* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
+
 superQuiet[ eval_ ] :=
-    Block[
-        {
-            $ProgressReporting = False,
-            Print              = Null &,
-            PrintTemporary     = Null &,
-            $Messages          = Streams[ "stderr" ]
-        },
-        eval
+    Module[ { logFile, logStream },
+        logFile = Quiet @ outputLogFile @ $currentMCPServer;
+        logStream = If[ fileQ @ logFile,
+            Quiet @ OpenWrite[ First @ logFile, CharacterEncoding -> "UTF-8" ],
+            $Failed
+        ];
+
+        If[ MatchQ[ logStream, _OutputStream ],
+            (* Success: redirect to log file *)
+
+            WithCleanup[
+                Block[
+                    {
+                        $ProgressReporting = False,
+                        $Messages = { logStream },
+                        $Output   = { logStream }
+                    },
+                    (* We use a veto handler to prevent print output from being written to stdout/stderr.
+                       We do this instead of redefining Print as a local symbol in Block because we need to let the
+                       WL evaluator tool capture and include print outputs in the tool call response. *)
+                    Internal`HandlerBlock[ { "Wolfram.System.Print.Veto", False & }, eval ]
+                ],
+                Quiet @ Close @ logStream
+            ],
+            (* Fallback: redirect to stderr as before *)
+            Block[
+                {
+                    $ProgressReporting = False,
+                    $Messages = Streams[ "stderr" ],
+                    $Output   = Streams[ "stderr" ]
+                },
+                Internal`HandlerBlock[ { "Wolfram.System.Print.Veto", False & }, eval ]
+            ]
+        ]
     ];
-(* :!CodeAnalysis::EndBlock:: *)
+
 superQuiet // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
@@ -449,7 +765,13 @@ initResponse // beginDefinition;
 initResponse[ obj_MCPServerObject ] :=
     initResponse[ obj[ "Name" ], obj[ "ServerVersion" ], obj[ "Tools" ], obj[ "Prompts" ] ];
 
-initResponse[ name_String, version_String, tools0: { ___LLMTool }, prompts_ ] := Enclose[
+initResponse[ obj_MCPServerObject, clientMsg_Association ] :=
+    initResponse[ obj[ "Name" ], obj[ "ServerVersion" ], obj[ "Tools" ], obj[ "Prompts" ], clientMsg ];
+
+initResponse[ name_String, version_String, tools0: { ___LLMTool }, prompts_ ] :=
+    initResponse[ name, version, tools0, prompts, <| |> ];
+
+initResponse[ name_String, version_String, tools0: { ___LLMTool }, prompts_, clientMsg_Association ] := Enclose[
     Module[ { tools, instructions },
         tools = If[ Length @ tools0 > 0, <| "listChanged" -> True |>, <| |> ];
         instructions = ConfirmMatch[ makeInstructions @ prompts, _Missing | _String, "Instructions" ];
@@ -457,10 +779,16 @@ initResponse[ name_String, version_String, tools0: { ___LLMTool }, prompts_ ] :=
             "protocolVersion" -> $protocolVersion,
             "instructions"    -> instructions,
             "capabilities" -> <|
-                "logging"   -> <| |>, (* TODO: support logging *)
-                "prompts"   -> <| |>, (* TODO: support prompts *)
-                "resources" -> <| |>, (* TODO: support resources *)
-                "tools"     -> tools
+                "prompts" -> <| |>,
+                "tools" -> tools,
+                If[ TrueQ @ $clientSupportsUI,
+                    "extensions" -> <|
+                        "io.modelcontextprotocol/ui" -> <|
+                            "mimeTypes" -> { "text/html;profile=mcp-app" }
+                        |>
+                    |>,
+                    Nothing
+                ]
             |>,
             "serverInfo" -> <| "name" -> name, "version" -> version |>
         |>

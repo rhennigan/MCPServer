@@ -1,17 +1,19 @@
 BeginPackage[ "Wolfram`MCPServer`Common`" ];
 
+`$aliasToCanonicalName;
 `$catching;
 `$catchTopTag;
 `$cloudNotebooks;
 `$debug;
 `$defaultMCPServer;
 `$imagePath;
+`$mcpEvaluation;
 `$objectVersion;
 `$pacletVersion;
 `$rootPath;
 `$serverVersion;
-`$settingsData;
 `$storagePath;
+`$supportedMCPClients;
 `$thisPaclet;
 `addToMXInitialization;
 `beginDefinition;
@@ -20,6 +22,7 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `catchTop;
 `catchTopAs;
 `chatbookVersionCheck;
+`defaultEnvironment;
 `directoryQ;
 `endDefinition;
 `endExportedDefinition;
@@ -62,11 +65,45 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 (* Shared symbols with Tools subcontexts: *)
 `exportMarkdownString;
 
+(* Graphics detection and conversion: *)
+`graphicsQ;
+`graphicsToImageContent;
+
+(* WolframAlpha image extraction: *)
+`extractWolframAlphaImages;
+
 (* Internal failure formatting: *)
 `$internalFailureLogPath;
 `extractFailureTag;
 `formatInternalFailureForMCP;
 `generateUniqueFailureFileName;
 `cleanupOldFailureLogs;
+
+(* Output logging: *)
+`$outputLogDirectory;
+`outputLogFile;
+`cleanupOldOutputLogs;
+
+(* Logging utilities: *)
+`debugPrint;
+`writeError;
+
+(* MCP Apps / UI resources: *)
+`$clientSupportsUI;
+`$uiResourceRegistry;
+`$toolUIAssociations;
+`clientSupportsUIQ;
+`mcpAppsEnabledQ;
+`initializeUIResources;
+`listUIResources;
+`loadUIResource;
+`readUIResource;
+`toolUIMetadata;
+`withToolUIMetadata;
+
+(* Tool options: *)
+`$toolOptions;
+`$defaultToolOptions;
+`toolOptionValue;
 
 EndPackage[ ];

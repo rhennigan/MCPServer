@@ -788,6 +788,7 @@ Notebook[
                ],
                "Text",
                "BlockQuote",
+               ShowStringCharacters -> False,
                Background -> None,
                CellID -> 426436109
               ],
@@ -839,6 +840,82 @@ Notebook[
          ],
          "Text",
          CellID -> 242095628
+        ],
+        Cell[
+         TextData[
+          {
+           StyleBox["Note for Claude Code users:", FontWeight -> Bold],
+           " Claude Code uses a ",
+           Cell[
+            BoxData[Cell["CLAUDE.md", Background -> None]],
+            "InlineCode"
+           ],
+           " file for project instructions rather than ",
+           Cell[
+            BoxData[Cell["AGENTS.md", Background -> None]],
+            "InlineCode"
+           ],
+           ". If your project only uses Claude Code, you can name your instructions file ",
+           Cell[
+            BoxData[Cell["CLAUDE.md", Background -> None]],
+            "InlineCode"
+           ],
+           " instead. If you use multiple AI coding tools and want to maintain a single source of truth, you have two options: "
+          }
+         ],
+         "Text",
+         CellID -> 331350253
+        ],
+        Cell[
+         TextData[
+          {
+           "Put ",
+           Cell[
+            BoxData[Cell["@AGENTS.md", Background -> None]],
+            "InlineCode"
+           ],
+           " in your ",
+           Cell[
+            BoxData[Cell["CLAUDE.md", Background -> None]],
+            "InlineCode"
+           ],
+           " file to automatically include the contents of ",
+           Cell[
+            BoxData[Cell["AGENTS.md", Background -> None]],
+            "InlineCode"
+           ]
+          }
+         ],
+         "Item",
+         CellID -> 686770717
+        ],
+        Cell[
+         TextData[
+          {
+           "Create ",
+           Cell[
+            BoxData[Cell["CLAUDE.md", Background -> None]],
+            "InlineCode"
+           ],
+           " as a ",
+           StyleBox["symlink", IgnoreSpellCheck -> True],
+           " to ",
+           Cell[
+            BoxData[Cell["AGENTS.md", Background -> None]],
+            "InlineCode"
+           ],
+           " (e.g., ",
+           Cell[
+            BoxData[
+             Cell["ln -s AGENTS.md CLAUDE.md", Background -> None]
+            ],
+            "InlineCode"
+           ],
+           ")"
+          }
+         ],
+         "Item",
+         CellID -> 625813132
         ],
         Cell[
          CellGroupData[
@@ -1226,6 +1303,7 @@ Notebook[
             ],
             "Text",
             "BlockQuote",
+            ShowStringCharacters -> False,
             Background -> None,
             CellID -> 141046162
            ]
@@ -1363,6 +1441,7 @@ Notebook[
             ],
             "Text",
             "BlockQuote",
+            ShowStringCharacters -> False,
             Background -> None,
             CellID -> 17091729
            ],
@@ -1625,6 +1704,7 @@ Notebook[
                ],
                "Text",
                "BlockQuote",
+               ShowStringCharacters -> False,
                Background -> None,
                CellID -> 412321688
               ],
@@ -1701,6 +1781,7 @@ Notebook[
                ],
                "Text",
                "BlockQuote",
+               ShowStringCharacters -> False,
                Background -> None,
                CellID -> 516123482
               ],
@@ -1829,6 +1910,7 @@ Notebook[
                ],
                "Text",
                "BlockQuote",
+               ShowStringCharacters -> False,
                Background -> None,
                CellID -> 95493957
               ]

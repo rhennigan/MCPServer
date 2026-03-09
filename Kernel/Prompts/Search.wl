@@ -72,6 +72,11 @@ $defaultMCPPrompts[ "WolframAlphaSearch" ] := <|
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*$$validSearchResult*)
+$$validSearchResult = _String | KeyValuePattern[ "Content" -> { __Association } ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*formatSearchPrompt*)
 formatSearchPrompt // beginDefinition;
 
@@ -85,7 +90,37 @@ formatSearchPrompt[ query_String, results_String ] :=
         "<user-query>", query, "</user-query>"
     ];
 
+(* Handle multimodal content *)
+formatSearchPrompt[ query_String, results_Association ] /; KeyExistsQ[ results, "Content" ] :=
+    formatSearchPromptMultimodal[ query, results[ "Content" ] ];
+
 formatSearchPrompt // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*formatSearchPromptMultimodal*)
+formatSearchPromptMultimodal // beginDefinition;
+
+formatSearchPromptMultimodal[ query_String, content: { __Association } ] :=
+    Module[ { textParts, imageParts, textContent, formattedText },
+        textParts = Cases[ content, KeyValuePattern[ "type" -> "text" ] ];
+        imageParts = Cases[ content, KeyValuePattern[ "type" -> "image" ] ];
+        textContent = StringJoin[ Lookup[ textParts, "text", "" ] ];
+
+        formattedText = StringJoin[
+            "<search-query>", query, "</search-query>\n",
+            "<search-results>\n",
+            textContent, "\n",
+            "</search-results>\n",
+            "Use the above search results to answer the user's query below.\n",
+            "<user-query>", query, "</user-query>"
+        ];
+
+        (* Return array: text content followed by images *)
+        Flatten @ { <| "type" -> "text", "text" -> formattedText |>, imageParts }
+    ];
+
+formatSearchPromptMultimodal // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -98,9 +133,9 @@ generateWolframSearchPrompt[ KeyValuePattern[ "query" -> query_String ] ] :=
 generateWolframSearchPrompt[ query_String ] := Enclose[
     Module[ { result },
         (* relatedWolframContext is from Tools`Context` *)
-        result = ConfirmBy[
+        result = ConfirmMatch[
             relatedWolframContext[ <| "context" -> query |> ],
-            StringQ,
+            $$validSearchResult,
             "Result"
         ];
         formatSearchPrompt[ query, result ]
@@ -121,9 +156,9 @@ generateWLSearchPrompt[ KeyValuePattern[ "query" -> query_String ] ] :=
 generateWLSearchPrompt[ query_String ] := Enclose[
     Module[ { result },
         (* relatedDocumentation is from Tools`Context` *)
-        result = ConfirmBy[
+        result = ConfirmMatch[
             relatedDocumentation[ <| "context" -> query |> ],
-            StringQ,
+            $$validSearchResult,
             "Result"
         ];
         formatSearchPrompt[ query, result ]
@@ -144,9 +179,9 @@ generateWASearchPrompt[ KeyValuePattern[ "query" -> query_String ] ] :=
 generateWASearchPrompt[ query_String ] := Enclose[
     Module[ { result },
         (* relatedWolframAlphaResults is from Tools`Context` *)
-        result = ConfirmBy[
+        result = ConfirmMatch[
             relatedWolframAlphaResults[ <| "context" -> query |> ],
-            StringQ,
+            $$validSearchResult,
             "Result"
         ];
         formatSearchPrompt[ query, result ]

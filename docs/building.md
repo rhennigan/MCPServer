@@ -58,9 +58,22 @@ During development, you may want to:
 
 See [Getting Started](getting-started.md#important-mx-files) for more details on MX files during development.
 
+## Building Agent Skills
+
+Agent skills are built separately from the paclet. The build script generates `.wls` scripts from MCP tool definitions and distributes them to skill directories:
+
+```bash
+wolframscript -f Scripts/BuildAgentSkills.wls
+```
+
+This generates scripts, copies shared references, updates version numbers in `SKILL.md` frontmatter and `.claude-plugin/marketplace.json`, and cleans up temporary files.
+
+See [agent-skills.md](agent-skills.md) for full details on the agent skills system and build process.
+
 ## See Also
 
 - [Getting Started](getting-started.md) - Development environment setup
 - [Testing](testing.md) - Writing and running tests
 - [Error Handling](error-handling.md) - Error handling architecture and patterns
+- [Agent Skills](agent-skills.md) - Building and distributing agent skills
 - [AGENTS.md](../AGENTS.md) - Detailed development guidelines

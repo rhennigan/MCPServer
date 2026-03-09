@@ -10,21 +10,89 @@ Needs[ "Wolfram`MCPServer`Tools`"  ];
 Needs[ "CodeInspector`" -> "ci`"   ];
 Needs[ "CodeParser`"    -> "cp`"   ];
 
+(* TODO:
+  `StringTrimLeft` is not a System symbol - suggest `StringDelete[ string, StartOfString ~~ pattern.. ]`
+  `StringTrimRight` is not a System symbol - suggest `StringDelete[ string, pattern.. ~~ EndOfString ]`
+*)
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Argument Patterns*)
 $holdingSymbols = { "Hold", "HoldForm", "HoldComplete", "HoldCompleteForm" };
 $$holdingSymbol = Alternatives @@ Flatten @ { "System`" <> # & /@ $holdingSymbols, $holdingSymbols };
 
+$$yieldsDateObject = HoldPattern @ Alternatives[
+    _CurrentDate,
+    _DateObject,
+    _DatePlus,
+    _FileDate,
+    _NextDate,
+    _PreviousDate,
+    _RandomDate,
+    Now,
+    Today,
+    Tomorrow,
+    Yesterday
+];
+
+$$setOrSetDelayed = "Set"|"System`Set"|"SetDelayed"|"System`SetDelayed";
+
+$$concreteWS = cp`LeafNode[ Whitespace | Token`Newline, __ ]...;
+$$symbolAtSymbol = cp`BinaryNode[
+    cp`BinaryAt,
+    { cp`LeafNode[ Symbol, _, _ ], $$concreteWS, cp`LeafNode[ Token`At, __, _ ], $$concreteWS, cp`LeafNode[ Symbol, _, _ ] },
+    _
+];
+$$ambiguousMapPrecedence = cp`BinaryNode[
+    Map,
+    { $$symbolAtSymbol, $$concreteWS, cp`LeafNode[ Token`SlashAt, __, _ ], $$concreteWS, _ },
+    _
+];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Config*)
+$maxLineLength = 200;
+$maxFileLines  = 10000;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*AST Pattern Helper*)
+importResourceFunction[ astPattern, "ASTPattern" ];
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Abstract Rules*)
 $abstractRules := $abstractRules = <|
     CodeInspector`AbstractRules`$DefaultAbstractRules,
-    cp`CallNode[ cp`LeafNode[ Symbol, "Throw"|"System`Throw", _ ], { _ }, _ ] -> scanSingleArgThrow,
-    cp`CallNode[ cp`LeafNode[ Symbol, "Return"|"System`Return", _ ], { _ }, _ ] -> scanReturn,
-    cp`LeafNode[ Symbol, _String? privateContextQ, _ ] -> scanPrivateContext,
-    cp`LeafNode[ Symbol, _String? globalSymbolQ, _ ] -> scanGlobalSymbol
+    $customAbstractRules
+|>;
+
+$customAbstractRules := $customAbstractRules = <|
+    (* Single-Argument Throw appearing without a surrounding Catch *)
+    cp`CallNode[ cp`LeafNode[ Symbol, "Throw"|"System`Throw", _ ], { _ }, _ ] -> inspectSingleArgThrow,
+    (* Single-Argument Return *)
+    cp`CallNode[ cp`LeafNode[ Symbol, "Return"|"System`Return", _ ], { _ }, _ ] -> inspectReturn,
+    (* Private Context Symbol *)
+    cp`LeafNode[ Symbol, _String? privateContextQ, _ ] -> inspectPrivateContext,
+    (* Global Symbol *)
+    cp`LeafNode[ Symbol, _String? globalSymbolQ, _ ] -> inspectGlobalSymbol,
+    (* Negated Date Object *)
+    astPattern[ - $$yieldsDateObject ] -> inspectNegatedDateObject,
+    (* ReadString with Character Encoding *)
+    astPattern @ HoldPattern @ ReadString[ __, CharacterEncoding -> _String? StringQ, ___ ] ->
+        inspectReadStringWithCharacterEncoding,
+    (* Nothing as Value in Association *)
+    astPattern @ HoldPattern @ Association[ ___, (Rule|RuleDelayed)[ _, Nothing ], ___ ] ->
+        inspectNothingInAssociation,
+    (* KeyExistsQ with List as Second Argument *)
+    astPattern @ HoldPattern @ KeyExistsQ[ _, _List ] -> inspectKeyExistsQWithList,
+    (* Definitions of the form `x /; cond := value` that need ordering checked *)
+    astPattern @ HoldPattern[ Verbatim[ Condition ][ _Symbol, _ ] := _ ] ->
+        inspectConditionalOwnValueOrdering,
+    (* Definitions of the form `f[] /; cond := value` that need ordering checked *)
+    astPattern @ HoldPattern[ Verbatim[ Condition ][ _Symbol[ ], _ ] := _ ] ->
+        inspectConditionalDownValueOrdering
 |>;
 
 (* ::**************************************************************************************************************:: *)
@@ -44,7 +112,9 @@ $concreteRules := $concreteRules = <|
         Token`Comment,
         _String? (StringStartsQ[ "(*"~~WhitespaceCharacter...~~"FIXME:" ]),
         _
-    ] -> scanFixMeComment
+    ] -> inspectFixMeComment,
+    (* Ambiguous Map Precedence: f @ g /@ x *)
+    $$ambiguousMapPrecedence -> inspectAmbiguousMapPrecedence
 |>;
 
 (* ::**************************************************************************************************************:: *)
@@ -53,10 +123,10 @@ $concreteRules := $concreteRules = <|
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*scanSingleArgThrow*)
-scanSingleArgThrow // beginDefinition;
+(*inspectSingleArgThrow*)
+inspectSingleArgThrow // beginDefinition;
 
-scanSingleArgThrow[ pos_, ast_ ] := Catch[
+inspectSingleArgThrow[ pos_, ast_ ] := Catch[
     Replace[
         Fold[ walkASTForCatch, ast, pos ],
         {
@@ -73,7 +143,7 @@ scanSingleArgThrow[ pos_, ast_ ] := Catch[
     $tag
 ];
 
-scanSingleArgThrow // endDefinition;
+inspectSingleArgThrow // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -90,10 +160,10 @@ walkASTForCatch // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*scanReturn*)
-scanReturn // beginDefinition;
+(*inspectReturn*)
+inspectReturn // beginDefinition;
 
-scanReturn[ pos_, ast_ ] :=
+inspectReturn[ pos_, ast_ ] :=
     Enclose @ Module[ { node, as },
         node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
         as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
@@ -105,17 +175,17 @@ scanReturn[ pos_, ast_ ] :=
         ]
     ];
 
-scanReturn // endDefinition;
+inspectReturn // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*scanPrivateContext*)
-scanPrivateContext // beginDefinition;
+(*inspectPrivateContext*)
+inspectPrivateContext // beginDefinition;
 
 (* Skip matches inside AST metadata (e.g., "Definitions" key) to avoid duplicate issues *)
-scanPrivateContext[ pos_, ast_ ] /; MemberQ[ pos, _Key ] := { };
+inspectPrivateContext[ pos_, ast_ ] /; MemberQ[ pos, _Key ] := { };
 
-scanPrivateContext[ pos_, ast_ ] :=
+inspectPrivateContext[ pos_, ast_ ] :=
     Enclose @ Module[ { node, name, as },
         node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
         name = ConfirmBy[ node[[ 2 ]], StringQ, "Name" ];
@@ -128,7 +198,7 @@ scanPrivateContext[ pos_, ast_ ] :=
         ]
     ];
 
-scanPrivateContext // endDefinition;
+inspectPrivateContext // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -141,13 +211,13 @@ privateContextQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*scanGlobalSymbol*)
-scanGlobalSymbol // beginDefinition;
+(*inspectGlobalSymbol*)
+inspectGlobalSymbol // beginDefinition;
 
 (* Skip matches inside AST metadata (e.g., "Definitions" key) to avoid duplicate issues *)
-scanGlobalSymbol[ pos_, ast_ ] /; MemberQ[ pos, _Key ] := { };
+inspectGlobalSymbol[ pos_, ast_ ] /; MemberQ[ pos, _Key ] := { };
 
-scanGlobalSymbol[ pos_, ast_ ] :=
+inspectGlobalSymbol[ pos_, ast_ ] :=
     Enclose @ Module[ { node, name, as },
         node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
         name = ConfirmBy[ node[[ 2 ]], StringQ, "Name" ];
@@ -160,7 +230,7 @@ scanGlobalSymbol[ pos_, ast_ ] :=
         ]
     ];
 
-scanGlobalSymbol // endDefinition;
+inspectGlobalSymbol // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -172,10 +242,10 @@ globalSymbolQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*scanFixMeComment*)
-scanFixMeComment // beginDefinition;
+(*inspectFixMeComment*)
+inspectFixMeComment // beginDefinition;
 
-scanFixMeComment[ pos_, ast_ ] :=
+inspectFixMeComment[ pos_, ast_ ] :=
     Enclose @ Module[ { node, comment, as },
         node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
         comment = StringTrim @ StringTrim[ ConfirmBy[ node[[ 2 ]], StringQ, "Comment" ], { "(*", "*)" } ];
@@ -183,10 +253,337 @@ scanFixMeComment[ pos_, ast_ ] :=
         ci`InspectionObject[ "FixMeComment", comment, "Warning", <| as, ConfidenceLevel -> 0.9 |> ]
     ];
 
-scanFixMeComment // endDefinition;
+inspectFixMeComment // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectNegatedDateObject*)
+inspectNegatedDateObject // beginDefinition;
+
+inspectNegatedDateObject[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, as },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        ci`InspectionObject[
+            "NegatedDateObject",
+            "Negating a ``DateObject`` does not produce a meaningful result",
+            "Error",
+            <| as, ConfidenceLevel -> 0.95 |>
+        ]
+    ];
+
+inspectNegatedDateObject // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectReadStringWithCharacterEncoding*)
+inspectReadStringWithCharacterEncoding // beginDefinition;
+
+inspectReadStringWithCharacterEncoding[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, as },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        ci`InspectionObject[
+            "ReadStringCharacterEncoding",
+            $readStringWithCharacterEncodingHint,
+            "Error",
+            <| as, ConfidenceLevel -> 0.95 |>
+        ]
+    ];
+
+inspectReadStringWithCharacterEncoding // endDefinition;
+
+$readStringWithCharacterEncodingHint = "\
+``ReadString`` does not support the ``CharacterEncoding`` option; \
+use ``ByteArrayToString[ReadByteArray[source], encoding]`` instead";
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectNothingInAssociation*)
+inspectNothingInAssociation // beginDefinition;
+
+inspectNothingInAssociation[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, children, nothingRules },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        children = ConfirmBy[ node[[ 2 ]], ListQ, "Children" ];
+        nothingRules = Cases[ children, $$nothingValueRule ];
+        inspectNothingRule /@ nothingRules
+    ];
+
+inspectNothingInAssociation // endDefinition;
+
+$$nothingValueRule := $$nothingValueRule = astPattern[ (Rule|RuleDelayed)[ _, Nothing ] ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*inspectNothingRule*)
+inspectNothingRule // beginDefinition;
+
+inspectNothingRule[ cp`CallNode[ _, _, as_Association ] ] :=
+    ci`InspectionObject[
+        "NothingValueInAssociation",
+        $nothingInAssociationHint,
+        "Warning",
+        <| as, ConfidenceLevel -> 0.9 |>
+    ];
+
+inspectNothingRule // endDefinition;
+
+$nothingInAssociationHint = "\
+``Nothing`` used as a value in an ``Association`` is not automatically removed; \
+the key will map to the value ``Nothing``";
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectKeyExistsQWithList*)
+inspectKeyExistsQWithList // beginDefinition;
+
+inspectKeyExistsQWithList[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, as },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        ci`InspectionObject[
+            "KeyExistsQNestedKeyPath",
+            $keyExistsQNestedKeyPathHint,
+            "Warning",
+            <| as, ConfidenceLevel -> 0.9 |>
+        ]
+    ];
+
+inspectKeyExistsQWithList // endDefinition;
+
+$keyExistsQNestedKeyPathHint = "\
+``KeyExistsQ`` with a ``List`` as its second argument checks for a literal list key in the association, \
+not a nested key path. If you intended a nested lookup, use ``!MissingQ[assoc[\"k1\", \"k2\", ...]]`` instead";
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectConditionalOwnValueOrdering*)
+inspectConditionalOwnValueOrdering // beginDefinition;
+
+(* Skip matches inside AST metadata (e.g., "Definitions" key) to avoid duplicate issues *)
+inspectConditionalOwnValueOrdering[ pos_, ast_ ] /; MemberQ[ pos, _Key ] := { };
+
+inspectConditionalOwnValueOrdering[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, name, as },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        name = ConfirmBy[ node[[ 2, 1, 2, 1, 2 ]], StringQ, "Name" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        If[ hasUnconditionalOwnValueQ[ ast, name ],
+            ci`InspectionObject[
+                "UnreachableConditionalDefinition",
+                unreachableConditionalHint @ name,
+                "Warning",
+                <| as, ConfidenceLevel -> 0.9 |>
+            ],
+            { }
+        ]
+    ];
+
+inspectConditionalOwnValueOrdering // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*hasUnconditionalOwnValueQ*)
+hasUnconditionalOwnValueQ // beginDefinition;
+
+hasUnconditionalOwnValueQ[ ast_, name_String ] :=
+    MemberQ[
+        ast,
+        cp`CallNode[
+            cp`LeafNode[ Symbol, $$setOrSetDelayed, _ ],
+            { cp`LeafNode[ Symbol, name, _ ], _ },
+            _
+        ],
+        Infinity
+    ];
+
+hasUnconditionalOwnValueQ // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectConditionalDownValueOrdering*)
+inspectConditionalDownValueOrdering // beginDefinition;
+
+(* Skip matches inside AST metadata (e.g., "Definitions" key) to avoid duplicate issues *)
+inspectConditionalDownValueOrdering[ pos_, ast_ ] /; MemberQ[ pos, _Key ] := { };
+
+inspectConditionalDownValueOrdering[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, name, as },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        name = ConfirmBy[ node[[ 2, 1, 2, 1, 1, 2 ]], StringQ, "Name" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        If[ hasUnconditionalDownValue[ ast, name ],
+            ci`InspectionObject[
+                "UnreachableConditionalDefinition",
+                unreachableConditionalHint @ name,
+                "Warning",
+                <| as, ConfidenceLevel -> 0.9 |>
+            ],
+            { }
+        ]
+    ];
+
+inspectConditionalDownValueOrdering // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*hasUnconditionalDownValue*)
+hasUnconditionalDownValue // beginDefinition;
+
+hasUnconditionalDownValue[ ast_, name_String ] :=
+    MemberQ[
+        ast,
+        cp`CallNode[
+            cp`LeafNode[ Symbol, $$setOrSetDelayed, _ ],
+            { cp`CallNode[ cp`LeafNode[ Symbol, name, _ ], { }, _ ], _ },
+            _
+        ],
+        Infinity
+    ];
+
+hasUnconditionalDownValue // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*unreachableConditionalHint*)
+unreachableConditionalHint // beginDefinition;
+
+unreachableConditionalHint[ name0_String ] :=
+    Module[ { name },
+        name = Last @ StringSplit[ name0, "`" ];
+        "This conditional definition of ``" <> name <>
+        "`` is likely unreachable since other unconditional definitions override it"
+    ];
+
+unreachableConditionalHint // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectAmbiguousMapPrecedence*)
+inspectAmbiguousMapPrecedence // beginDefinition;
+
+inspectAmbiguousMapPrecedence[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, as, symbols, fName, gName, xCode },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        symbols = ConfirmMatch[
+            Cases[ node[[ 2, 1, 2 ]], cp`LeafNode[ Symbol, name_String, _ ] :> name ],
+            { _String, _String },
+            "Symbols"
+        ];
+        { fName, gName } = symbols;
+        xCode = concreteNodeToString @ Last @ node[[ 2 ]];
+        ci`InspectionObject[
+            "AmbiguousMapPrecedence",
+            ambiguousMapPrecedenceHint[ fName, gName, xCode ],
+            "Warning",
+            <| as, ConfidenceLevel -> 0.9 |>
+        ]
+    ];
+
+inspectAmbiguousMapPrecedence // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*concreteNodeToString*)
+concreteNodeToString // beginDefinition;
+concreteNodeToString[ cp`LeafNode[ _, s_String, _ ] ] := s;
+concreteNodeToString[ cp`CallNode[ head_List, group_, _ ] ] := StringJoin[ concreteNodeToString /@ head, concreteNodeToString @ group ];
+concreteNodeToString[ _[ _, children_List, _ ] ] := StringJoin[ concreteNodeToString /@ children ];
+concreteNodeToString // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*ambiguousMapPrecedenceHint*)
+ambiguousMapPrecedenceHint // beginDefinition;
+
+ambiguousMapPrecedenceHint[ f_String, g_String, x_String ] :=
+    StringJoin[
+        "``", f, " @ ", g, " /@ ", x, "`` is parsed as ``Map[", f, "[", g, "], ", x, "]``.",
+        " Suggestions: ``(", f, " @ ", g, ") /@ ", x, "`` or ``", f, " @ (", g, " /@ ", x, ")``"
+    ];
+
+ambiguousMapPrecedenceHint // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Text-Level Inspections*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*textLevelInspections*)
+textLevelInspections // beginDefinition;
+
+textLevelInspections[ code_String ] :=
+    Module[ { lines },
+        lines = StringSplit[ code, "\n", All ];
+        Flatten @ {
+            inspectLineLengths @ lines,
+            inspectFileLength @ lines
+        }
+    ];
+
+textLevelInspections // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectLineLengths*)
+inspectLineLengths // beginDefinition;
+
+inspectLineLengths[ lines_List ] := MapIndexed[
+    Function[
+        { line, idx },
+        With[ { len = StringLength @ line },
+            If[ len > $maxLineLength,
+                ci`InspectionObject[
+                    "ExcessiveLineLength",
+                    StringJoin[
+                        "Line is ",
+                        ToString @ len,
+                        " characters long (maximum recommended: ",
+                        ToString @ $maxLineLength,
+                        ")"
+                    ],
+                    "Formatting",
+                    <|
+                        cp`Source -> { { First @ idx, $maxLineLength + 1 }, { First @ idx, len } },
+                        ConfidenceLevel -> 0.95
+                    |>
+                ],
+                Nothing
+            ]
+        ]
+    ],
+    lines
+];
+
+inspectLineLengths // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectFileLength*)
+inspectFileLength // beginDefinition;
+
+inspectFileLength[ lines_List ] /; Length @ lines > $maxFileLines :=
+    ci`InspectionObject[
+        "ExcessiveFileLength",
+        "File is " <> ToString @ Length @ lines <> " lines long (maximum recommended: " <> ToString @ $maxFileLines <> ")",
+        "Formatting",
+        <| cp`Source -> { { 1, 1 }, { Length @ lines, Max[ StringLength /@ lines, 1 ] } }, ConfidenceLevel -> 0.95 |>
+    ];
+
+inspectFileLength[ _List ] := { };
+
+inspectFileLength // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Package Footer*)
+addToMXInitialization[
+    $customAbstractRules;
+    $concreteRules;
+];
+
 End[ ];
 EndPackage[ ];

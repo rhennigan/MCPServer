@@ -28,6 +28,8 @@ Implements a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) ser
 - **Custom servers** with tailored tools for specific needs
 - **Wide client support** including Claude Desktop, Cursor, VS Code, and more
 - **MCP prompts** for enhanced context and workflows
+- **MCP Apps** for interactive UI resources in supported clients (e.g., embedded notebook viewers, Wolfram\|Alpha result displays)
+- **Agent Skills** for distributing Wolfram tools as portable skills to AI coding agents (Claude Code, Cursor, Gemini CLI, VS Code, and [more](https://agentskills.io/))
 
 ## Requirements
 
@@ -191,6 +193,13 @@ While only `WolframAlphaContext` *requires* an [LLMKit subscription](https://www
 - **EditSymbolDoc** - Edit existing symbol documentation pages
 - **EditSymbolDocExamples** - Edit example sections of documentation
 
+### MCP Apps Tools
+
+- **NotebookViewer** - Embed interactive Wolfram Cloud notebooks inline
+- **MCPAppsTest** - Diagnostic tool for testing the MCP Apps pipeline
+
+> **Note:** MCP Apps tools require a client that supports the `io.modelcontextprotocol/ui` extension. When UI support is available, the `WolframAlpha` and `WolframLanguageEvaluator` tools are automatically enhanced with interactive notebook viewers. See [docs/mcp-apps.md](docs/mcp-apps.md) for details.
+
 See [docs/tools.md](docs/tools.md) for detailed information about each tool.
 
 ## Creating Custom Servers
@@ -255,16 +264,29 @@ CreateMCPServer["My MCP Server", <|
 |--------|-------------|
 | `$DefaultMCPServers` | Association of predefined server configurations |
 | `$DefaultMCPTools` | Association of available tool definitions |
+| `$DefaultMCPToolOptions` | Association of default tool option values |
 | `$DefaultMCPPrompts` | Association of available prompt definitions |
+
+### Options
+
+#### `InstallMCPServer`
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `"EnableMCPApps"` | `True` | Enable or disable [MCP Apps](docs/mcp-apps.md) UI resources |
+| `"DevelopmentMode"` | `False` | Use local source files instead of installed paclet |
+| `"ToolOptions"` | `<\|\|>` | Customize built-in tool behavior (see [docs/tools.md](docs/tools.md#tool-options)) |
+| `"VerifyLLMKit"` | `True` | Check LLMKit subscription requirements |
 
 ## Development
 
-See the [developer documentation](docs/index.md) for information on:
+See the [developer documentation](docs/README.md) for information on:
 
 - [Getting started](docs/getting-started.md) with development
 - [Writing and running tests](docs/testing.md)
 - [Building the paclet](docs/building.md)
 - [Adding new tools](docs/tools.md)
+- [Agent skills](docs/agent-skills.md) for distributing tools to AI coding agents
 - [Error handling](docs/error-handling.md)
 
 For AI agents working on this codebase, see [AGENTS.md](AGENTS.md).

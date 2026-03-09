@@ -30,6 +30,11 @@ $$metadata = KeyValuePattern @ {
     "Transport"     -> $$transport
 };
 
+$$installation = KeyValuePattern @ {
+    "ClientName"        -> _String? StringQ | None,
+    "ConfigurationFile" -> _? fileQ
+};
+
 $defaultMetadata := <|
     "LLMEvaluator"  -> Automatic,
     "Name"          -> CreateUUID[ ],
@@ -339,7 +344,7 @@ $specialProperties = {
 getInstallations // beginDefinition;
 
 getInstallations[ data_Association ] := Enclose[
-    ConfirmMatch[ mcpServerInstallations @ data, { ___? fileQ }, "Installations" ],
+    ConfirmMatch[ mcpServerInstallations @ data, { $$installation... }, "Installations" ],
     throwInternalFailure
 ];
 
@@ -394,7 +399,7 @@ normalizePromptData // endDefinition;
 determinePromptType // beginDefinition;
 determinePromptType[ KeyValuePattern[ "Type" -> "Function" ] ] := "Function";
 determinePromptType[ KeyValuePattern[ "Type" -> "Text" ] ] := "Text";
-determinePromptType[ KeyValuePattern[ "Type" -> Automatic ] ] := determinePromptType @ <||>;
+determinePromptType[ KeyValuePattern[ "Type" -> Automatic ] ] := determinePromptType @ <| |>;
 determinePromptType[ KeyValuePattern[ "Content" -> _String ] ] := "Text";
 determinePromptType[ KeyValuePattern[ "Content" -> _TemplateObject ] ] := "Text";
 determinePromptType[ KeyValuePattern[ "Content" -> _ ] ] := "Function";
@@ -440,7 +445,7 @@ makeJSONConfiguration // beginDefinition;
 makeJSONConfiguration[ data_Association ] := Enclose[
     Module[ { name, env, cmd, config, full },
         name = ConfirmBy[ data[ "Name" ], StringQ, "Name" ];
-        env = <| "MCP_SERVER_NAME" -> name |>;
+        env = <| "MCP_SERVER_NAME" -> name, ConfirmBy[ defaultEnvironment[ ], AssociationQ, "Environment" ] |>;
         cmd = ConfirmBy[ getWolframCommand[ ], StringQ, "WolframCommand" ];
         config = <| "type" -> "stdio", "command" -> cmd, "args" -> $defaultCommandLineArguments, "env" -> env |>;
         full = <| "mcpServers" -> <| name -> config |> |>;

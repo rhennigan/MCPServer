@@ -1,0 +1,57 @@
+{
+    "words": [
+        "Agentic",
+        "BUILDKIT",
+        "buildx",
+        "CICD",
+        "dpkg",
+        "Embedder",
+        "ENTITLEMENTID",
+        "evals",
+        "FelisCatus",
+        "frontmatter",
+        "Legended",
+        "libgomp",
+        "llmkit",
+        "LOCALBASE",
+        "MCPB",
+        "mcpserver",
+        "modelcontextprotocol",
+        "Multicolumn",
+        "newclient",
+        "noinit",
+        "noprompt",
+        "oneline",
+        "opencode",
+        "pacletreadonly",
+        "patt",
+        "prebuild",
+        "pwfile",
+        "reranking",
+        "sandboxed",
+        "saoudrizwan",
+        "shdw",
+        "skeletonize",
+        "Skeletonizer",
+        "streamable",
+        "Stylesheet",
+        "subcontext",
+        "subcontexts",
+        "Subsubsubsection",
+        "unbuilt",
+        "unformat",
+        "USERBASE",
+        "USERPROFILE",
+        "wolframalpha",
+        "wolframengine",
+        "WOLFRAMINIT",
+        "wolframresearch",
+        "zoomable"
+    ],
+    "ignoreRegExpList": [
+        "\\:\\:[a-z]+", // message names
+        "\\\\:[0-9a-f]+", // unicode characters
+        "%[0-9A-F]{2}\\w+", // url encoded characters
+        "1\\:eJ.+" // compressed data
+    ]
+}
