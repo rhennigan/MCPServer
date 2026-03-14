@@ -2307,6 +2307,205 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Custom Rules - DefinitionNoSymbol*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectDefinitionNoSymbol - Bare Blank*)
+VerificationTest[
+    $defNoSymBlankResult = CodeInspectorToolFunction @ <|
+        "code"               -> "_ := xxx",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DefinitionNoSymbol-BareBlank-ReturnsString"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymBlankResult, "DefinitionNoSymbol" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-BareBlank-HasTag"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymBlankResult, "does not contain a symbol to attach a rule to" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-BareBlank-HasDescription"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymBlankResult, "(Error" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-BareBlank-HasSeverity"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectDefinitionNoSymbol - Named Pattern with Bare Blank*)
+VerificationTest[
+    $defNoSymNamedResult = CodeInspectorToolFunction @ <|
+        "code"               -> "name_ := f[name]",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DefinitionNoSymbol-NamedBlank-ReturnsString"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymNamedResult, "DefinitionNoSymbol" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-NamedBlank-HasTag"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectDefinitionNoSymbol - BlankSequence and BlankNullSequence*)
+VerificationTest[
+    $defNoSymBSResult = CodeInspectorToolFunction @ <|
+        "code"               -> "__ := xxx",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DefinitionNoSymbol-BlankSequence-ReturnsString"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymBSResult, "DefinitionNoSymbol" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-BlankSequence-HasTag"
+]
+
+VerificationTest[
+    $defNoSymBNSResult = CodeInspectorToolFunction @ <|
+        "code"               -> "___ := xxx",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DefinitionNoSymbol-BlankNullSequence-ReturnsString"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymBNSResult, "DefinitionNoSymbol" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-BlankNullSequence-HasTag"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectDefinitionNoSymbol - PatternTest and Condition*)
+VerificationTest[
+    $defNoSymPTResult = CodeInspectorToolFunction @ <|
+        "code"               -> "_?test := xxx",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DefinitionNoSymbol-PatternTest-ReturnsString"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymPTResult, "DefinitionNoSymbol" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-PatternTest-HasTag"
+]
+
+VerificationTest[
+    $defNoSymCondResult = CodeInspectorToolFunction @ <|
+        "code"               -> "_ /; cond := xxx",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DefinitionNoSymbol-Condition-ReturnsString"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymCondResult, "DefinitionNoSymbol" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-Condition-HasTag"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectDefinitionNoSymbol - No False Positives*)
+
+(* Valid DownValues definition should not trigger *)
+VerificationTest[
+    $defNoSymValidDV = CodeInspectorToolFunction @ <|
+        "code"               -> "f[x_] := x",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DefinitionNoSymbol-ValidDownValue-ReturnsString"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymValidDV, "DefinitionNoSymbol" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-ValidDownValue-NoTag"
+]
+
+(* Valid OwnValues definition should not trigger *)
+VerificationTest[
+    $defNoSymValidOV = CodeInspectorToolFunction @ <|
+        "code"               -> "x := 5",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DefinitionNoSymbol-ValidOwnValue-ReturnsString"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymValidOV, "DefinitionNoSymbol" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-ValidOwnValue-NoTag"
+]
+
+(* Blank with head argument should not trigger (attaches to Integer) *)
+VerificationTest[
+    $defNoSymTypedBlank = CodeInspectorToolFunction @ <|
+        "code"               -> "_Integer := xxx",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DefinitionNoSymbol-TypedBlank-ReturnsString"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymTypedBlank, "DefinitionNoSymbol" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-TypedBlank-NoTag"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Integration Tests - Cleanup*)
 VerificationTest[
     DeleteDirectory[ $integrationTempDir, DeleteContents -> True ];
