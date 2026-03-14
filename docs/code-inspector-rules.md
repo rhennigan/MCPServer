@@ -419,6 +419,7 @@ The following custom rules are defined in `Kernel/Tools/CodeInspector/Rules.wl`:
 | `NothingValueInAssociation` | Warning | 0.9 | Using `Nothing` as a value in an `Association` (not automatically removed like in `List`) |
 | `KeyExistsQNestedKeyPath` | Warning | 0.9 | Using a `List` as the second argument to `KeyExistsQ` (does not support nested key paths) |
 | `UnreachableConditionalDefinition` | Warning | 0.9 | A conditional definition (`x /; cond := val` or `f[] /; cond := val`) that is unreachable because an unconditional definition overrides it |
+| `DefinitionNoSymbol` | Error | 0.95 | Definition LHS does not contain a symbol to attach a rule to (e.g., `_ := xxx`, `name_ := f[name]`) |
 
 ### Concrete Rules
 

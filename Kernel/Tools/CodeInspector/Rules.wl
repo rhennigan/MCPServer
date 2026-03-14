@@ -37,6 +37,12 @@ $$yieldsDateObject = HoldPattern @ Alternatives[
 
 $$setOrSetDelayed = "Set"|"System`Set"|"SetDelayed"|"System`SetDelayed";
 
+$$blankSymbol = "Blank"|"System`Blank"|"BlankSequence"|"System`BlankSequence"|"BlankNullSequence"|"System`BlankNullSequence";
+
+$$patternConstructSymbol =
+    $$blankSymbol|"Pattern"|"System`Pattern"|"PatternTest"|"System`PatternTest"|
+    "Condition"|"System`Condition"|"Optional"|"System`Optional";
+
 $$concreteWS = cp`LeafNode[ Whitespace | Token`Newline, __ ]...;
 $$symbolAtSymbol = cp`BinaryNode[
     cp`BinaryAt,
@@ -92,7 +98,13 @@ $customAbstractRules := $customAbstractRules = <|
         inspectConditionalOwnValueOrdering,
     (* Definitions of the form `f[] /; cond := value` that need ordering checked *)
     astPattern @ HoldPattern[ Verbatim[ Condition ][ _Symbol[ ], _ ] := _ ] ->
-        inspectConditionalDownValueOrdering
+        inspectConditionalDownValueOrdering,
+    (* Definition without a symbol to attach a rule to *)
+    cp`CallNode[
+        cp`LeafNode[ Symbol, $$setOrSetDelayed, _ ],
+        { cp`CallNode[ cp`LeafNode[ Symbol, $$patternConstructSymbol, _ ], _, _ ], _ },
+        _
+    ] -> inspectDefinitionNoSymbol
 |>;
 
 (* ::**************************************************************************************************************:: *)
@@ -457,6 +469,61 @@ unreachableConditionalHint[ name0_String ] :=
     ];
 
 unreachableConditionalHint // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectDefinitionNoSymbol*)
+inspectDefinitionNoSymbol // beginDefinition;
+
+(* Skip matches inside AST metadata (e.g., "Definitions" key) to avoid duplicate issues *)
+inspectDefinitionNoSymbol[ pos_, ast_ ] /; MemberQ[ pos, _Key ] := { };
+
+inspectDefinitionNoSymbol[ pos_, ast_ ] :=
+    Enclose @ Module[ { node, lhs, as },
+        node = ConfirmMatch[ Extract[ ast, pos ], _[ _, _, __ ], "Node" ];
+        lhs = node[[ 2, 1 ]];
+        as = ConfirmBy[ node[[ 3 ]], AssociationQ, "Metadata" ];
+        If[ lhsHasSymbolQ @ lhs,
+            { },
+            ci`InspectionObject[
+                "DefinitionNoSymbol",
+                "The left-hand side of this definition does not contain a symbol to attach a rule to",
+                "Error",
+                <| as, ConfidenceLevel -> 0.95 |>
+            ]
+        ]
+    ];
+
+inspectDefinitionNoSymbol // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*lhsHasSymbolQ*)
+lhsHasSymbolQ // beginDefinition;
+
+(* Pattern[name, expr] -> recurse on expr *)
+lhsHasSymbolQ[ cp`CallNode[ cp`LeafNode[ Symbol, "Pattern"|"System`Pattern", _ ], { _, expr_ }, _ ] ] :=
+    lhsHasSymbolQ @ expr;
+
+(* PatternTest[expr, test] -> recurse on expr *)
+lhsHasSymbolQ[ cp`CallNode[ cp`LeafNode[ Symbol, "PatternTest"|"System`PatternTest", _ ], { expr_, _ }, _ ] ] :=
+    lhsHasSymbolQ @ expr;
+
+(* Condition[expr, test] -> recurse on expr *)
+lhsHasSymbolQ[ cp`CallNode[ cp`LeafNode[ Symbol, "Condition"|"System`Condition", _ ], { expr_, _ }, _ ] ] :=
+    lhsHasSymbolQ @ expr;
+
+(* Optional[expr, ...] -> recurse on expr *)
+lhsHasSymbolQ[ cp`CallNode[ cp`LeafNode[ Symbol, "Optional"|"System`Optional", _ ], { expr_, ___ }, _ ] ] :=
+    lhsHasSymbolQ @ expr;
+
+(* Bare Blank/BlankSequence/BlankNullSequence without a head argument -> no symbol *)
+lhsHasSymbolQ[ cp`CallNode[ cp`LeafNode[ Symbol, $$blankSymbol, _ ], { }, _ ] ] := False;
+
+(* Anything else (Blank[head], f[args], LeafNode symbol, etc.) -> has symbol *)
+lhsHasSymbolQ[ _ ] := True;
+
+lhsHasSymbolQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
