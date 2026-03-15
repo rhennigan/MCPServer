@@ -32,10 +32,12 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Should create a new resource function definition notebook
 - [ ] Implement `EditResourceFunction` tool
   - Should edit an existing resource function definition notebook
-- [ ] Implement `CheckPaclet` tool
-- [ ] Implement `BuildPaclet` tool
-- [ ] Implement `PublishPaclet` tool
-- [ ] Implement `ReloadPaclet` tool
+- [ ] Paclet tools:
+  - [ ] `CreatePaclet`
+  - [ ] `CheckPaclet`
+  - [ ] `BuildPaclet`
+  - [ ] `PublishPaclet`
+  - [ ] `ReloadPaclet`
 - [ ] Implement `RestartMCPServer` tool (if possible)
 - [ ] Tool to open notebooks for the user (e.g., `UsingFrontEnd[SystemOpen[notebookPath]]`)
   - Might be redundant, since the same can be trivially done with a Bash tool or even the WL tool itself
@@ -124,7 +126,7 @@ This is effectively what the paclet currently does, but we'll run it in reverse.
 - [ ] Support connecting to local MCP servers
 - [ ] Support connecting to remote MCP servers
 
-## Agent Skills
+## Agent Skills and Plugins
 
 Create distributable agent skills that use functionality from this paclet.
 
@@ -133,7 +135,11 @@ Create distributable agent skills that use functionality from this paclet.
 - [x] Plugin marketplace
 - [x] Add new documentation page for adding skills
 - [ ] Create and run agent-level evals
-- [ ] Investigate using hooks instead of instructions to use CodeInspector
+- [ ] Investigate plugin equivalents in agents other than Claude Code
+- [ ] Investigate using hooks instead of instructions to use CodeInspector (or just use LSP server)
+- [ ] Investigate LSP server support
+  - https://code.claude.com/docs/en/plugins-reference#lsp-servers
+  - https://github.com/WolframResearch/LSPServer
 
 ### More Skill Ideas
 
