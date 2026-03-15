@@ -386,7 +386,7 @@ Resolution order for `getMCPServerObjectByName`:
 1. File-based servers (existing — user-created via `CreateMCPServer`)
 2. Built-in servers (existing — `$DefaultMCPServers`)
 3. Installed paclet servers (new — scan installed paclets with `"MCP"` extension)
-4. Remote paclet servers (new — `PacletFindRemote`, metadata only)
+4. Remote paclet servers (new — `PacletFindRemote`, metadata only; supports `UpdatePacletSites` option)
 
 The `"Location"` property for paclet-defined servers is `PacletObject["Wolfram/JIRALink"]`:
 
@@ -406,12 +406,16 @@ New properties:
 
 ### MCPServerObjects
 
-New option `"AllowUninstalled"`:
+New options `"IncludeRemotePaclets"` and `UpdatePacletSites`:
 
 ```wl
-MCPServerObjects[]                              (* file-based + built-in + installed paclet servers *)
-MCPServerObjects["AllowUninstalled" -> True]    (* also includes remote/uninstalled paclet servers *)
+MCPServerObjects[]                                    (* file-based + built-in + installed paclet servers *)
+MCPServerObjects["IncludeRemotePaclets" -> True]      (* also includes uninstalled paclet servers from the Paclet Repository *)
+MCPServerObjects["IncludeRemotePaclets" -> True,
+    UpdatePacletSites -> True]                         (* force refresh of cached remote paclet site data *)
 ```
+
+`UpdatePacletSites` is passed through to `PacletFindRemote`. By default, the PacletManager uses cached remote paclet site data, so `"IncludeRemotePaclets" -> True` is fast after the first call. Use `UpdatePacletSites -> True` to force a refresh.
 
 ### CreateMCPServer
 
@@ -575,7 +579,7 @@ New files:
 - **Circular initialization:** If Paclet A's init loads Paclet B and Paclet B's init loads Paclet A, this is the paclet developer's responsibility to avoid.
 - **Short name shadowing:** A paclet can define a tool named `"WolframAlpha"`, but the fully qualified name is `"Publisher/Paclet/WolframAlpha"`. The short name `"WolframAlpha"` always resolves to the built-in tool.
 - **Paclet uninstalled while server running:** Tool calls will fail at runtime. This is expected behavior.
-- **`PacletFindRemote` performance:** Remote discovery involves network calls. `MCPServerObjects["AllowUninstalled" -> True]` should be used judiciously. Consider caching remote results.
+- **`PacletFindRemote` performance:** The PacletManager caches remote paclet site data automatically, so `MCPServerObjects["IncludeRemotePaclets" -> True]` is fast after the initial fetch. A fresh network call only occurs when `UpdatePacletSites -> True` is passed.
 - **Missing root directory:** If the `"Root"` directory doesn't exist in a paclet, definition file loading fails gracefully. PacletInfo metadata remains available.
 
 ---
