@@ -344,15 +344,17 @@ Built-in tools always take precedence for short (unqualified) names.
 
 ### Installed = Trusted
 
-When a user writes `MCPServerObject["Wolfram/JIRALink/ProjectManagement"]`, they are explicitly referencing a paclet-qualified name. If the paclet is locally installed, MCPServer loads its definition files. This is analogous to how `Needs["Wolfram`JIRALink`"]` trusts installed paclets.
+When a user writes `MCPServerObject["Wolfram/JIRALink/ProjectManagement"]`, they are explicitly referencing a paclet-qualified name. If the paclet is locally installed, MCPServer loads its definition files. This is analogous to how ``Needs["Wolfram`JIRALink`"]`` trusts installed paclets.
 
-### Never Auto-Install Paclets
+### Paclet Installation Policy
 
-MCPServer must **never** call `PacletInstall` automatically. Paclets can have auto-load on startup enabled, which could execute arbitrary code. Installation must always be an explicit user action.
+Metadata-only operations (`MCPServerObject`, `MCPServerObjects`) must **never** call `PacletInstall` automatically. These functions work with PacletInfo metadata from `PacletFindRemote` and should not trigger code execution.
+
+Execution-level operations (`InstallMCPServer`, `StartMCPServer`) require the paclet to be installed and should call `PacletInstall` if the paclet is not already present.
 
 ### Uninstalled Paclet Behavior
 
-For uninstalled paclets discovered via `PacletFindRemote`, only PacletInfo metadata is available. Properties that require loading definition files return a failure:
+For uninstalled paclets discovered via `PacletFindRemote`, only PacletInfo metadata is available. `MCPServerObject` properties that require loading definition files return a failure:
 
 ```wl
 MCPServerObject["Unknown/Paclet/Server"]["Tools"]
@@ -368,6 +370,8 @@ A new `"ToolNames"` property returns just the string names from PacletInfo metad
 MCPServerObject["Unknown/Paclet/Server"]["ToolNames"]
 (* {"ToolA", "ToolB"} *)
 ```
+
+In contrast, `InstallMCPServer` and `StartMCPServer` will call `PacletInstall` as needed to ensure the paclet is available before proceeding.
 
 ---
 
