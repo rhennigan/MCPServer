@@ -18,24 +18,29 @@ External Wolfram paclets can contribute MCP servers, tools, and prompts by decla
 
 ## Naming Convention
 
-Paclet-defined items use a three-segment fully qualified name:
+Paclet-defined items use a fully qualified name constructed from the paclet name and the item name:
 
 ```
-"PublisherID/PacletShortName/ItemName"
+"PacletName/ItemName"
 ```
 
-Where:
+Since paclet names may include a publisher prefix (e.g., `"Wolfram/JIRALink"`), this can result in either a two-segment or three-segment name:
 
-- **PublisherID** — from the paclet's `"PublisherID"` property (e.g., `"Wolfram"`)
-- **PacletShortName** — the paclet name minus the publisher prefix (e.g., `"Wolfram/JIRALink"` → `"JIRALink"`)
-- **ItemName** — the local name declared in the `"MCP"` extension
+- **Two-segment** — for paclets without a publisher prefix: `"PacletName/ItemName"`
+- **Three-segment** — for paclets with a publisher prefix: `"PublisherID/PacletShortName/ItemName"`
 
 Examples:
 
 ```wl
+(* Paclet with publisher prefix: "Wolfram/JIRALink" *)
 "Wolfram/JIRALink/GetIssue"            (* tool *)
 "Wolfram/JIRALink/ProjectManagement"   (* server *)
 "Wolfram/JIRALink/IssueText"           (* prompt *)
+
+(* Paclet without publisher prefix: "JIRALink" *)
+"JIRALink/GetIssue"                    (* tool *)
+"JIRALink/ProjectManagement"           (* server *)
+"JIRALink/IssueText"                   (* prompt *)
 ```
 
 Names containing `/` are reserved for paclet-defined items. Built-in names (e.g., `"WolframAlpha"`, `"WolframLanguage"`) never contain `/`.
