@@ -81,7 +81,7 @@ PacletObject[ <|
 
 | Property | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `"Root"` | `String` | No | `"MCP"` | Subdirectory for definition files. Handled by `PacletExtensionDirectory`. |
+| `"Root"` | `String` | No | `"MCP"` | Subdirectory for definition files. Resolved by the built-in `PacletExtensionDirectory` function. |
 | `"Servers"` | `List` | No | `{}` | Server declarations. |
 | `"Tools"` | `List` | No | `{}` | Tool declarations. |
 | `"Prompts"` | `List` | No | `{}` | Prompt declarations. |
@@ -200,7 +200,7 @@ When loading a definition for item `"GetIssue"` of type `"Tools"`:
 1. **Per-item file:** `First @ FileNames[ "GetIssue." ~~ ("mx"|"wl"|"wxf"), "<root>/Tools" ]`
 2. **Combined file:** `First @ FileNames[ "Tools." ~~ ("mx"|"wl"|"wxf"), "<root>" ]` — look up `"GetIssue"` key
 
-Per-item files take precedence over combined files. If multiple files match the same item (e.g., both `GetIssue.wl` and `GetIssue.mx` exist), the first match from `FileNames` is used. `ValidateMCPPacletExtension` warns about duplicate definition files.
+Per-item files take precedence over combined files. If multiple definition files exist for the same item (e.g., both `GetIssue.wl` and `GetIssue.mx`), the priority order is `.mx` > `.wxf` > `.wl` (preferring compiled formats for performance). `ValidateMCPPacletExtension` warns about duplicate definition files.
 
 ---
 
@@ -312,7 +312,7 @@ Common patterns:
 The existing `convertStringTools0` in `Kernel/MCPServerObject.wl` currently checks:
 
 1. `$DefaultMCPTools[name]` — built-in MCPServer tools
-2. ``Chatbook`$AvailableTools[name]`` — Chatbook tools
+2. ``cb`$AvailableTools[name]`` — Chatbook tools (where ``cb`` is a context alias for ``Wolfram`Chatbook` ``)
 3. `LLMResourceTool[name]` — Wolfram resource tools
 
 The new resolution adds a check for `/`-containing names that routes through paclet tool resolution:
@@ -325,10 +325,14 @@ convertStringTools0[ name_String ] /; pacletQualifiedNameQ[ name ] :=
     resolvePacletTool[ name ];
 
 convertStringTools0[ name_String ] :=
-    Lookup[ Chatbook`$AvailableTools, name, tryResourceTool @ name ];
+    Lookup[ cb`$AvailableTools, name, tryResourceTool @ name ];
 ```
 
 Built-in tools always take precedence for short (unqualified) names.
+
+### Intra-Paclet Name Resolution
+
+When loading a paclet's server definition file, tool and prompt names within `"LLMEvaluator"` are short names that should resolve within the owning paclet first. To support this, the system pre-qualifies short names to fully qualified names at definition file load time. When a server definition is loaded from paclet `"Wolfram/JIRALink"`, a tool reference `"GetIssue"` is rewritten to `"Wolfram/JIRALink/GetIssue"` before being stored in the metadata association. Names that already contain `/` (fully qualified or cross-paclet references) are left unchanged. This avoids the need for dynamic resolution context during tool/prompt resolution.
 
 ---
 
@@ -350,7 +354,7 @@ When a user writes `MCPServerObject["Wolfram/JIRALink/ProjectManagement"]`, they
 
 Metadata-only operations (`MCPServerObject`, `MCPServerObjects`) must **never** call `PacletInstall` automatically. These functions work with PacletInfo metadata from `PacletFindRemote` and should not trigger code execution.
 
-Execution-level operations (`InstallMCPServer`, `StartMCPServer`) require the paclet to be installed and should call `PacletInstall` if the paclet is not already present.
+Execution-level operations (`InstallMCPServer`, `StartMCPServer`) automatically install the referenced paclet via `PacletInstall` if it is not already installed. This is safe because these operations represent explicit user intent: `InstallMCPServer` is a direct request to set up a server, and `StartMCPServer` runs only on servers the user has opted into (via `InstallMCPServer` or manual config editing). Since the user would never see error messages in a running MCP server process, failing silently with a `PacletNotInstalled` error would be unhelpful.
 
 ### Uninstalled Paclet Behavior
 
@@ -371,7 +375,7 @@ MCPServerObject["Unknown/Paclet/Server"]["ToolNames"]
 (* {"ToolA", "ToolB"} *)
 ```
 
-In contrast, `InstallMCPServer` and `StartMCPServer` will call `PacletInstall` as needed to ensure the paclet is available before proceeding.
+`InstallMCPServer` and `StartMCPServer` automatically call `PacletInstall` as needed to ensure the paclet is available before proceeding (see [Paclet Installation Policy](#paclet-installation-policy)).
 
 ---
 
@@ -395,7 +399,14 @@ MCPServerObject["Wolfram/JIRALink/ProjectManagement"]["Location"]
 (* PacletObject["Wolfram/JIRALink"] *)
 ```
 
-The `$$metadata` pattern in `Kernel/MCPServerObject.wl` must be updated to accept `_PacletObject` as a valid `"Location"` value.
+The `$$metadata` pattern in `Kernel/MCPServerObject.wl` must be updated to accept `_PacletObject` as a valid `"Location"` value. The `$specialProperties` list must also be updated to include `"ToolNames"` and `"PromptNames"`.
+
+### Paclet Server Metadata Construction
+
+When `MCPServerObject` resolves a paclet-qualified server name, it constructs a metadata association:
+
+- **Installed paclets:** The server definition file is loaded (via `loadPacletDefinitionFile`). Short tool/prompt names in `"LLMEvaluator"` are pre-qualified to fully qualified names. The resulting metadata has `"Location" -> PacletObject[...]`.
+- **Uninstalled remote paclets (metadata only):** Only PacletInfo metadata is available. A partial metadata association is constructed with `"Name"`, `"Location"`, `"Transport"` (default), `"ServerVersion"` (from paclet version), and `"LLMEvaluator"` containing only tool/prompt name strings from PacletInfo declarations (no loaded `LLMTool` objects). Properties that require definition file loading (e.g., `"Tools"`) return a `PacletNotInstalled` failure.
 
 New properties:
 
@@ -406,6 +417,8 @@ New properties:
 
 ### MCPServerObjects
 
+**Behavior change:** `MCPServerObjects[]` currently returns only file-based (user-created) servers. This is extended to also include built-in servers and installed paclet servers.
+
 New options `"IncludeRemotePaclets"` and `UpdatePacletSites`:
 
 ```wl
@@ -415,11 +428,19 @@ MCPServerObjects["IncludeRemotePaclets" -> True,
     UpdatePacletSites -> True]                         (* force refresh of cached remote paclet site data *)
 ```
 
+The function signature is extended to accept options alongside the existing pattern argument:
+
+```wl
+MCPServerObjects[ pattern: All | _String? StringQ : All, opts: OptionsPattern[] ]
+```
+
 `UpdatePacletSites` is passed through to `PacletFindRemote`. By default, the PacletManager uses cached remote paclet site data, so `"IncludeRemotePaclets" -> True` is fast after the first call. Use `UpdatePacletSites -> True` to force a refresh.
 
 ### CreateMCPServer
 
 Paclet tool name strings (containing `/`) are stored as-is without resolving. They are resolved dynamically when `obj["Tools"]` is accessed or at `StartMCPServer` time.
+
+**Implementation note:** The current `CreateMCPServer` flow passes tool strings through `validateMCPServerObjectData` → `validateTools` → `convertStringTools`, which attempts resolution at creation time. `convertStringTools0` and `validateTool` must be modified to pass through `/`-containing strings without attempting resolution, so that paclet-qualified names survive as plain strings in `Metadata.wxf`.
 
 ```wl
 CreateMCPServer[ "MyServer", <|
@@ -432,7 +453,7 @@ CreateMCPServer[ "MyServer", <|
 
 ### InstallMCPServer
 
-Supports paclet-qualified server names:
+Supports paclet-qualified server names. Automatically installs the referenced paclet via `PacletInstall` if not already present:
 
 ```wl
 InstallMCPServer[ "ClaudeCode", "Wolfram/JIRALink/ProjectManagement" ]
@@ -440,7 +461,7 @@ InstallMCPServer[ "ClaudeCode", "Wolfram/JIRALink/ProjectManagement" ]
 
 ### StartMCPServer
 
-At start time, all paclet tool and prompt references are fully resolved: definition files are loaded, `Initialization` code is executed, and `LLMTool` objects are constructed. This is the **Execution** trust level.
+At start time, referenced paclets are automatically installed via `PacletInstall` if not already present. All paclet tool and prompt references are then fully resolved: definition files are loaded, `Initialization` code is executed, and `LLMTool` objects are constructed. This is the **Execution** trust level.
 
 ### $DefaultMCPTools / $DefaultMCPServers / $DefaultMCPPrompts
 
@@ -466,25 +487,24 @@ New messages to add to `Kernel/Messages.wl`:
 
 | Tag | Template | Trigger |
 |---|---|---|
-| `PacletNotInstalled` | ``"The paclet \"`1`\" is not installed. Evaluate `2` to install it."`` | Accessing execution-level properties of an uninstalled paclet |
+| `PacletNotInstalled` | ``"The paclet \"`1`\" is not installed. Evaluate `2` to install it."`` | `MCPServerObject` accessing definition-file properties of an uninstalled paclet |
 | `PacletExtensionNotFound` | ``"No MCP extension found in paclet \"`1`\"."`` | Referencing a paclet that exists but has no `"MCP"` extension |
 | `PacletToolNotFound` | ``"Tool \"`1`\" not found in paclet \"`2`\"."`` | Tool name not declared in the paclet's extension |
 | `PacletServerNotFound` | ``"Server \"`1`\" not found in paclet \"`2`\"."`` | Server name not declared in the paclet's extension |
 | `PacletPromptNotFound` | ``"Prompt \"`1`\" not found in paclet \"`2`\"."`` | Prompt name not declared in the paclet's extension |
 | `InvalidPacletToolDefinition` | ``"Invalid tool definition in `1`."`` | Definition file returns malformed data |
 | `InvalidPacletServerDefinition` | ``"Invalid server definition in `1`."`` | Server definition file returns malformed data |
-| `PacletDependencyMissing` | ``"Server \"`1`\" references tool \"`2`\" from paclet \"`3`\", which is not installed. Evaluate `4` to install it."`` | Cross-paclet tool reference to uninstalled paclet at start time |
+| `PacletDependencyMissing` | ``"Server \"`1`\" references tool \"`2`\" from paclet \"`3`\", which could not be installed."`` | Cross-paclet tool reference to a paclet that fails to install at start time |
 | `InvalidMCPPacletExtension` | ``"The MCP extension in paclet \"`1`\" is invalid: `2`."`` | `ValidateMCPPacletExtension` finds errors |
 
 Example error scenarios:
 
 ```wl
-(* Missing cross-paclet dependency *)
+(* Cross-paclet dependency that fails to install *)
 StartMCPServer @ MCPServerObject["MyServer"]
 (* MCPServer::PacletDependencyMissing: Server "MyServer" references tool
    "Wolfram/SlackLink/PostMessage" from paclet "Wolfram/SlackLink",
-   which is not installed. Evaluate PacletInstall["Wolfram/SlackLink"]
-   to install it. *)
+   which could not be installed. *)
 ```
 
 ---
@@ -555,14 +575,12 @@ ValidateMCPPacletExtension[ PacletObject["Wolfram/BrokenPaclet"] ]
 
 Existing files:
 
-- `Kernel/MCPServerObject.wl` — paclet name resolution in `getMCPServerObjectByName`, update `$$metadata` pattern to accept `_PacletObject` as Location, add `"ToolNames"` and `"PromptNames"` properties
-- `Kernel/Tools/Tools.wl` — extend `convertStringTools0` with paclet tool resolution for `/`-containing names
+- `Kernel/MCPServerObject.wl` — paclet name resolution in `getMCPServerObjectByName`, update `$$metadata` pattern to accept `_PacletObject` as Location, add `"ToolNames"` and `"PromptNames"` properties to `$specialProperties`, extend `convertStringTools0` with paclet tool resolution for `/`-containing names, extend `normalizePromptData` with paclet prompt resolution for `/`-containing names, extend `MCPServerObjects` to include built-in and paclet servers with new options, modify `validateTool` to pass through `/`-containing strings
 - `Kernel/CreateMCPServer.wl` — store paclet-qualified tool name strings without resolving
 - `Kernel/InstallMCPServer.wl` — support paclet-qualified server names
 - `Kernel/StartMCPServer.wl` — resolve all paclet references at start time, run Initialization
-- `Kernel/Prompts/Prompts.wl` — extend prompt resolution for paclet-qualified names
 - `Kernel/CommonSymbols.wl` — declare new shared symbols (`resolvePacletTool`, `resolvePacletServer`, `resolvePacletPrompt`, `pacletQualifiedNameQ`, `parsePacletQualifiedName`, `findMCPPaclets`, `loadPacletDefinitionFile`)
-- `Kernel/Main.wl` — add `ValidateMCPPacletExtension` to exports, add new subcontext
+- `Kernel/Main.wl` — add `ValidateMCPPacletExtension` to exports, add new subcontexts ``Wolfram`MCPServer`PacletExtension` `` and ``Wolfram`MCPServer`ValidateMCPPacletExtension` ``
 - `Kernel/Messages.wl` — add new error messages
 - `PacletInfo.wl` — add `ValidateMCPPacletExtension` to Symbols list
 
@@ -570,6 +588,8 @@ New files:
 
 - `Kernel/PacletExtension.wl` — core implementation: paclet discovery, name parsing, definition file loading, resolution logic
 - `Kernel/ValidateMCPPacletExtension.wl` — validation utility implementation
+
+**Note:** `convertStringTools0` and `normalizePromptData` are both defined in `Kernel/MCPServerObject.wl`, not in `Kernel/Tools/Tools.wl` or `Kernel/Prompts/Prompts.wl`. Those files (`Tools.wl`, `Prompts.wl`) only contain `$DefaultMCPTools` / `$DefaultMCPPrompts` initialization and subcontext loading — they do not need changes for paclet extension support.
 
 ---
 
