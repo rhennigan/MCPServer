@@ -191,16 +191,16 @@ Example combined `Tools.wl`:
 |---|---|---|
 | `.wl` | `Get` | Standard — Wolfram Language source |
 | `.mx` | `Import[..., "MX"]` | Compiled — faster loading, platform-specific |
-| `.wxf` | `Import[..., "WXF"]` | Serialized data — portable binary format |
+| `.wxf` | `readWXFFile[...]` | Serialized data — portable binary format |
 
 ### Resolution Order
 
 When loading a definition for item `"GetIssue"` of type `"Tools"`:
 
-1. `<root>/Tools/GetIssue.wl` (then `.mx`, then `.wxf`)
-2. `<root>/Tools.wl` (then `.mx`, then `.wxf`) — look up `"GetIssue"` key
+1. **Per-item file:** `First @ FileNames[ "GetIssue." ~~ ("mx"|"wl"|"wxf"), "<root>/Tools" ]`
+2. **Combined file:** `First @ FileNames[ "Tools." ~~ ("mx"|"wl"|"wxf"), "<root>" ]` — look up `"GetIssue"` key
 
-Per-item files take precedence over combined files.
+Per-item files take precedence over combined files. If multiple files match the same item (e.g., both `GetIssue.wl` and `GetIssue.mx` exist), the first match from `FileNames` is used. `ValidateMCPPacletExtension` warns about duplicate definition files.
 
 ---
 
@@ -208,7 +208,7 @@ Per-item files take precedence over combined files.
 
 ### Server Definitions
 
-A server definition file must evaluate to an `Association`:
+Importing a server definition file must give an `Association`:
 
 ```wl
 (* MCP/Servers/ProjectManagement.wl *)
@@ -501,6 +501,7 @@ ValidateMCPPacletExtension[ PacletObject["Wolfram/JIRALink"] ]
 2. **File existence**
    - Root directory exists
    - Each declared server, tool, and prompt has a corresponding definition file (per-item or combined)
+   - Warn if multiple definition files exist for the same item (e.g., both `GetIssue.wl` and `GetIssue.mx`)
 
 3. **File contents** (for installed paclets)
    - Each definition file evaluates without error
