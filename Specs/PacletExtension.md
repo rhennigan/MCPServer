@@ -515,9 +515,11 @@ At start time, all paclet tool and prompt references are fully resolved: definit
 
 1. Installing any referenced paclets that are not yet locally available.
 2. Loading definition files for all paclet-qualified tool and prompt strings.
-3. Running `"Initialization"` code from both server and tool definitions.
+3. Running `"Initialization"` code from paclet server definitions and from all tool definitions (see behavioral change note below).
 4. Constructing `LLMTool` objects and prompt data from the loaded definitions.
 5. Disambiguating MCP name collisions by appending numeric suffixes (see [MCP Name Collision Handling](#mcp-name-collision-handling)).
+
+**Behavioral change — start-time initialization:** Currently, tool `"Initialization"` code (e.g., `initializeVectorDatabases` for the context tools) is executed only at install time by `InstallMCPServer` via `initializeTools`. As part of this spec, `StartMCPServer` will also execute `"Initialization"` code for all tools at server startup. This ensures that initialization runs even when a server is started without a preceding `InstallMCPServer` call (e.g., when launched directly by an MCP client from an existing config file). Only built-in tools currently use the `"Initialization"` property, so this is not a breaking change. Install-time initialization in `InstallMCPServer` is retained as-is — it serves as an early validation step to surface errors while the user is present.
 
 ### $DefaultMCPTools / $DefaultMCPServers / $DefaultMCPPrompts
 
@@ -635,7 +637,7 @@ Existing files:
 - `Kernel/MCPServerObject.wl` — paclet name resolution in `getMCPServerObjectByName`, update `$$metadata` pattern to accept `_PacletObject` as Location, add `_PacletObject` case to `mcpServerExistsQ` (check via `PacletFind`), add `_PacletObject` case to `deleteMCPServer` (refuse deletion with error), add `"ToolNames"` and `"PromptNames"` properties to `$specialProperties`, extend `convertStringTools0` with paclet tool resolution for `/`-containing names, extend `normalizePromptData` with paclet prompt resolution for `/`-containing names, extend `MCPServerObjects` to include paclet servers with new options, modify `validateTools` to accept unresolved paclet-qualified strings alongside `LLMTool` objects, modify `getToolList` to handle mixed lists of `LLMTool` objects and paclet-qualified strings (resolving at access time), modify `validateMCPPrompt` to accept `/`-containing prompt names without rejecting, modify `validateTool` to pass through `/`-containing strings
 - `Kernel/CreateMCPServer.wl` — store paclet-qualified tool name strings without resolving
 - `Kernel/InstallMCPServer.wl` — support paclet-qualified server names
-- `Kernel/StartMCPServer.wl` — resolve all paclet references at start time, run Initialization, disambiguate MCP name collisions
+- `Kernel/StartMCPServer.wl` — resolve all paclet references at start time, run `"Initialization"` code for all tools at startup (new — currently only done at install time), disambiguate MCP name collisions
 - `Kernel/CommonSymbols.wl` — declare new shared symbols (`resolvePacletTool`, `resolvePacletServer`, `resolvePacletPrompt`, `pacletQualifiedNameQ`, `parsePacletQualifiedName`, `findMCPPaclets`, `loadPacletDefinitionFile`)
 - `Kernel/Main.wl` — add `ValidateMCPPacletExtension` to exports, add new subcontexts ``Wolfram`MCPServer`PacletExtension` `` and ``Wolfram`MCPServer`ValidateMCPPacletExtension` ``
 - `Kernel/Messages.wl` — add new error messages
