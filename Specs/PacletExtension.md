@@ -63,7 +63,7 @@ CreateMCPServer["MyServer", <|
 (* tools/list response includes: {"name": "GetIssue", ...} *)
 ```
 
-This means two paclets could both define a tool with the MCP-exposed name `"Search"` without conflict at the WL level (they have distinct qualified keys), but would conflict if included in the same MCP server (duplicate MCP names). `ValidateMCPPacletExtension` does not check for cross-paclet MCP name collisions; this is the server author's responsibility.
+This means two paclets could both define a tool with the MCP-exposed name `"Search"` without conflict at the WL level (they have distinct qualified keys), but would conflict if included in the same MCP server (duplicate MCP names). When this occurs, `StartMCPServer` automatically disambiguates by appending numeric suffixes (e.g., `"Search1"`, `"Search2"`). The tool descriptions already contain enough context for the AI to select the correct tool. See [MCP Name Collision Handling](#mcp-name-collision-handling) for details.
 
 ---
 
@@ -517,6 +517,7 @@ At start time, all paclet tool and prompt references are fully resolved: definit
 2. Loading definition files for all paclet-qualified tool and prompt strings.
 3. Running `"Initialization"` code from both server and tool definitions.
 4. Constructing `LLMTool` objects and prompt data from the loaded definitions.
+5. Disambiguating MCP name collisions by appending numeric suffixes (see [MCP Name Collision Handling](#mcp-name-collision-handling)).
 
 ### $DefaultMCPTools / $DefaultMCPServers / $DefaultMCPPrompts
 
@@ -634,7 +635,7 @@ Existing files:
 - `Kernel/MCPServerObject.wl` — paclet name resolution in `getMCPServerObjectByName`, update `$$metadata` pattern to accept `_PacletObject` as Location, add `_PacletObject` case to `mcpServerExistsQ` (check via `PacletFind`), add `_PacletObject` case to `deleteMCPServer` (refuse deletion with error), add `"ToolNames"` and `"PromptNames"` properties to `$specialProperties`, extend `convertStringTools0` with paclet tool resolution for `/`-containing names, extend `normalizePromptData` with paclet prompt resolution for `/`-containing names, extend `MCPServerObjects` to include paclet servers with new options, modify `validateTools` to accept unresolved paclet-qualified strings alongside `LLMTool` objects, modify `getToolList` to handle mixed lists of `LLMTool` objects and paclet-qualified strings (resolving at access time), modify `validateMCPPrompt` to accept `/`-containing prompt names without rejecting, modify `validateTool` to pass through `/`-containing strings
 - `Kernel/CreateMCPServer.wl` — store paclet-qualified tool name strings without resolving
 - `Kernel/InstallMCPServer.wl` — support paclet-qualified server names
-- `Kernel/StartMCPServer.wl` — resolve all paclet references at start time, run Initialization
+- `Kernel/StartMCPServer.wl` — resolve all paclet references at start time, run Initialization, disambiguate MCP name collisions
 - `Kernel/CommonSymbols.wl` — declare new shared symbols (`resolvePacletTool`, `resolvePacletServer`, `resolvePacletPrompt`, `pacletQualifiedNameQ`, `parsePacletQualifiedName`, `findMCPPaclets`, `loadPacletDefinitionFile`)
 - `Kernel/Main.wl` — add `ValidateMCPPacletExtension` to exports, add new subcontexts ``Wolfram`MCPServer`PacletExtension` `` and ``Wolfram`MCPServer`ValidateMCPPacletExtension` ``
 - `Kernel/Messages.wl` — add new error messages
@@ -646,6 +647,48 @@ New files:
 - `Kernel/ValidateMCPPacletExtension.wl` — validation utility implementation
 
 **Note:** `convertStringTools0` and `normalizePromptData` are both defined in `Kernel/MCPServerObject.wl`, not in `Kernel/Tools/Tools.wl` or `Kernel/Prompts/Prompts.wl`. Those files (`Tools.wl`, `Prompts.wl`) only contain `$DefaultMCPTools` / `$DefaultMCPPrompts` initialization and subcontext loading — they do not need changes for paclet extension support. The `insertCatchTop` wrapping in `Tools.wl` is only for built-in tools and does not apply to paclet-loaded tools.
+
+---
+
+## MCP Name Collision Handling
+
+When multiple tools included in the same MCP server share the same MCP-exposed name (the `"Name"` field from their definition files), `StartMCPServer` automatically disambiguates them by appending numeric suffixes.
+
+### Example
+
+A server includes tools from two paclets that both expose a tool named `"Search"`:
+
+```wl
+CreateMCPServer["MyServer", <|
+    "Tools" -> {
+        "Wolfram/JIRALink/Search",   (* MCP name: "Search" *)
+        "Wolfram/SlackLink/Search"  (* MCP name: "Search" *)
+    }
+|>]
+```
+
+At `StartMCPServer` time, the `tools/list` response exposes:
+
+```json
+[
+    {"name": "Search1", "description": "Search for JIRA issues ..."},
+    {"name": "Search2", "description": "Search Slack messages ..."}
+]
+```
+
+The AI uses the tool descriptions to determine which tool to call.
+
+### Disambiguation Rules
+
+1. **Detection:** After all tool definitions are loaded, `StartMCPServer` groups tools by their MCP-exposed name.
+2. **Renaming:** For any group with more than one tool, each tool's MCP name is replaced with `name <> ToString[i]` where `i` is a sequential index starting at 1, ordered by the tool's position in the server's tool list.
+3. **Non-conflicting tools are unchanged:** Tools with unique MCP names keep their original name.
+4. **Internal tracking:** The server maintains a mapping from disambiguated MCP names back to the original qualified tool keys, so that `tools/call` requests route to the correct tool function.
+5. **Scope:** This applies to all tools in the server, not just paclet-defined ones. A built-in tool and a paclet tool with the same MCP name are disambiguated the same way.
+
+### Implementation Location
+
+The disambiguation logic lives in `StartMCPServer.wl`, after all tool definitions have been resolved into `LLMTool` objects but before the tool list is registered with the MCP protocol handler. This is a thin renaming layer — it does not modify the underlying `LLMTool` objects, only the names sent over the MCP wire.
 
 ---
 
