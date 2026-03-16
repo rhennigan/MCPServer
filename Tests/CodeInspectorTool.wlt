@@ -2320,28 +2320,28 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "DefinitionNoSymbol-BareBlank-ReturnsString"
+    TestID   -> "DefinitionNoSymbol-BareBlank-ReturnsString@@Tests/CodeInspectorTool.wlt:2315,1-2324,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $defNoSymBlankResult, "DefinitionNoSymbol" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "DefinitionNoSymbol-BareBlank-HasTag"
+    TestID   -> "DefinitionNoSymbol-BareBlank-HasTag@@Tests/CodeInspectorTool.wlt:2326,1-2331,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $defNoSymBlankResult, "does not contain a symbol to attach a rule to" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "DefinitionNoSymbol-BareBlank-HasDescription"
+    TestID   -> "DefinitionNoSymbol-BareBlank-HasDescription@@Tests/CodeInspectorTool.wlt:2333,1-2338,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $defNoSymBlankResult, "(Error" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "DefinitionNoSymbol-BareBlank-HasSeverity"
+    TestID   -> "DefinitionNoSymbol-BareBlank-HasSeverity@@Tests/CodeInspectorTool.wlt:2340,1-2345,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -2355,14 +2355,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "DefinitionNoSymbol-NamedBlank-ReturnsString"
+    TestID   -> "DefinitionNoSymbol-NamedBlank-ReturnsString@@Tests/CodeInspectorTool.wlt:2350,1-2359,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $defNoSymNamedResult, "DefinitionNoSymbol" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "DefinitionNoSymbol-NamedBlank-HasTag"
+    TestID   -> "DefinitionNoSymbol-NamedBlank-HasTag@@Tests/CodeInspectorTool.wlt:2361,1-2366,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -2376,14 +2376,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "DefinitionNoSymbol-BlankSequence-ReturnsString"
+    TestID   -> "DefinitionNoSymbol-BlankSequence-ReturnsString@@Tests/CodeInspectorTool.wlt:2371,1-2380,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $defNoSymBSResult, "DefinitionNoSymbol" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "DefinitionNoSymbol-BlankSequence-HasTag"
+    TestID   -> "DefinitionNoSymbol-BlankSequence-HasTag@@Tests/CodeInspectorTool.wlt:2382,1-2387,2"
 ]
 
 VerificationTest[
@@ -2394,14 +2394,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "DefinitionNoSymbol-BlankNullSequence-ReturnsString"
+    TestID   -> "DefinitionNoSymbol-BlankNullSequence-ReturnsString@@Tests/CodeInspectorTool.wlt:2389,1-2398,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $defNoSymBNSResult, "DefinitionNoSymbol" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "DefinitionNoSymbol-BlankNullSequence-HasTag"
+    TestID   -> "DefinitionNoSymbol-BlankNullSequence-HasTag@@Tests/CodeInspectorTool.wlt:2400,1-2405,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -2415,14 +2415,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "DefinitionNoSymbol-PatternTest-ReturnsString"
+    TestID   -> "DefinitionNoSymbol-PatternTest-ReturnsString@@Tests/CodeInspectorTool.wlt:2410,1-2419,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $defNoSymPTResult, "DefinitionNoSymbol" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "DefinitionNoSymbol-PatternTest-HasTag"
+    TestID   -> "DefinitionNoSymbol-PatternTest-HasTag@@Tests/CodeInspectorTool.wlt:2421,1-2426,2"
 ]
 
 VerificationTest[
@@ -2433,14 +2433,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "DefinitionNoSymbol-Condition-ReturnsString"
+    TestID   -> "DefinitionNoSymbol-Condition-ReturnsString@@Tests/CodeInspectorTool.wlt:2428,1-2437,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $defNoSymCondResult, "DefinitionNoSymbol" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "DefinitionNoSymbol-Condition-HasTag"
+    TestID   -> "DefinitionNoSymbol-Condition-HasTag@@Tests/CodeInspectorTool.wlt:2439,1-2444,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -2456,14 +2456,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "DefinitionNoSymbol-ValidDownValue-ReturnsString"
+    TestID   -> "DefinitionNoSymbol-ValidDownValue-ReturnsString@@Tests/CodeInspectorTool.wlt:2451,1-2460,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $defNoSymValidDV, "DefinitionNoSymbol" ],
     False,
     SameTest -> SameQ,
-    TestID   -> "DefinitionNoSymbol-ValidDownValue-NoTag"
+    TestID   -> "DefinitionNoSymbol-ValidDownValue-NoTag@@Tests/CodeInspectorTool.wlt:2462,1-2467,2"
 ]
 
 (* Valid OwnValues definition should not trigger *)
@@ -2475,14 +2475,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "DefinitionNoSymbol-ValidOwnValue-ReturnsString"
+    TestID   -> "DefinitionNoSymbol-ValidOwnValue-ReturnsString@@Tests/CodeInspectorTool.wlt:2470,1-2479,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $defNoSymValidOV, "DefinitionNoSymbol" ],
     False,
     SameTest -> SameQ,
-    TestID   -> "DefinitionNoSymbol-ValidOwnValue-NoTag"
+    TestID   -> "DefinitionNoSymbol-ValidOwnValue-NoTag@@Tests/CodeInspectorTool.wlt:2481,1-2486,2"
 ]
 
 (* Blank with head argument should not trigger (attaches to Integer) *)
@@ -2494,14 +2494,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "DefinitionNoSymbol-TypedBlank-ReturnsString"
+    TestID   -> "DefinitionNoSymbol-TypedBlank-ReturnsString@@Tests/CodeInspectorTool.wlt:2489,1-2498,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $defNoSymTypedBlank, "DefinitionNoSymbol" ],
     False,
     SameTest -> SameQ,
-    TestID   -> "DefinitionNoSymbol-TypedBlank-NoTag"
+    TestID   -> "DefinitionNoSymbol-TypedBlank-NoTag@@Tests/CodeInspectorTool.wlt:2500,1-2505,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -2512,7 +2512,7 @@ VerificationTest[
     ! DirectoryQ @ $integrationTempDir,
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:2311,1-2317,2"
+    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:2510,1-2516,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
