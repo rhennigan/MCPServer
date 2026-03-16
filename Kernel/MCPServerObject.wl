@@ -23,7 +23,7 @@ $$transport = "StandardInputOutput" | "HTTP" | "ServerSentEvents";
 
 $$metadata = KeyValuePattern @ {
     "LLMEvaluator"  -> _Association? AssociationQ,
-    "Location"      -> _File? fileQ | "BuiltIn",
+    "Location"      -> _File? fileQ | "BuiltIn" | _PacletObject,
     "Name"          -> _String? StringQ,
     "ObjectVersion" -> _Integer? IntegerQ,
     "ServerVersion" -> _String? StringQ,
@@ -127,7 +127,7 @@ validateTools[ tool_String  ] := validateTools @ { tool };
 
 validateTools[ tools_List ] :=
     With[ { v = validateTool /@ Flatten @ { tools } },
-        Flatten @ { tools } /; MatchQ[ v, { ___LLMTool } ]
+        Flatten @ { tools } /; MatchQ[ v, { (_LLMTool | _String)... } ]
     ];
 
 validateTools[ tools_ ] :=
@@ -140,6 +140,7 @@ validateTools // endDefinition;
 (*validateTool*)
 validateTool // beginDefinition;
 validateTool[ tool_LLMTool ] := tool;
+validateTool[ name_String ] /; pacletQualifiedNameQ @ name := name;
 validateTool[ tool_String ] := convertStringTools @ tool;
 validateTool[ tool_TemplateObject ] := TemplateApply @ tool;
 validateTool[ other_ ] := throwFailure[ "InvalidToolSpecification", other ];
@@ -163,6 +164,7 @@ validateMCPPrompts // endDefinition;
 (*validateMCPPrompt*)
 validateMCPPrompt // beginDefinition;
 validateMCPPrompt[ prompt_Association ] := prompt;
+validateMCPPrompt[ name_String ] /; pacletQualifiedNameQ @ name := name;
 validateMCPPrompt[ name_String ] /; KeyExistsQ[ $DefaultMCPPrompts, name ] := name;
 validateMCPPrompt[ name_String ] := throwFailure[ "PromptNameNotFound", name ];
 validateMCPPrompt[ other_ ] := throwFailure[ "InvalidMCPPromptSpecification", other ];
@@ -181,7 +183,12 @@ getMCPServerObjectByName // beginDefinition;
 getMCPServerObjectByName[ name_String ] := Enclose[
     Catch @ Module[ { file, data },
         file = ConfirmBy[ mcpServerFile @ name, fileQ, "File" ];
-        If[ ! FileExistsQ @ file, Throw @ checkBuiltInMCPServer @ name ];
+        If[ ! FileExistsQ @ file,
+            Throw @ If[ pacletQualifiedNameQ @ name,
+                checkPacletMCPServer @ name,
+                checkBuiltInMCPServer @ name
+            ]
+        ];
         data = readMetadataFile @ file;
         If[ ! AssociationQ @ data, throwFailure[ "MCPServerNotFound", name ] ];
         ConfirmBy[ MCPServerObject @ data, MCPServerObjectQ, "MCPServerObject" ]
@@ -205,6 +212,112 @@ checkBuiltInMCPServer[ name_String ] :=
     ];
 
 checkBuiltInMCPServer // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*checkPacletMCPServer*)
+checkPacletMCPServer // beginDefinition;
+
+checkPacletMCPServer[ qualifiedName_String ] := Enclose[
+    Module[ { parsed, pacletName, serverName, paclet, serverDef, metadata },
+        parsed = ConfirmBy[ parsePacletQualifiedName @ qualifiedName, AssociationQ, "Parse" ];
+        pacletName = parsed[ "PacletName" ];
+        serverName = parsed[ "ItemName" ];
+
+        (* Try installed paclet first *)
+        paclet = findInstalledPaclet @ pacletName;
+        If[ MatchQ[ paclet, _PacletObject ],
+            (* Installed: load the server definition file *)
+            serverDef = resolvePacletServer @ qualifiedName;
+            If[ ! AssociationQ @ serverDef,
+                throwFailure[ "PacletServerNotFound", serverName, pacletName ]
+            ];
+            metadata = buildPacletServerMetadata[ qualifiedName, paclet, serverDef ];
+            ConfirmBy[ MCPServerObject @ metadata, MCPServerObjectQ, "MCPServerObject" ],
+
+            (* Not installed: try remote metadata only *)
+            checkRemotePacletMCPServer[ qualifiedName, pacletName, serverName ]
+        ]
+    ],
+    throwInternalFailure
+];
+
+checkPacletMCPServer // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*buildPacletServerMetadata*)
+buildPacletServerMetadata // beginDefinition;
+
+buildPacletServerMetadata[ qualifiedName_String, paclet_PacletObject, serverDef_Association ] :=
+    <|
+        "LLMEvaluator"  -> Lookup[ serverDef, "LLMEvaluator", <| |> ],
+        "Location"      -> paclet,
+        "Name"          -> qualifiedName,
+        "ObjectVersion" -> $objectVersion,
+        "ServerVersion" -> Lookup[ serverDef, "ServerVersion", paclet[ "Version" ] ],
+        "Transport"     -> Lookup[ serverDef, "Transport", "StandardInputOutput" ]
+    |>;
+
+buildPacletServerMetadata // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*checkRemotePacletMCPServer*)
+checkRemotePacletMCPServer // beginDefinition;
+
+checkRemotePacletMCPServer[ qualifiedName_String, pacletName_String, serverName_String ] :=
+    Module[ { remote, paclet, declaredServers, metadata },
+        remote = Quiet @ PacletFindRemote @ pacletName;
+        If[ ! MatchQ[ remote, { __PacletObject } ],
+            throwFailure[ "MCPServerNotFound", qualifiedName ]
+        ];
+        paclet = First @ remote;
+        declaredServers = Quiet @ getMCPDeclaredItems[ paclet, "Servers" ];
+        If[ ! MemberQ[ declaredServers, serverName ],
+            throwFailure[ "MCPServerNotFound", qualifiedName ]
+        ];
+        metadata = buildRemotePacletServerMetadata[ qualifiedName, paclet, serverName ];
+        MCPServerObject @ metadata
+    ];
+
+checkRemotePacletMCPServer // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*buildRemotePacletServerMetadata*)
+buildRemotePacletServerMetadata // beginDefinition;
+
+buildRemotePacletServerMetadata[ qualifiedName_String, paclet_PacletObject, serverName_String ] :=
+    Module[ { extData, serverDecl, tools, prompts, evaluator },
+        extData = Quiet @ getMCPExtensionData @ paclet;
+        serverDecl = If[ AssociationQ @ extData,
+            SelectFirst[
+                Lookup[ extData, "Servers", {} ],
+                MatchQ[ #, serverName | { serverName, _ } | KeyValuePattern[ "Name" -> serverName ] ] &
+            ],
+            Missing[ "NotAvailable" ]
+        ];
+        tools = If[ MatchQ[ serverDecl, _Association ] && KeyExistsQ[ serverDecl, "Tools" ],
+            serverDecl[ "Tools" ],
+            getMCPDeclaredItems[ paclet, "Tools" ]
+        ];
+        prompts = If[ MatchQ[ serverDecl, _Association ] && KeyExistsQ[ serverDecl, "Prompts" ],
+            serverDecl[ "Prompts" ],
+            getMCPDeclaredItems[ paclet, "Prompts" ]
+        ];
+        evaluator = <| "Tools" -> tools, "MCPPrompts" -> prompts |>;
+        <|
+            "LLMEvaluator"  -> evaluator,
+            "Location"      -> paclet,
+            "Name"          -> qualifiedName,
+            "ObjectVersion" -> $objectVersion,
+            "ServerVersion" -> paclet[ "Version" ],
+            "Transport"     -> "StandardInputOutput"
+        |>
+    ];
+
+buildRemotePacletServerMetadata // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -304,7 +417,9 @@ getMCPServerObjectProperty[ MCPServerObject[ data_Association ], prop_ ] :=
 getMCPServerObjectProperty[ data_Association, "Data"              ] := data;
 getMCPServerObjectProperty[ data_Association, "LLMConfiguration"  ] := makeLLMConfiguration @ data;
 getMCPServerObjectProperty[ data_Association, "PromptData"        ] := getPromptData @ data;
+getMCPServerObjectProperty[ data_Association, "PromptNames"       ] := getPromptNames @ data;
 getMCPServerObjectProperty[ data_Association, "Tools"             ] := getToolList @ data;
+getMCPServerObjectProperty[ data_Association, "ToolNames"         ] := getToolNames @ data;
 getMCPServerObjectProperty[ data_Association, "JSONConfiguration" ] := makeJSONConfiguration @ data;
 getMCPServerObjectProperty[ data_Association, "Installations"     ] := getInstallations @ data;
 getMCPServerObjectProperty[ data_Association, "Properties"        ] := getProperties @ data;
@@ -334,7 +449,9 @@ $specialProperties = {
     "JSONConfiguration",
     "LLMConfiguration",
     "PromptData",
+    "PromptNames",
     "Properties",
+    "ToolNames",
     "Tools"
 };
 
@@ -421,6 +538,42 @@ getToolList[ as_Association ] := Enclose[
 ];
 
 getToolList // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*getToolNames*)
+getToolNames // beginDefinition;
+
+getToolNames[ as_Association ] := getToolNames[ as, as[ "Location" ] ];
+
+getToolNames[ as_Association, _PacletObject ] :=
+    Replace[ as[ "LLMEvaluator", "Tools" ], _Missing -> { } ];
+
+getToolNames[ as_Association, _ ] :=
+    Replace[ as[ "LLMEvaluator", "Tools" ], {
+        tools_List :> Cases[ tools, _String | _LLMTool ],
+        _          -> { }
+    } ];
+
+getToolNames // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*getPromptNames*)
+getPromptNames // beginDefinition;
+
+getPromptNames[ as_Association ] := getPromptNames[ as, as[ "Location" ] ];
+
+getPromptNames[ as_Association, _PacletObject ] :=
+    Replace[ as[ "LLMEvaluator", "MCPPrompts" ], _Missing -> { } ];
+
+getPromptNames[ as_Association, _ ] :=
+    Replace[ as[ "LLMEvaluator", "MCPPrompts" ], {
+        prompts_List :> Cases[ prompts, _String | _Association ],
+        _            -> { }
+    } ];
+
+getPromptNames // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -530,6 +683,9 @@ MCPServerObject /: LLMConfiguration[ obj_MCPServerObject ] := catchTop[
 (*deleteMCPServer*)
 deleteMCPServer // beginDefinition;
 
+deleteMCPServer[ obj_ ] /; MatchQ[ obj[ "Location" ], _PacletObject ] :=
+    deleteMCPServer[ obj[ "Name" ], obj[ "Location" ] ];
+
 deleteMCPServer[ obj_ ] := (
     UninstallMCPServer @ obj;
     deleteMCPServer[ obj[ "Name" ], obj[ "Location" ] ]
@@ -537,6 +693,11 @@ deleteMCPServer[ obj_ ] := (
 
 deleteMCPServer[ name_, "BuiltIn" ] :=
     throwFailure[ "DeleteBuiltInMCPServer", name ];
+
+deleteMCPServer[ name_, paclet_PacletObject ] :=
+    With[ { pn = paclet[ "Name" ] },
+        throwFailure[ "DeletePacletMCPServer", name, HoldForm @ PacletUninstall[ pn ] ]
+    ];
 
 deleteMCPServer[ name_, location_File ] := Enclose[
     If[ DirectoryQ @ location,
@@ -585,6 +746,7 @@ mcpServerExistsQ // beginDefinition;
 mcpServerExistsQ[ HoldPattern @ MCPServerObject[ as_Association ] ] := mcpServerExistsQ[ as, as[ "Location" ] ];
 mcpServerExistsQ[ as_, "BuiltIn" ] := True;
 mcpServerExistsQ[ as_, location_File ] := FileExistsQ @ location;
+mcpServerExistsQ[ as_, paclet_PacletObject ] := Length[ PacletFind[ paclet[ "Name" ] ] ] > 0;
 mcpServerExistsQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)

@@ -47,3 +47,21 @@ Completed TODO task 3:
 - Fixed HoldForm scoping issue in throwFailure calls — use `With` to inject string values into `HoldForm @ PacletInstall[...]`
 - All tests pass, code inspector clean
 
+## Session 4
+
+Completed TODO task 4:
+
+- Updated `$$metadata` pattern to accept `_PacletObject` as a valid `"Location"` alongside `_File` and `"BuiltIn"`
+- Added `"ToolNames"` and `"PromptNames"` to `$specialProperties`
+- Implemented `getToolNames` and `getPromptNames` — extract tool/prompt name lists from server metadata, with location-aware dispatch for paclet-backed vs file-based servers
+- Added `_PacletObject` case to `mcpServerExistsQ` — checks via `PacletFind`
+- Added `_PacletObject` case to `deleteMCPServer` — refuses deletion with `DeletePacletMCPServer` error, with early dispatch to avoid calling `UninstallMCPServer` on paclet-backed servers
+- Extended `getMCPServerObjectByName` — routes paclet-qualified names (containing `/`) to `checkPacletMCPServer` instead of `checkBuiltInMCPServer`
+- Implemented `checkPacletMCPServer` — resolves installed paclet servers via `resolvePacletServer`, falls back to remote metadata via `checkRemotePacletMCPServer`
+- Implemented `buildPacletServerMetadata` — constructs metadata association for installed paclet servers
+- Implemented `checkRemotePacletMCPServer` and `buildRemotePacletServerMetadata` — constructs partial metadata from PacletInfo for uninstalled remote paclets
+- Made `validateTool` and `validateMCPPrompt` pass through paclet-qualified names (strings containing `/`) without attempting resolution — minimum change needed for paclet-backed MCPServerObject creation; full resolution pipeline changes are in Task 5
+- Updated `validateTools` to accept strings alongside `LLMTool` objects in validation result
+- Extended MCPServerObject tests from 20 to 45 (25 new) covering paclet server creation, properties, ToolNames/PromptNames, DeleteObject refusal, and error cases
+- All tests pass, code inspector clean
+

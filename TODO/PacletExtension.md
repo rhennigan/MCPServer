@@ -29,7 +29,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **4. Update MCPServerObject.wl — paclet-backed server metadata and properties**
+- [x] **4. Update MCPServerObject.wl — paclet-backed server metadata and properties**
 
   Add `_PacletObject` as valid `"Location"` in `$$metadata`, add `"ToolNames"`/`"PromptNames"` to `$specialProperties`, add `_PacletObject` cases to `mcpServerExistsQ` and `deleteMCPServer`, extend `getMCPServerObjectByName` with paclet server resolution (installed + remote). Write tests.
 
