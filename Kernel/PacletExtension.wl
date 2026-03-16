@@ -6,6 +6,8 @@ Begin[ "`Private`" ];
 Needs[ "Wolfram`MCPServer`"        ];
 Needs[ "Wolfram`MCPServer`Common`" ];
 
+Needs[ "PacletTools`" -> "pt`" ];
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*pacletQualifiedNameQ*)
@@ -33,7 +35,6 @@ parsePacletQualifiedName[ name_String ] := Enclose[
 
 parsePacletQualifiedName // endDefinition;
 
-
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*parsePacletQualifiedName0*)
@@ -56,7 +57,7 @@ findMCPPaclets // beginDefinition;
 
 findMCPPaclets[ ] := Enclose[
     Module[ { paclets },
-        Needs[ "PacletTools`" ];
+        Needs[ "PacletTools`" -> None ];
         paclets = PacletFind[ ];
         ConfirmMatch[
             Select[ paclets, mcpPacletQ ],
@@ -75,7 +76,7 @@ findMCPPaclets // endDefinition;
 mcpPacletQ // beginDefinition;
 
 mcpPacletQ[ paclet_PacletObject ] :=
-    mcpPacletQ[ paclet, Quiet @ PacletTools`PacletExtensions[ paclet, "MCP" ] ];
+    mcpPacletQ[ paclet, Quiet @ pt`PacletExtensions[ paclet, "MCP" ] ];
 
 mcpPacletQ[ _PacletObject, extensions_List ] :=
     Length[ extensions ] > 0;
