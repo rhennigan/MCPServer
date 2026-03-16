@@ -126,3 +126,15 @@ Completed TODO task 9:
   - `runServerInitialization`: built-in server no-op, file-based server no-op, paclet server with no init returns Null
 - All 46 StartMCPServer tests pass, 70 MCPServerObject tests pass, 176 InstallMCPServer tests pass, code inspector clean
 
+## Session 9
+
+Completed TODO task 10:
+
+- Added `disambiguateToolNames` — after all tools are resolved to `LLMTool` objects, groups them by MCP-exposed name, appends numeric suffixes (`Name1`, `Name2`, ...) for groups with collisions, and returns an association keyed by disambiguated names. Non-conflicting tools keep their original name.
+- Modified `startMCPServer` to use `disambiguateToolNames` instead of manually building the `llmTools` association. This also fixes a pre-existing edge case where two tools with the same name would silently overwrite each other in the association.
+- Changed `toolList` construction from `createMCPToolData /@ Values @ llmTools` to `KeyValueMap[createMCPToolData, llmTools]` so disambiguated names are passed through.
+- Added two-argument `createMCPToolData[mcpName_String, tool_LLMTool]` that uses the provided MCP name instead of `tool["Name"]`. The one-argument form delegates to it.
+- No changes needed to `evaluateTool` — it already looks up tools in `$llmTools` by the name the client sends, and `$llmTools` is now keyed by disambiguated names.
+- Added 13 new tests (59 total) covering: empty list, no collisions, two/three tools with same name, mixed collisions, multiple collision groups, value preservation, single tool, `createMCPToolData` name override, single-arg backward compat, wire name integration, lookup routing integration
+- All 59 StartMCPServer tests pass, code inspector clean
+

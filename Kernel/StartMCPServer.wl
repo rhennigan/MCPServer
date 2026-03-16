@@ -117,12 +117,12 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
         (* Run server-level initialization for paclet-backed servers *)
         runServerInitialization @ obj;
 
-        llmTools     = Association[ #[ "Name" ] -> # & /@ ConfirmMatch[ obj[ "Tools" ], { ___LLMTool }, "Tools" ] ];
+        llmTools     = disambiguateToolNames @ ConfirmMatch[ obj[ "Tools" ], { ___LLMTool }, "Tools" ];
 
         (* Run tool initialization for all tools at startup *)
         runToolInitialization @ Values @ llmTools;
 
-        toolList     = ConfirmMatch[ createMCPToolData /@ Values @ llmTools, { ___Association }, "ToolList" ];
+        toolList     = ConfirmMatch[ KeyValueMap[ createMCPToolData, llmTools ], { ___Association }, "ToolList" ];
         promptList   = ConfirmMatch[ makePromptData @ obj[ "PromptData" ], { ___Association }, "PromptData" ];
         promptLookup = ConfirmBy[ makePromptLookup @ obj[ "PromptData" ], AssociationQ, "PromptLookup" ];
 
@@ -254,17 +254,43 @@ runToolInitialization[ as_Association ] := Lookup[ as, "Initialization", Null ];
 runToolInitialization[ _ ] := Null;
 runToolInitialization // endDefinition;
 
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*disambiguateToolNames*)
+disambiguateToolNames // beginDefinition;
+
+disambiguateToolNames[ { } ] := <| |>;
+
+disambiguateToolNames[ tools: { __LLMTool } ] :=
+    Module[ { names, nameCounts, indices = <| |>, mcpName },
+        names = #[ "Name" ] & /@ tools;
+        nameCounts = Counts @ names;
+        Association @ Table[
+            mcpName = names[[ i ]];
+            If[ nameCounts[ mcpName ] > 1,
+                indices[ mcpName ] = Lookup[ indices, mcpName, 0 ] + 1;
+                (mcpName <> ToString @ indices[ mcpName ]) -> tools[[ i ]],
+                mcpName -> tools[[ i ]]
+            ],
+            { i, Length @ tools }
+        ]
+    ];
+
+disambiguateToolNames // endDefinition;
+
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
 (*createMCPToolData*)
 createMCPToolData // beginDefinition;
 
-createMCPToolData[ tool: HoldPattern[ _LLMTool ] ] := Enclose[
-    Module[ { data, name, description, inputSchema, title, annotations },
+createMCPToolData[ tool: HoldPattern[ _LLMTool ] ] :=
+    createMCPToolData[ tool[ "Name" ], tool ];
+
+createMCPToolData[ mcpName_String, tool: HoldPattern[ _LLMTool ] ] := Enclose[
+    Module[ { data, description, inputSchema, title, annotations },
 
         data = ConfirmBy[ tool[ "Data" ], AssociationQ, "Data" ];
-        name = safeString @ ConfirmBy[ tool[ "Name" ], StringQ, "Name" ];
         description = safeString @ ConfirmBy[ tool[ "Description" ], StringQ, "Description" ];
         inputSchema = ConfirmBy[ tool[ "JSONSchema" ], AssociationQ, "InputSchema" ];
 
@@ -274,7 +300,7 @@ createMCPToolData[ tool: HoldPattern[ _LLMTool ] ] := Enclose[
         annotations = If[ StringQ @ title, <| "title" -> title |>, Missing[ ] ];
 
         DeleteMissing @ <|
-            "name"        -> name,
+            "name"        -> safeString @ mcpName,
             "title"       -> title,
             "description" -> description,
             "inputSchema" -> inputSchema,

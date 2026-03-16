@@ -77,7 +77,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **10. Implement MCP name collision disambiguation in StartMCPServer.wl**
+- [x] **10. Implement MCP name collision disambiguation in StartMCPServer.wl**
 
   After loading all tools, detect duplicate MCP-exposed names and append numeric suffixes. Maintain mapping from disambiguated names back to original keys for `tools/call` routing. Write tests.
 
