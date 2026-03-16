@@ -53,7 +53,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **7. Update CreateMCPServer.wl — store paclet-qualified names as strings**
+- [x] **7. Update CreateMCPServer.wl — store paclet-qualified names as strings**
 
   Ensure `/`-containing tool name strings pass through validation and `convertStringTools` without resolution, and are preserved as-is in `Metadata.wxf`. Write tests.
 

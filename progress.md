@@ -95,3 +95,18 @@ Completed TODO task 6:
 - Added 12 new tests (70 total) covering: installed paclet servers in default listing, `"IncludeBuiltIn"` option (options-only and with pattern), built-in excluded by default, pattern matching for paclet servers, `"IncludeRemotePaclets"` no-error, options declaration, deduplication, `All` equivalence
 - All tests pass, code inspector clean
 
+## Session 7
+
+Completed TODO task 7:
+
+- No code changes needed in `CreateMCPServer.wl` — the validation path already handles paclet-qualified names correctly via changes from Tasks 4 and 5: `validateTool` passes through `/`-containing strings without resolution, and `convertStringTools0` only resolves them at property access time
+- Added 24 new tests (55 total) to `Tests/CreateMCPServer.wlt` covering:
+  - Three-segment paclet-qualified tool name stored as string in data and WXF
+  - Two-segment paclet-qualified tool name preserved
+  - Mixed tool types (LLMTool objects + paclet-qualified strings) preserved correctly
+  - Multiple paclet-qualified tool names from different paclets
+  - Paclet-qualified prompt names stored as strings
+  - End-to-end mock paclet test: string stored at creation, resolved to LLMTool at access time
+- Key insight: `validateTools` validates each tool via `validateTool` but returns the **original** tools list (`Flatten @ { tools }`), not the validated results. So paclet-qualified strings survive as plain strings in `Metadata.wxf` without any code changes to `CreateMCPServer.wl`
+- All 55 CreateMCPServer tests pass, all 70 MCPServerObject tests pass, code inspector clean
+

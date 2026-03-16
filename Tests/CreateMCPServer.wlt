@@ -299,3 +299,237 @@ VerificationTest[
     SameTest -> MatchQ,
     TestID   -> "CreateMCPServer-RewriteChatbookTools-CustomToolCleanup@@Tests/CreateMCPServer.wlt:296,1-301,2"
 ]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Paclet-Qualified Tool Names*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Three-Segment Paclet-Qualified Tool Name*)
+VerificationTest[
+    name = CreateUUID[ ];
+    server = CreateMCPServer[ name, <|
+        "Tools" -> { "TestPublisher/TestPaclet/SomeTool" }
+    |> ],
+    _MCPServerObject? MCPServerObjectQ,
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-PacletQualifiedToolName@@Tests/CreateMCPServer.wlt:310,1-318,2"
+]
+
+VerificationTest[
+    server[ "Data" ][ "LLMEvaluator" ][ "Tools" ],
+    { "TestPublisher/TestPaclet/SomeTool" },
+    SameTest -> Equal,
+    TestID   -> "CreateMCPServer-PacletToolPreservedInData@@Tests/CreateMCPServer.wlt:320,1-325,2"
+]
+
+VerificationTest[
+    Module[ { wxfPath, wxfData },
+        wxfPath = FileNameJoin @ { First @ server[ "Location" ], "Metadata.wxf" };
+        wxfData = Developer`ReadWXFFile @ wxfPath;
+        wxfData[ "LLMEvaluator" ][ "Tools" ]
+    ],
+    { "TestPublisher/TestPaclet/SomeTool" },
+    SameTest -> Equal,
+    TestID   -> "CreateMCPServer-PacletToolPreservedInWXF@@Tests/CreateMCPServer.wlt:327,1-336,2"
+]
+
+VerificationTest[
+    DeleteObject @ server,
+    Null,
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-PacletToolCleanup@@Tests/CreateMCPServer.wlt:338,1-343,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Two-Segment Paclet-Qualified Tool Name*)
+VerificationTest[
+    name = CreateUUID[ ];
+    server = CreateMCPServer[ name, <|
+        "Tools" -> { "SimplePaclet/MyTool" }
+    |> ],
+    _MCPServerObject? MCPServerObjectQ,
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-TwoSegmentPacletName@@Tests/CreateMCPServer.wlt:348,1-356,2"
+]
+
+VerificationTest[
+    server[ "Data" ][ "LLMEvaluator" ][ "Tools" ],
+    { "SimplePaclet/MyTool" },
+    SameTest -> Equal,
+    TestID   -> "CreateMCPServer-TwoSegmentPreserved@@Tests/CreateMCPServer.wlt:358,1-363,2"
+]
+
+VerificationTest[
+    DeleteObject @ server,
+    Null,
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-TwoSegmentCleanup@@Tests/CreateMCPServer.wlt:365,1-370,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Mixed Tool Types*)
+VerificationTest[
+    name = CreateUUID[ ];
+    customTool = LLMTool[ "CustomTool", { "x" -> "Integer" }, #x^2 & ];
+    server = CreateMCPServer[ name, <|
+        "Tools" -> {
+            customTool,
+            "TestPublisher/TestPaclet/ToolA",
+            "OtherPaclet/ToolB"
+        }
+    |> ],
+    _MCPServerObject? MCPServerObjectQ,
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-MixedToolTypes@@Tests/CreateMCPServer.wlt:375,1-388,2"
+]
+
+VerificationTest[
+    With[ { tools = server[ "Data" ][ "LLMEvaluator" ][ "Tools" ] },
+        {
+            MatchQ[ tools[[ 1 ]], _LLMTool ],
+            tools[[ 2 ]],
+            tools[[ 3 ]]
+        }
+    ],
+    { True, "TestPublisher/TestPaclet/ToolA", "OtherPaclet/ToolB" },
+    SameTest -> Equal,
+    TestID   -> "CreateMCPServer-MixedToolTypesPreserved@@Tests/CreateMCPServer.wlt:390,1-401,2"
+]
+
+VerificationTest[
+    DeleteObject @ server,
+    Null,
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-MixedToolTypesCleanup@@Tests/CreateMCPServer.wlt:403,1-408,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Multiple Paclet-Qualified Tool Names*)
+VerificationTest[
+    name = CreateUUID[ ];
+    server = CreateMCPServer[ name, <|
+        "Tools" -> {
+            "Publisher/PacletA/Tool1",
+            "Publisher/PacletA/Tool2",
+            "PacletB/Tool3"
+        }
+    |> ],
+    _MCPServerObject? MCPServerObjectQ,
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-MultiplePacletTools@@Tests/CreateMCPServer.wlt:413,1-425,2"
+]
+
+VerificationTest[
+    server[ "Data" ][ "LLMEvaluator" ][ "Tools" ],
+    { "Publisher/PacletA/Tool1", "Publisher/PacletA/Tool2", "PacletB/Tool3" },
+    SameTest -> Equal,
+    TestID   -> "CreateMCPServer-MultiplePacletToolsPreserved@@Tests/CreateMCPServer.wlt:427,1-432,2"
+]
+
+VerificationTest[
+    DeleteObject @ server,
+    Null,
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-MultiplePacletToolsCleanup@@Tests/CreateMCPServer.wlt:434,1-439,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Paclet-Qualified Prompt Names*)
+VerificationTest[
+    name = CreateUUID[ ];
+    server = CreateMCPServer[ name, <|
+        "Tools" -> { LLMTool[ "SimpleTool", { "x" -> "String" }, #x & ] },
+        "MCPPrompts" -> { "TestPublisher/TestPaclet/SomePrompt" }
+    |> ],
+    _MCPServerObject? MCPServerObjectQ,
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-PacletPromptName@@Tests/CreateMCPServer.wlt:444,1-453,2"
+]
+
+VerificationTest[
+    server[ "Data" ][ "LLMEvaluator" ][ "MCPPrompts" ],
+    { "TestPublisher/TestPaclet/SomePrompt" },
+    SameTest -> Equal,
+    TestID   -> "CreateMCPServer-PacletPromptPreservedInData@@Tests/CreateMCPServer.wlt:455,1-460,2"
+]
+
+VerificationTest[
+    DeleteObject @ server,
+    Null,
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-PacletPromptCleanup@@Tests/CreateMCPServer.wlt:462,1-467,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Paclet Tool Resolution with Mock Paclet*)
+
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
+
+$testResourceDirectory = FileNameJoin @ { DirectoryName[ $TestFileName, 2 ], "TestResources" };
+
+VerificationTest[
+    PacletDirectoryLoad @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletTest" };
+    $mockPaclet = First @ PacletFind[ "MockMCPPacletTest" ];
+    $mockPaclet[ "Name" ],
+    "MockMCPPacletTest",
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-MockPacletSetup@@Tests/CreateMCPServer.wlt:478,1-485,2"
+]
+
+VerificationTest[
+    name = CreateUUID[ ];
+    server = CreateMCPServer[ name, <|
+        "Tools" -> { "MockMCPPacletTest/TestTool" }
+    |> ],
+    _MCPServerObject? MCPServerObjectQ,
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-WithMockPacletTool@@Tests/CreateMCPServer.wlt:487,1-495,2"
+]
+
+(* Raw data has string *)
+VerificationTest[
+    server[ "Data" ][ "LLMEvaluator" ][ "Tools" ],
+    { "MockMCPPacletTest/TestTool" },
+    SameTest -> Equal,
+    TestID   -> "CreateMCPServer-MockPacletToolStringInData@@Tests/CreateMCPServer.wlt:498,1-503,2"
+]
+
+(* Tools property resolves to LLMTool *)
+VerificationTest[
+    server[ "Tools" ],
+    { _LLMTool },
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-MockPacletToolResolves@@Tests/CreateMCPServer.wlt:506,1-511,2"
+]
+
+VerificationTest[
+    server[ "Tools" ][[ 1 ]][ "Name" ],
+    "TestTool",
+    SameTest -> Equal,
+    TestID   -> "CreateMCPServer-MockPacletToolResolvedName@@Tests/CreateMCPServer.wlt:513,1-518,2"
+]
+
+VerificationTest[
+    DeleteObject @ server,
+    Null,
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-MockPacletToolCleanup@@Tests/CreateMCPServer.wlt:520,1-525,2"
+]
+
+VerificationTest[
+    PacletDirectoryUnload @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletTest" };
+    Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
+    <| |>,
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-MockPacletCleanup@@Tests/CreateMCPServer.wlt:527,1-533,2"
+]
+
+(* :!CodeAnalysis::EndBlock:: *)
