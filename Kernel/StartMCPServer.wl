@@ -111,7 +111,17 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
         If[ FileExistsQ @ logFile, DeleteFile @ logFile ];
         writeLog[ "LogFile" -> logFile ];
 
+        (* Ensure referenced paclets are installed before tool/prompt resolution *)
+        ensurePacletsForStart @ obj;
+
+        (* Run server-level initialization for paclet-backed servers *)
+        runServerInitialization @ obj;
+
         llmTools     = Association[ #[ "Name" ] -> # & /@ ConfirmMatch[ obj[ "Tools" ], { ___LLMTool }, "Tools" ] ];
+
+        (* Run tool initialization for all tools at startup *)
+        runToolInitialization @ Values @ llmTools;
+
         toolList     = ConfirmMatch[ createMCPToolData /@ Values @ llmTools, { ___Association }, "ToolList" ];
         promptList   = ConfirmMatch[ makePromptData @ obj[ "PromptData" ], { ___Association }, "PromptData" ];
         promptLookup = ConfirmBy[ makePromptLookup @ obj[ "PromptData" ], AssociationQ, "PromptLookup" ];
@@ -152,6 +162,98 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
 (* :!CodeAnalysis::EndBlock:: *)
 
 startMCPServer // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*ensurePacletsForStart*)
+ensurePacletsForStart // beginDefinition;
+
+ensurePacletsForStart[ obj_MCPServerObject ] :=
+    ensurePacletsForStart[ obj[ "Name" ], obj[ "Data" ] ];
+
+ensurePacletsForStart[ serverName_String, data_Association ] :=
+    Module[ { evaluator, tools, prompts, qualifiedNames },
+        evaluator = Lookup[ data, "LLMEvaluator", <| |> ];
+        If[ ! AssociationQ @ evaluator, Return[ Null, Module ] ];
+
+        tools = Flatten @ { Lookup[ evaluator, "Tools", { } ] };
+        prompts = Flatten @ { Lookup[ evaluator, "MCPPrompts", { } ] };
+        qualifiedNames = Select[
+            Join[ tools, prompts ],
+            StringQ[ # ] && pacletQualifiedNameQ[ # ] &
+        ];
+
+        ensurePacletForStart[ serverName, # ] & /@ qualifiedNames;
+        Null
+    ];
+
+ensurePacletsForStart // endDefinition;
+
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*ensurePacletForStart*)
+ensurePacletForStart // beginDefinition;
+
+ensurePacletForStart[ serverName_String, qualifiedName_String ] :=
+    Module[ { parsed, pacletName, paclet },
+        parsed = parsePacletQualifiedName @ qualifiedName;
+        If[ ! AssociationQ @ parsed, Return[ Null, Module ] ];
+        pacletName = parsed[ "PacletName" ];
+
+        (* Already installed? *)
+        paclet = findInstalledPaclet @ pacletName;
+        If[ MatchQ[ paclet, _PacletObject ], Return[ paclet, Module ] ];
+
+        (* Try to install *)
+        paclet = Quiet @ PacletInstall[ pacletName ];
+        If[ MatchQ[ paclet, _PacletObject ], Return[ paclet, Module ] ];
+
+        throwFailure[ "PacletDependencyMissing", serverName, qualifiedName, pacletName ]
+    ];
+
+ensurePacletForStart // endDefinition;
+
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*runServerInitialization*)
+runServerInitialization // beginDefinition;
+
+runServerInitialization[ obj_MCPServerObject ] :=
+    runServerInitialization @ obj[ "Data" ];
+
+runServerInitialization[ data_Association ] :=
+    Module[ { location, qualifiedName, serverDef },
+        location = Lookup[ data, "Location" ];
+        If[ ! MatchQ[ location, _PacletObject ], Return[ Null, Module ] ];
+
+        qualifiedName = data[ "Name" ];
+        If[ ! StringQ @ qualifiedName || ! pacletQualifiedNameQ @ qualifiedName,
+            Return[ Null, Module ]
+        ];
+
+        (* Load server definition to access Initialization code *)
+        serverDef = Quiet @ resolvePacletServer @ qualifiedName;
+        If[ ! AssociationQ @ serverDef, Return[ Null, Module ] ];
+
+        (* Initialization uses RuleDelayed, so accessing the key evaluates it *)
+        Lookup[ serverDef, "Initialization", Null ]
+    ];
+
+runServerInitialization // endDefinition;
+
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*runToolInitialization*)
+runToolInitialization // beginDefinition;
+runToolInitialization[ tools_List ] := runToolInitialization /@ tools;
+runToolInitialization[ tool_LLMTool ] := runToolInitialization @ tool[ "Data" ];
+runToolInitialization[ as_Association ] := Lookup[ as, "Initialization", Null ];
+runToolInitialization[ _ ] := Null;
+runToolInitialization // endDefinition;
+
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)

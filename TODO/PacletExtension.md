@@ -69,7 +69,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **9. Update StartMCPServer.wl — resolve paclet references and run tool initialization**
+- [x] **9. Update StartMCPServer.wl — resolve paclet references and run tool initialization**
 
   Fully resolve all paclet references at start time. Behavioral change: run `"Initialization"` code for all tools at startup (not just at install time). Write tests.
 

@@ -110,3 +110,19 @@ Completed TODO task 7:
 - Key insight: `validateTools` validates each tool via `validateTool` but returns the **original** tools list (`Flatten @ { tools }`), not the validated results. So paclet-qualified strings survive as plain strings in `Metadata.wxf` without any code changes to `CreateMCPServer.wl`
 - All 55 CreateMCPServer tests pass, all 70 MCPServerObject tests pass, code inspector clean
 
+## Session 8
+
+Completed TODO task 9:
+
+- Added `ensurePacletsForStart` — extracts paclet-qualified tool/prompt names from server data and ensures each referenced paclet is installed via `PacletInstall` before tool/prompt resolution. Uses `PacletDependencyMissing` error (with server name context) when a paclet fails to install.
+- Added `ensurePacletForStart` — helper that installs a single paclet for a qualified name, with server-name-aware error reporting
+- Added `runServerInitialization` — runs server-level `"Initialization"` code for paclet-backed servers by reloading the server definition and accessing the `"Initialization"` key (which uses `RuleDelayed` for lazy evaluation). No-op for built-in and file-based servers.
+- Added `runToolInitialization` — runs `"Initialization"` code for all tools at startup (behavioral change: previously only done at install time). Iterates over resolved `LLMTool` objects and accesses their `"Initialization"` key.
+- Modified `startMCPServer` to call these functions in order: (1) `ensurePacletsForStart` before resolution, (2) `runServerInitialization` before tool resolution, (3) `runToolInitialization` after tools are resolved to `LLMTool` objects
+- Added 14 new tests (46 total) to `Tests/StartMCPServer.wlt` covering:
+  - `runToolInitialization`: runs both inits, no-init tools are no-op, empty list, mixed init/no-init
+  - `ensurePacletsForStart`: installed paclet succeeds, no paclet tools is no-op, empty evaluator, no evaluator, paclet tools succeed
+  - `ensurePacletForStart`: installed paclet returns PacletObject, missing paclet throws PacletDependencyMissing
+  - `runServerInitialization`: built-in server no-op, file-based server no-op, paclet server with no init returns Null
+- All 46 StartMCPServer tests pass, 70 MCPServerObject tests pass, 176 InstallMCPServer tests pass, code inspector clean
+

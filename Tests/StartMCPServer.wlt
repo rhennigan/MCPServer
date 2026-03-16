@@ -277,3 +277,228 @@ skipIfScript @ VerificationTest[
     SameTest -> MatchQ,
     TestID   -> "Wolfram-ServerStopped@@Tests/StartMCPServer.wlt:274,16-279,2"
 ]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Paclet Resolution and Tool Initialization*)
+
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Setup Mock Paclet*)
+VerificationTest[
+    $testResourceDirectory = FileNameJoin @ { DirectoryName[ $TestFileName, 2 ], "TestResources" };
+    PacletDirectoryLoad @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletTest" };
+    $mockPaclet = First @ PacletFind[ "MockMCPPacletTest" ];
+    $mockPaclet[ "Name" ],
+    "MockMCPPacletTest",
+    SameTest -> MatchQ,
+    TestID   -> "PacletInit-LoadMockPaclet@@Tests/StartMCPServer.wlt:291,1-299,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*runToolInitialization*)
+VerificationTest[
+    $initTestValue = 0;
+    tool1 = LLMTool[ <|
+        "Name" -> "InitTool1",
+        "Description" -> "Tool with initialization",
+        "Function" -> Identity,
+        "Parameters" -> {},
+        "Initialization" :> ($initTestValue += 1)
+    |> ];
+    tool2 = LLMTool[ <|
+        "Name" -> "InitTool2",
+        "Description" -> "Tool with initialization",
+        "Function" -> Identity,
+        "Parameters" -> {},
+        "Initialization" :> ($initTestValue += 10)
+    |> ];
+    Wolfram`MCPServer`StartMCPServer`Private`runToolInitialization[ { tool1, tool2 } ];
+    $initTestValue,
+    11,
+    SameTest -> MatchQ,
+    TestID   -> "RunToolInitialization-RunsBothInits@@Tests/StartMCPServer.wlt:304,1-325,2"
+]
+
+VerificationTest[
+    $initTestValue2 = 0;
+    toolNoInit = LLMTool[ <|
+        "Name" -> "NoInitTool",
+        "Description" -> "Tool without initialization",
+        "Function" -> Identity,
+        "Parameters" -> {}
+    |> ];
+    Wolfram`MCPServer`StartMCPServer`Private`runToolInitialization[ { toolNoInit } ];
+    $initTestValue2,
+    0,
+    SameTest -> MatchQ,
+    TestID   -> "RunToolInitialization-NoInitIsNoOp@@Tests/StartMCPServer.wlt:327,1-340,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`runToolInitialization[ { } ],
+    { },
+    SameTest -> MatchQ,
+    TestID   -> "RunToolInitialization-EmptyListIsNoOp@@Tests/StartMCPServer.wlt:342,1-347,2"
+]
+
+VerificationTest[
+    $initTestValue3 = 0;
+    mixedTool1 = LLMTool[ <|
+        "Name" -> "MixedInit",
+        "Description" -> "Has init",
+        "Function" -> Identity,
+        "Parameters" -> {},
+        "Initialization" :> ($initTestValue3 = 42)
+    |> ];
+    mixedTool2 = LLMTool[ <|
+        "Name" -> "MixedNoInit",
+        "Description" -> "No init",
+        "Function" -> Identity,
+        "Parameters" -> {}
+    |> ];
+    Wolfram`MCPServer`StartMCPServer`Private`runToolInitialization[ { mixedTool1, mixedTool2 } ];
+    $initTestValue3,
+    42,
+    SameTest -> MatchQ,
+    TestID   -> "RunToolInitialization-MixedInitAndNoInit@@Tests/StartMCPServer.wlt:349,1-369,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*ensurePacletsForStart*)
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`ensurePacletsForStart[
+        MCPServerObject[ "MockMCPPacletTest/TestServer" ]
+    ],
+    Null,
+    SameTest -> MatchQ,
+    TestID   -> "EnsurePacletsForStart-InstalledPacletSucceeds@@Tests/StartMCPServer.wlt:374,1-381,2"
+]
+
+VerificationTest[
+    builtInData = <|
+        "Name" -> "TestBuiltIn",
+        "LLMEvaluator" -> <| "Tools" -> { "WolframAlpha", "WolframLanguageEvaluator" } |>,
+        "Location" -> "BuiltIn"
+    |>;
+    Wolfram`MCPServer`StartMCPServer`Private`ensurePacletsForStart[ "TestBuiltIn", builtInData ],
+    Null,
+    SameTest -> MatchQ,
+    TestID   -> "EnsurePacletsForStart-NoPacletToolsIsNoOp@@Tests/StartMCPServer.wlt:383,1-393,2"
+]
+
+VerificationTest[
+    emptyData = <| "Name" -> "Empty", "LLMEvaluator" -> <| |> |>;
+    Wolfram`MCPServer`StartMCPServer`Private`ensurePacletsForStart[ "Empty", emptyData ],
+    Null,
+    SameTest -> MatchQ,
+    TestID   -> "EnsurePacletsForStart-EmptyEvaluatorIsNoOp@@Tests/StartMCPServer.wlt:395,1-401,2"
+]
+
+VerificationTest[
+    noEvalData = <| "Name" -> "NoEval" |>;
+    Wolfram`MCPServer`StartMCPServer`Private`ensurePacletsForStart[ "NoEval", noEvalData ],
+    Null,
+    SameTest -> MatchQ,
+    TestID   -> "EnsurePacletsForStart-NoEvaluatorIsNoOp@@Tests/StartMCPServer.wlt:403,1-409,2"
+]
+
+VerificationTest[
+    pacletData = <|
+        "Name" -> "TestServer",
+        "LLMEvaluator" -> <|
+            "Tools" -> { "MockMCPPacletTest/TestTool", "MockMCPPacletTest/DescribedTool" },
+            "MCPPrompts" -> { "MockMCPPacletTest/TestPrompt" }
+        |>
+    |>;
+    Wolfram`MCPServer`StartMCPServer`Private`ensurePacletsForStart[ "TestServer", pacletData ],
+    Null,
+    SameTest -> MatchQ,
+    TestID   -> "EnsurePacletsForStart-PacletToolsSucceeds@@Tests/StartMCPServer.wlt:411,1-423,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*ensurePacletForStart*)
+VerificationTest[
+    Wolfram`MCPServer`StartMCPServer`Private`ensurePacletForStart[
+        "TestServer", "MockMCPPacletTest/TestTool"
+    ],
+    _PacletObject,
+    SameTest -> MatchQ,
+    TestID   -> "EnsurePacletForStart-InstalledPacletReturns@@Tests/StartMCPServer.wlt:428,1-435,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Common`catchAlways[
+        Wolfram`MCPServer`StartMCPServer`Private`ensurePacletForStart[
+            "TestServer", "NonExistentPaclet12345/SomeTool"
+        ]
+    ],
+    _Failure,
+    { MCPServer::PacletDependencyMissing },
+    SameTest -> MatchQ,
+    TestID   -> "EnsurePacletForStart-MissingPacletFails@@Tests/StartMCPServer.wlt:437,1-447,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*runServerInitialization*)
+VerificationTest[
+    builtInServerData = <|
+        "Name" -> "WolframLanguage",
+        "Location" -> "BuiltIn",
+        "LLMEvaluator" -> <| "Tools" -> { "WolframLanguageEvaluator" } |>
+    |>;
+    Wolfram`MCPServer`StartMCPServer`Private`runServerInitialization[ builtInServerData ],
+    Null,
+    SameTest -> MatchQ,
+    TestID   -> "RunServerInitialization-BuiltInIsNoOp@@Tests/StartMCPServer.wlt:452,1-462,2"
+]
+
+VerificationTest[
+    fileServerData = <|
+        "Name" -> "UserServer",
+        "Location" -> File[ "some/path" ],
+        "LLMEvaluator" -> <| "Tools" -> { } |>
+    |>;
+    Wolfram`MCPServer`StartMCPServer`Private`runServerInitialization[ fileServerData ],
+    Null,
+    SameTest -> MatchQ,
+    TestID   -> "RunServerInitialization-FileBasedIsNoOp@@Tests/StartMCPServer.wlt:464,1-474,2"
+]
+
+VerificationTest[
+    pacletServerData = <|
+        "Name" -> "MockMCPPacletTest/TestServer",
+        "Location" -> $mockPaclet,
+        "LLMEvaluator" -> <|
+            "Tools" -> { "MockMCPPacletTest/TestTool" },
+            "MCPPrompts" -> { "MockMCPPacletTest/TestPrompt" }
+        |>
+    |>;
+    (* TestServer definition has no Initialization key, so this should return Null *)
+    Wolfram`MCPServer`StartMCPServer`Private`runServerInitialization[ pacletServerData ],
+    Null,
+    SameTest -> MatchQ,
+    TestID   -> "RunServerInitialization-PacletServerNoInit@@Tests/StartMCPServer.wlt:476,1-490,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Cleanup Mock Paclet*)
+VerificationTest[
+    PacletDirectoryUnload @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletTest" };
+    Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ];
+    True,
+    True,
+    SameTest -> MatchQ,
+    TestID   -> "PacletCleanup-UnloadMockPaclet@@Tests/StartMCPServer.wlt:495,1-502,2"
+]
+
+(* :!CodeAnalysis::EndBlock:: *)
