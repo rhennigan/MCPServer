@@ -138,3 +138,21 @@ Completed TODO task 10:
 - Added 13 new tests (59 total) covering: empty list, no collisions, two/three tools with same name, mixed collisions, multiple collision groups, value preservation, single tool, `createMCPToolData` name override, single-arg backward compat, wire name integration, lookup routing integration
 - All 59 StartMCPServer tests pass, code inspector clean
 
+## Session 10
+
+Completed TODO task 11:
+
+- Implemented `ValidateMCPPacletExtension` in `Kernel/ValidateMCPPacletExtension.wl` with all four validation check categories:
+  1. **Extension structure** — checks for MCP extension presence, valid keys, valid declaration forms
+  2. **File existence** — checks root directory, per-item and combined files, warns on duplicate definition files
+  3. **File contents** — validates definition files evaluate to associations with required keys (LLMEvaluator for servers, Name/Function/Parameters for tools, Name for prompts)
+  4. **Cross-references** — validates tool/prompt names referenced by servers are declared in the same paclet or are fully qualified names
+- Returns `Success["ValidMCPPacletExtension", <|"Servers" -> ..., "Tools" -> ..., "Prompts" -> ...|>]` on success, `Failure["InvalidMCPPacletExtension", <|"Errors" -> {...}|>]` with detailed error associations on failure
+- Each error association includes "Type", "Message", and context-specific keys (e.g., "Item", "ExpectedPath", "MissingKeys")
+- Used functional error-collection approach (each helper returns error list) rather than mutable `AppendTo` — WL passes values not references, so `AppendTo` on a function parameter fails with `AppendTo::rvalue`
+- Used `catchAlways` wrapper in `tryGetExtensionDirectory` to catch `throwInternalFailure` from `getMCPExtensionDirectory` when root directory doesn't exist
+- `catchMine` sets `$messageSymbol` to the exported function symbol (`ValidateMCPPacletExtension`), so messages are issued as `ValidateMCPPacletExtension::InvalidMCPPacletExtension` rather than `MCPServer::InvalidMCPPacletExtension`
+- Created 7 mock paclets in `TestResources/` for testing various validation scenarios: InvalidKeys, MissingFiles, BadContents, BadCrossRef, BadDecl, DupFiles, NoRoot
+- Added 36 tests covering all validation categories, success/failure paths, and error detail inspection
+- All 36 ValidateMCPPacletExtension tests pass, all 52 PacletExtension tests pass, code inspector clean
+

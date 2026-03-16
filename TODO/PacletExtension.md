@@ -85,7 +85,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **11. Implement ValidateMCPPacletExtension.wl**
+- [x] **11. Implement ValidateMCPPacletExtension.wl**
 
   Create `Kernel/ValidateMCPPacletExtension.wl` with all four validation check categories: extension structure, file existence, file contents, and cross-references. Return `Success`/`Failure` as specified. Write tests using mock paclets.
 
