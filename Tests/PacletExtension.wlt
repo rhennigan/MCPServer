@@ -119,81 +119,23 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*Mock Paclet Setup*)
 
-(* Create a mock paclet with per-item definition files *)
+$testResourceDirectory = FileNameJoin @ { DirectoryName[ $TestFileName, 2 ], "TestResources" };
+
+(* Load mock paclet with per-item definition files *)
 VerificationTest[
-    Module[ { mockDir, mcpDir },
-        mockDir = FileNameJoin @ { $TemporaryDirectory, "MockMCPPacletTest" };
-        If[ DirectoryQ @ mockDir, DeleteDirectory[ mockDir, DeleteContents -> True ] ];
-        CreateDirectory[ FileNameJoin @ { mockDir, "MCP", "Servers" }, CreateIntermediateDirectories -> True ];
-        CreateDirectory[ FileNameJoin @ { mockDir, "MCP", "Tools" }, CreateIntermediateDirectories -> True ];
-        CreateDirectory[ FileNameJoin @ { mockDir, "MCP", "Prompts" }, CreateIntermediateDirectories -> True ];
-
-        Export[ FileNameJoin @ { mockDir, "PacletInfo.wl" },
-            "PacletObject[<|
-    \"Name\" -> \"MockMCPPacletTest\",
-    \"Version\" -> \"1.0.0\",
-    \"Extensions\" -> {
-        {\"MCP\",
-            \"Root\" -> \"MCP\",
-            \"Servers\" -> {\"TestServer\"},
-            \"Tools\" -> {\"TestTool\", {\"DescribedTool\", \"A described tool\"}, <|\"Name\" -> \"AssocTool\"|>},
-            \"Prompts\" -> {\"TestPrompt\"}
-        }
-    }
-|>]", "Text" ];
-
-        Export[ FileNameJoin @ { mockDir, "MCP", "Tools", "TestTool.wl" },
-            "<|\"Name\" -> \"TestTool\", \"Description\" -> \"A test tool\", \"Function\" -> Identity, \"Parameters\" -> {}|>",
-            "Text" ];
-        Export[ FileNameJoin @ { mockDir, "MCP", "Tools", "DescribedTool.wl" },
-            "<|\"Name\" -> \"DescribedTool\", \"Description\" -> \"A described tool\", \"Function\" -> Identity, \"Parameters\" -> {}|>",
-            "Text" ];
-        Export[ FileNameJoin @ { mockDir, "MCP", "Tools", "AssocTool.wl" },
-            "<|\"Name\" -> \"AssocTool\", \"Description\" -> \"An assoc-declared tool\", \"Function\" -> Identity, \"Parameters\" -> {}|>",
-            "Text" ];
-        Export[ FileNameJoin @ { mockDir, "MCP", "Servers", "TestServer.wl" },
-            "<|\"Name\" -> \"TestServer\", \"LLMEvaluator\" -> <|\"Tools\" -> {\"TestTool\", \"DescribedTool\"}, \"MCPPrompts\" -> {\"TestPrompt\"}|>|>",
-            "Text" ];
-        Export[ FileNameJoin @ { mockDir, "MCP", "Prompts", "TestPrompt.wl" },
-            "<|\"Name\" -> \"TestPrompt\", \"Description\" -> \"A test prompt\", \"Arguments\" -> {}, \"Type\" -> \"Text\", \"Content\" -> \"Hello\"|>",
-            "Text" ];
-
-        PacletDirectoryLoad @ mockDir;
-        $mockPacletTest = First @ PacletFind[ "MockMCPPacletTest" ];
-        $mockPacletTest[ "Name" ]
-    ],
+    PacletDirectoryLoad @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletTest" };
+    $mockPacletTest = First @ PacletFind[ "MockMCPPacletTest" ];
+    $mockPacletTest[ "Name" ],
     "MockMCPPacletTest",
     SameTest -> MatchQ,
     TestID   -> "MockPacletSetup-PerItem"
 ]
 
-(* Create a mock paclet with combined definition files *)
+(* Load mock paclet with combined definition files *)
 VerificationTest[
-    Module[ { mockDir },
-        mockDir = FileNameJoin @ { $TemporaryDirectory, "MockMCPPacletCombined" };
-        If[ DirectoryQ @ mockDir, DeleteDirectory[ mockDir, DeleteContents -> True ] ];
-        CreateDirectory[ FileNameJoin @ { mockDir, "MCP" }, CreateIntermediateDirectories -> True ];
-
-        Export[ FileNameJoin @ { mockDir, "PacletInfo.wl" },
-            "PacletObject[<|
-    \"Name\" -> \"MockMCPPacletCombined\",
-    \"Version\" -> \"1.0.0\",
-    \"Extensions\" -> {
-        {\"MCP\",
-            \"Root\" -> \"MCP\",
-            \"Tools\" -> {\"CombTool1\", \"CombTool2\"}
-        }
-    }
-|>]", "Text" ];
-
-        Export[ FileNameJoin @ { mockDir, "MCP", "Tools.wl" },
-            "<|\n    \"CombTool1\" -> <|\"Name\" -> \"CombTool1\", \"Description\" -> \"Combined tool 1\", \"Function\" -> Identity, \"Parameters\" -> {}|>,\n    \"CombTool2\" -> <|\"Name\" -> \"CombTool2\", \"Description\" -> \"Combined tool 2\", \"Function\" -> Identity, \"Parameters\" -> {}|>\n|>",
-            "Text" ];
-
-        PacletDirectoryLoad @ mockDir;
-        $mockPacletCombined = First @ PacletFind[ "MockMCPPacletCombined" ];
-        $mockPacletCombined[ "Name" ]
-    ],
+    PacletDirectoryLoad @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletCombined" };
+    $mockPacletCombined = First @ PacletFind[ "MockMCPPacletCombined" ];
+    $mockPacletCombined[ "Name" ],
     "MockMCPPacletCombined",
     SameTest -> MatchQ,
     TestID   -> "MockPacletSetup-Combined"
@@ -499,10 +441,8 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*Mock Paclet Cleanup*)
 VerificationTest[
-    PacletDirectoryUnload @ FileNameJoin @ { $TemporaryDirectory, "MockMCPPacletTest" };
-    PacletDirectoryUnload @ FileNameJoin @ { $TemporaryDirectory, "MockMCPPacletCombined" };
-    DeleteDirectory[ FileNameJoin @ { $TemporaryDirectory, "MockMCPPacletTest" }, DeleteContents -> True ];
-    DeleteDirectory[ FileNameJoin @ { $TemporaryDirectory, "MockMCPPacletCombined" }, DeleteContents -> True ];
+    PacletDirectoryUnload @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletTest" };
+    PacletDirectoryUnload @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletCombined" };
     Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
     <| |>,
     SameTest -> MatchQ,
