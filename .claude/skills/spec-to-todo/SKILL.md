@@ -82,8 +82,8 @@ Each item is a logical unit of work for one coding session.
 
 - [ ] **1. <Task title>**
 
-  <Description of what needs to be done and why. Include enough context
-  that someone could pick this up without re-reading the entire spec.
+  <Brief description clarifying which part of the spec this covers.
+  Don't repeat spec details — the reader has read the spec.
   Note any discrepancies found between spec and current state.>
 
   **Files:** `path/to/file1`, `path/to/file2`
