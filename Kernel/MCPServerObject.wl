@@ -497,6 +497,9 @@ normalizePromptData // beginDefinition;
 normalizePromptData[ name_String ] /; KeyExistsQ[ $DefaultMCPPrompts, name ] :=
     $DefaultMCPPrompts[ name ];
 
+normalizePromptData[ name_String ] /; pacletQualifiedNameQ[ name ] :=
+    normalizePromptData @ resolvePacletPrompt[ name ];
+
 normalizePromptData[ name_String ] :=
     throwFailure[ "PromptNameNotFound", name ];
 
@@ -650,6 +653,7 @@ convertStringTools // endDefinition;
 
 convertStringTools0 // beginDefinition;
 convertStringTools0[ name_String ] /; KeyExistsQ[ $DefaultMCPTools, name ] := $DefaultMCPTools[ name ];
+convertStringTools0[ name_String ] /; pacletQualifiedNameQ[ name ] := LLMTool @ resolvePacletTool[ name ];
 convertStringTools0[ name_String ] := Lookup[ cb`$AvailableTools, name, tryResourceTool @ name ];
 convertStringTools0[ template_TemplateObject ] := TemplateApply @ template;
 convertStringTools0[ tool_ ] := tool;

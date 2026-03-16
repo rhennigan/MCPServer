@@ -65,3 +65,15 @@ Completed TODO task 4:
 - Extended MCPServerObject tests from 20 to 45 (25 new) covering paclet server creation, properties, ToolNames/PromptNames, DeleteObject refusal, and error cases
 - All tests pass, code inspector clean
 
+## Session 5
+
+Completed TODO task 5:
+
+- Extended `convertStringTools0` with paclet-qualified name resolution — names containing `/` are resolved via `resolvePacletTool` and wrapped in `LLMTool`
+- Extended `normalizePromptData` with paclet-qualified prompt resolution — names containing `/` are resolved via `resolvePacletPrompt` then normalized (adds "Type" key)
+- `validateTool` and `validateMCPPrompt` already had paclet pass-through from Task 4 — verified they work correctly
+- `getToolList` works without changes since `convertStringTools0` now resolves paclet tools to `LLMTool` objects
+- Added 13 new tests (58 total) covering: `convertStringTools0` paclet resolution, `normalizePromptData` paclet resolution, `obj["Tools"]` and `obj["PromptData"]` for paclet-backed servers, `obj["LLMConfiguration"]` for paclet servers, error cases (tool not found, prompt not found, paclet not installed), and `validateTool`/`validateMCPPrompt` pass-through verification
+- Error tests use `catchAlways` wrapper since these internal functions are designed to run inside `catchMine`/`catchAlways` contexts
+- All tests pass, code inspector clean
+

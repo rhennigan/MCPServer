@@ -409,13 +409,141 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*Paclet Tool String Resolution via convertStringTools0*)
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`convertStringTools0[ "MockMCPPacletTest/TestTool" ],
+    _LLMTool,
+    SameTest -> MatchQ,
+    TestID   -> "ConvertStringTools0-PacletTool@@Tests/MCPServerObject.wlt:413,1-418,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`convertStringTools0[ "MockMCPPacletTest/DescribedTool" ],
+    _LLMTool,
+    SameTest -> MatchQ,
+    TestID   -> "ConvertStringTools0-PacletDescribedTool@@Tests/MCPServerObject.wlt:420,1-425,2"
+]
+
+(* Built-in tools still take precedence over paclet resolution *)
+VerificationTest[
+    MatchQ[
+        Wolfram`MCPServer`MCPServerObject`Private`convertStringTools0[ "WolframAlpha" ],
+        _LLMTool
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "ConvertStringTools0-BuiltInPrecedence@@Tests/MCPServerObject.wlt:428,1-436,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Paclet Prompt String Resolution via normalizePromptData*)
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`normalizePromptData[ "MockMCPPacletTest/TestPrompt" ],
+    KeyValuePattern[ { "Name" -> "TestPrompt", "Type" -> "Text" } ],
+    SameTest -> MatchQ,
+    TestID   -> "NormalizePromptData-PacletPrompt@@Tests/MCPServerObject.wlt:441,1-446,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*getToolList Resolves Paclet Tools to LLMTool Objects*)
+VerificationTest[
+    $pacletServer[ "Tools" ],
+    { _LLMTool, _LLMTool },
+    SameTest -> MatchQ,
+    TestID   -> "PacletServer-GetTools@@Tests/MCPServerObject.wlt:451,1-456,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*PromptData Resolves Paclet Prompts*)
+VerificationTest[
+    $pacletServer[ "PromptData" ],
+    { KeyValuePattern[ { "Name" -> "TestPrompt", "Type" -> "Text" } ] },
+    SameTest -> MatchQ,
+    TestID   -> "PacletServer-GetPromptData@@Tests/MCPServerObject.wlt:461,1-466,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*LLMConfiguration Resolves Paclet Tools*)
+VerificationTest[
+    $pacletServer[ "LLMConfiguration" ],
+    _LLMConfiguration,
+    SameTest -> MatchQ,
+    TestID   -> "PacletServer-LLMConfiguration@@Tests/MCPServerObject.wlt:471,1-476,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Error Cases for Paclet Tool/Prompt Resolution*)
+(* Note: these internal functions are designed to run inside catchAlways/catchMine *)
+VerificationTest[
+    Wolfram`MCPServer`Common`catchAlways @
+        Wolfram`MCPServer`MCPServerObject`Private`convertStringTools0[ "MockMCPPacletTest/NonExistentTool" ],
+    _Failure,
+    { MCPServer::PacletToolNotFound },
+    SameTest -> MatchQ,
+    TestID   -> "ConvertStringTools0-PacletToolNotFound@@Tests/MCPServerObject.wlt:482,1-489,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Common`catchAlways @
+        Wolfram`MCPServer`MCPServerObject`Private`normalizePromptData[ "MockMCPPacletTest/NonExistentPrompt" ],
+    _Failure,
+    { MCPServer::PacletPromptNotFound },
+    SameTest -> MatchQ,
+    TestID   -> "NormalizePromptData-PacletPromptNotFound@@Tests/MCPServerObject.wlt:491,1-498,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Common`catchAlways @
+        Wolfram`MCPServer`MCPServerObject`Private`convertStringTools0[ "NonExistentPaclet12345/SomeTool" ],
+    _Failure,
+    { MCPServer::PacletNotInstalled },
+    SameTest -> MatchQ,
+    TestID   -> "ConvertStringTools0-PacletNotInstalled@@Tests/MCPServerObject.wlt:500,1-507,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Common`catchAlways @
+        Wolfram`MCPServer`MCPServerObject`Private`normalizePromptData[ "NonExistentPaclet12345/SomePrompt" ],
+    _Failure,
+    { MCPServer::PacletNotInstalled },
+    SameTest -> MatchQ,
+    TestID   -> "NormalizePromptData-PacletNotInstalled@@Tests/MCPServerObject.wlt:509,1-516,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*validateTool Passes Through Paclet-Qualified Names*)
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`validateTool[ "MockMCPPacletTest/TestTool" ],
+    "MockMCPPacletTest/TestTool",
+    SameTest -> Equal,
+    TestID   -> "ValidateTool-PacletPassthrough@@Tests/MCPServerObject.wlt:521,1-526,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*validateMCPPrompt Passes Through Paclet-Qualified Names*)
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompt[ "MockMCPPacletTest/TestPrompt" ],
+    "MockMCPPacletTest/TestPrompt",
+    SameTest -> Equal,
+    TestID   -> "ValidateMCPPrompt-PacletPassthrough@@Tests/MCPServerObject.wlt:531,1-536,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*Mock Paclet Cleanup*)
 VerificationTest[
     PacletDirectoryUnload @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletTest" };
     Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
     <||>,
     SameTest -> MatchQ,
-    TestID   -> "PacletServer-MockCleanup@@Tests/MCPServerObject.wlt:413,1-419,2"
+    TestID   -> "PacletServer-MockCleanup@@Tests/MCPServerObject.wlt:541,1-547,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

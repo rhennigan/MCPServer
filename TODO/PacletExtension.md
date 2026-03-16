@@ -37,7 +37,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **5. Update MCPServerObject.wl — paclet tool/prompt string resolution**
+- [x] **5. Update MCPServerObject.wl — paclet tool/prompt string resolution**
 
   Extend `convertStringTools0`, `normalizePromptData`, `validateMCPPrompt`, `validateTool`, and `getToolList` to handle `/`-containing paclet-qualified names. Write tests.
 
