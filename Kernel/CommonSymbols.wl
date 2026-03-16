@@ -106,4 +106,13 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `$defaultToolOptions;
 `toolOptionValue;
 
+(* Paclet extension support: *)
+`findMCPPaclets;
+`loadPacletDefinitionFile;
+`pacletQualifiedNameQ;
+`parsePacletQualifiedName;
+`resolvePacletPrompt;
+`resolvePacletServer;
+`resolvePacletTool;
+
 EndPackage[ ];

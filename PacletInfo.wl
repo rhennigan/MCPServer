@@ -35,7 +35,8 @@ PacletObject[ <|
                 "Wolfram`MCPServer`MCPServerObjectQ",
                 "Wolfram`MCPServer`MCPServerObjects",
                 "Wolfram`MCPServer`StartMCPServer",
-                "Wolfram`MCPServer`UninstallMCPServer"
+                "Wolfram`MCPServer`UninstallMCPServer",
+                "Wolfram`MCPServer`ValidateMCPPacletExtension"
             }
         },
         { "Documentation",

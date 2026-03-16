@@ -5,7 +5,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **1. Add shared symbols, exports, and error messages**
+- [x] **1. Add shared symbols, exports, and error messages**
 
   Foundation task that all other work depends on. Declare the new shared symbols
   in `CommonSymbols.wl` (`resolvePacletTool`, `resolvePacletServer`,
