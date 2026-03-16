@@ -29,3 +29,21 @@ Completed TODO task 2:
 - Created `Tests/PacletExtension.wlt` with 15 tests covering valid/invalid name parsing, `pacletQualifiedNameQ` for various inputs, and `findMCPPaclets` return type
 - All tests pass, code inspector clean
 
+## Session 3
+
+Completed TODO task 3:
+
+- Implemented `getMCPExtension`, `getMCPExtensionData`, `getMCPExtensionDirectory` — helpers to extract MCP extension data and root directory from a PacletObject using `PacletTools`PacletExtensions` and `PacletTools`PacletExtensionDirectory`
+- Implemented `extractItemName` — handles all three declaration forms (string, {name, description}, association)
+- Implemented `getMCPDeclaredItems` — extracts declared item names of a given type from a paclet's MCP extension
+- Implemented `findInstalledPaclet` — finds an installed paclet by name via `PacletFind`
+- Implemented `loadFile` — loads definition files with .mx (Import MX), .wxf (readWXFFile), .wl (Get) support
+- Implemented `findPerItemFile` and `findCombinedFile` — file resolution with .mx > .wxf > .wl priority
+- Implemented `loadPacletDefinitionFile` — full definition file loading with per-item/combined file resolution and session-level caching keyed by {pacletName, version, type, name}
+- Implemented `qualifyName` and `qualifyNamesInLLMEvaluator` — pre-qualifies short tool/prompt names to fully qualified names within server definitions
+- Implemented `resolvePacletTool`, `resolvePacletServer`, `resolvePacletPrompt` — parse qualified name, find paclet, verify declaration, load definition; server resolution pre-qualifies LLMEvaluator names
+- Added `clearPacletDefinitionCache`, `findInstalledPaclet`, `getMCPDeclaredItems`, `getMCPExtension`, `getMCPExtensionData`, `getMCPExtensionDirectory` to `CommonSymbols.wl` for use by future tasks
+- Extended tests to 52 total (37 new) using mock paclet directories with per-item and combined file layouts
+- Fixed HoldForm scoping issue in throwFailure calls — use `With` to inject string values into `HoldForm @ PacletInstall[...]`
+- All tests pass, code inspector clean
+

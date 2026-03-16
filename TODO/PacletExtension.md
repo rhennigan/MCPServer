@@ -21,7 +21,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **3. Implement PacletExtension.wl — definition file loading and resolution**
+- [x] **3. Implement PacletExtension.wl — definition file loading and resolution**
 
   Extend `Kernel/PacletExtension.wl` with `loadPacletDefinitionFile`, `resolvePacletTool`, `resolvePacletServer`, `resolvePacletPrompt`, and session-level caching. Tests need a mock paclet directory structure with sample definition files.
 
