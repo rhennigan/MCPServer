@@ -203,7 +203,7 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*getMCPExtension*)
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`getMCPExtension[ $mockPacletTest ],
+    Wolfram`MCPServer`Common`getMCPExtension[ $mockPacletTest ],
     { "MCP", _Association },
     SameTest -> MatchQ,
     TestID   -> "getMCPExtension-Valid"
@@ -224,7 +224,7 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*getMCPExtensionData*)
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`getMCPExtensionData[ $mockPacletTest ],
+    Wolfram`MCPServer`Common`getMCPExtensionData[ $mockPacletTest ],
     _Association? (KeyExistsQ[ #, "Tools" ] &),
     SameTest -> MatchQ,
     TestID   -> "getMCPExtensionData-Valid"
@@ -234,7 +234,7 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*getMCPExtensionDirectory*)
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`getMCPExtensionDirectory[ $mockPacletTest ],
+    Wolfram`MCPServer`Common`getMCPExtensionDirectory[ $mockPacletTest ],
     _String? DirectoryQ,
     SameTest -> MatchQ,
     TestID   -> "getMCPExtensionDirectory-Valid"
@@ -275,28 +275,28 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*getMCPDeclaredItems*)
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`getMCPDeclaredItems[ $mockPacletTest, "Tools" ],
+    Wolfram`MCPServer`Common`getMCPDeclaredItems[ $mockPacletTest, "Tools" ],
     { "TestTool", "DescribedTool", "AssocTool" },
     SameTest -> MatchQ,
     TestID   -> "getMCPDeclaredItems-Tools"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`getMCPDeclaredItems[ $mockPacletTest, "Servers" ],
+    Wolfram`MCPServer`Common`getMCPDeclaredItems[ $mockPacletTest, "Servers" ],
     { "TestServer" },
     SameTest -> MatchQ,
     TestID   -> "getMCPDeclaredItems-Servers"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`getMCPDeclaredItems[ $mockPacletTest, "Prompts" ],
+    Wolfram`MCPServer`Common`getMCPDeclaredItems[ $mockPacletTest, "Prompts" ],
     { "TestPrompt" },
     SameTest -> MatchQ,
     TestID   -> "getMCPDeclaredItems-Prompts"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`getMCPDeclaredItems[ $mockPacletTest, "NonExistentType" ],
+    Wolfram`MCPServer`Common`getMCPDeclaredItems[ $mockPacletTest, "NonExistentType" ],
     {},
     SameTest -> MatchQ,
     TestID   -> "getMCPDeclaredItems-EmptyType"
@@ -334,7 +334,7 @@ VerificationTest[
 
 (* Per-item tool file *)
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`loadPacletDefinitionFile[ $mockPacletTest, "Tools", "TestTool" ],
+    Wolfram`MCPServer`Common`loadPacletDefinitionFile[ $mockPacletTest, "Tools", "TestTool" ],
     KeyValuePattern[ { "Name" -> "TestTool", "Description" -> "A test tool" } ],
     SameTest -> MatchQ,
     TestID   -> "loadPacletDefinitionFile-PerItemTool"
@@ -342,7 +342,7 @@ VerificationTest[
 
 (* Per-item server file *)
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`loadPacletDefinitionFile[ $mockPacletTest, "Servers", "TestServer" ],
+    Wolfram`MCPServer`Common`loadPacletDefinitionFile[ $mockPacletTest, "Servers", "TestServer" ],
     _Association? (KeyExistsQ[ #, "LLMEvaluator" ] &),
     SameTest -> MatchQ,
     TestID   -> "loadPacletDefinitionFile-PerItemServer"
@@ -350,7 +350,7 @@ VerificationTest[
 
 (* Per-item prompt file *)
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`loadPacletDefinitionFile[ $mockPacletTest, "Prompts", "TestPrompt" ],
+    Wolfram`MCPServer`Common`loadPacletDefinitionFile[ $mockPacletTest, "Prompts", "TestPrompt" ],
     KeyValuePattern[ { "Name" -> "TestPrompt" } ],
     SameTest -> MatchQ,
     TestID   -> "loadPacletDefinitionFile-PerItemPrompt"
@@ -358,14 +358,14 @@ VerificationTest[
 
 (* Combined file *)
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`loadPacletDefinitionFile[ $mockPacletCombined, "Tools", "CombTool1" ],
+    Wolfram`MCPServer`Common`loadPacletDefinitionFile[ $mockPacletCombined, "Tools", "CombTool1" ],
     KeyValuePattern[ { "Name" -> "CombTool1", "Description" -> "Combined tool 1" } ],
     SameTest -> MatchQ,
     TestID   -> "loadPacletDefinitionFile-CombinedFile"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`loadPacletDefinitionFile[ $mockPacletCombined, "Tools", "CombTool2" ],
+    Wolfram`MCPServer`Common`loadPacletDefinitionFile[ $mockPacletCombined, "Tools", "CombTool2" ],
     KeyValuePattern[ { "Name" -> "CombTool2" } ],
     SameTest -> MatchQ,
     TestID   -> "loadPacletDefinitionFile-CombinedFile2"
@@ -373,7 +373,7 @@ VerificationTest[
 
 (* Non-existent item returns $Failed *)
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`loadPacletDefinitionFile[ $mockPacletTest, "Tools", "NonExistent" ],
+    Wolfram`MCPServer`Common`loadPacletDefinitionFile[ $mockPacletTest, "Tools", "NonExistent" ],
     $Failed,
     SameTest -> MatchQ,
     TestID   -> "loadPacletDefinitionFile-NotFound"
@@ -382,7 +382,7 @@ VerificationTest[
 (* Caching: verify cache is populated after load *)
 VerificationTest[
     Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ];
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`loadPacletDefinitionFile[ $mockPacletTest, "Tools", "TestTool" ];
+    Wolfram`MCPServer`Common`loadPacletDefinitionFile[ $mockPacletTest, "Tools", "TestTool" ];
     Length @ Wolfram`MCPServer`PacletExtension`Private`$pacletDefinitionCache > 0,
     True,
     SameTest -> MatchQ,
@@ -393,14 +393,14 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*resolvePacletTool*)
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`resolvePacletTool[ "MockMCPPacletTest/TestTool" ],
+    Wolfram`MCPServer`Common`resolvePacletTool[ "MockMCPPacletTest/TestTool" ],
     KeyValuePattern[ { "Name" -> "TestTool", "Description" -> "A test tool" } ],
     SameTest -> MatchQ,
     TestID   -> "resolvePacletTool-Valid"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`resolvePacletTool[ "MockMCPPacletTest/DescribedTool" ],
+    Wolfram`MCPServer`Common`resolvePacletTool[ "MockMCPPacletTest/DescribedTool" ],
     KeyValuePattern[ { "Name" -> "DescribedTool" } ],
     SameTest -> MatchQ,
     TestID   -> "resolvePacletTool-DescribedTool"
@@ -426,7 +426,7 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*resolvePacletServer*)
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`resolvePacletServer[ "MockMCPPacletTest/TestServer" ],
+    Wolfram`MCPServer`Common`resolvePacletServer[ "MockMCPPacletTest/TestServer" ],
     _Association? (KeyExistsQ[ #, "LLMEvaluator" ] &),
     SameTest -> MatchQ,
     TestID   -> "resolvePacletServer-Valid"
@@ -435,7 +435,7 @@ VerificationTest[
 (* Verify name pre-qualification: short names become fully qualified *)
 VerificationTest[
     Module[ { def },
-        def = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`resolvePacletServer[ "MockMCPPacletTest/TestServer" ];
+        def = Wolfram`MCPServer`Common`resolvePacletServer[ "MockMCPPacletTest/TestServer" ];
         def[ "LLMEvaluator", "Tools" ]
     ],
     { "MockMCPPacletTest/TestTool", "MockMCPPacletTest/DescribedTool" },
@@ -445,7 +445,7 @@ VerificationTest[
 
 VerificationTest[
     Module[ { def },
-        def = Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`resolvePacletServer[ "MockMCPPacletTest/TestServer" ];
+        def = Wolfram`MCPServer`Common`resolvePacletServer[ "MockMCPPacletTest/TestServer" ];
         def[ "LLMEvaluator", "MCPPrompts" ]
     ],
     { "MockMCPPacletTest/TestPrompt" },
@@ -473,7 +473,7 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*resolvePacletPrompt*)
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`resolvePacletPrompt[ "MockMCPPacletTest/TestPrompt" ],
+    Wolfram`MCPServer`Common`resolvePacletPrompt[ "MockMCPPacletTest/TestPrompt" ],
     KeyValuePattern[ { "Name" -> "TestPrompt", "Description" -> "A test prompt" } ],
     SameTest -> MatchQ,
     TestID   -> "resolvePacletPrompt-Valid"
@@ -503,9 +503,8 @@ VerificationTest[
     PacletDirectoryUnload @ FileNameJoin @ { $TemporaryDirectory, "MockMCPPacletCombined" };
     DeleteDirectory[ FileNameJoin @ { $TemporaryDirectory, "MockMCPPacletTest" }, DeleteContents -> True ];
     DeleteDirectory[ FileNameJoin @ { $TemporaryDirectory, "MockMCPPacletCombined" }, DeleteContents -> True ];
-    Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ];
-    True,
-    True,
+    Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
+    <| |>,
     SameTest -> MatchQ,
     TestID   -> "MockPacletCleanup"
 ]
