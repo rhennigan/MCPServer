@@ -77,3 +77,21 @@ Completed TODO task 5:
 - Error tests use `catchAlways` wrapper since these internal functions are designed to run inside `catchMine`/`catchAlways` contexts
 - All tests pass, code inspector clean
 
+## Session 6
+
+Completed TODO task 6:
+
+- Extended `MCPServerObjects` to accept options via `OptionsPattern` with `Optional` default pattern (`All`)
+- Added `"IncludeBuiltIn"`, `"IncludeRemotePaclets"`, and `UpdatePacletSites` options with `False` defaults
+- Supports options-only syntax: `MCPServerObjects["IncludeBuiltIn" -> True]` (pattern defaults to `All`)
+- Replaced `getMatchingMCPServerObjects` with modular architecture:
+  - `mcpServerObjects` — orchestrator that combines all server sources and deduplicates by name
+  - `getFileBasedServers` — file-based servers (renamed from `getMatchingMCPServerObjects`, logic unchanged)
+  - `getInstalledPacletServers` / `installedPacletToServers` — discovers installed paclets with MCP extensions via `findMCPPaclets`, creates MCPServerObjects for each declared server
+  - `getBuiltInServers` — returns `$DefaultMCPServers` values, filtered by pattern
+  - `getRemotePacletServers` / `remotePacletToServers` — discovers uninstalled remote paclets via `findRemoteMCPPaclets`, constructs metadata-only MCPServerObjects
+  - `filterServersByPattern` — filters server list by `StringMatchQ` on name
+- Added `findRemoteMCPPaclets` to `PacletExtension.wl` and `CommonSymbols.wl` — uses `PacletFindRemote` + `mcpPacletQ`, calls `PacletSiteUpdate` when `updateSites` is True
+- Added 12 new tests (70 total) covering: installed paclet servers in default listing, `"IncludeBuiltIn"` option (options-only and with pattern), built-in excluded by default, pattern matching for paclet servers, `"IncludeRemotePaclets"` no-error, options declaration, deduplication, `All` equivalence
+- All tests pass, code inspector clean
+

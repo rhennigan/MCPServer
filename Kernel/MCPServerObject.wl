@@ -757,28 +757,147 @@ mcpServerExistsQ // endDefinition;
 (* ::Section::Closed:: *)
 (*MCPServerObjects*)
 MCPServerObjects // beginDefinition;
-MCPServerObjects[ ] := catchMine @ MCPServerObjects @ All;
-MCPServerObjects[ pattern: All | _String? StringQ ] := catchMine @ getMatchingMCPServerObjects @ pattern;
+
+MCPServerObjects // Options = {
+    "IncludeBuiltIn"       -> False,
+    "IncludeRemotePaclets" -> False,
+    UpdatePacletSites      -> False
+};
+
+MCPServerObjects[ pattern: (All | _String? StringQ) : All, opts: OptionsPattern[ ] ] :=
+    catchMine @ mcpServerObjects[
+        pattern,
+        TrueQ @ OptionValue[ "IncludeBuiltIn" ],
+        TrueQ @ OptionValue[ "IncludeRemotePaclets" ],
+        TrueQ @ OptionValue[ UpdatePacletSites ]
+    ];
+
 MCPServerObjects // endExportedDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*getMatchingMCPServerObjects*)
-getMatchingMCPServerObjects // beginDefinition;
+(*mcpServerObjects*)
+mcpServerObjects // beginDefinition;
 
-getMatchingMCPServerObjects[ All ] :=
-    getMatchingMCPServerObjects @ Select[ FileNames[ All, $storagePath ], DirectoryQ ];
+mcpServerObjects[ pattern_, includeBuiltIn_, includeRemote_, updateSites_ ] := Enclose[
+    Module[ { fileBased, pacletServers, builtIn, remote, all },
+        fileBased = getFileBasedServers @ pattern;
+        pacletServers = getInstalledPacletServers @ pattern;
+        builtIn = If[ includeBuiltIn, getBuiltInServers @ pattern, {} ];
+        remote = If[ includeRemote, getRemotePacletServers[ pattern, updateSites ], {} ];
+        all = Join[ fileBased, pacletServers, builtIn, remote ];
+        DeleteDuplicatesBy[ all, #[ "Name" ] & ]
+    ],
+    throwInternalFailure
+];
 
-getMatchingMCPServerObjects[ pattern_String? StringQ ] :=
-    getMatchingMCPServerObjects @ Select[
+mcpServerObjects // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*getFileBasedServers*)
+getFileBasedServers // beginDefinition;
+
+getFileBasedServers[ All ] :=
+    getFileBasedServers @ Select[ FileNames[ All, $storagePath ], DirectoryQ ];
+
+getFileBasedServers[ pattern_String? StringQ ] :=
+    getFileBasedServers @ Select[
         FileNames[ StringReplace[ URLEncode @ pattern, "%2A" -> "*", IgnoreCase -> True ], $storagePath ],
         DirectoryQ
     ];
 
-getMatchingMCPServerObjects[ dirs: { ___String } ] :=
+getFileBasedServers[ dirs: { ___String } ] :=
     Select[ Quiet @ catchAlways @ MCPServerObject @ File[ # ] & /@ dirs, MCPServerObjectQ ];
 
-getMatchingMCPServerObjects // endDefinition;
+getFileBasedServers // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*getInstalledPacletServers*)
+getInstalledPacletServers // beginDefinition;
+
+getInstalledPacletServers[ pattern_ ] :=
+    Module[ { paclets, servers },
+        paclets = Quiet @ findMCPPaclets[ ];
+        If[ !MatchQ[ paclets, { __PacletObject } ], Return[ {}, Module ] ];
+        servers = Flatten[ installedPacletToServers /@ paclets ];
+        filterServersByPattern[ servers, pattern ]
+    ];
+
+getInstalledPacletServers // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*installedPacletToServers*)
+installedPacletToServers // beginDefinition;
+
+installedPacletToServers[ paclet_PacletObject ] :=
+    Module[ { pacletName, declaredServers },
+        pacletName = paclet[ "Name" ];
+        declaredServers = Quiet @ getMCPDeclaredItems[ paclet, "Servers" ];
+        If[ !ListQ @ declaredServers, Return[ {}, Module ] ];
+        Select[
+            Quiet @ catchAlways @ MCPServerObject[ pacletName <> "/" <> # ] & /@ declaredServers,
+            MCPServerObjectQ
+        ]
+    ];
+
+installedPacletToServers // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*getBuiltInServers*)
+getBuiltInServers // beginDefinition;
+getBuiltInServers[ All ] := Values @ $DefaultMCPServers;
+getBuiltInServers[ pattern_String ] := Select[ Values @ $DefaultMCPServers, StringMatchQ[ #[ "Name" ], pattern ] & ];
+getBuiltInServers // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*getRemotePacletServers*)
+getRemotePacletServers // beginDefinition;
+
+getRemotePacletServers[ pattern_, updateSites_ ] :=
+    Module[ { remotePaclets, installedNames, uninstalledPaclets, servers },
+        remotePaclets = Quiet @ findRemoteMCPPaclets[ updateSites ];
+        If[ !MatchQ[ remotePaclets, { __PacletObject } ], Return[ {}, Module ] ];
+        installedNames = Quiet[ #[ "Name" ] & /@ findMCPPaclets[ ] ] /. Except[ { __String } ] -> {};
+        uninstalledPaclets = Select[ remotePaclets, !MemberQ[ installedNames, #[ "Name" ] ] & ];
+        servers = Flatten[ remotePacletToServers /@ uninstalledPaclets ];
+        filterServersByPattern[ servers, pattern ]
+    ];
+
+getRemotePacletServers // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*remotePacletToServers*)
+remotePacletToServers // beginDefinition;
+
+remotePacletToServers[ paclet_PacletObject ] :=
+    Module[ { pacletName, declaredServers },
+        pacletName = paclet[ "Name" ];
+        declaredServers = Quiet @ getMCPDeclaredItems[ paclet, "Servers" ];
+        If[ !ListQ @ declaredServers, Return[ {}, Module ] ];
+        Function[ serverName,
+            MCPServerObject @ buildRemotePacletServerMetadata[
+                pacletName <> "/" <> serverName,
+                paclet,
+                serverName
+            ]
+        ] /@ declaredServers
+    ];
+
+remotePacletToServers // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*filterServersByPattern*)
+filterServersByPattern // beginDefinition;
+filterServersByPattern[ servers_List, All ] := servers;
+filterServersByPattern[ servers_List, pattern_String ] := Select[ servers, StringMatchQ[ #[ "Name" ], pattern ] & ];
+filterServersByPattern // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

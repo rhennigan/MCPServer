@@ -71,6 +71,30 @@ findMCPPaclets[ ] := Enclose[
 findMCPPaclets // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*findRemoteMCPPaclets*)
+findRemoteMCPPaclets // beginDefinition;
+
+findRemoteMCPPaclets[ ] := findRemoteMCPPaclets[ False ];
+
+findRemoteMCPPaclets[ updateSites: True | False ] := Enclose[
+    Module[ { remotePaclets },
+        Needs[ "PacletTools`" -> None ];
+        If[ updateSites, Quiet @ PacletSiteUpdate[ ] ];
+        remotePaclets = Quiet @ PacletFindRemote[ ];
+        If[ !MatchQ[ remotePaclets, { ___PacletObject } ], Return[ {}, Module ] ];
+        ConfirmMatch[
+            Select[ remotePaclets, mcpPacletQ ],
+            { ___PacletObject },
+            "Result"
+        ]
+    ],
+    throwInternalFailure
+];
+
+findRemoteMCPPaclets // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*mcpPacletQ*)
 mcpPacletQ // beginDefinition;

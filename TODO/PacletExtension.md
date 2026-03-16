@@ -45,7 +45,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **6. Extend MCPServerObjects with paclet server listing and options**
+- [x] **6. Extend MCPServerObjects with paclet server listing and options**
 
   Add installed paclet servers to default listing. Add `"IncludeBuiltIn"`, `"IncludeRemotePaclets"`, and `UpdatePacletSites` options. Extend function signature to accept options alongside the pattern argument. Write tests.
 

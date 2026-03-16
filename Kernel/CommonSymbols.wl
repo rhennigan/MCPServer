@@ -110,6 +110,7 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `clearPacletDefinitionCache;
 `findInstalledPaclet;
 `findMCPPaclets;
+`findRemoteMCPPaclets;
 `getMCPDeclaredItems;
 `getMCPExtension;
 `getMCPExtensionData;

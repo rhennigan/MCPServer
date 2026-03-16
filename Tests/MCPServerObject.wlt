@@ -537,13 +537,139 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*MCPServerObjects Includes Installed Paclet Servers*)
+VerificationTest[
+    $allServers = MCPServerObjects[];
+    MemberQ[ #[ "Name" ] & /@ $allServers, "MockMCPPacletTest/TestServer" ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "MCPServerObjects-IncludesPacletServers@@Tests/MCPServerObject.wlt:541,1-547,2"
+]
+
+VerificationTest[
+    MatchQ[ $allServers, { ___MCPServerObject? MCPServerObjectQ } ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "MCPServerObjects-AllAreValidObjects@@Tests/MCPServerObject.wlt:549,1-554,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*MCPServerObjects Options - IncludeBuiltIn*)
+VerificationTest[
+    $withBuiltIn = MCPServerObjects[ "IncludeBuiltIn" -> True ];
+    MemberQ[ #[ "Name" ] & /@ $withBuiltIn, "WolframLanguage" ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "MCPServerObjects-IncludeBuiltIn@@Tests/MCPServerObject.wlt:559,1-565,2"
+]
+
+VerificationTest[
+    (* Built-in servers should NOT be in default listing *)
+    defaultNames = #[ "Name" ] & /@ MCPServerObjects[];
+    !MemberQ[ defaultNames, "WolframLanguage" ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "MCPServerObjects-ExcludesBuiltInByDefault@@Tests/MCPServerObject.wlt:567,1-574,2"
+]
+
+VerificationTest[
+    (* IncludeBuiltIn with explicit All pattern *)
+    $withBuiltInAll = MCPServerObjects[ All, "IncludeBuiltIn" -> True ];
+    builtInNames = #[ "Name" ] & /@ $withBuiltInAll;
+    AllTrue[ { "Wolfram", "WolframLanguage", "WolframAlpha" }, MemberQ[ builtInNames, # ] & ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "MCPServerObjects-IncludeBuiltInWithAll@@Tests/MCPServerObject.wlt:576,1-584,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*MCPServerObjects Options - Pattern Matching*)
+VerificationTest[
+    $mockFiltered = MCPServerObjects[ "MockMCPPacletTest*" ];
+    #[ "Name" ] & /@ $mockFiltered,
+    { "MockMCPPacletTest/TestServer" },
+    SameTest -> MatchQ,
+    TestID   -> "MCPServerObjects-PatternMatchesPacletServers@@Tests/MCPServerObject.wlt:589,1-595,2"
+]
+
+VerificationTest[
+    (* Pattern with IncludeBuiltIn *)
+    wolfServers = MCPServerObjects[ "Wolfram*", "IncludeBuiltIn" -> True ];
+    wolfNames = #[ "Name" ] & /@ wolfServers;
+    MemberQ[ wolfNames, "Wolfram" ] && MemberQ[ wolfNames, "WolframLanguage" ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "MCPServerObjects-PatternWithIncludeBuiltIn@@Tests/MCPServerObject.wlt:597,1-605,2"
+]
+
+VerificationTest[
+    (* Pattern that matches nothing *)
+    MCPServerObjects[ "ZZZNonExistentPattern12345*" ],
+    {},
+    SameTest -> MatchQ,
+    TestID   -> "MCPServerObjects-PatternNoMatch@@Tests/MCPServerObject.wlt:607,1-613,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*MCPServerObjects Options - IncludeRemotePaclets*)
+VerificationTest[
+    (* IncludeRemotePaclets should not error *)
+    $withRemote = MCPServerObjects[ "IncludeRemotePaclets" -> True ];
+    MatchQ[ $withRemote, { ___MCPServerObject } ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "MCPServerObjects-IncludeRemotePacletsNoError@@Tests/MCPServerObject.wlt:618,1-625,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*MCPServerObjects Options Declaration*)
+VerificationTest[
+    Options[ MCPServerObjects ],
+    KeyValuePattern[ {
+        "IncludeBuiltIn" -> False,
+        "IncludeRemotePaclets" -> False,
+        UpdatePacletSites -> False
+    } ],
+    SameTest -> MatchQ,
+    TestID   -> "MCPServerObjects-OptionsDeclaration@@Tests/MCPServerObject.wlt:630,1-639,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*MCPServerObjects Deduplication*)
+VerificationTest[
+    (* Verify no duplicate server names in results *)
+    allWithBuiltIn = MCPServerObjects[ "IncludeBuiltIn" -> True ];
+    names = #[ "Name" ] & /@ allWithBuiltIn;
+    names === DeleteDuplicates[ names ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "MCPServerObjects-NoDuplicates@@Tests/MCPServerObject.wlt:644,1-652,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*MCPServerObjects All Equivalence*)
+VerificationTest[
+    MCPServerObjects[ All ] === MCPServerObjects[ ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "MCPServerObjects-AllEquivalence@@Tests/MCPServerObject.wlt:657,1-662,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*Mock Paclet Cleanup*)
 VerificationTest[
     PacletDirectoryUnload @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletTest" };
     Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
     <||>,
     SameTest -> MatchQ,
-    TestID   -> "PacletServer-MockCleanup@@Tests/MCPServerObject.wlt:541,1-547,2"
+    TestID   -> "PacletServer-MockCleanup@@Tests/MCPServerObject.wlt:667,1-673,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
