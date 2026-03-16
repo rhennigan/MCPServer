@@ -25,7 +25,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **2. Implement core PacletExtension.wl — name parsing and paclet discovery**
+- [x] **2. Implement core PacletExtension.wl — name parsing and paclet discovery**
 
   Create `Kernel/PacletExtension.wl` with the foundational utilities. Implement:
 
