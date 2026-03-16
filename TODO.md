@@ -140,6 +140,7 @@ Create distributable agent skills that use functionality from this paclet.
 - [ ] Investigate LSP server support
   - https://code.claude.com/docs/en/plugins-reference#lsp-servers
   - https://github.com/WolframResearch/LSPServer
+- [ ] New function `InstallAgentTools` that installs the MCP server, agent skills, hooks, etc.
 
 ### More Skill Ideas
 
