@@ -61,7 +61,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **8. Update InstallMCPServer.wl — support paclet-qualified server names**
+- [x] **8. Update InstallMCPServer.wl — support paclet-qualified server names**
 
   Handle paclet-qualified server names: auto-install via `PacletInstall`, full validation at install time (load definitions, verify tools/prompts), surface errors immediately. Store names as strings in config. Write tests.
 

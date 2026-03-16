@@ -47,7 +47,7 @@ mcpServerDirectory[ name_String ] :=
 
 mcpServerDirectory[ obj_MCPServerObject? MCPServerObjectQ ] :=
     With[ { location = obj[ "Location" ] },
-        If[ location === "BuiltIn",
+        If[ location === "BuiltIn" || MatchQ[ location, _PacletObject ],
             mcpServerDirectory @ obj[ "Name" ],
             location
         ]

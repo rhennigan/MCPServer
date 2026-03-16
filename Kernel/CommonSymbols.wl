@@ -108,6 +108,7 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 
 (* Paclet extension support: *)
 `clearPacletDefinitionCache;
+`ensurePacletForInstall;
 `findInstalledPaclet;
 `findMCPPaclets;
 `findRemoteMCPPaclets;

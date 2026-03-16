@@ -1623,3 +1623,200 @@ VerificationTest[
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Paclet-Qualified Server Names*)
+
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
+
+$testResourceDirectory = FileNameJoin @ { DirectoryName[ $TestFileName, 2 ], "TestResources" };
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Mock Paclet Setup*)
+VerificationTest[
+    PacletDirectoryLoad @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletTest" };
+    $mockPaclet = First @ PacletFind[ "MockMCPPacletTest" ];
+    $mockPaclet[ "Name" ],
+    "MockMCPPacletTest",
+    SameTest -> MatchQ,
+    TestID   -> "InstallPacletServer-MockPacletSetup@@Tests/InstallMCPServer.wlt:1639,1-1646,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*ensurePacletForInstall — already installed*)
+VerificationTest[
+    Wolfram`MCPServer`Common`ensurePacletForInstall[ "MockMCPPacletTest/TestServer" ],
+    _PacletObject,
+    SameTest -> MatchQ,
+    TestID   -"InstallPacletServer-EnsurePacletAlreadyInstalled@@Tests/InstallMCPServer.wlt:1651,1-1656,2"d"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*ensurePacletForInstall — three-segment name*)
+VerificationTest[
+    Wolfram`MCPServer`Common`ensurePacletForInstall[ "MockMCPPacletTest/TestServer/SomeItem" ],
+    (* "MockMCPPacletTest/TestServer" is NOT a valid paclet name here, so this should fail *)
+    _Failure,
+    { MCPServer::PacletNotInstalled },
+    SameTest -> MatchQ,
+    TestID  "InstallPacletServer-EnsurePacletThreeSegment@@Tests/InstallMCPServer.wlt:1661,1-1668,2"ent"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Install paclet-qualified server to config file*)
+VerificationTest[
+    $pacletConfigFile = testConfigFile[];
+    $pacletInstallResult = InstallMCPServer[ $pacletConfigFile, "MockMCPPacletTest/TestServer", "VerifyLLMKit" -> False ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID  "InstallPacletServer-Install@@Tests/InstallMCPServer.wlt:1673,1-1679,2"all"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Config file created*)
+VerificationTest[
+    FileExistsQ @ $pacletConfigFile,
+    True,
+    SameTest -> Equal,
+    TestID  "InstallPacletServer-ConfigFileExists@@Tests/InstallMCPServer.wlt:1684,1-1689,2"sts"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Config file has correct server name as key*)
+VerificationTest[
+    $pacletConfigJSON = Import[ $pacletConfigFile, "RawJSON" ];
+    KeyExistsQ[ $pacletConfigJSON[ "mcpServers" ], "MockMCPPacletTest/TestServer" ],
+    True,
+    SameTest -> Equal,
+    TestID  "InstallPacletServer-ConfigHasServerName@@Tests/InstallMCPServer.wlt:1694,1-1700,2"ame"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Config server entry has correct MCP_SERVER_NAME env var*)
+VerificationTest[
+    $pacletConfigJSON[ "mcpServers", "MockMCPPacletTest/TestServer", "env", "MCP_SERVER_NAME" ],
+    "MockMCPPacletTest/TestServer",
+    SameTest -> Equal,
+    TestID  "InstallPacletServer-ConfigEnvServerName@@Tests/InstallMCPServer.wlt:1705,1-1710,2"ame"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Uninstall paclet server*)
+VerificationTest[
+    UninstallMCPServer[ $pacletConfigFile, MCPServerObject[ "MockMCPPacletTest/TestServer" ] ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID  "InstallPacletServer-Uninstall@@Tests/InstallMCPServer.wlt:1715,1-1720,2"all"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Config no longer has server after uninstall*)
+VerificationTest[
+    updatedJSON = Import[ $pacletConfigFile, "RawJSON" ];
+    KeyExistsQ[ updatedJSON[ "mcpServers" ], "MockMCPPacletTest/TestServer" ],
+    False,
+    SameTest -> Equal,
+    TestID  "InstallPacletServer-VerifyUninstall@@Tests/InstallMCPServer.wlt:1725,1-1731,2"all"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Install result contains MCPServerObject*)
+VerificationTest[
+    $pacletInstallResult2 = InstallMCPServer[ $pacletConfigFile, "MockMCPPacletTest/TestServer", "VerifyLLMKit" -> False ];
+    $pacletInstallResult2[ "MCPServerObject" ],
+    _MCPServerObject? MCPServerObjectQ,
+    SameTest -> MatchQ,
+    TestID  "InstallPacletServer-ResultHasMCPServerObject@@Tests/InstallMCPServer.wlt:1736,1-1742,2"ect"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*validatePacletServerDefinitions — no error for valid paclet server*)
+VerificationTest[
+    obj = MCPServerObject[ "MockMCPPacletTest/TestServer" ];
+    Wolfram`MCPServer`InstallMCPServer`Private`validatePacletServerDefinitions @ obj,
+    Null,
+    SameTest -> MatchQ,
+    TestID"InstallPacletServer-ValidateDefinitionsValid@@Tests/InstallMCPServer.wlt:1747,1-1753,2"Valid"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*validatePacletServerDefinitions — no-op for server without paclet references*)
+VerificationTest[
+    testServer = CreateMCPServer[
+        StringJoin[ "NoPacletRefs_", CreateUUID[] ],
+        LLMConfiguration @ <| "Tools" -> { LLMTool[ "Simple", { "x" -> "Integer" }, #x & ] } |>
+    ];
+    result = Wolfram`MCPServer`InstallMCPServer`Private`validatePacletServerDefinitions @ testServer;
+    DeleteObject @ testServer;
+    result,
+    Null,
+    SameTest -> MatchQ,
+    Test"InstallPacletServer-ValidateDefinitionsNoOp@@Tests/InstallMCPServer.wlt:1758,1-1769,2"onsNoOp"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*validatePacletServerDefinitions — catches invalid paclet tool*)
+VerificationTest[
+    badToolServerName = StringJoin[ "BadToolServer_", CreateUUID[] ];
+    badToolServer = CreateMCPServer[
+        badToolServerName,
+        <| "Tools" -> { "NonExistentPaclet/BadTool" } |>
+    ];
+    result = Wolfram`MCPServer`Common`catchAlways[
+        Wolfram`MCPServer`InstallMCPServer`Private`validatePacletServerDefinitions @ badToolServer
+    ];
+    DeleteObject @ badToolServer;
+    result,
+    _Failure,
+    { MCPServer::PacletNotInstalled },
+    SameTest -> MatchQ,
+    Te"InstallPacletServer-ValidateToolError@@Tests/InstallMCPServer.wlt:1774,1-1789,2"ToolError"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*validatePacletServerDefinitions — catches invalid paclet prompt*)
+VerificationTest[
+    badPromptServerName = StringJoin[ "BadPromptServer_", CreateUUID[] ];
+    badPromptServer = CreateMCPServer[
+        badPromptServerName,
+        <| "MCPPrompts" -> { "NonExistentPaclet/BadPrompt" } |>
+    ];
+    result = Wolfram`MCPServer`Common`catchAlways[
+        Wolfram`MCPServer`InstallMCPServer`Private`validatePacletServerDefinitions @ badPromptServer
+    ];
+    DeleteObject @ badPromptServer;
+    result,
+    _Failure,
+    { MCPServer::PacletNotInstalled },
+    SameTest -> MatchQ,
+    "InstallPacletServer-ValidatePromptError@@Tests/InstallMCPServer.wlt:1794,1-1809,2"PromptError"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Cleanup*)
+VerificationTest[
+    cleanupTestFiles @ $pacletConfigFile;
+    Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
+    <| |>,
+    SameTest -> MatchQ,
+    "InstallPacletServer-Cleanup@@Tests/InstallMCPServer.wlt:1814,1-1820,2"ver-Cleanup"
+]
+
+(* :!CodeAnalysis::EndBlock:: *)

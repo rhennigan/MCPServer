@@ -420,6 +420,33 @@ resolvePacletPrompt // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*ensurePacletForInstall*)
+ensurePacletForInstall // beginDefinition;
+
+ensurePacletForInstall[ qualifiedName_String ] := Enclose[
+    Module[ { parsed, pacletName, paclet },
+        parsed = ConfirmBy[ parsePacletQualifiedName @ qualifiedName, AssociationQ, "Parse" ];
+        pacletName = parsed[ "PacletName" ];
+
+        (* Already installed? *)
+        paclet = findInstalledPaclet @ pacletName;
+        If[ MatchQ[ paclet, _PacletObject ], Return[ paclet, Module ] ];
+
+        (* Try to install *)
+        paclet = Quiet @ PacletInstall[ pacletName ];
+        If[ MatchQ[ paclet, _PacletObject ], Return[ paclet, Module ] ];
+
+        With[ { pn = pacletName },
+            throwFailure[ "PacletNotInstalled", pn, HoldForm @ PacletInstall[ pn ] ]
+        ]
+    ],
+    throwInternalFailure
+];
+
+ensurePacletForInstall // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Package Footer*)
 addToMXInitialization[
     Null
