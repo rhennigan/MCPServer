@@ -90,7 +90,7 @@ VerificationTest[
 
 (* Invalid inputs should produce failures *)
 VerificationTest[
-    Wolfram`MCPServer`Common`parsePacletQualifiedName[ "NoSlashHere" ],
+    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`parsePacletQualifiedName[ "NoSlashHere" ],
     _Failure,
     { MCPServer::Internal },
     SameTest -> MatchQ,
@@ -98,7 +98,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`parsePacletQualifiedName[ "A/B/C/D" ],
+    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`parsePacletQualifiedName[ "A/B/C/D" ],
     _Failure,
     { MCPServer::Internal },
     SameTest -> MatchQ,
