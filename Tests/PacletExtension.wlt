@@ -239,7 +239,7 @@ VerificationTest[
 
 VerificationTest[
     Wolfram`MCPServer`Common`getMCPDeclaredItems[ $mockPacletTest, "NonExistentType" ],
-    {},
+    { },
     SameTest -> MatchQ,
     TestID   -> "getMCPDeclaredItems-EmptyType@@Tests/PacletExtension.wlt:240,1-245,2"
 ]
@@ -269,7 +269,7 @@ VerificationTest[
 VerificationTest[
     Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ];
     Wolfram`MCPServer`PacletExtension`Private`$pacletDefinitionCache,
-    <||>,
+    <| |>,
     SameTest -> MatchQ,
     TestID   -> "loadPacletDefinitionFile-ClearCache@@Tests/PacletExtension.wlt:269,1-275,2"
 ]

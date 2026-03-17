@@ -768,7 +768,7 @@ VerificationTest[
 (*formatSingleCodeAction*)
 VerificationTest[
     Wolfram`MCPServer`Tools`CodeInspector`Private`formatSingleCodeAction[
-        CodeParser`CodeAction[ "Replace with ``StringQ``", CodeParser`ReplaceNode, <| "ReplacementNode" -> CodeParser`LeafNode[ Symbol, "StringQ", <||> ] |> ]
+        CodeParser`CodeAction[ "Replace with ``StringQ``", CodeParser`ReplaceNode, <| "ReplacementNode" -> CodeParser`LeafNode[ Symbol, "StringQ", <| |> ] |> ]
     ],
     _String ? (StringContainsQ[ #, "Replace with `StringQ`" ] &),
     SameTest -> MatchQ,

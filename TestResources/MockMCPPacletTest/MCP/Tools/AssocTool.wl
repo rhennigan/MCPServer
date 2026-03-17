@@ -1,1 +1,1 @@
-<|"Name" -> "AssocTool", "Description" -> "An assoc-declared tool", "Function" -> Identity, "Parameters" -> {}|>
+<|"Name" -> "AssocTool", "Description" -> "An assoc-declared tool", "Function" -> Identity, "Parameters" -> { }|>

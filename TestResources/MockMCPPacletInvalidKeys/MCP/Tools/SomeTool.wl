@@ -1,1 +1,1 @@
-<|"Name" -> "SomeTool", "Description" -> "A tool", "Function" -> Identity, "Parameters" -> {}|>
+<|"Name" -> "SomeTool", "Description" -> "A tool", "Function" -> Identity, "Parameters" -> { }|>

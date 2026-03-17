@@ -307,14 +307,14 @@ VerificationTest[
         "Name" -> "InitTool1",
         "Description" -> "Tool with initialization",
         "Function" -> Identity,
-        "Parameters" -> {},
+        "Parameters" -> { },
         "Initialization" :> ($initTestValue += 1)
     |> ];
     tool2 = LLMTool[ <|
         "Name" -> "InitTool2",
         "Description" -> "Tool with initialization",
         "Function" -> Identity,
-        "Parameters" -> {},
+        "Parameters" -> { },
         "Initialization" :> ($initTestValue += 10)
     |> ];
     Wolfram`MCPServer`StartMCPServer`Private`runToolInitialization[ { tool1, tool2 } ];
@@ -330,7 +330,7 @@ VerificationTest[
         "Name" -> "NoInitTool",
         "Description" -> "Tool without initialization",
         "Function" -> Identity,
-        "Parameters" -> {}
+        "Parameters" -> { }
     |> ];
     Wolfram`MCPServer`StartMCPServer`Private`runToolInitialization[ { toolNoInit } ];
     $initTestValue2,
@@ -352,14 +352,14 @@ VerificationTest[
         "Name" -> "MixedInit",
         "Description" -> "Has init",
         "Function" -> Identity,
-        "Parameters" -> {},
+        "Parameters" -> { },
         "Initialization" :> ($initTestValue3 = 42)
     |> ];
     mixedTool2 = LLMTool[ <|
         "Name" -> "MixedNoInit",
         "Description" -> "No init",
         "Function" -> Identity,
-        "Parameters" -> {}
+        "Parameters" -> { }
     |> ];
     Wolfram`MCPServer`StartMCPServer`Private`runToolInitialization[ { mixedTool1, mixedTool2 } ];
     $initTestValue3,
@@ -500,8 +500,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    toolA = LLMTool[ <| "Name" -> "Alpha", "Description" -> "Tool A", "Function" -> Identity, "Parameters" -> {} |> ];
-    toolB = LLMTool[ <| "Name" -> "Beta", "Description" -> "Tool B", "Function" -> Identity, "Parameters" -> {} |> ];
+    toolA = LLMTool[ <| "Name" -> "Alpha", "Description" -> "Tool A", "Function" -> Identity, "Parameters" -> { } |> ];
+    toolB = LLMTool[ <| "Name" -> "Beta", "Description" -> "Tool B", "Function" -> Identity, "Parameters" -> { } |> ];
     result = Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { toolA, toolB } ];
     Keys @ result,
     { "Alpha", "Beta" },
@@ -510,8 +510,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search JIRA", "Function" -> Identity, "Parameters" -> {} |> ];
-    toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search Slack", "Function" -> Identity, "Parameters" -> {} |> ];
+    toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search JIRA", "Function" -> Identity, "Parameters" -> { } |> ];
+    toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search Slack", "Function" -> Identity, "Parameters" -> { } |> ];
     result = Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { toolS1, toolS2 } ];
     Keys @ result,
     { "Search1", "Search2" },
@@ -520,9 +520,9 @@ VerificationTest[
 ]
 
 VerificationTest[
-    toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search A", "Function" -> Identity, "Parameters" -> {} |> ];
-    toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search B", "Function" -> Identity, "Parameters" -> {} |> ];
-    toolS3 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search C", "Function" -> Identity, "Parameters" -> {} |> ];
+    toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search A", "Function" -> Identity, "Parameters" -> { } |> ];
+    toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search B", "Function" -> Identity, "Parameters" -> { } |> ];
+    toolS3 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search C", "Function" -> Identity, "Parameters" -> { } |> ];
     result = Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { toolS1, toolS2, toolS3 } ];
     Keys @ result,
     { "Search1", "Search2", "Search3" },
@@ -531,10 +531,10 @@ VerificationTest[
 ]
 
 VerificationTest[
-    toolA = LLMTool[ <| "Name" -> "Alpha", "Description" -> "Unique", "Function" -> Identity, "Parameters" -> {} |> ];
-    toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search A", "Function" -> Identity, "Parameters" -> {} |> ];
-    toolB = LLMTool[ <| "Name" -> "Beta", "Description" -> "Unique", "Function" -> Identity, "Parameters" -> {} |> ];
-    toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search B", "Function" -> Identity, "Parameters" -> {} |> ];
+    toolA = LLMTool[ <| "Name" -> "Alpha", "Description" -> "Unique", "Function" -> Identity, "Parameters" -> { } |> ];
+    toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search A", "Function" -> Identity, "Parameters" -> { } |> ];
+    toolB = LLMTool[ <| "Name" -> "Beta", "Description" -> "Unique", "Function" -> Identity, "Parameters" -> { } |> ];
+    toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search B", "Function" -> Identity, "Parameters" -> { } |> ];
     result = Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { toolA, toolS1, toolB, toolS2 } ];
     Keys @ result,
     { "Alpha", "Search1", "Beta", "Search2" },
@@ -543,8 +543,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search JIRA", "Function" -> Identity, "Parameters" -> {} |> ];
-    toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search Slack", "Function" -> Identity, "Parameters" -> {} |> ];
+    toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search JIRA", "Function" -> Identity, "Parameters" -> { } |> ];
+    toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search Slack", "Function" -> Identity, "Parameters" -> { } |> ];
     result = Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { toolS1, toolS2 } ];
     (* The values are the original LLMTool objects *)
     { result["Search1"]["Description"], result["Search2"]["Description"] },
@@ -554,7 +554,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    toolA = LLMTool[ <| "Name" -> "Alpha", "Description" -> "Only tool", "Function" -> Identity, "Parameters" -> {} |> ];
+    toolA = LLMTool[ <| "Name" -> "Alpha", "Description" -> "Only tool", "Function" -> Identity, "Parameters" -> { } |> ];
     result = Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { toolA } ];
     Keys @ result,
     { "Alpha" },
@@ -566,7 +566,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*createMCPToolData with name override*)
 VerificationTest[
-    tool = LLMTool[ <| "Name" -> "Search", "Description" -> "Search things", "Function" -> Identity, "Parameters" -> {} |> ];
+    tool = LLMTool[ <| "Name" -> "Search", "Description" -> "Search things", "Function" -> Identity, "Parameters" -> { } |> ];
     data = Wolfram`MCPServer`StartMCPServer`Private`createMCPToolData[ "Search1", tool ];
     data[ "name" ],
     "Search1",
@@ -575,7 +575,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    tool = LLMTool[ <| "Name" -> "Search", "Description" -> "Search things", "Function" -> Identity, "Parameters" -> {} |> ];
+    tool = LLMTool[ <| "Name" -> "Search", "Description" -> "Search things", "Function" -> Identity, "Parameters" -> { } |> ];
     data = Wolfram`MCPServer`StartMCPServer`Private`createMCPToolData[ "Search1", tool ];
     data[ "description" ],
     "Search things",
@@ -584,7 +584,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    tool = LLMTool[ <| "Name" -> "MyTool", "Description" -> "A tool", "Function" -> Identity, "Parameters" -> {} |> ];
+    tool = LLMTool[ <| "Name" -> "MyTool", "Description" -> "A tool", "Function" -> Identity, "Parameters" -> { } |> ];
     dataOriginal = Wolfram`MCPServer`StartMCPServer`Private`createMCPToolData[ tool ];
     dataOriginal[ "name" ],
     "MyTool",
@@ -597,8 +597,8 @@ VerificationTest[
 (*Disambiguation integration with evaluateTool*)
 VerificationTest[
     (* Build a disambiguated llmTools association and verify lookup works *)
-    toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search JIRA", "Function" -> Identity, "Parameters" -> {} |> ];
-    toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search Slack", "Function" -> Identity, "Parameters" -> {} |> ];
+    toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search JIRA", "Function" -> Identity, "Parameters" -> { } |> ];
+    toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search Slack", "Function" -> Identity, "Parameters" -> { } |> ];
     disambiguated = Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { toolS1, toolS2 } ];
     (* evaluateTool looks up tools in $llmTools by the name the client sends *)
     (* Verify the disambiguated keys correctly map to different tools *)
@@ -610,8 +610,8 @@ VerificationTest[
 
 VerificationTest[
     (* Verify the tool data sent over MCP wire uses disambiguated names *)
-    toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search JIRA", "Function" -> Identity, "Parameters" -> {} |> ];
-    toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search Slack", "Function" -> Identity, "Parameters" -> {} |> ];
+    toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search JIRA", "Function" -> Identity, "Parameters" -> { } |> ];
+    toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search Slack", "Function" -> Identity, "Parameters" -> { } |> ];
     disambiguated = Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { toolS1, toolS2 } ];
     toolDataList = KeyValueMap[ Wolfram`MCPServer`StartMCPServer`Private`createMCPToolData, disambiguated ];
     toolDataList[[ All, "name" ]],
@@ -622,11 +622,11 @@ VerificationTest[
 
 VerificationTest[
     (* Multiple collision groups: two "Search" tools and two "Evaluate" tools *)
-    toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "S1", "Function" -> Identity, "Parameters" -> {} |> ];
-    toolE1 = LLMTool[ <| "Name" -> "Evaluate", "Description" -> "E1", "Function" -> Identity, "Parameters" -> {} |> ];
-    toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "S2", "Function" -> Identity, "Parameters" -> {} |> ];
-    toolE2 = LLMTool[ <| "Name" -> "Evaluate", "Description" -> "E2", "Function" -> Identity, "Parameters" -> {} |> ];
-    toolU = LLMTool[ <| "Name" -> "Unique", "Description" -> "U", "Function" -> Identity, "Parameters" -> {} |> ];
+    toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "S1", "Function" -> Identity, "Parameters" -> { } |> ];
+    toolE1 = LLMTool[ <| "Name" -> "Evaluate", "Description" -> "E1", "Function" -> Identity, "Parameters" -> { } |> ];
+    toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "S2", "Function" -> Identity, "Parameters" -> { } |> ];
+    toolE2 = LLMTool[ <| "Name" -> "Evaluate", "Description" -> "E2", "Function" -> Identity, "Parameters" -> { } |> ];
+    toolU = LLMTool[ <| "Name" -> "Unique", "Description" -> "U", "Function" -> Identity, "Parameters" -> { } |> ];
     result = Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { toolS1, toolE1, toolS2, toolE2, toolU } ];
     Keys @ result,
     { "Search1", "Evaluate1", "Search2", "Evaluate2", "Unique" },

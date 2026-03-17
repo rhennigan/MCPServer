@@ -607,7 +607,7 @@ VerificationTest[
 VerificationTest[
     (* Pattern that matches nothing *)
     MCPServerObjects[ "ZZZNonExistentPattern12345*" ],
-    {},
+    { },
     SameTest -> MatchQ,
     TestID   -> "MCPServerObjects-PatternNoMatch@@Tests/MCPServerObject.wlt:607,1-613,2"
 ]
@@ -667,7 +667,7 @@ VerificationTest[
 VerificationTest[
     PacletDirectoryUnload @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletTest" };
     Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
-    <||>,
+    <| |>,
     SameTest -> MatchQ,
     TestID   -> "PacletServer-MockCleanup@@Tests/MCPServerObject.wlt:667,1-673,2"
 ]

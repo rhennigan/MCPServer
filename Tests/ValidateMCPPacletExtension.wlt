@@ -107,7 +107,7 @@ VerificationTest[
 (* Clear definition cache before validation tests *)
 VerificationTest[
     Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
-    <||>,
+    <| |>,
     SameTest -> MatchQ,
     TestID   -> "Setup-ClearCache@@Tests/ValidateMCPPacletExtension.wlt:108,1-113,2"
 ]
@@ -384,7 +384,7 @@ VerificationTest[
     PacletDirectoryUnload @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletDupFiles" };
     PacletDirectoryUnload @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletNoRoot" };
     Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
-    <||>,
+    <| |>,
     SameTest -> MatchQ,
     TestID   -> "Cleanup@@Tests/ValidateMCPPacletExtension.wlt:377,1-390,2"
 ]

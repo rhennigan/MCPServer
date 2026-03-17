@@ -204,7 +204,7 @@ VerificationTest[
 VerificationTest[
     UninstallMCPServer[configFile];
     jsonContent = Import[configFile, "RawJSON"];
-    jsonContent["mcpServers"] === <||>,
+    jsonContent["mcpServers"] === <| |>,
     True,
     SameTest -> Equal,
     TestID   -> "InstallMCPServer-UninstallAll@@Tests/InstallMCPServer.wlt:204,1-211,2"
@@ -286,7 +286,7 @@ VerificationTest[
 VerificationTest[
     (* Create a temporary .claude.json-like file with existing data *)
     configFile = testConfigFile[];
-    Export[configFile, <|"numStartups" -> 1, "mcpServers" -> <||>|>, "JSON"];
+    Export[configFile, <|"numStartups" -> 1, "mcpServers" -> <| |>|>, "JSON"];
     installResult = InstallMCPServer[configFile, "WolframLanguage"],
     _Success,
     SameTest -> MatchQ,

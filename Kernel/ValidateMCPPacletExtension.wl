@@ -47,7 +47,7 @@ validateMCPPacletExtension[ paclet_PacletObject ] := Enclose[
         root = tryGetExtensionDirectory[ paclet ];
         rootErrors = If[ !StringQ[ root ],
             { <| "Type" -> "MissingRootDirectory", "Message" -> "Root directory does not exist." |> },
-            {}
+            { }
         ];
 
         servers = getMCPDeclaredItems[ paclet, "Servers" ];
@@ -60,7 +60,7 @@ validateMCPPacletExtension[ paclet_PacletObject ] := Enclose[
                 checkFileExistence[ root, "Tools", tools ],
                 checkFileExistence[ root, "Prompts", prompts ]
             ],
-            {}
+            { }
         ];
 
         (* 3. File contents *)
@@ -70,13 +70,13 @@ validateMCPPacletExtension[ paclet_PacletObject ] := Enclose[
                 checkFileContents[ paclet, "Tools", tools ],
                 checkFileContents[ paclet, "Prompts", prompts ]
             ],
-            {}
+            { }
         ];
 
         (* 4. Cross-references *)
         crossRefErrors = If[ StringQ[ root ] && Length[ PacletFind[ paclet[ "Name" ] ] ] > 0,
             checkCrossReferences[ paclet, servers, tools, prompts ],
-            {}
+            { }
         ];
 
         allErrors = Join[ structureErrors, rootErrors, fileErrors, contentErrors, crossRefErrors ];
@@ -116,7 +116,7 @@ validateExtensionStructure // beginDefinition;
 validateExtensionStructure[ paclet_PacletObject ] :=
     Module[ { errors, extensions, extension, data, invalidKeys },
 
-        errors = {};
+        errors = { };
 
         (* Check that the paclet has an MCP extension *)
         extensions = Quiet @ pt`PacletExtensions[ paclet, "MCP" ];
@@ -155,7 +155,7 @@ validateExtensionStructure[ paclet_PacletObject ] :=
         Scan[
             Function[ type,
                 Module[ { items },
-                    items = Lookup[ data, type, {} ];
+                    items = Lookup[ data, type, { } ];
                     If[ ListQ[ items ],
                         MapIndexed[
                             Function[ { item, pos },
@@ -199,12 +199,12 @@ checkItemFileExistence // beginDefinition;
 checkItemFileExistence[ root_String, type_String, name_String ] :=
     Module[ { dir, perItemFiles, hasCombined, errors },
 
-        errors = {};
+        errors = { };
 
         dir = FileNameJoin @ { root, type };
         perItemFiles = If[ DirectoryQ[ dir ],
             FileNames[ { name <> ".mx", name <> ".wxf", name <> ".wl" }, dir ],
-            {}
+            { }
         ];
 
         hasCombined = StringQ @ findCombinedFile[ root, type ];
@@ -263,7 +263,7 @@ checkItemFileContents[ paclet_PacletObject, type_String, name_String ] :=
             "Servers", checkServerDefinition[ name, data ],
             "Tools",   checkToolDefinition[ name, data ],
             "Prompts", checkPromptDefinition[ name, data ],
-            _,         {}
+            _,         { }
         ]
     ];
 
@@ -278,7 +278,7 @@ checkServerDefinition[ name_String, data_Association ] :=
     If[ !KeyExistsQ[ data, "LLMEvaluator" ],
         { <| "Type" -> "InvalidServerDefinition", "Item" -> name,
              "Message" -> "Server definition \"" <> name <> "\" is missing required key \"LLMEvaluator\"." |> },
-        {}
+        { }
     ];
 
 checkServerDefinition // endDefinition;
@@ -296,7 +296,7 @@ checkToolDefinition[ name_String, data_Association ] :=
         If[ Length[ missing ] > 0,
             { <| "Type" -> "InvalidToolDefinition", "Item" -> name, "MissingKeys" -> missing,
                  "Message" -> "Tool definition \"" <> name <> "\" is missing required keys: " <> StringRiffle[ missing, ", " ] <> "." |> },
-            {}
+            { }
         ]
     ];
 
@@ -311,7 +311,7 @@ checkPromptDefinition[ name_String, data_Association ] :=
     If[ !KeyExistsQ[ data, "Name" ],
         { <| "Type" -> "InvalidPromptDefinition", "Item" -> name,
              "Message" -> "Prompt definition \"" <> name <> "\" is missing required key \"Name\"." |> },
-        {}
+        { }
     ];
 
 checkPromptDefinition // endDefinition;
@@ -334,12 +334,12 @@ checkServerCrossReferences // beginDefinition;
 checkServerCrossReferences[ paclet_PacletObject, serverName_String, tools_List, prompts_List ] :=
     Module[ { data, evaluator, referencedTools, referencedPrompts, toolErrors, promptErrors },
         data = Quiet @ loadPacletDefinitionFile[ paclet, "Servers", serverName ];
-        If[ !AssociationQ[ data ], Return[ {}, Module ] ];
+        If[ !AssociationQ[ data ], Return[ { }, Module ] ];
 
-        evaluator = Lookup[ data, "LLMEvaluator", <||> ];
-        If[ !AssociationQ[ evaluator ], Return[ {}, Module ] ];
+        evaluator = Lookup[ data, "LLMEvaluator", <| |> ];
+        If[ !AssociationQ[ evaluator ], Return[ { }, Module ] ];
 
-        referencedTools = Lookup[ evaluator, "Tools", {} ];
+        referencedTools = Lookup[ evaluator, "Tools", { } ];
         toolErrors = If[ ListQ[ referencedTools ],
             Cases[
                 referencedTools,
@@ -347,10 +347,10 @@ checkServerCrossReferences[ paclet_PacletObject, serverName_String, tools_List, 
                     <| "Type" -> "InvalidToolReference", "Server" -> serverName, "Tool" -> toolRef,
                        "Message" -> "Server \"" <> serverName <> "\" references tool \"" <> toolRef <> "\" which is not declared in this paclet and is not a fully qualified name." |>
             ],
-            {}
+            { }
         ];
 
-        referencedPrompts = Lookup[ evaluator, "MCPPrompts", {} ];
+        referencedPrompts = Lookup[ evaluator, "MCPPrompts", { } ];
         promptErrors = If[ ListQ[ referencedPrompts ],
             Cases[
                 referencedPrompts,
@@ -358,7 +358,7 @@ checkServerCrossReferences[ paclet_PacletObject, serverName_String, tools_List, 
                     <| "Type" -> "InvalidPromptReference", "Server" -> serverName, "Prompt" -> promptRef,
                        "Message" -> "Server \"" <> serverName <> "\" references prompt \"" <> promptRef <> "\" which is not declared in this paclet and is not a fully qualified name." |>
             ],
-            {}
+            { }
         ];
 
         Join[ toolErrors, promptErrors ]
