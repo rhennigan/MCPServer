@@ -70,9 +70,9 @@ findRemoteMCPPaclets // beginDefinition;
 findRemoteMCPPaclets[ ] := findRemoteMCPPaclets @ Automatic;
 
 findRemoteMCPPaclets[ updateSites: Automatic|True|False ] := Enclose[
-    Module[ { remotePaclets },
+    Catch @ Module[ { remotePaclets },
         remotePaclets = Quiet @ PacletFindRemote[ All, <| "Extension" -> "MCP" |>, UpdatePacletSites -> updateSites ];
-        If[ ! MatchQ[ remotePaclets, { ___PacletObject } ], Return[ { }, Module ] ];
+        If[ ! MatchQ[ remotePaclets, { ___PacletObject } ], Throw @ { } ];
         ConfirmMatch[ remotePaclets, { ___PacletObject }, "Result" ]
     ],
     throwInternalFailure
@@ -220,11 +220,11 @@ findCombinedFile // endDefinition;
 loadPacletDefinitionFile // beginDefinition;
 
 loadPacletDefinitionFile[ paclet_PacletObject, type_String, name_String ] := Enclose[
-    Module[ { cacheKey, cached, root, perItemFile, combinedFile, data, result },
+    Catch @ Module[ { cacheKey, cached, root, perItemFile, combinedFile, data, result },
         (* Check cache *)
         cacheKey = { paclet[ "Name" ], paclet[ "Version" ], type, name };
         cached = $pacletDefinitionCache[ cacheKey ];
-        If[ AssociationQ @ cached, Return[ cached, Module ] ];
+        If[ AssociationQ @ cached, Throw @ cached ];
 
         (* Get root directory *)
         root = ConfirmBy[ getMCPExtensionDirectory @ paclet, StringQ, "Root" ];
@@ -234,7 +234,7 @@ loadPacletDefinitionFile[ paclet_PacletObject, type_String, name_String ] := Enc
         If[ StringQ @ perItemFile,
             result = loadFile @ perItemFile;
             If[ AssociationQ @ result, $pacletDefinitionCache[ cacheKey ] = result ];
-            Return[ result, Module ]
+            Throw @ result
         ];
 
         (* Fall back to combined file *)
@@ -244,7 +244,7 @@ loadPacletDefinitionFile[ paclet_PacletObject, type_String, name_String ] := Enc
             If[ AssociationQ @ data,
                 result = Lookup[ data, name, $Failed ];
                 If[ AssociationQ @ result, $pacletDefinitionCache[ cacheKey ] = result ];
-                Return[ result, Module ]
+                Throw @ result
             ]
         ];
 
@@ -392,17 +392,17 @@ resolvePacletPrompt // endDefinition;
 ensurePacletForInstall // beginDefinition;
 
 ensurePacletForInstall[ qualifiedName_String ] := Enclose[
-    Module[ { parsed, pacletName, paclet },
+    Catch @ Module[ { parsed, pacletName, paclet },
         parsed = ConfirmBy[ parsePacletQualifiedName @ qualifiedName, AssociationQ, "Parse" ];
         pacletName = parsed[ "PacletName" ];
 
         (* Already installed? *)
         paclet = findInstalledPaclet @ pacletName;
-        If[ MatchQ[ paclet, _PacletObject ], Return[ paclet, Module ] ];
+        If[ MatchQ[ paclet, _PacletObject ], Throw @ paclet ];
 
         (* Try to install *)
         paclet = Quiet @ PacletInstall @ pacletName;
-        If[ MatchQ[ paclet, _PacletObject ], Return[ paclet, Module ] ];
+        If[ MatchQ[ paclet, _PacletObject ], Throw @ paclet ];
 
         With[ { pn = pacletName },
             throwFailure[ "PacletNotInstalled", pn, HoldForm @ PacletInstall @ pn ]

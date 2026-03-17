@@ -31,7 +31,7 @@ ValidateMCPPacletExtension // endExportedDefinition;
 validateMCPPacletExtension // beginDefinition;
 
 validateMCPPacletExtension[ paclet_PacletObject ] := Enclose[
-    Module[ { structureResult, extensionData, structureErrors, root, rootErrors,
+    Catch @ Module[ { structureResult, extensionData, structureErrors, root, rootErrors,
               servers, tools, prompts, fileErrors, contentErrors, crossRefErrors, allErrors },
 
         (* 1. Extension structure *)
@@ -40,7 +40,7 @@ validateMCPPacletExtension[ paclet_PacletObject ] := Enclose[
         structureErrors = structureResult[ "Errors" ];
 
         If[ ! AssociationQ @ extensionData,
-            Return[ buildFailure[ paclet, structureErrors ], Module ]
+            Throw @ buildFailure[ paclet, structureErrors ]
         ];
 
         (* 2. File existence *)
@@ -117,29 +117,23 @@ tryGetExtensionDirectory // endDefinition;
 validateExtensionStructure // beginDefinition;
 
 validateExtensionStructure[ paclet_PacletObject ] :=
-    Module[ { errors, extensions, extension, data, invalidKeys },
+    Catch @ Module[ { errors, extensions, extension, data, invalidKeys },
 
         errors = { };
 
         (* Check that the paclet has an MCP extension *)
         extensions = Quiet @ pt`PacletExtensions[ paclet, "MCP" ];
         If[ ! MatchQ[ extensions, { __List } ],
-            Return[
-                <| "Data" -> $Failed, "Errors" -> {
-                    <| "Type" -> "NoMCPExtension", "Message" -> "PacletInfo does not contain an \"MCP\" extension." |>
-                } |>,
-                Module
-            ]
+            Throw @ <| "Data" -> $Failed, "Errors" -> {
+                <| "Type" -> "NoMCPExtension", "Message" -> "PacletInfo does not contain an \"MCP\" extension." |>
+            } |>
         ];
 
         extension = First @ extensions;
         If[ ! MatchQ[ extension, { "MCP", _Association } ],
-            Return[
-                <| "Data" -> $Failed, "Errors" -> {
-                    <| "Type" -> "MalformedExtension", "Message" -> "MCP extension has unexpected format." |>
-                } |>,
-                Module
-            ]
+            Throw @ <| "Data" -> $Failed, "Errors" -> {
+                <| "Type" -> "MalformedExtension", "Message" -> "MCP extension has unexpected format." |>
+            } |>
         ];
 
         data = Last @ extension;
@@ -250,14 +244,11 @@ checkFileContents // endDefinition;
 checkItemFileContents // beginDefinition;
 
 checkItemFileContents[ paclet_PacletObject, type_String, name_String ] :=
-    Module[ { data },
+    Catch @ Module[ { data },
         data = Quiet @ loadPacletDefinitionFile[ paclet, type, name ];
         If[ ! AssociationQ @ data,
-            Return[
-                { <| "Type" -> "InvalidDefinitionContents", "Item" -> name, "ItemType" -> type,
-                     "Message" -> "Definition file for " <> type <> " \"" <> name <> "\" did not evaluate to a valid Association." |> },
-                Module
-            ]
+            Throw @ { <| "Type" -> "InvalidDefinitionContents", "Item" -> name, "ItemType" -> type,
+                     "Message" -> "Definition file for " <> type <> " \"" <> name <> "\" did not evaluate to a valid Association." |> }
         ];
         Switch[ type,
             "Servers", checkServerDefinition[ name, data ],
@@ -332,12 +323,12 @@ checkCrossReferences // endDefinition;
 checkServerCrossReferences // beginDefinition;
 
 checkServerCrossReferences[ paclet_PacletObject, serverName_String, tools_List, prompts_List ] :=
-    Module[ { data, evaluator, referencedTools, referencedPrompts, toolErrors, promptErrors },
+    Catch @ Module[ { data, evaluator, referencedTools, referencedPrompts, toolErrors, promptErrors },
         data = Quiet @ loadPacletDefinitionFile[ paclet, "Servers", serverName ];
-        If[ ! AssociationQ @ data, Return[ { }, Module ] ];
+        If[ ! AssociationQ @ data, Throw @ { } ];
 
         evaluator = Lookup[ data, "LLMEvaluator", <| |> ];
-        If[ ! AssociationQ @ evaluator, Return[ { }, Module ] ];
+        If[ ! AssociationQ @ evaluator, Throw @ { } ];
 
         referencedTools = Lookup[ evaluator, "Tools", { } ];
         toolErrors = If[ ListQ @ referencedTools,

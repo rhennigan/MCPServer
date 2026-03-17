@@ -828,9 +828,9 @@ getFileBasedServers // endDefinition;
 getInstalledPacletServers // beginDefinition;
 
 getInstalledPacletServers[ pattern_ ] :=
-    Module[ { paclets, servers },
+    Catch @ Module[ { paclets, servers },
         paclets = Quiet @ findMCPPaclets[ ];
-        If[ ! MatchQ[ paclets, { __PacletObject } ], Return[ { }, Module ] ];
+        If[ ! MatchQ[ paclets, { __PacletObject } ], Throw @ { } ];
         servers = Flatten[ installedPacletToServers /@ paclets ];
         filterServersByPattern[ servers, pattern ]
     ];
@@ -843,10 +843,10 @@ getInstalledPacletServers // endDefinition;
 installedPacletToServers // beginDefinition;
 
 installedPacletToServers[ paclet_PacletObject ] :=
-    Module[ { pacletName, declaredServers },
+    Catch @ Module[ { pacletName, declaredServers },
         pacletName = paclet[ "Name" ];
         declaredServers = Quiet @ getMCPDeclaredItems[ paclet, "Servers" ];
-        If[ ! ListQ @ declaredServers, Return[ { }, Module ] ];
+        If[ ! ListQ @ declaredServers, Throw @ { } ];
         Select[
             Quiet @ catchAlways @ MCPServerObject[ pacletName <> "/" <> # ] & /@ declaredServers,
             MCPServerObjectQ
@@ -869,9 +869,9 @@ getBuiltInServers // endDefinition;
 getRemotePacletServers // beginDefinition;
 
 getRemotePacletServers[ pattern_, updateSites_ ] :=
-    Module[ { remotePaclets, installedNames, uninstalledPaclets, servers },
+    Catch @ Module[ { remotePaclets, installedNames, uninstalledPaclets, servers },
         remotePaclets = Quiet @ findRemoteMCPPaclets[ updateSites ];
-        If[ ! MatchQ[ remotePaclets, { __PacletObject } ], Return[ { }, Module ] ];
+        If[ ! MatchQ[ remotePaclets, { __PacletObject } ], Throw @ { } ];
         installedNames = Quiet[ #[ "Name" ] & /@ findMCPPaclets[ ] ] /. Except[ { __String } ] -> { };
         uninstalledPaclets = Select[ remotePaclets, !MemberQ[ installedNames, #[ "Name" ] ] & ];
         servers = Flatten[ remotePacletToServers /@ uninstalledPaclets ];
@@ -886,10 +886,10 @@ getRemotePacletServers // endDefinition;
 remotePacletToServers // beginDefinition;
 
 remotePacletToServers[ paclet_PacletObject ] :=
-    Module[ { pacletName, declaredServers },
+    Catch @ Module[ { pacletName, declaredServers },
         pacletName = paclet[ "Name" ];
         declaredServers = Quiet @ getMCPDeclaredItems[ paclet, "Servers" ];
-        If[ ! ListQ @ declaredServers, Return[ { }, Module ] ];
+        If[ ! ListQ @ declaredServers, Throw @ { } ];
         Function[ serverName,
             MCPServerObject @ buildRemotePacletServerMetadata[
                 pacletName <> "/" <> serverName,

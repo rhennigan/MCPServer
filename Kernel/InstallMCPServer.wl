@@ -200,9 +200,9 @@ validatePacletServerDefinitions[ obj_MCPServerObject ] :=
     validatePacletServerDefinitions @ obj[ "Data" ];
 
 validatePacletServerDefinitions[ data_Association ] :=
-    Module[ { evaluator, tools, prompts },
+    Catch @ Module[ { evaluator, tools, prompts },
         evaluator = Lookup[ data, "LLMEvaluator", <| |> ];
-        If[ ! AssociationQ @ evaluator, Return[ Null, Module ] ];
+        If[ ! AssociationQ @ evaluator, Throw @ Null ];
 
         (* Validate paclet-qualified tools *)
         tools = Flatten @ { Lookup[ evaluator, "Tools", { } ] };

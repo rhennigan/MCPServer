@@ -172,9 +172,9 @@ ensurePacletsForStart[ obj_MCPServerObject ] :=
     ensurePacletsForStart[ obj[ "Name" ], obj[ "Data" ] ];
 
 ensurePacletsForStart[ serverName_String, data_Association ] :=
-    Module[ { evaluator, tools, prompts, qualifiedNames },
+    Catch @ Module[ { evaluator, tools, prompts, qualifiedNames },
         evaluator = Lookup[ data, "LLMEvaluator", <| |> ];
-        If[ ! AssociationQ @ evaluator, Return[ Null, Module ] ];
+        If[ ! AssociationQ @ evaluator, Throw @ Null ];
 
         tools = Flatten @ { Lookup[ evaluator, "Tools", { } ] };
         prompts = Flatten @ { Lookup[ evaluator, "MCPPrompts", { } ] };
@@ -196,18 +196,18 @@ ensurePacletsForStart // endDefinition;
 ensurePacletForStart // beginDefinition;
 
 ensurePacletForStart[ serverName_String, qualifiedName_String ] :=
-    Module[ { parsed, pacletName, paclet },
+    Catch @ Module[ { parsed, pacletName, paclet },
         parsed = parsePacletQualifiedName @ qualifiedName;
-        If[ ! AssociationQ @ parsed, Return[ Null, Module ] ];
+        If[ ! AssociationQ @ parsed, Throw @ Null ];
         pacletName = parsed[ "PacletName" ];
 
         (* Already installed? *)
         paclet = findInstalledPaclet @ pacletName;
-        If[ MatchQ[ paclet, _PacletObject ], Return[ paclet, Module ] ];
+        If[ MatchQ[ paclet, _PacletObject ], Throw @ paclet ];
 
         (* Try to install *)
         paclet = Quiet @ PacletInstall[ pacletName ];
-        If[ MatchQ[ paclet, _PacletObject ], Return[ paclet, Module ] ];
+        If[ MatchQ[ paclet, _PacletObject ], Throw @ paclet ];
 
         throwFailure[ "PacletDependencyMissing", serverName, qualifiedName, pacletName ]
     ];
@@ -224,18 +224,18 @@ runServerInitialization[ obj_MCPServerObject ] :=
     runServerInitialization @ obj[ "Data" ];
 
 runServerInitialization[ data_Association ] :=
-    Module[ { location, qualifiedName, serverDef },
+    Catch @ Module[ { location, qualifiedName, serverDef },
         location = Lookup[ data, "Location" ];
-        If[ ! MatchQ[ location, _PacletObject ], Return[ Null, Module ] ];
+        If[ ! MatchQ[ location, _PacletObject ], Throw @ Null ];
 
         qualifiedName = data[ "Name" ];
         If[ ! StringQ @ qualifiedName || ! pacletQualifiedNameQ @ qualifiedName,
-            Return[ Null, Module ]
+            Throw @ Null
         ];
 
         (* Load server definition to access Initialization code *)
         serverDef = Quiet @ resolvePacletServer @ qualifiedName;
-        If[ ! AssociationQ @ serverDef, Return[ Null, Module ] ];
+        If[ ! AssociationQ @ serverDef, Throw @ Null ];
 
         (* Initialization uses RuleDelayed, so accessing the key evaluates it *)
         Lookup[ serverDef, "Initialization", Null ]
