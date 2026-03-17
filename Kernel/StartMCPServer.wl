@@ -697,7 +697,7 @@ extractWolframAlphaImages[ str_String ] := Enclose[
                     (* URL: import image and create both text + image content *)
                     hasImages = True;
                     Module[ { img, imageContent },
-                        img = Quiet @ Import[ item, "Image" ];
+                        img = Quiet @ TimeConstrained[ Import[ item, "Image" ], 5, $Failed ];
                         imageContent = If[ ImageQ @ img, graphicsToImageContent @ img, $Failed ];
                         Flatten @ {
                             (* Always include the markdown link as text *)
