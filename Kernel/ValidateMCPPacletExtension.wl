@@ -21,7 +21,7 @@ $$declarationItem = _String | { _String, _String } | _Association? (KeyExistsQ[ 
 ValidateMCPPacletExtension // beginDefinition;
 
 ValidateMCPPacletExtension[ paclet_PacletObject ] :=
-    catchMine @ validateMCPPacletExtension[ paclet ];
+    catchMine @ validateMCPPacletExtension @ paclet;
 
 ValidateMCPPacletExtension // endExportedDefinition;
 
@@ -35,53 +35,53 @@ validateMCPPacletExtension[ paclet_PacletObject ] := Enclose[
               servers, tools, prompts, fileErrors, contentErrors, crossRefErrors, allErrors },
 
         (* 1. Extension structure *)
-        structureResult = validateExtensionStructure[ paclet ];
-        extensionData = structureResult[ "Data" ];
+        structureResult = validateExtensionStructure @ paclet;
+        extensionData   = structureResult[ "Data" ];
         structureErrors = structureResult[ "Errors" ];
 
-        If[ !AssociationQ[ extensionData ],
+        If[ ! AssociationQ @ extensionData,
             Return[ buildFailure[ paclet, structureErrors ], Module ]
         ];
 
         (* 2. File existence *)
-        root = tryGetExtensionDirectory[ paclet ];
-        rootErrors = If[ !StringQ[ root ],
+        root = tryGetExtensionDirectory @ paclet;
+        rootErrors = If[ ! StringQ @ root,
             { <| "Type" -> "MissingRootDirectory", "Message" -> "Root directory does not exist." |> },
             { }
         ];
 
         servers = getMCPDeclaredItems[ paclet, "Servers" ];
-        tools   = getMCPDeclaredItems[ paclet, "Tools" ];
+        tools   = getMCPDeclaredItems[ paclet, "Tools"   ];
         prompts = getMCPDeclaredItems[ paclet, "Prompts" ];
 
-        fileErrors = If[ StringQ[ root ],
+        fileErrors = If[ StringQ @ root,
             Join[
                 checkFileExistence[ root, "Servers", servers ],
-                checkFileExistence[ root, "Tools", tools ],
+                checkFileExistence[ root, "Tools"  , tools   ],
                 checkFileExistence[ root, "Prompts", prompts ]
             ],
             { }
         ];
 
         (* 3. File contents *)
-        contentErrors = If[ StringQ[ root ] && Length[ PacletFind[ paclet[ "Name" ] ] ] > 0,
+        contentErrors = If[ StringQ @ root && Length @ PacletFind @ paclet[ "Name" ] > 0,
             Join[
                 checkFileContents[ paclet, "Servers", servers ],
-                checkFileContents[ paclet, "Tools", tools ],
+                checkFileContents[ paclet, "Tools"  , tools   ],
                 checkFileContents[ paclet, "Prompts", prompts ]
             ],
             { }
         ];
 
         (* 4. Cross-references *)
-        crossRefErrors = If[ StringQ[ root ] && Length[ PacletFind[ paclet[ "Name" ] ] ] > 0,
+        crossRefErrors = If[ StringQ @ root && Length @ PacletFind @ paclet[ "Name" ] > 0,
             checkCrossReferences[ paclet, servers, tools, prompts ],
             { }
         ];
 
         allErrors = Join[ structureErrors, rootErrors, fileErrors, contentErrors, crossRefErrors ];
 
-        If[ Length[ allErrors ] > 0,
+        If[ Length @ allErrors > 0,
             buildFailure[ paclet, allErrors ],
             Success[ "ValidMCPPacletExtension", <|
                 "Servers" -> servers,
@@ -102,8 +102,11 @@ tryGetExtensionDirectory // beginDefinition;
 
 tryGetExtensionDirectory[ paclet_PacletObject ] :=
     Module[ { root },
-        root = Quiet @ catchAlways @ getMCPExtensionDirectory[ paclet ];
-        If[ StringQ[ root ] && DirectoryQ[ root ], root, $Failed ]
+        root = Quiet @ catchAlways @ getMCPExtensionDirectory @ paclet;
+        If[ StringQ @ root && DirectoryQ @ root,
+            root,
+            $Failed
+        ]
     ];
 
 tryGetExtensionDirectory // endDefinition;
@@ -120,7 +123,7 @@ validateExtensionStructure[ paclet_PacletObject ] :=
 
         (* Check that the paclet has an MCP extension *)
         extensions = Quiet @ pt`PacletExtensions[ paclet, "MCP" ];
-        If[ !MatchQ[ extensions, { __List } ],
+        If[ ! MatchQ[ extensions, { __List } ],
             Return[
                 <| "Data" -> $Failed, "Errors" -> {
                     <| "Type" -> "NoMCPExtension", "Message" -> "PacletInfo does not contain an \"MCP\" extension." |>
@@ -129,8 +132,8 @@ validateExtensionStructure[ paclet_PacletObject ] :=
             ]
         ];
 
-        extension = First[ extensions ];
-        If[ !MatchQ[ extension, { "MCP", _Association } ],
+        extension = First @ extensions;
+        If[ ! MatchQ[ extension, { "MCP", _Association } ],
             Return[
                 <| "Data" -> $Failed, "Errors" -> {
                     <| "Type" -> "MalformedExtension", "Message" -> "MCP extension has unexpected format." |>
@@ -139,11 +142,11 @@ validateExtensionStructure[ paclet_PacletObject ] :=
             ]
         ];
 
-        data = Last[ extension ];
+        data = Last @ extension;
 
         (* Check for invalid keys *)
-        invalidKeys = Complement[ Keys[ data ], $validExtensionKeys ];
-        If[ Length[ invalidKeys ] > 0,
+        invalidKeys = Complement[ Keys @ data, $validExtensionKeys ];
+        If[ Length @ invalidKeys > 0,
             AppendTo[ errors, <|
                 "Type"    -> "InvalidExtensionKeys",
                 "Keys"    -> invalidKeys,
@@ -156,15 +159,15 @@ validateExtensionStructure[ paclet_PacletObject ] :=
             Function[ type,
                 Module[ { items },
                     items = Lookup[ data, type, { } ];
-                    If[ ListQ[ items ],
+                    If[ ListQ @ items,
                         MapIndexed[
                             Function[ { item, pos },
-                                If[ !MatchQ[ item, $$declarationItem ],
+                                If[ ! MatchQ[ item, $$declarationItem ],
                                     AppendTo[ errors, <|
                                         "Type"     -> "InvalidDeclaration",
                                         "ItemType" -> type,
-                                        "Position" -> First[ pos ],
-                                        "Message"  -> "Invalid declaration form at position " <> ToString[ First[ pos ] ] <> " in \"" <> type <> "\"."
+                                        "Position" -> First @ pos,
+                                        "Message"  -> "Invalid declaration form at position " <> ToString @ First @ pos <> " in \"" <> type <> "\"."
                                     |> ]
                                 ]
                             ],
@@ -202,14 +205,11 @@ checkItemFileExistence[ root_String, type_String, name_String ] :=
         errors = { };
 
         dir = FileNameJoin @ { root, type };
-        perItemFiles = If[ DirectoryQ[ dir ],
-            FileNames[ { name <> ".mx", name <> ".wxf", name <> ".wl" }, dir ],
-            { }
-        ];
+        perItemFiles = If[ DirectoryQ @ dir, FileNames[ { name<>".mx", name<>".wxf", name<>".wl" }, dir ], { } ];
 
         hasCombined = StringQ @ findCombinedFile[ root, type ];
 
-        If[ Length[ perItemFiles ] > 1,
+        If[ Length @ perItemFiles > 1,
             AppendTo[ errors, <|
                 "Type"     -> "DuplicateDefinitionFiles",
                 "Item"     -> name,
@@ -219,7 +219,7 @@ checkItemFileExistence[ root_String, type_String, name_String ] :=
             |> ]
         ];
 
-        If[ Length[ perItemFiles ] === 0 && !hasCombined,
+        If[ Length @ perItemFiles === 0 && ! hasCombined,
             AppendTo[ errors, <|
                 "Type"         -> "MissingDefinitionFile",
                 "Item"         -> name,
@@ -252,7 +252,7 @@ checkItemFileContents // beginDefinition;
 checkItemFileContents[ paclet_PacletObject, type_String, name_String ] :=
     Module[ { data },
         data = Quiet @ loadPacletDefinitionFile[ paclet, type, name ];
-        If[ !AssociationQ[ data ],
+        If[ ! AssociationQ @ data,
             Return[
                 { <| "Type" -> "InvalidDefinitionContents", "Item" -> name, "ItemType" -> type,
                      "Message" -> "Definition file for " <> type <> " \"" <> name <> "\" did not evaluate to a valid Association." |> },
@@ -261,9 +261,9 @@ checkItemFileContents[ paclet_PacletObject, type_String, name_String ] :=
         ];
         Switch[ type,
             "Servers", checkServerDefinition[ name, data ],
-            "Tools",   checkToolDefinition[ name, data ],
+            "Tools"  , checkToolDefinition[ name, data ],
             "Prompts", checkPromptDefinition[ name, data ],
-            _,         { }
+            _        , { }
         ]
     ];
 
@@ -275,7 +275,7 @@ checkItemFileContents // endDefinition;
 checkServerDefinition // beginDefinition;
 
 checkServerDefinition[ name_String, data_Association ] :=
-    If[ !KeyExistsQ[ data, "LLMEvaluator" ],
+    If[ ! KeyExistsQ[ data, "LLMEvaluator" ],
         { <| "Type" -> "InvalidServerDefinition", "Item" -> name,
              "Message" -> "Server definition \"" <> name <> "\" is missing required key \"LLMEvaluator\"." |> },
         { }
@@ -292,8 +292,8 @@ checkToolDefinition // beginDefinition;
 
 checkToolDefinition[ name_String, data_Association ] :=
     Module[ { missing },
-        missing = Select[ $requiredToolKeys, !KeyExistsQ[ data, # ] & ];
-        If[ Length[ missing ] > 0,
+        missing = Select[ $requiredToolKeys, ! KeyExistsQ[ data, # ] & ];
+        If[ Length @ missing > 0,
             { <| "Type" -> "InvalidToolDefinition", "Item" -> name, "MissingKeys" -> missing,
                  "Message" -> "Tool definition \"" <> name <> "\" is missing required keys: " <> StringRiffle[ missing, ", " ] <> "." |> },
             { }
@@ -308,7 +308,7 @@ checkToolDefinition // endDefinition;
 checkPromptDefinition // beginDefinition;
 
 checkPromptDefinition[ name_String, data_Association ] :=
-    If[ !KeyExistsQ[ data, "Name" ],
+    If[ ! KeyExistsQ[ data, "Name" ],
         { <| "Type" -> "InvalidPromptDefinition", "Item" -> name,
              "Message" -> "Prompt definition \"" <> name <> "\" is missing required key \"Name\"." |> },
         { }
@@ -334,16 +334,16 @@ checkServerCrossReferences // beginDefinition;
 checkServerCrossReferences[ paclet_PacletObject, serverName_String, tools_List, prompts_List ] :=
     Module[ { data, evaluator, referencedTools, referencedPrompts, toolErrors, promptErrors },
         data = Quiet @ loadPacletDefinitionFile[ paclet, "Servers", serverName ];
-        If[ !AssociationQ[ data ], Return[ { }, Module ] ];
+        If[ ! AssociationQ @ data, Return[ { }, Module ] ];
 
         evaluator = Lookup[ data, "LLMEvaluator", <| |> ];
-        If[ !AssociationQ[ evaluator ], Return[ { }, Module ] ];
+        If[ ! AssociationQ @ evaluator, Return[ { }, Module ] ];
 
         referencedTools = Lookup[ evaluator, "Tools", { } ];
-        toolErrors = If[ ListQ[ referencedTools ],
+        toolErrors = If[ ListQ @ referencedTools,
             Cases[
                 referencedTools,
-                toolRef_String /; !validCrossReference[ toolRef, tools ] :>
+                toolRef_String /; ! validCrossReference[ toolRef, tools ] :>
                     <| "Type" -> "InvalidToolReference", "Server" -> serverName, "Tool" -> toolRef,
                        "Message" -> "Server \"" <> serverName <> "\" references tool \"" <> toolRef <> "\" which is not declared in this paclet and is not a fully qualified name." |>
             ],
@@ -351,10 +351,10 @@ checkServerCrossReferences[ paclet_PacletObject, serverName_String, tools_List, 
         ];
 
         referencedPrompts = Lookup[ evaluator, "MCPPrompts", { } ];
-        promptErrors = If[ ListQ[ referencedPrompts ],
+        promptErrors = If[ ListQ @ referencedPrompts,
             Cases[
                 referencedPrompts,
-                promptRef_String /; !validCrossReference[ promptRef, prompts ] :>
+                promptRef_String /; ! validCrossReference[ promptRef, prompts ] :>
                     <| "Type" -> "InvalidPromptReference", "Server" -> serverName, "Prompt" -> promptRef,
                        "Message" -> "Server \"" <> serverName <> "\" references prompt \"" <> promptRef <> "\" which is not declared in this paclet and is not a fully qualified name." |>
             ],
@@ -370,7 +370,7 @@ checkServerCrossReferences // endDefinition;
 (* ::Subsection::Closed:: *)
 (*validCrossReference*)
 validCrossReference // beginDefinition;
-validCrossReference[ name_String, declared_List ] := MemberQ[ declared, name ] || pacletQualifiedNameQ[ name ];
+validCrossReference[ name_String, declared_List ] := MemberQ[ declared, name ] || pacletQualifiedNameQ @ name;
 validCrossReference // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
@@ -380,7 +380,7 @@ buildFailure // beginDefinition;
 
 buildFailure[ paclet_PacletObject, errors_List ] :=
     Module[ { firstMessage },
-        firstMessage = If[ Length[ errors ] > 0, errors[[ 1, "Message" ]], "Unknown error." ];
+        firstMessage = If[ Length @ errors > 0, errors[[ 1, "Message" ]], "Unknown error." ];
         messagePrint[ "InvalidMCPPacletExtension", paclet[ "Name" ], firstMessage ];
         Failure[ "InvalidMCPPacletExtension", <| "Errors" -> errors |> ]
     ];
