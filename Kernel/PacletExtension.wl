@@ -56,14 +56,10 @@ parsePacletQualifiedName0 // endDefinition;
 findMCPPaclets // beginDefinition;
 
 findMCPPaclets[ ] := Enclose[
-    Module[ { paclets },
-        Needs[ "PacletTools`" -> None ];
-        paclets = PacletFind[ ];
-        ConfirmMatch[
-            Select[ paclets, mcpPacletQ ],
-            { ___PacletObject },
-            "Result"
-        ]
+    ConfirmMatch[
+        PacletFind[ All, <| "Extension" -> "MCP" |> ],
+        { ___PacletObject },
+        "Result"
     ],
     throwInternalFailure
 ];
@@ -79,35 +75,16 @@ findRemoteMCPPaclets[ ] := findRemoteMCPPaclets[ False ];
 
 findRemoteMCPPaclets[ updateSites: True | False ] := Enclose[
     Module[ { remotePaclets },
-        Needs[ "PacletTools`" -> None ];
         If[ updateSites, Quiet @ PacletSiteUpdate[ ] ];
-        remotePaclets = Quiet @ PacletFindRemote[ ];
+        remotePaclets = Quiet @ PacletFindRemote[ All, <| "Extension" -> "MCP" |> ];
         If[ !MatchQ[ remotePaclets, { ___PacletObject } ], Return[ {}, Module ] ];
-        ConfirmMatch[
-            Select[ remotePaclets, mcpPacletQ ],
-            { ___PacletObject },
-            "Result"
-        ]
+        ConfirmMatch[ remotePaclets, { ___PacletObject }, "Result" ]
     ],
     throwInternalFailure
 ];
 
 findRemoteMCPPaclets // endDefinition;
 
-(* ::**************************************************************************************************************:: *)
-(* ::Subsection::Closed:: *)
-(*mcpPacletQ*)
-mcpPacletQ // beginDefinition;
-
-mcpPacletQ[ paclet_PacletObject ] :=
-    mcpPacletQ[ paclet, Quiet @ pt`PacletExtensions[ paclet, "MCP" ] ];
-
-mcpPacletQ[ _PacletObject, extensions_List ] :=
-    Length[ extensions ] > 0;
-
-mcpPacletQ[ _PacletObject, _ ] := False;
-
-mcpPacletQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
