@@ -71,12 +71,11 @@ findMCPPaclets // endDefinition;
 (*findRemoteMCPPaclets*)
 findRemoteMCPPaclets // beginDefinition;
 
-findRemoteMCPPaclets[ ] := findRemoteMCPPaclets[ False ];
+findRemoteMCPPaclets[ ] := findRemoteMCPPaclets[ Automatic ];
 
-findRemoteMCPPaclets[ updateSites: True | False ] := Enclose[
+findRemoteMCPPaclets[ updateSites: Automatic | True | False ] := Enclose[
     Module[ { remotePaclets },
-        If[ updateSites, Quiet @ PacletSiteUpdate[ ] ];
-        remotePaclets = Quiet @ PacletFindRemote[ All, <| "Extension" -> "MCP" |> ];
+        remotePaclets = Quiet @ PacletFindRemote[ All, <| "Extension" -> "MCP" |>, UpdatePacletSites -> updateSites ];
         If[ !MatchQ[ remotePaclets, { ___PacletObject } ], Return[ {}, Module ] ];
         ConfirmMatch[ remotePaclets, { ___PacletObject }, "Result" ]
     ],
@@ -84,7 +83,6 @@ findRemoteMCPPaclets[ updateSites: True | False ] := Enclose[
 ];
 
 findRemoteMCPPaclets // endDefinition;
-
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

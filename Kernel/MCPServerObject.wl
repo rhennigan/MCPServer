@@ -761,7 +761,7 @@ MCPServerObjects // beginDefinition;
 MCPServerObjects // Options = {
     "IncludeBuiltIn"       -> False,
     "IncludeRemotePaclets" -> False,
-    UpdatePacletSites      -> False
+    UpdatePacletSites      -> Automatic
 };
 
 MCPServerObjects[ pattern: (All | _String? StringQ) : All, opts: OptionsPattern[ ] ] :=
@@ -769,7 +769,7 @@ MCPServerObjects[ pattern: (All | _String? StringQ) : All, opts: OptionsPattern[
         pattern,
         TrueQ @ OptionValue[ "IncludeBuiltIn" ],
         TrueQ @ OptionValue[ "IncludeRemotePaclets" ],
-        TrueQ @ OptionValue[ UpdatePacletSites ]
+        OptionValue[ UpdatePacletSites ]
     ];
 
 MCPServerObjects // endExportedDefinition;
