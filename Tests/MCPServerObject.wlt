@@ -628,12 +628,12 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*MCPServerObjects Options Declaration*)
 VerificationTest[
-    Options[ MCPServerObjects ],
-    KeyValuePattern[ {
-        "IncludeBuiltIn" -> False,
+    Options @ MCPServerObjects,
+    KeyValuePattern @ {
+        "IncludeBuiltIn"       -> False,
         "IncludeRemotePaclets" -> False,
-        UpdatePacletSites -> False
-    } ],
+        UpdatePacletSites      -> Automatic
+    },
     SameTest -> MatchQ,
     TestID   -> "MCPServerObjects-OptionsDeclaration@@Tests/MCPServerObject.wlt:630,1-639,2"
 ]
