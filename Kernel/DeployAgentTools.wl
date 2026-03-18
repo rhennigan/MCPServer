@@ -366,9 +366,9 @@ resolveDeployTarget // endDefinition;
 findExistingDeployment // beginDefinition;
 
 findExistingDeployment[ clientName_String, configFile_File ] :=
-    Module[ { clientDir, uuidDirs },
+    Catch @ Module[ { clientDir, uuidDirs },
         clientDir = FileNameJoin @ { $deploymentsPath, clientName };
-        If[ ! DirectoryQ @ clientDir, Return[ None, Module ] ];
+        If[ ! DirectoryQ @ clientDir, Throw @ None ];
         uuidDirs = Select[ FileNames[ All, clientDir ], DirectoryQ ];
         SelectFirst[
             DeleteMissing @ Map[ loadDeploymentFromDir, uuidDirs ],
@@ -385,13 +385,13 @@ findExistingDeployment // endDefinition;
 loadDeploymentFromDir // beginDefinition;
 
 loadDeploymentFromDir[ dir_String ] :=
-    Module[ { wxfFile, data, dep },
+    Catch @ Module[ { wxfFile, data, dep },
         wxfFile = FileNameJoin @ { dir, "Deployment.wxf" };
-        If[ ! FileExistsQ @ wxfFile, Return[ Missing[ "NotFound" ], Module ] ];
+        If[ ! FileExistsQ @ wxfFile, Throw @ Missing[ "NotFound" ] ];
         data = Quiet @ readWXFFile @ wxfFile;
-        If[ ! AssociationQ @ data, Return[ Missing[ "InvalidData" ], Module ] ];
+        If[ ! AssociationQ @ data, Throw @ Missing[ "InvalidData" ] ];
         dep = Quiet @ AgentToolsDeployment @ data;
-        If[ agentToolsDeploymentQ @ dep, dep, Missing[ "InvalidDeployment" ] ]
+        If[ agentToolsDeploymentQ @ dep, dep, Throw @ Missing[ "InvalidDeployment" ] ]
     ];
 
 loadDeploymentFromDir // endDefinition;
@@ -419,8 +419,8 @@ deployedAgentTools // beginDefinition;
 
 (* No arguments: scan all client subdirectories *)
 deployedAgentTools[ ] := Enclose[
-    Module[ { clientDirs },
-        If[ ! DirectoryQ @ $deploymentsPath, Return[ { }, Module ] ];
+    Catch @ Module[ { clientDirs },
+        If[ ! DirectoryQ @ $deploymentsPath, Throw @ { } ];
         clientDirs = Select[ FileNames[ All, $deploymentsPath ], DirectoryQ ];
         Flatten @ Map[ deploymentsInClientDir, clientDirs ]
     ],
@@ -429,9 +429,9 @@ deployedAgentTools[ ] := Enclose[
 
 (* With client name: scan only the matching subdirectory *)
 deployedAgentTools[ clientName_String ] := Enclose[
-    Module[ { clientDir },
+    Catch @ Module[ { clientDir },
         clientDir = FileNameJoin @ { $deploymentsPath, clientName };
-        If[ ! DirectoryQ @ clientDir, Return[ { }, Module ] ];
+        If[ ! DirectoryQ @ clientDir, Throw @ { } ];
         deploymentsInClientDir @ clientDir
     ],
     throwInternalFailure
