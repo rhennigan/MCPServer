@@ -83,6 +83,7 @@ Each item is a logical unit of work for one coding session.
 - [ ] **1. <Task title>**
 
   <Brief description clarifying which part of the spec this covers.
+  Only include enough information to make it clear which part of the spec this covers.
   Don't repeat spec details — the reader has read the spec.
   Note any discrepancies found between spec and current state.>
 
