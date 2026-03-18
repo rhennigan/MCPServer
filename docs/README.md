@@ -21,6 +21,7 @@ This is the developer documentation for contributing to MCPServer. For user docu
 - **[MCP Clients](mcp-clients.md)** - Supported client applications and configuration
 - **[CodeInspector Rules](code-inspector-rules.md)** - Adding custom CodeInspector rules and current rule catalog
 - **[Agent Skills](agent-skills.md)** - Distributable agent skills, dual-mode architecture, and how to add new skills
+- **[Deploy Agent Tools](deploy-agent-tools.md)** - Managed deployment of Wolfram tools to AI agent clients
 
 ## Development Workflow
 

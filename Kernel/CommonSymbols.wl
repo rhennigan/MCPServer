@@ -6,6 +6,7 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `$cloudNotebooks;
 `$debug;
 `$defaultMCPServer;
+`$deploymentsPath;
 `$imagePath;
 `$mcpEvaluation;
 `$objectVersion;
@@ -36,6 +37,7 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `importResourceFunction;
 `initializeVectorDatabases;
 `llmKitSubscribedQ;
+`makeDeploymentBoxes;
 `makeMCPServerObjectBoxes;
 `mcpServerDirectory;
 `mcpServerFile;
@@ -64,6 +66,12 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 
 (* Shared symbols with Tools subcontexts: *)
 `exportMarkdownString;
+
+(* Shared symbols with DeployAgentTools: *)
+`guessClientName;
+`installLocation;
+`projectInstallLocation;
+`toInstallName;
 
 (* Graphics detection and conversion: *)
 `graphicsQ;

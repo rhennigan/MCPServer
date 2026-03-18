@@ -9,9 +9,10 @@ Needs[ "Wolfram`MCPServer`Common`" ];
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Config*)
-$installClientName  = None;
-$enableMCPApps      = True;
-$installToolOptions = <| |>;
+$installClientName    = None;
+$enableMCPApps        = True;
+$installToolOptions   = <| |>;
+$installMCPServerName = Automatic;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -27,6 +28,7 @@ InstallMCPServer // Options = {
     "ApplicationName"    -> Automatic,
     "DevelopmentMode"    -> False,
     "EnableMCPApps"      -> True,
+    "MCPServerName"      -> Automatic,
     "ProcessEnvironment" -> Automatic,
     "ToolOptions"        -> <| |>,
     "VerifyLLMKit"       -> True
@@ -42,9 +44,10 @@ InstallMCPServer[ target_File? fileQ, server0_, opts: OptionsPattern[ ] ] :=
     catchMine @ With[ { server = ensureMCPServerExists @ MCPServerObject @ server0 },
         Block[
             {
-                $installClientName  = validateInstallClientName[ OptionValue[ "ApplicationName" ], target ],
-                $enableMCPApps      = OptionValue[ "EnableMCPApps" ],
-                $installToolOptions = validateToolOptions[ OptionValue[ "ToolOptions" ], server ]
+                $installClientName    = validateInstallClientName[ OptionValue[ "ApplicationName" ], target ],
+                $enableMCPApps        = OptionValue[ "EnableMCPApps" ],
+                $installToolOptions   = validateToolOptions[ OptionValue[ "ToolOptions" ], server ],
+                $installMCPServerName = OptionValue[ "MCPServerName" ]
             },
             installMCPServer[
                 target,
@@ -79,6 +82,15 @@ validateInstallClientName // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*resolveMCPServerName*)
+resolveMCPServerName // beginDefinition;
+resolveMCPServerName[ obj_MCPServerObject ] := resolveMCPServerName[ $installMCPServerName, obj ];
+resolveMCPServerName[ name_String, _ ] := name;
+resolveMCPServerName[ Automatic, obj_MCPServerObject ] := Replace[ Quiet @ obj[ "MCPServerName" ], Except[ _String ] :> obj[ "Name" ] ];
+resolveMCPServerName // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*installMCPServer*)
 installMCPServer // beginDefinition;
 
@@ -86,16 +98,17 @@ installMCPServer[ target_, obj_, Automatic|Inherited, verifyLLMKit_, devMode_ ] 
     installMCPServer[ target, obj, defaultEnvironment[ ], verifyLLMKit, devMode ];
 
 installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_, devMode_ ] /; $installClientName === "Codex" := Enclose[
-    Module[ { target, name, json, data, server, existing, updated },
+    Module[ { target, name, configName, json, data, server, existing, updated },
 
         If[ verifyLLMKit, ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ] ];
         initializeTools @ obj;
 
-        target   = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
-        name     = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
-        json     = ConfirmBy[ obj[ "JSONConfiguration" ], StringQ, "JSONConfiguration" ];
-        data     = ConfirmBy[ Developer`ReadRawJSONString @ json, AssociationQ, "JSONConfiguration" ];
-        server   = ConfirmBy[ addEnvironmentVariables[ data[ "mcpServers", name ], env ], AssociationQ, "Server" ];
+        target     = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
+        name       = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
+        configName = ConfirmBy[ resolveMCPServerName @ obj, StringQ, "ConfigName" ];
+        json       = ConfirmBy[ obj[ "JSONConfiguration" ], StringQ, "JSONConfiguration" ];
+        data       = ConfirmBy[ Developer`ReadRawJSONString @ json, AssociationQ, "JSONConfiguration" ];
+        server     = ConfirmBy[ addEnvironmentVariables[ data[ "mcpServers", name ], env ], AssociationQ, "Server" ];
         If[ devMode =!= False,
             server[ "args" ] = ConfirmMatch[ makeDevelopmentArgs @ devMode, { __String }, "DevelopmentArgs" ]
         ];
@@ -107,10 +120,11 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
         existing = ConfirmBy[ readTOMLFile @ target, AssociationQ, "ExistingTOML" ];
 
         (* Add/update the server *)
-        updated = ConfirmBy[ setMCPServer[ existing, name, server ], AssociationQ, "UpdatedTOML" ];
+        updated = ConfirmBy[ setMCPServer[ existing, configName, server ], AssociationQ, "UpdatedTOML" ];
 
         (* Write back *)
         ConfirmBy[ writeTOMLFile[ target, updated[ "Data" ], updated ], fileQ, "Export" ];
+        clearStaleBuiltInRecords[ target, configName, obj ];
         ConfirmBy[ recordMCPInstallation[ target, obj ], FileExistsQ, "Record" ];
 
         installSuccess[ name, target, obj ]
@@ -119,16 +133,17 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
 ];
 
 installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_, devMode_ ] := Enclose[
-    Module[ { target, name, json, data, server, existing, path, convert },
+    Module[ { target, name, configName, json, data, server, existing, path, convert },
 
         If[ verifyLLMKit, ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ] ];
         initializeTools @ obj;
 
-        target   = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
-        name     = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
-        json     = ConfirmBy[ obj[ "JSONConfiguration" ], StringQ, "JSONConfiguration" ];
-        data     = ConfirmBy[ Developer`ReadRawJSONString @ json, AssociationQ, "JSONConfiguration" ];
-        server   = ConfirmBy[ addEnvironmentVariables[ data[ "mcpServers", name ], env ], AssociationQ, "Server" ];
+        target     = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
+        name       = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
+        configName = ConfirmBy[ resolveMCPServerName @ obj, StringQ, "ConfigName" ];
+        json       = ConfirmBy[ obj[ "JSONConfiguration" ], StringQ, "JSONConfiguration" ];
+        data       = ConfirmBy[ Developer`ReadRawJSONString @ json, AssociationQ, "JSONConfiguration" ];
+        server     = ConfirmBy[ addEnvironmentVariables[ data[ "mcpServers", name ], env ], AssociationQ, "Server" ];
         If[ devMode =!= False,
             server[ "args" ] = ConfirmMatch[ makeDevelopmentArgs @ devMode, { __String }, "DevelopmentArgs" ]
         ];
@@ -139,12 +154,13 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
         server  = ConfirmBy[ convert @ server, AssociationQ, "ConvertedServer" ];
 
         With[ { keys = Sequence @@ path },
-            existing[ keys, name ] = server
+            existing[ keys, configName ] = server
         ];
 
         ConfirmBy[ writeRawJSONFile[ target, existing ], FileExistsQ, "Export" ];
         ConfirmAssert[ readRawJSONFile @ target === existing, "ExportCheck" ];
 
+        clearStaleBuiltInRecords[ target, configName, obj ];
         ConfirmBy[ recordMCPInstallation[ target, obj ], FileExistsQ, "Record" ];
 
         installSuccess[ name, target, obj ]
@@ -262,6 +278,28 @@ recordMCPInstallation[ { name: _String|None, target_? fileQ }, obj_MCPServerObje
 ];
 
 recordMCPInstallation // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*clearStaleBuiltInRecords*)
+clearStaleBuiltInRecords // beginDefinition;
+
+clearStaleBuiltInRecords[ target_, "Wolfram", obj_MCPServerObject ] /;
+    KeyExistsQ[ $DefaultMCPServers, obj[ "Name" ] ] :=
+    Module[ { currentName, otherNames },
+        currentName = obj[ "Name" ];
+        otherNames = DeleteCases[ Keys @ $DefaultMCPServers, currentName ];
+        Scan[
+            Function[ otherName,
+                Quiet @ catchAlways @ clearRecordedInstallation[ target, MCPServerObject @ otherName ]
+            ],
+            otherNames
+        ]
+    ];
+
+clearStaleBuiltInRecords[ _, _, _ ] := Null;
+
+clearStaleBuiltInRecords // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -733,7 +771,8 @@ readExistingMCPConfig // endDefinition;
 UninstallMCPServer // beginDefinition;
 
 UninstallMCPServer // Options = {
-    "ApplicationName" -> Automatic
+    "ApplicationName" -> Automatic,
+    "MCPServerName"   -> Automatic
 };
 
 UninstallMCPServer[ target_File, opts: OptionsPattern[ ] ] :=
@@ -780,7 +819,10 @@ UninstallMCPServer[ { name_String, dir_ }, obj_, opts: OptionsPattern[ ] ] :=
 
 UninstallMCPServer[ target_File? fileQ, obj_, opts: OptionsPattern[ ] ] :=
     catchMine @ Block[
-        { $installClientName = validateInstallClientName[ OptionValue[ "ApplicationName" ], target ] },
+        {
+            $installClientName    = validateInstallClientName[ OptionValue[ "ApplicationName" ], target ],
+            $installMCPServerName = OptionValue[ "MCPServerName" ]
+        },
         uninstallMCPServer[ target, ensureMCPServerExists @ MCPServerObject @ obj ]
     ];
 
@@ -804,22 +846,23 @@ allMCPServers // endDefinition;
 uninstallMCPServer // beginDefinition;
 
 uninstallMCPServer[ target0_File, obj_MCPServerObject ] /; $installClientName === "Codex" := Enclose[
-    Catch @ Module[ { target, name, existing, mcpServers, updated },
+    Catch @ Module[ { target, name, configName, existing, mcpServers, updated },
 
-        target = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
+        target     = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
         If[ ! FileExistsQ @ target, Throw @ Missing[ "NotInstalled", target ] ];
 
-        name = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
+        name       = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
+        configName = ConfirmBy[ resolveMCPServerName @ obj, StringQ, "ConfigName" ];
 
         (* Read existing TOML config *)
         existing = ConfirmBy[ readTOMLFile @ target, AssociationQ, "ExistingTOML" ];
 
         (* Check if server exists *)
         mcpServers = getMCPServers @ existing;
-        If[ ! KeyExistsQ[ mcpServers, name ], Throw @ Missing[ "NotInstalled", target ] ];
+        If[ ! KeyExistsQ[ mcpServers, configName ], Throw @ Missing[ "NotInstalled", target ] ];
 
         (* Remove the server *)
-        updated = ConfirmBy[ removeMCPServer[ existing, name ], AssociationQ, "UpdatedTOML" ];
+        updated = ConfirmBy[ removeMCPServer[ existing, configName ], AssociationQ, "UpdatedTOML" ];
 
         (* Write back *)
         ConfirmBy[ writeTOMLFile[ target, updated[ "Data" ], updated ], fileQ, "Export" ];
@@ -831,20 +874,21 @@ uninstallMCPServer[ target0_File, obj_MCPServerObject ] /; $installClientName ==
 ];
 
 uninstallMCPServer[ target0_File, obj_MCPServerObject ] := Enclose[
-    Catch @ Module[ { target, name, existing, path },
+    Catch @ Module[ { target, name, configName, existing, path },
 
-        target = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
+        target     = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
         If[ ! FileExistsQ @ target, Throw @ Missing[ "NotInstalled", target ] ];
 
-        name = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
-        existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
+        name       = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
+        configName = ConfirmBy[ resolveMCPServerName @ obj, StringQ, "ConfigName" ];
+        existing   = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
 
         path = ConfirmMatch[ configKeyPath[ ], { __String }, "ConfigKeyPath" ];
 
         With[ { keys = Sequence @@ path },
             If[ ! AssociationQ @ existing[ keys ], Throw @ Missing[ "NotInstalled", target ] ];
-            If[ ! KeyExistsQ[ existing[ keys ], name ], Throw @ Missing[ "NotInstalled", target ] ];
-            KeyDropFrom[ existing[ keys ], name ]
+            If[ ! KeyExistsQ[ existing[ keys ], configName ], Throw @ Missing[ "NotInstalled", target ] ];
+            KeyDropFrom[ existing[ keys ], configName ]
         ];
 
         ConfirmBy[ writeRawJSONFile[ target, existing ], FileExistsQ, "Export" ];
