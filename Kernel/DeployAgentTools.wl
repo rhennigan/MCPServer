@@ -432,6 +432,57 @@ configFilesEqual // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*AgentToolsDeployments*)
+AgentToolsDeployments // beginDefinition;
+
+AgentToolsDeployments[ ] := catchMine @ agentToolsDeployments[ ];
+
+AgentToolsDeployments[ target_String ] := catchMine @ agentToolsDeployments[ toInstallName @ target ];
+
+AgentToolsDeployments // endExportedDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*agentToolsDeployments*)
+agentToolsDeployments // beginDefinition;
+
+(* No arguments: scan all client subdirectories *)
+agentToolsDeployments[ ] := Enclose[
+    Module[ { clientDirs },
+        If[ ! DirectoryQ @ $deploymentsPath, Return[ { }, Module ] ];
+        clientDirs = Select[ FileNames[ All, $deploymentsPath ], DirectoryQ ];
+        Flatten @ Map[ deploymentsInClientDir, clientDirs ]
+    ],
+    throwInternalFailure
+];
+
+(* With client name: scan only the matching subdirectory *)
+agentToolsDeployments[ clientName_String ] := Enclose[
+    Module[ { clientDir },
+        clientDir = FileNameJoin @ { $deploymentsPath, clientName };
+        If[ ! DirectoryQ @ clientDir, Return[ { }, Module ] ];
+        deploymentsInClientDir @ clientDir
+    ],
+    throwInternalFailure
+];
+
+agentToolsDeployments // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*deploymentsInClientDir*)
+deploymentsInClientDir // beginDefinition;
+
+deploymentsInClientDir[ clientDir_String ] :=
+    Module[ { uuidDirs },
+        uuidDirs = Select[ FileNames[ All, clientDir ], DirectoryQ ];
+        DeleteMissing @ Map[ loadDeploymentFromDir, uuidDirs ]
+    ];
+
+deploymentsInClientDir // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Helper Functions*)
 
 (* ::**************************************************************************************************************:: *)

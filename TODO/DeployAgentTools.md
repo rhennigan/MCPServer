@@ -53,7 +53,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **7. Implement `AgentToolsDeployments` function**
+- [x] **7. Implement `AgentToolsDeployments` function**
 
   Implement the listing/query function: no-argument form (scan all client subdirectories), single-argument form (filter by client name with alias resolution). Handle corrupted/invalid records gracefully. Write and run tests covering spec verification items 3–4.
 

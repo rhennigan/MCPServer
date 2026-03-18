@@ -72,3 +72,15 @@ Use the following format incrementing the session number from the latest entry:
 - Added 24 new tests covering spec verification items 1-2 (deploy and verify properties/config), 6 (duplicate fails), 7 (overwrite replaces), and 8 (equivalent target forms detected as same deployment).
 - All 60 DeployAgentTools tests pass. All 196 existing tests (InstallMCPServer + UninstallMCPServer) still pass. CodeInspector clean.
 
+## Session 7
+
+- Completed Task 7: Implemented `AgentToolsDeployments` listing/query function in `Kernel/DeployAgentTools.wl`.
+- Implemented no-argument form: scans all client subdirectories under `$deploymentsPath`, reads `Deployment.wxf` from each UUID subdirectory, filters out corrupted/invalid records.
+- Implemented single-argument form: resolves the target string through `toInstallName` (alias resolution via `$aliasToCanonicalName`), then scans only the matching `$deploymentsPath/<ClientName>/` subdirectory.
+- Added `deploymentsInClientDir` internal helper that maps `loadDeploymentFromDir` over UUID subdirectories and filters out `Missing` results.
+- Fixed pre-existing syntax error in test file: `TestID -"..."s"` → `TestID -> "..."` on the EquivalentTargetFails test.
+- Key gotcha: `ClaudeCode` has no aliases, so alias resolution tests should use `"Claude"` → `"ClaudeDesktop"` instead.
+- Key gotcha: `$deploymentsPath` in tests is set via `= Wolfram`MCPServer`Common`$deploymentsPath` (value assignment to Global context). To Block it in tests, must use the fully qualified `Wolfram`MCPServer`Common`$deploymentsPath` symbol.
+- Added 10 new tests covering spec verification items 3-4: list all deployments, filter by client name, alias resolution, non-existent client returns empty list, empty deployments path, and corrupted records filtered out.
+- All 70 DeployAgentTools tests pass. All 196 existing tests (InstallMCPServer + UninstallMCPServer) still pass. CodeInspector clean on both source and test files.
+
