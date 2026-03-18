@@ -69,7 +69,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **9. Run CodeInspector and final verification**
+- [x] **9. Run CodeInspector and final verification**
 
   Run `CodeInspector` on `Kernel/DeployAgentTools.wl` and fix any issues. Run the full `Tests/DeployAgentTools.wlt` test suite end-to-end. Verify all spec verification items pass.
 
