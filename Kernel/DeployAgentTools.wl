@@ -52,8 +52,8 @@ $deploymentProperties = {
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*AgentToolsDeployment*)
-Unprotect[ AgentToolsDeployment, AgentToolsDeployments, DeployAgentTools ];
-ClearAll[ AgentToolsDeployment, AgentToolsDeployments, DeployAgentTools ];
+AgentToolsDeployment // Unprotect;
+AgentToolsDeployment // ClearAll;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -265,24 +265,26 @@ AgentToolsDeployment[ args___ ]? sp`HoldNotValidQ := catchTop[
 (*DeployAgentTools*)
 DeployAgentTools // beginDefinition;
 
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Options*)
 DeployAgentTools // Options = {
-    OverwriteTarget      -> False,
-    "ApplicationName"    -> Automatic,
-    "DevelopmentMode"    -> False,
-    "EnableMCPApps"      -> True,
-    "MCPServerName"      -> Automatic,
-    "ProcessEnvironment" -> Automatic,
-    "ToolOptions"        -> <| |>,
-    "VerifyLLMKit"       -> True
+    OverwriteTarget -> False
+    (* DeployAgentTools can also accept any InstallMCPServer options *)
 };
 
-DeployAgentTools[ target_, opts: OptionsPattern[ ] ] :=
+$$deployAgentToolsOptions = OptionsPattern @ { DeployAgentTools, InstallMCPServer };
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Main Definition*)
+DeployAgentTools[ target_, opts: $$deployAgentToolsOptions ] :=
     catchMine @ DeployAgentTools[ target, Automatic, opts ];
 
-DeployAgentTools[ target_, Automatic, opts: OptionsPattern[ ] ] :=
+DeployAgentTools[ target_, Automatic, opts: $$deployAgentToolsOptions ] :=
     catchMine @ DeployAgentTools[ target, $defaultMCPServer, opts ];
 
-DeployAgentTools[ target_, server_, opts: OptionsPattern[ ] ] :=
+DeployAgentTools[ target_, server_, opts: $$deployAgentToolsOptions ] :=
     catchMine @ deployAgentTools[ target, ensureMCPServerExists @ MCPServerObject @ server, opts ];
 
 DeployAgentTools // endExportedDefinition;
@@ -292,9 +294,11 @@ DeployAgentTools // endExportedDefinition;
 (*deployAgentTools*)
 deployAgentTools // beginDefinition;
 
-deployAgentTools[ target_, server_MCPServerObject, opts: OptionsPattern[ DeployAgentTools ] ] := Enclose[
-    Module[ { resolved, clientName, configFile, normalizedTarget, overwrite,
+deployAgentTools[ target_, server_MCPServerObject, opts0: $$deployAgentToolsOptions ] := Enclose[
+    Module[ { opts, resolved, clientName, configFile, normalizedTarget, overwrite,
               existingDep, installOpts, installResult, uuid, deployData, dir },
+
+        opts = Sequence @@ FilterRules[ { opts0 }, Options @ DeployAgentTools ];
 
         (* Step 1: Resolve target *)
         resolved = ConfirmMatch[ resolveDeployTarget @ target, { _String, _File, _ }, "ResolveTarget" ];
@@ -311,7 +315,7 @@ deployAgentTools[ target_, server_MCPServerObject, opts: OptionsPattern[ DeployA
         ];
 
         (* Step 3: Call InstallMCPServer *)
-        installOpts = FilterRules[ { opts }, Options @ InstallMCPServer ];
+        installOpts = FilterRules[ { opts0 }, Options @ InstallMCPServer ];
         installResult = ConfirmBy[
             InstallMCPServer[ target, server, Sequence @@ installOpts ],
             MatchQ[ _Success ],
@@ -434,11 +438,8 @@ configFilesEqual // endDefinition;
 (* ::Section::Closed:: *)
 (*AgentToolsDeployments*)
 AgentToolsDeployments // beginDefinition;
-
 AgentToolsDeployments[ ] := catchMine @ agentToolsDeployments[ ];
-
 AgentToolsDeployments[ target_String ] := catchMine @ agentToolsDeployments[ toInstallName @ target ];
-
 AgentToolsDeployments // endExportedDefinition;
 
 (* ::**************************************************************************************************************:: *)
