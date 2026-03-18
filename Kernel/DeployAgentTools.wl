@@ -66,6 +66,12 @@ AgentToolsDeployment[ data_Association ]? sp`HoldNotValidQ :=
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*UUID Lookup*)
+AgentToolsDeployment[ uuid_String ] :=
+    catchTop[ getAgentToolsDeploymentByUUID @ uuid, AgentToolsDeployment ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*createAgentToolsDeployment*)
 createAgentToolsDeployment // beginDefinition;
 
@@ -457,6 +463,26 @@ deploymentDirectory // beginDefinition;
 deploymentDirectory[ clientName_String, uuid_String ] := fileNameJoin[ $deploymentsPath, clientName, uuid ];
 deploymentDirectory[ None, uuid_String ] := deploymentDirectory[ "Other", uuid ];
 deploymentDirectory // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*getAgentToolsDeploymentByUUID*)
+getAgentToolsDeploymentByUUID // beginDefinition;
+
+getAgentToolsDeploymentByUUID[ uuid_String ] := Enclose[
+    Module[ { clientDirs, dir, dep },
+        If[ ! DirectoryQ @ $deploymentsPath, throwFailure[ "DeploymentNotFound", uuid ] ];
+        clientDirs = Select[ FileNames[ All, $deploymentsPath ], DirectoryQ ];
+        dir = SelectFirst[ Map[ FileNameJoin @ { #, uuid } &, clientDirs ], DirectoryQ ];
+        If[ MissingQ @ dir, throwFailure[ "DeploymentNotFound", uuid ] ];
+        dep = loadDeploymentFromDir @ dir;
+        If[ ! agentToolsDeploymentQ @ dep, throwFailure[ "DeploymentNotFound", uuid ] ];
+        dep
+    ],
+    throwInternalFailure
+];
+
+getAgentToolsDeploymentByUUID // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

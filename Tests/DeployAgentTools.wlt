@@ -68,11 +68,11 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Invalid Construction*)
 VerificationTest[
-    AgentToolsDeployment[ "not an association" ],
+    AgentToolsDeployment[ "not-a-real-uuid" ],
     _Failure,
-    { AgentToolsDeployment::InvalidDeploymentData },
+    { AgentToolsDeployment::DeploymentNotFound },
     SameTest -> MatchQ,
-    TestID   -> "AgentToolsDeployment-InvalidString@@Tests/DeployAgentTools.wlt:70,1-76,2"
+    TestID   -> "AgentToolsDeployment-InvalidUUID@@Tests/DeployAgentTools.wlt:70,1-76,2"
 ]
 
 VerificationTest[
@@ -537,13 +537,43 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*UUID Lookup*)
+VerificationTest[
+    $dep1Lookup = AgentToolsDeployment[ $dep1[ "UUID" ] ],
+    _AgentToolsDeployment,
+    SameTest -> MatchQ,
+    TestID   -> "AgentToolsDeployment-UUIDLookup@@Tests/DeployAgentTools.wlt:541,1-546,2"
+]
+
+VerificationTest[
+    $dep1Lookup[ "UUID" ] === $dep1[ "UUID" ],
+    True,
+    TestID -> "AgentToolsDeployment-UUIDLookup-SameUUID@@Tests/DeployAgentTools.wlt:548,1-552,2"
+]
+
+VerificationTest[
+    $dep1Lookup[ "Server" ] === $dep1[ "Server" ],
+    True,
+    TestID -> "AgentToolsDeployment-UUIDLookup-SameServer@@Tests/DeployAgentTools.wlt:554,1-558,2"
+]
+
+VerificationTest[
+    AgentToolsDeployment[ "nonexistent-uuid-00000000" ],
+    _Failure,
+    { AgentToolsDeployment::DeploymentNotFound },
+    SameTest -> MatchQ,
+    TestID   -> "AgentToolsDeployment-UUIDLookup-NotFound@@Tests/DeployAgentTools.wlt:560,1-566,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*OverwriteTarget -> False Fails*)
 VerificationTest[
     DeployAgentTools[ $deployTestConfig, "Wolfram", "VerifyLLMKit" -> False ],
     _Failure,
     { DeployAgentTools::DeploymentExists },
     SameTest -> MatchQ,
-    TestID   -> "DeployAgentTools-DuplicateFails@@Tests/DeployAgentTools.wlt:541,1-547,2"
+    TestID   -> "DeployAgentTools-DuplicateFails@@Tests/DeployAgentTools.wlt:571,1-577,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -558,20 +588,20 @@ VerificationTest[
     ],
     _AgentToolsDeployment,
     SameTest -> MatchQ,
-    TestID   -> "DeployAgentTools-OverwriteTrue@@Tests/DeployAgentTools.wlt:552,1-562,2"
+    TestID   -> "DeployAgentTools-OverwriteTrue@@Tests/DeployAgentTools.wlt:582,1-592,2"
 ]
 
 VerificationTest[
     $dep2[ "UUID" ] =!= $dep1[ "UUID" ],
     True,
-    TestID -> "DeployAgentTools-OverwriteNewUUID@@Tests/DeployAgentTools.wlt:564,1-568,2"
+    TestID -> "DeployAgentTools-OverwriteNewUUID@@Tests/DeployAgentTools.wlt:594,1-598,2"
 ]
 
 VerificationTest[
     (* The old deployment directory should have been cleaned up *)
     ! DirectoryQ @ First @ $dep1[ "Location" ],
     True,
-    TestID -> "DeployAgentTools-OverwriteOldDirRemoved@@Tests/DeployAgentTools.wlt:570,1-575,2"
+    TestID -> "DeployAgentTools-OverwriteOldDirRemoved@@Tests/DeployAgentTools.wlt:600,1-605,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -586,19 +616,19 @@ VerificationTest[
     ],
     _AgentToolsDeployment,
     SameTest -> MatchQ,
-    TestID   -> "DeployAgentTools-ProjectDeploy@@Tests/DeployAgentTools.wlt:580,1-590,2"
+    TestID   -> "DeployAgentTools-ProjectDeploy@@Tests/DeployAgentTools.wlt:610,1-620,2"
 ]
 
 VerificationTest[
     $dep3[ "ClientName" ],
     "ClaudeCode",
-    TestID -> "DeployAgentTools-ProjectDeploy-ClientName@@Tests/DeployAgentTools.wlt:592,1-596,2"
+    TestID -> "DeployAgentTools-ProjectDeploy-ClientName@@Tests/DeployAgentTools.wlt:622,1-626,2"
 ]
 
 VerificationTest[
     $dep3[ "Target" ],
     { "ClaudeCode", $deployTestDir2 },
-    TestID -> "DeployAgentTools-ProjectDeploy-Target@@Tests/DeployAgentTools.wlt:598,1-602,2"
+    TestID -> "DeployAgentTools-ProjectDeploy-Target@@Tests/DeployAgentTools.wlt:628,1-632,2"
 ]
 
 VerificationTest[
@@ -611,7 +641,7 @@ VerificationTest[
     _Failure,
     { DeployAgentTools::DeploymentExists },
     SameTest -> MatchQ,
-    TestID   -> "DeployAgentTools-EquivalentTargetFails@@Tests/DeployAgentTools.wlt:604,1-615,2"
+    TestID   -> "DeployAgentTools-EquivalentTargetFails@@Tests/DeployAgentTools.wlt:634,1-645,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -625,13 +655,13 @@ VerificationTest[
     $allDeps = DeployedAgentTools[ ],
     _List,
     SameTest -> MatchQ,
-    TestID   -> "DeployedAgentTools-ListAll@@Tests/DeployAgentTools.wlt:624,1-629,2"
+    TestID   -> "DeployedAgentTools-ListAll@@Tests/DeployAgentTools.wlt:654,1-659,2"
 ]
 
 VerificationTest[
     AllTrue[ $allDeps, agentToolsDeploymentQ ],
     True,
-    TestID -> "DeployedAgentTools-ListAll-AllValid@@Tests/DeployAgentTools.wlt:631,1-635,2"
+    TestID -> "DeployedAgentTools-ListAll-AllValid@@Tests/DeployAgentTools.wlt:661,1-665,2"
 ]
 
 VerificationTest[
@@ -639,7 +669,7 @@ VerificationTest[
     MemberQ[ $allDeps, _? (configFilesEqual[ #[ "ConfigFile" ], $dep2[ "ConfigFile" ] ] &) ] &&
     MemberQ[ $allDeps, _? (configFilesEqual[ #[ "ConfigFile" ], $dep3[ "ConfigFile" ] ] &) ],
     True,
-    TestID -> "DeployedAgentTools-ListAll-ContainsDeployments@@Tests/DeployAgentTools.wlt:637,1-643,2"
+    TestID -> "DeployedAgentTools-ListAll-ContainsDeployments@@Tests/DeployAgentTools.wlt:667,1-673,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -649,20 +679,20 @@ VerificationTest[
     $ccDeps = DeployedAgentTools[ "ClaudeCode" ],
     _List,
     SameTest -> MatchQ,
-    TestID   -> "DeployedAgentTools-FilterClaudeCode@@Tests/DeployAgentTools.wlt:648,1-653,2"
+    TestID   -> "DeployedAgentTools-FilterClaudeCode@@Tests/DeployAgentTools.wlt:678,1-683,2"
 ]
 
 VerificationTest[
     MemberQ[ $ccDeps, _? (#[ "UUID" ] === $dep3[ "UUID" ] &) ],
     True,
-    TestID -> "DeployedAgentTools-FilterClaudeCode-ContainsDep3@@Tests/DeployAgentTools.wlt:655,1-659,2"
+    TestID -> "DeployedAgentTools-FilterClaudeCode-ContainsDep3@@Tests/DeployAgentTools.wlt:685,1-689,2"
 ]
 
 VerificationTest[
     (* $dep2 is a File target - should NOT be in the ClaudeCode list *)
     NoneTrue[ $ccDeps, #[ "UUID" ] === $dep2[ "UUID" ] & ],
     True,
-    TestID -> "DeployedAgentTools-FilterClaudeCode-ExcludesDep2@@Tests/DeployAgentTools.wlt:661,1-666,2"
+    TestID -> "DeployedAgentTools-FilterClaudeCode-ExcludesDep2@@Tests/DeployAgentTools.wlt:691,1-696,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -672,7 +702,7 @@ VerificationTest[
     (* "Claude" is an alias for "ClaudeDesktop" - should return the same result *)
     DeployedAgentTools[ "Claude" ] === DeployedAgentTools[ "ClaudeDesktop" ],
     True,
-    TestID -> "DeployedAgentTools-AliasResolution@@Tests/DeployAgentTools.wlt:671,1-676,2"
+    TestID -> "DeployedAgentTools-AliasResolution@@Tests/DeployAgentTools.wlt:701,1-706,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -681,7 +711,7 @@ VerificationTest[
 VerificationTest[
     DeployedAgentTools[ "NonExistentClient" ],
     { },
-    TestID -> "DeployedAgentTools-NonExistentClient@@Tests/DeployAgentTools.wlt:681,1-685,2"
+    TestID -> "DeployedAgentTools-NonExistentClient@@Tests/DeployAgentTools.wlt:711,1-715,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -693,7 +723,7 @@ VerificationTest[
         DeployedAgentTools[ ]
     ],
     { },
-    TestID -> "DeployedAgentTools-EmptyPath@@Tests/DeployAgentTools.wlt:690,1-697,2"
+    TestID -> "DeployedAgentTools-EmptyPath@@Tests/DeployAgentTools.wlt:720,1-727,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -717,7 +747,7 @@ VerificationTest[
         AllTrue[ $ccDeps2, agentToolsDeploymentQ ]
     ],
     True,
-    TestID -> "DeployedAgentTools-CorruptedRecordFiltered@@Tests/DeployAgentTools.wlt:702,1-721,2"
+    TestID -> "DeployedAgentTools-CorruptedRecordFiltered@@Tests/DeployAgentTools.wlt:732,1-751,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -733,7 +763,7 @@ VerificationTest[
     $deleteDep = DeployAgentTools[ $deleteTestConfig, "Wolfram", "VerifyLLMKit" -> False ],
     _AgentToolsDeployment,
     SameTest -> MatchQ,
-    TestID   -> "DeleteObject-Setup-Deploy@@Tests/DeployAgentTools.wlt:730,1-737,2"
+    TestID   -> "DeleteObject-Setup-Deploy@@Tests/DeployAgentTools.wlt:760,1-767,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -746,20 +776,20 @@ VerificationTest[
         KeyExistsQ[ json, "mcpServers" ] && KeyExistsQ[ json[ "mcpServers" ], "Wolfram" ]
     ],
     True,
-    TestID -> "DeleteObject-ConfigHasEntry@@Tests/DeployAgentTools.wlt:742,1-750,2"
+    TestID -> "DeleteObject-ConfigHasEntry@@Tests/DeployAgentTools.wlt:772,1-780,2"
 ]
 
 VerificationTest[
     $deleteDepDir = $deleteDep[ "Location" ];
     DirectoryQ @ $deleteDepDir,
     True,
-    TestID -> "DeleteObject-DeploymentDirExists@@Tests/DeployAgentTools.wlt:752,1-757,2"
+    TestID -> "DeleteObject-DeploymentDirExists@@Tests/DeployAgentTools.wlt:782,1-787,2"
 ]
 
 VerificationTest[
     MemberQ[ DeployedAgentTools[ ], _? (#[ "UUID" ] === $deleteDep[ "UUID" ] &) ],
     True,
-    TestID -> "DeleteObject-InListing@@Tests/DeployAgentTools.wlt:759,1-763,2"
+    TestID -> "DeleteObject-InListing@@Tests/DeployAgentTools.wlt:789,1-793,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -768,7 +798,7 @@ VerificationTest[
 VerificationTest[
     DeleteObject[ $deleteDep ],
     Null,
-    TestID -> "DeleteObject-Delete@@Tests/DeployAgentTools.wlt:768,1-772,2"
+    TestID -> "DeleteObject-Delete@@Tests/DeployAgentTools.wlt:798,1-802,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -781,19 +811,19 @@ VerificationTest[
         ! KeyExistsQ[ json[ "mcpServers" ], "Wolfram" ]
     ],
     True,
-    TestID -> "DeleteObject-ConfigEntryRemoved@@Tests/DeployAgentTools.wlt:777,1-785,2"
+    TestID -> "DeleteObject-ConfigEntryRemoved@@Tests/DeployAgentTools.wlt:807,1-815,2"
 ]
 
 VerificationTest[
     ! DirectoryQ @ $deleteDepDir,
     True,
-    TestID -> "DeleteObject-DeploymentDirRemoved@@Tests/DeployAgentTools.wlt:787,1-791,2"
+    TestID -> "DeleteObject-DeploymentDirRemoved@@Tests/DeployAgentTools.wlt:817,1-821,2"
 ]
 
 VerificationTest[
     NoneTrue[ DeployedAgentTools[ ], #[ "UUID" ] === $deleteDep[ "UUID" ] & ],
     True,
-    TestID -> "DeleteObject-NotInListing@@Tests/DeployAgentTools.wlt:793,1-797,2"
+    TestID -> "DeleteObject-NotInListing@@Tests/DeployAgentTools.wlt:823,1-827,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -804,7 +834,7 @@ VerificationTest[
     _Failure,
     { AgentToolsDeployment::DeploymentNotFound },
     SameTest -> MatchQ,
-    TestID   -> "DeleteObject-DeleteAgainFails@@Tests/DeployAgentTools.wlt:802,1-808,2"
+    TestID   -> "DeleteObject-DeleteAgainFails@@Tests/DeployAgentTools.wlt:832,1-838,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -842,7 +872,7 @@ VerificationTest[
         ! KeyExistsQ[ json[ "mcpServers" ], "Wolfram" ]
     ],
     True,
-    TestID -> "DeleteObject-RoundTrip@@Tests/DeployAgentTools.wlt:813,1-846,2"
+    TestID -> "DeleteObject-RoundTrip@@Tests/DeployAgentTools.wlt:843,1-876,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -852,7 +882,7 @@ VerificationTest[
     Quiet @ DeleteDirectory[ $deleteTestDir, DeleteContents -> True ];
     True,
     True,
-    TestID -> "DeleteObject-Cleanup@@Tests/DeployAgentTools.wlt:851,1-856,2"
+    TestID -> "DeleteObject-Cleanup@@Tests/DeployAgentTools.wlt:881,1-886,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -871,7 +901,7 @@ VerificationTest[
     ];
     True,
     True,
-    TestID -> "DeployAgentTools-Cleanup@@Tests/DeployAgentTools.wlt:865,1-875,2"
+    TestID -> "DeployAgentTools-Cleanup@@Tests/DeployAgentTools.wlt:895,1-905,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
