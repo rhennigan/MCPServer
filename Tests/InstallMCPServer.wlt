@@ -362,21 +362,21 @@ VerificationTest[
 (* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Antigravity", "Windows" ],
+    Wolfram`MCPServer`Common`installLocation[ "Antigravity", "Windows" ],
     _File,
     SameTest -> MatchQ,
     TestID   -> "InstallLocation-Antigravity-Windows@@Tests/InstallMCPServer.wlt:364,1-369,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Antigravity", "MacOSX" ],
+    Wolfram`MCPServer`Common`installLocation[ "Antigravity", "MacOSX" ],
     _File,
     SameTest -> MatchQ,
     TestID   -> "InstallLocation-Antigravity-MacOSX@@Tests/InstallMCPServer.wlt:371,1-376,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Antigravity", "Unix" ],
+    Wolfram`MCPServer`Common`installLocation[ "Antigravity", "Unix" ],
     _File,
     SameTest -> MatchQ,
     TestID   -> "InstallLocation-Antigravity-Unix@@Tests/InstallMCPServer.wlt:378,1-383,2"
@@ -390,7 +390,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "GoogleAntigravity" ],
+    Wolfram`MCPServer`Common`toInstallName[ "GoogleAntigravity" ],
     "Antigravity",
     SameTest -> Equal,
     TestID   -> "ToInstallName-GoogleAntigravity@@Tests/InstallMCPServer.wlt:392,1-397,2"
@@ -404,7 +404,7 @@ VerificationTest[
 VerificationTest[
     Module[ { path, result },
         path = FileNameJoin @ { $TemporaryDirectory, "testproject" };
-        result = Wolfram`MCPServer`InstallMCPServer`Private`projectInstallLocation[ "ClaudeCode", path ];
+        result = Wolfram`MCPServer`Common`projectInstallLocation[ "ClaudeCode", path ];
         FileNameTake[ First @ result, -1 ]
     ],
     ".mcp.json",
@@ -414,7 +414,7 @@ VerificationTest[
 
 VerificationTest[
     Module[ { result },
-        result = Wolfram`MCPServer`InstallMCPServer`Private`projectInstallLocation[ "ClaudeCode", File[ "MCPServer" ] ];
+        result = Wolfram`MCPServer`Common`projectInstallLocation[ "ClaudeCode", File[ "MCPServer" ] ];
         FileNameTake[ First @ result, -1 ]
     ],
     ".mcp.json",
@@ -425,7 +425,7 @@ VerificationTest[
 VerificationTest[
     Module[ { path, result },
         path = FileNameJoin @ { $TemporaryDirectory, "testproject" };
-        result = Wolfram`MCPServer`InstallMCPServer`Private`projectInstallLocation[ "OpenCode", path ];
+        result = Wolfram`MCPServer`Common`projectInstallLocation[ "OpenCode", path ];
         FileNameTake[ First @ result, -1 ]
     ],
     "opencode.json",
@@ -436,7 +436,7 @@ VerificationTest[
 VerificationTest[
     Module[ { path, result },
         path = FileNameJoin @ { $TemporaryDirectory, "testproject" };
-        result = Wolfram`MCPServer`InstallMCPServer`Private`projectInstallLocation[ "VisualStudioCode", path ];
+        result = Wolfram`MCPServer`Common`projectInstallLocation[ "VisualStudioCode", path ];
         FileNameTake[ First @ result, -2 ]
     ],
     FileNameJoin @ { ".vscode", "settings.json" },
@@ -523,21 +523,21 @@ testTOMLFile = Function[
 (* ::Subsection::Closed:: *)
 (*Install Location for Codex*)
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Codex", "Windows" ],
+    Wolfram`MCPServer`Common`installLocation[ "Codex", "Windows" ],
     _File,
     SameTest -> MatchQ,
     TestID   -> "InstallLocation-Codex-Windows@@Tests/InstallMCPServer.wlt:525,1-530,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Codex", "MacOSX" ],
+    Wolfram`MCPServer`Common`installLocation[ "Codex", "MacOSX" ],
     _File,
     SameTest -> MatchQ,
     TestID   -> "InstallLocation-Codex-MacOSX@@Tests/InstallMCPServer.wlt:532,1-537,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Codex", "Unix" ],
+    Wolfram`MCPServer`Common`installLocation[ "Codex", "Unix" ],
     _File,
     SameTest -> MatchQ,
     TestID   -> "InstallLocation-Codex-Unix@@Tests/InstallMCPServer.wlt:539,1-544,2"
@@ -547,14 +547,14 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Name Normalization*)
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "OpenAICodex" ],
+    Wolfram`MCPServer`Common`toInstallName[ "OpenAICodex" ],
     "Codex",
     SameTest -> Equal,
     TestID   -> "ToInstallName-OpenAICodex@@Tests/InstallMCPServer.wlt:549,1-554,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "Codex" ],
+    Wolfram`MCPServer`Common`toInstallName[ "Codex" ],
     "Codex",
     SameTest -> Equal,
     TestID   -> "ToInstallName-Codex@@Tests/InstallMCPServer.wlt:556,1-561,2"
@@ -781,21 +781,21 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Install Location for Copilot CLI*)
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "CopilotCLI", "Windows" ],
+    Wolfram`MCPServer`Common`installLocation[ "CopilotCLI", "Windows" ],
     _File,
     SameTest -> MatchQ,
     TestID   -> "InstallLocation-CopilotCLI-Windows@@Tests/InstallMCPServer.wlt:783,1-788,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "CopilotCLI", "MacOSX" ],
+    Wolfram`MCPServer`Common`installLocation[ "CopilotCLI", "MacOSX" ],
     _File,
     SameTest -> MatchQ,
     TestID   -> "InstallLocation-CopilotCLI-MacOSX@@Tests/InstallMCPServer.wlt:790,1-795,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "CopilotCLI", "Unix" ],
+    Wolfram`MCPServer`Common`installLocation[ "CopilotCLI", "Unix" ],
     _File,
     SameTest -> MatchQ,
     TestID   -> "InstallLocation-CopilotCLI-Unix@@Tests/InstallMCPServer.wlt:797,1-802,2"
@@ -805,14 +805,14 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Name Normalization*)
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "Copilot" ],
+    Wolfram`MCPServer`Common`toInstallName[ "Copilot" ],
     "CopilotCLI",
     SameTest -> Equal,
     TestID   -> "ToInstallName-Copilot@@Tests/InstallMCPServer.wlt:807,1-812,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "CopilotCLI" ],
+    Wolfram`MCPServer`Common`toInstallName[ "CopilotCLI" ],
     "CopilotCLI",
     SameTest -> Equal,
     TestID   -> "ToInstallName-CopilotCLI@@Tests/InstallMCPServer.wlt:814,1-819,2"
@@ -861,21 +861,21 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Install Location for Windsurf*)
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Windsurf", "Windows" ],
+    Wolfram`MCPServer`Common`installLocation[ "Windsurf", "Windows" ],
     _File,
     SameTest -> MatchQ,
     TestID   -> "InstallLocation-Windsurf-Windows@@Tests/InstallMCPServer.wlt:863,1-868,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Windsurf", "MacOSX" ],
+    Wolfram`MCPServer`Common`installLocation[ "Windsurf", "MacOSX" ],
     _File,
     SameTest -> MatchQ,
     TestID   -> "InstallLocation-Windsurf-MacOSX@@Tests/InstallMCPServer.wlt:870,1-875,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Windsurf", "Unix" ],
+    Wolfram`MCPServer`Common`installLocation[ "Windsurf", "Unix" ],
     _File,
     SameTest -> MatchQ,
     TestID   -> "InstallLocation-Windsurf-Unix@@Tests/InstallMCPServer.wlt:877,1-882,2"
@@ -885,14 +885,14 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Name Normalization*)
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "Codeium" ],
+    Wolfram`MCPServer`Common`toInstallName[ "Codeium" ],
     "Windsurf",
     SameTest -> Equal,
     TestID   -> "ToInstallName-Codeium@@Tests/InstallMCPServer.wlt:887,1-892,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "Windsurf" ],
+    Wolfram`MCPServer`Common`toInstallName[ "Windsurf" ],
     "Windsurf",
     SameTest -> Equal,
     TestID   -> "ToInstallName-Windsurf@@Tests/InstallMCPServer.wlt:894,1-899,2"
@@ -913,21 +913,21 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Install Location for Cline*)
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Cline", "Windows" ],
+    Wolfram`MCPServer`Common`installLocation[ "Cline", "Windows" ],
     _File,
     SameTest -> MatchQ,
     TestID   -> "InstallLocation-Cline-Windows@@Tests/InstallMCPServer.wlt:915,1-920,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Cline", "MacOSX" ],
+    Wolfram`MCPServer`Common`installLocation[ "Cline", "MacOSX" ],
     _File,
     SameTest -> MatchQ,
     TestID   -> "InstallLocation-Cline-MacOSX@@Tests/InstallMCPServer.wlt:922,1-927,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Cline", "Unix" ],
+    Wolfram`MCPServer`Common`installLocation[ "Cline", "Unix" ],
     _File,
     SameTest -> MatchQ,
     TestID   -> "InstallLocation-Cline-Unix@@Tests/InstallMCPServer.wlt:929,1-934,2"
@@ -937,7 +937,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Name Normalization*)
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "Cline" ],
+    Wolfram`MCPServer`Common`toInstallName[ "Cline" ],
     "Cline",
     SameTest -> Equal,
     TestID   -> "ToInstallName-Cline@@Tests/InstallMCPServer.wlt:939,1-944,2"
@@ -1103,21 +1103,21 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Install Location for Zed*)
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Zed", "Windows" ],
+    Wolfram`MCPServer`Common`installLocation[ "Zed", "Windows" ],
     _File,
     SameTest -> MatchQ,
     TestID   -> "InstallLocation-Zed-Windows@@Tests/InstallMCPServer.wlt:1105,1-1110,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Zed", "MacOSX" ],
+    Wolfram`MCPServer`Common`installLocation[ "Zed", "MacOSX" ],
     _File,
     SameTest -> MatchQ,
     TestID   -> "InstallLocation-Zed-MacOSX@@Tests/InstallMCPServer.wlt:1112,1-1117,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`installLocation[ "Zed", "Unix" ],
+    Wolfram`MCPServer`Common`installLocation[ "Zed", "Unix" ],
     _File,
     SameTest -> MatchQ,
     TestID   -> "InstallLocation-Zed-Unix@@Tests/InstallMCPServer.wlt:1119,1-1124,2"
@@ -1127,7 +1127,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Name Normalization*)
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`toInstallName[ "Zed" ],
+    Wolfram`MCPServer`Common`toInstallName[ "Zed" ],
     "Zed",
     SameTest -> Equal,
     TestID   -> "ToInstallName-Zed@@Tests/InstallMCPServer.wlt:1129,1-1134,2"
@@ -1146,7 +1146,7 @@ VerificationTest[
 VerificationTest[
     Module[ { path, result },
         path = FileNameJoin @ { $TemporaryDirectory, "testproject" };
-        result = Wolfram`MCPServer`InstallMCPServer`Private`projectInstallLocation[ "Zed", path ];
+        result = Wolfram`MCPServer`Common`projectInstallLocation[ "Zed", path ];
         FileNameTake[ First @ result, -2 ]
     ],
     FileNameJoin @ { ".zed", "settings.json" },

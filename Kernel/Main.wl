@@ -60,6 +60,7 @@ $MCPServerContexts = {
     "Wolfram`MCPServer`Common`",
     "Wolfram`MCPServer`CreateMCPServer`",
     "Wolfram`MCPServer`DefaultServers`",
+    "Wolfram`MCPServer`DeployAgentTools`",
     "Wolfram`MCPServer`Files`",
     "Wolfram`MCPServer`Formatting`",
     "Wolfram`MCPServer`Graphics`",

@@ -21,7 +21,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **3. Export shared symbols to `CommonSymbols.wl` and add `$deploymentsPath`**
+- [x] **3. Export shared symbols to `CommonSymbols.wl` and add `$deploymentsPath`**
 
   Declare `$deploymentsPath`, `toInstallName`, `installLocation`, `projectInstallLocation`, and `guessClientName` in `CommonSymbols.wl` so they are accessible from `DeployAgentTools.wl`. Add the `$deploymentsPath` definition in `Files.wl` following the existing pattern (`$UserBaseDirectory/ApplicationData/Wolfram/MCPServer/Deployments`). Register the `DeployAgentTools` context in `$MCPServerContexts` in `Main.wl`.
 

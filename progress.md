@@ -29,3 +29,13 @@ Use the following format incrementing the session number from the latest entry:
 - Added new "MCPServerName Option" test section covering all 7 spec verification items: built-in key resolution, overwrite behavior, custom server unchanged, uninstall by resolved key, option override, two built-in with different overrides coexisting, and stale record clearing.
 - All 179 InstallMCPServer tests and 17 UninstallMCPServer tests pass. CodeInspector clean.
 
+## Session 3
+
+- Completed Task 3: Exported shared symbols to `CommonSymbols.wl` and added `$deploymentsPath`.
+- Declared `$deploymentsPath`, `toInstallName`, `installLocation`, `projectInstallLocation`, and `guessClientName` in `CommonSymbols.wl` so they are accessible from `DeployAgentTools.wl`.
+- Added `$deploymentsPath` definition in `Files.wl` following the existing pattern (`$UserBaseDirectory/ApplicationData/Wolfram/MCPServer/Deployments`).
+- Registered the `DeployAgentTools` context (`Wolfram`MCPServer`DeployAgentTools``) in `$MCPServerContexts` in `Main.wl`.
+- Created skeleton `Kernel/DeployAgentTools.wl` so the `Needs` call in `Main.wl` doesn't fail.
+- Key gotcha: moving `toInstallName`, `installLocation`, `projectInstallLocation` from `InstallMCPServer`Private`` to `Common`` context required updating test references — 32 tests referenced the old fully-qualified `InstallMCPServer`Private`` paths. Updated all to `Common`` context. `guessClientNameFromJSON` stays private.
+- All 179 InstallMCPServer tests and 17 UninstallMCPServer tests pass. CodeInspector clean on all 4 modified files.
+

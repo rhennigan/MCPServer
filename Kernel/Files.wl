@@ -11,6 +11,7 @@ Needs[ "Wolfram`MCPServer`Common`" ];
 (*Configuration*)
 $rootPath           := FileNameJoin @ { $UserBaseDirectory, "ApplicationData", "Wolfram", "MCPServer" };
 $storagePath        := FileNameJoin @ { $rootPath, "Servers" };
+$deploymentsPath    := FileNameJoin @ { $rootPath, "Deployments" };
 $imagePath          := FileNameJoin @ { $rootPath, "Images"  };
 $outputLogDirectory := FileNameJoin @ { $UserBaseDirectory, "Logs", "MCPServer", "Output" };
 
