@@ -58,3 +58,17 @@ Use the following format incrementing the session number from the latest entry:
 - Key gotcha: moving `toInstallName`, `installLocation`, `projectInstallLocation` from `InstallMCPServer`Private`` to `Common`` context required updating test references — 32 tests referenced the old fully-qualified `InstallMCPServer`Private`` paths. Updated all to `Common`` context. `guessClientNameFromJSON` stays private.
 - All 179 InstallMCPServer tests and 17 UninstallMCPServer tests pass. CodeInspector clean on all 4 modified files.
 
+## Session 6
+
+- Completed Task 6: Implemented `DeployAgentTools` function in `Kernel/DeployAgentTools.wl`.
+- Implemented all four call signatures: `DeployAgentTools[target]`, `DeployAgentTools[target, opts]`, `DeployAgentTools[target, server]`, `DeployAgentTools[target, server, opts]`.
+- Implemented target resolution via `resolveDeployTarget` handling three target forms: string client names (with alias resolution via `toInstallName`), `{name, dir}` project-level pairs, and `File[...]` direct paths.
+- Implemented duplicate-checking via `findExistingDeployment` which scans the client subdirectory under `$deploymentsPath` and compares stored `ConfigFile` paths using `ExpandFileName` for equivalence.
+- Implemented `OverwriteTarget` logic: `False` (default) returns `Failure["DeploymentExists", ...]`; `True` deletes the existing deployment first.
+- Options are passed through to `InstallMCPServer` using `FilterRules`, and the install-relevant options are stored in the deployment record for use by `DeleteObject`.
+- Deployment records are written as WXF under `$deploymentsPath/<ClientName>/<UUID>/Deployment.wxf`.
+- Key fix: `deploymentDirectory` was returning raw strings from `FileNames` instead of `File[...]` — fixed to always return `File[...]` via `fileNameJoin`.
+- Helper functions added: `resolveDeployTarget`, `findExistingDeployment`, `loadDeploymentFromDir`, `configFilesEqual`.
+- Added 24 new tests covering spec verification items 1-2 (deploy and verify properties/config), 6 (duplicate fails), 7 (overwrite replaces), and 8 (equivalent target forms detected as same deployment).
+- All 60 DeployAgentTools tests pass. All 196 existing tests (InstallMCPServer + UninstallMCPServer) still pass. CodeInspector clean.
+

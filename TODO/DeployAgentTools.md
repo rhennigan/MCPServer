@@ -45,7 +45,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **6. Implement `DeployAgentTools` function**
+- [x] **6. Implement `DeployAgentTools` function**
 
   Implement the main `DeployAgentTools` function with all four call signatures. Cover: target resolution (aliases, `{name, dir}` pairs, `File[...]`), existing-deployment duplicate checking against `"MCP"/"ConfigFile"`, `OverwriteTarget` logic, `InstallMCPServer` passthrough with `FilterRules`, deployment record construction (UUID, timestamp, version, MCP component, empty Skills/Hooks/Meta), WXF serialization under `$deploymentsPath/<ClientName>/<uuid>/Deployment.wxf`. Write and run tests covering spec verification items 1–2 and 6–8.
 

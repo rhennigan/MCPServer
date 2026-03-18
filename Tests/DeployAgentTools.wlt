@@ -362,4 +362,221 @@ VerificationTest[
     TestID -> "AgentToolsDeployment-MultipleObjects-UniqueUUIDs@@Tests/DeployAgentTools.wlt:357,1-363,2"
 ]
 
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*DeployAgentTools*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Setup*)
+VerificationTest[
+    $deployTestDir = CreateDirectory[ ];
+    $deployTestConfig = File[ FileNameJoin @ { $deployTestDir, "test_mcp_config.json" } ];
+    FileExistsQ @ $deployTestDir,
+    True,
+    TestID -> "DeployAgentTools-Setup@@Tests/DeployAgentTools.wlt:372,1-378,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Basic Deployment*)
+VerificationTest[
+    $dep1 = DeployAgentTools[ $deployTestConfig, "Wolfram", "VerifyLLMKit" -> False ],
+    _AgentToolsDeployment,
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-BasicDeploy@@Tests/DeployAgentTools.wlt:383,1-388,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Returned Object Properties*)
+VerificationTest[
+    $dep1[ "Server" ],
+    "Wolfram",
+    TestID -> "DeployAgentTools-Property-Server@@Tests/DeployAgentTools.wlt:393,1-397,2"
+]
+
+VerificationTest[
+    $dep1[ "ConfigFile" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-Property-ConfigFile@@Tests/DeployAgentTools.wlt:399,1-404,2"
+]
+
+VerificationTest[
+    $dep1[ "UUID" ],
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-Property-UUID@@Tests/DeployAgentTools.wlt:406,1-411,2"
+]
+
+VerificationTest[
+    $dep1[ "Timestamp" ],
+    _DateObject,
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-Property-Timestamp@@Tests/DeployAgentTools.wlt:413,1-418,2"
+]
+
+VerificationTest[
+    $dep1[ "CreatedBy" ],
+    "DeployAgentTools",
+    TestID -> "DeployAgentTools-Property-CreatedBy@@Tests/DeployAgentTools.wlt:420,1-424,2"
+]
+
+VerificationTest[
+    $dep1[ "PacletVersion" ],
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-Property-PacletVersion@@Tests/DeployAgentTools.wlt:426,1-431,2"
+]
+
+VerificationTest[
+    $dep1[ "Target" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-Property-Target@@Tests/DeployAgentTools.wlt:433,1-438,2"
+]
+
+VerificationTest[
+    $dep1[ "MCP" ],
+    _Association? AssociationQ,
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-Property-MCP@@Tests/DeployAgentTools.wlt:440,1-445,2"
+]
+
+VerificationTest[
+    $dep1[ "MCP", "Options" ],
+    _Association? AssociationQ,
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-Property-MCP-Options@@Tests/DeployAgentTools.wlt:447,1-452,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Config File Updated*)
+VerificationTest[
+    FileExistsQ @ $deployTestConfig,
+    True,
+    TestID -> "DeployAgentTools-ConfigFileExists@@Tests/DeployAgentTools.wlt:457,1-461,2"
+]
+
+VerificationTest[
+    Module[ { json },
+        json = Developer`ReadRawJSONString @ ReadString @ First @ $deployTestConfig;
+        KeyExistsQ[ json, "mcpServers" ] && KeyExistsQ[ json[ "mcpServers" ], "Wolfram" ]
+    ],
+    True,
+    TestID -> "DeployAgentTools-ConfigFileHasServerEntry@@Tests/DeployAgentTools.wlt:463,1-470,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Deployment Record on Disk*)
+VerificationTest[
+    $dep1[ "Location" ],
+    _File? DirectoryQ,
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-DeploymentDirExists@@Tests/DeployAgentTools.wlt:475,1-480,2"
+]
+
+VerificationTest[
+    FileExistsQ @ FileNameJoin @ { First @ $dep1[ "Location" ], "Deployment.wxf" },
+    True,
+    TestID -> "DeployAgentTools-DeploymentWXFExists@@Tests/DeployAgentTools.wlt:482,1-486,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*OverwriteTarget -> False Fails*)
+VerificationTest[
+    DeployAgentTools[ $deployTestConfig, "Wolfram", "VerifyLLMKit" -> False ],
+    _Failure,
+    { DeployAgentTools::DeploymentExists },
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-DuplicateFails@@Tests/DeployAgentTools.wlt:491,1-497,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*OverwriteTarget -> True Replaces*)
+VerificationTest[
+    $dep2 = DeployAgentTools[
+        $deployTestConfig,
+        "Wolfram",
+        OverwriteTarget  -> True,
+        "VerifyLLMKit"   -> False
+    ],
+    _AgentToolsDeployment,
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-OverwriteTrue@@Tests/DeployAgentTools.wlt:502,1-512,2"
+]
+
+VerificationTest[
+    $dep2[ "UUID" ] =!= $dep1[ "UUID" ],
+    True,
+    TestID -> "DeployAgentTools-OverwriteNewUUID@@Tests/DeployAgentTools.wlt:514,1-518,2"
+]
+
+VerificationTest[
+    (* The old deployment directory should have been cleaned up *)
+    ! DirectoryQ @ First @ $dep1[ "Location" ],
+    True,
+    TestID -> "DeployAgentTools-OverwriteOldDirRemoved@@Tests/DeployAgentTools.wlt:520,1-525,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Equivalent Target Forms*)
+VerificationTest[
+    $deployTestDir2 = CreateDirectory[ ];
+    $dep3 = DeployAgentTools[
+        { "ClaudeCode", $deployTestDir2 },
+        "Wolfram",
+        "VerifyLLMKit" -> False
+    ],
+    _AgentToolsDeployment,
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-ProjectDeploy@@Tests/DeployAgentTools.wlt:530,1-540,2"
+]
+
+VerificationTest[
+    $dep3[ "ClientName" ],
+    "ClaudeCode",
+    TestID -> "DeployAgentTools-ProjectDeploy-ClientName@@Tests/DeployAgentTools.wlt:542,1-546,2"
+]
+
+VerificationTest[
+    $dep3[ "Target" ],
+    { "ClaudeCode", $deployTestDir2 },
+    TestID -> "DeployAgentTools-ProjectDeploy-Target@@Tests/DeployAgentTools.wlt:548,1-552,2"
+]
+
+VerificationTest[
+    (* Deploy to the same config file via File target — should fail as duplicate *)
+    DeployAgentTools[
+        File[ FileNameJoin @ { $deployTestDir2, ".mcp.json" } ],
+        "Wolfram",
+        "VerifyLLMKit" -> False
+    ],
+    _Failure,
+    { DeployAgentTools::DeploymentExists },
+    SameTest -> MatchQ,
+    TestID   -"DeployAgentTools-EquivalentTargetFails@@Tests/DeployAgentTools.wlt:554,1-565,2"s"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Cleanup*)
+VerificationTest[
+    Quiet[
+        catchAlways @ DeleteObject @ $dep2;
+        catchAlways @ DeleteObject @ $dep3;
+        Quiet @ DeleteDirectory[ $deployTestDir, DeleteContents -> True ];
+        Quiet @ DeleteDirectory[ $deployTestDir2, DeleteContents -> True ];
+    ];
+    True,
+    True,
+    TestID -"DeployAgentTools-Cleanup@@Tests/DeployAgentTools.wlt:570,1-580,2"p"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)

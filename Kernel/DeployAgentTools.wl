@@ -262,6 +262,176 @@ AgentToolsDeployment[ args___ ]? sp`HoldNotValidQ := catchTop[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*DeployAgentTools*)
+DeployAgentTools // beginDefinition;
+
+DeployAgentTools // Options = {
+    OverwriteTarget      -> False,
+    "ApplicationName"    -> Automatic,
+    "DevelopmentMode"    -> False,
+    "EnableMCPApps"      -> True,
+    "MCPServerName"      -> Automatic,
+    "ProcessEnvironment" -> Automatic,
+    "ToolOptions"        -> <| |>,
+    "VerifyLLMKit"       -> True
+};
+
+DeployAgentTools[ target_, opts: OptionsPattern[ ] ] :=
+    catchMine @ DeployAgentTools[ target, Automatic, opts ];
+
+DeployAgentTools[ target_, Automatic, opts: OptionsPattern[ ] ] :=
+    catchMine @ DeployAgentTools[ target, $defaultMCPServer, opts ];
+
+DeployAgentTools[ target_, server_, opts: OptionsPattern[ ] ] :=
+    catchMine @ deployAgentTools[ target, ensureMCPServerExists @ MCPServerObject @ server, opts ];
+
+DeployAgentTools // endExportedDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*deployAgentTools*)
+deployAgentTools // beginDefinition;
+
+deployAgentTools[ target_, server_MCPServerObject, opts: OptionsPattern[ DeployAgentTools ] ] := Enclose[
+    Module[ { resolved, clientName, configFile, normalizedTarget, overwrite,
+              existingDep, installOpts, installResult, uuid, deployData, dir },
+
+        (* Step 1: Resolve target *)
+        resolved = ConfirmMatch[ resolveDeployTarget @ target, { _String, _File, _ }, "ResolveTarget" ];
+        { clientName, configFile, normalizedTarget } = resolved;
+
+        (* Step 2: Check for existing deployment *)
+        overwrite = TrueQ @ OptionValue[ DeployAgentTools, { opts }, OverwriteTarget ];
+        existingDep = findExistingDeployment[ clientName, configFile ];
+        If[ existingDep =!= None,
+            If[ overwrite,
+                deleteDeployment @ existingDep,
+                throwFailure[ "DeploymentExists", normalizedTarget ]
+            ]
+        ];
+
+        (* Step 3: Call InstallMCPServer *)
+        installOpts = FilterRules[ { opts }, Options @ InstallMCPServer ];
+        installResult = ConfirmBy[
+            InstallMCPServer[ target, server, Sequence @@ installOpts ],
+            MatchQ[ _Success ],
+            "Install"
+        ];
+
+        (* Step 4: Build deployment record *)
+        uuid = ConfirmBy[ CreateUUID[ ], StringQ, "UUID" ];
+        deployData = <|
+            "UUID"          -> uuid,
+            "Version"       -> 1,
+            "Timestamp"     -> Now,
+            "PacletVersion" -> $pacletVersion,
+            "CreatedBy"     -> "DeployAgentTools",
+            "MCP"           -> <|
+                "ClientName" -> clientName,
+                "Target"     -> normalizedTarget,
+                "Server"     -> server[ "Name" ],
+                "ConfigFile" -> installResult[ "Location" ],
+                "Options"    -> Association @ installOpts
+            |>,
+            "Skills"        -> <| |>,
+            "Hooks"         -> <| |>,
+            "Meta"          -> <| |>
+        |>;
+
+        (* Step 5: Write to disk *)
+        dir = ConfirmBy[
+            ensureDirectory @ fileNameJoin[ $deploymentsPath, clientName, uuid ],
+            directoryQ,
+            "DeploymentDir"
+        ];
+        ConfirmBy[
+            writeWXFFile[ fileNameJoin[ dir, "Deployment.wxf" ], deployData ],
+            FileExistsQ,
+            "WriteDeployment"
+        ];
+
+        (* Step 6: Return object *)
+        AgentToolsDeployment @ deployData
+    ],
+    throwInternalFailure
+];
+
+deployAgentTools // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*resolveDeployTarget*)
+resolveDeployTarget // beginDefinition;
+
+resolveDeployTarget[ name0_String ] :=
+    Module[ { name, configFile },
+        name = toInstallName @ name0;
+        configFile = installLocation @ name;
+        { name, configFile, name }
+    ];
+
+resolveDeployTarget[ { name0_String, dir_ } ] :=
+    Module[ { name, configFile },
+        name = toInstallName @ name0;
+        configFile = projectInstallLocation[ name, dir ];
+        { name, configFile, { name, dir } }
+    ];
+
+resolveDeployTarget[ file_File? fileQ ] :=
+    Module[ { configFile, clientName },
+        configFile = ensureFilePath @ file;
+        clientName = guessClientName @ file;
+        { Replace[ clientName, None -> "Other" ], configFile, file }
+    ];
+
+resolveDeployTarget // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*findExistingDeployment*)
+findExistingDeployment // beginDefinition;
+
+findExistingDeployment[ clientName_String, configFile_File ] :=
+    Module[ { clientDir, uuidDirs },
+        clientDir = FileNameJoin @ { $deploymentsPath, clientName };
+        If[ ! DirectoryQ @ clientDir, Return[ None, Module ] ];
+        uuidDirs = Select[ FileNames[ All, clientDir ], DirectoryQ ];
+        SelectFirst[
+            DeleteMissing @ Map[ loadDeploymentFromDir, uuidDirs ],
+            configFilesEqual[ #[ "ConfigFile" ], configFile ] &,
+            None
+        ]
+    ];
+
+findExistingDeployment // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*loadDeploymentFromDir*)
+loadDeploymentFromDir // beginDefinition;
+
+loadDeploymentFromDir[ dir_String ] :=
+    Module[ { wxfFile, data, dep },
+        wxfFile = FileNameJoin @ { dir, "Deployment.wxf" };
+        If[ ! FileExistsQ @ wxfFile, Return[ Missing[ "NotFound" ], Module ] ];
+        data = Quiet @ readWXFFile @ wxfFile;
+        If[ ! AssociationQ @ data, Return[ Missing[ "InvalidData" ], Module ] ];
+        dep = Quiet @ AgentToolsDeployment @ data;
+        If[ agentToolsDeploymentQ @ dep, dep, Missing[ "InvalidDeployment" ] ]
+    ];
+
+loadDeploymentFromDir // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*configFilesEqual*)
+configFilesEqual // beginDefinition;
+configFilesEqual[ File[ a_String ], File[ b_String ] ] := ExpandFileName @ a === ExpandFileName @ b;
+configFilesEqual[ _, _ ] := False;
+configFilesEqual // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Helper Functions*)
 
 (* ::**************************************************************************************************************:: *)
@@ -270,11 +440,16 @@ AgentToolsDeployment[ args___ ]? sp`HoldNotValidQ := catchTop[
 deploymentDirectory // beginDefinition;
 
 deploymentDirectory[ uuid_String ] :=
-    With[ { dirs = FileNames[ All, $deploymentsPath ] },
-        SelectFirst[
+    Module[ { dirs, result },
+        dirs = FileNames[ All, $deploymentsPath ];
+        result = SelectFirst[
             Flatten @ Map[ FileNames[ uuid, # ] &, dirs ],
             DirectoryQ,
-            fileNameJoin[ $deploymentsPath, "Unknown", uuid ]
+            None
+        ];
+        If[ result === None,
+            fileNameJoin[ $deploymentsPath, "Unknown", uuid ],
+            fileNameJoin @ result
         ]
     ];
 
