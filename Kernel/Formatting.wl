@@ -71,7 +71,7 @@ makeHiddenSummaryRows[ name_String, tools_List, location: _File | "BuiltIn", jso
         copyJSONButton = clickToCopy[ "{\[Ellipsis]}", json ];
         Flatten @ {
             summaryItem[ "JSON Configuration", copyJSONButton ],
-            If[ Length @ toolNames > 0, summaryItem[ "Tool Names", Multicolumn[ toolNames, 5 ] ], Nothing ],
+            If[ Length @ toolNames > 0, summaryItem[ "Tools", Multicolumn[ toolNames, 5 ] ], Nothing ],
             summaryItem[ "Location", location ]
         }
     ];
@@ -139,10 +139,16 @@ makeDeploymentSummaryRows // endDefinition;
 (*makeDeploymentHiddenRows*)
 makeDeploymentHiddenRows // beginDefinition;
 
-makeDeploymentHiddenRows[ dep_ ] := Flatten @ {
-    summaryItem[ "UUID"      , dep[ "UUID" ] ],
-    summaryItem[ "ConfigFile", dep[ "ConfigFile" ] ]
-};
+makeDeploymentHiddenRows[ dep_ ] :=
+    Module[ { tools, toolNames },
+        tools = dep[ "Tools" ];
+        toolNames = Select[ Cases[ tools, tool: $$llmTool :> toolName @ tool ], StringQ ];
+        Flatten @ {
+            If[ Length @ toolNames > 0, summaryItem[ "Tools", Multicolumn[ toolNames, 5 ] ], Nothing ],
+            summaryItem[ "UUID"      , dep[ "UUID" ] ],
+            summaryItem[ "ConfigFile", dep[ "ConfigFile" ] ]
+        }
+    ];
 
 makeDeploymentHiddenRows // endDefinition;
 
