@@ -249,7 +249,7 @@ AgentToolsDeployment /: DeleteObject[dep_AgentToolsDeployment] := catchTop[
 
 The `deleteDeployment` function:
 
-1. Calls `UninstallMCPServer[dep["ConfigFile"], dep["Server"], <stored options>]` using the options stored in `dep["MCP", "Options"]` (e.g. `"ApplicationName"`, `"MCPServerName"`). This is wrapped in `catchAlways` to tolerate cases where the config has already been manually modified or removed.
+1. Calls `UninstallMCPServer[dep["ConfigFile"], dep["Server"], <filtered options>]` using `FilterRules[dep["MCP", "Options"], Options[UninstallMCPServer]]` to pass only `UninstallMCPServer`-valid options (e.g. `"ApplicationName"`, `"MCPServerName"`). This is wrapped in `catchAlways` to tolerate cases where the config has already been manually modified or removed.
 2. Deletes the deployment directory: `DeleteDirectory[deploymentDirectory[dep["UUID"]], DeleteContents -> True]`.
 3. Returns `Null`.
 
@@ -316,7 +316,7 @@ $UserBaseDirectory/ApplicationData/Wolfram/MCPServer/Deployments/<ClientName>/<u
 
 The `<ClientName>` directory groups deployments by canonical client name (e.g. `"ClaudeCode"`, `"ClaudeDesktop"`, `"Cursor"`). For `{name, dir}` project-level targets, `<ClientName>` is the resolved canonical client name (e.g. `"ClaudeCode"`). Multiple project-level deployments for the same client (different directories) coexist under the same `<ClientName>` subdirectory. This makes `AgentToolsDeployments["ClientName"]` efficient — it only needs to scan a single subdirectory rather than all deployments.
 
-For `File[...]` targets that don't resolve to a known client name, a fallback directory name such as `"Other"` is used.
+For `File[...]` targets that don't resolve to a known client name, the fallback directory name `"Other"` is used.
 
 ### Format
 
@@ -353,7 +353,8 @@ MCPServer::InvalidDeploymentData = "Invalid deployment data: `1`.";
 | `Kernel/MCPServerObject.wl` | Expose `"MCPServerName"` as a readable property. |
 | `Kernel/DeployAgentTools.wl` | **New file.** All definitions for `DeployAgentTools`, `AgentToolsDeployment`, `AgentToolsDeployments`, and internal helpers. Context: ``Wolfram`MCPServer`DeployAgentTools` ``. |
 | `Kernel/Main.wl` | Add ``"Wolfram`MCPServer`DeployAgentTools`"`` to `$MCPServerContexts`. |
-| `Kernel/CommonSymbols.wl` | Add shared symbols needed across files (e.g. `$deploymentsPath`, `agentToolsDeploymentQ`, `deleteDeployment`, `ensureDeploymentExists`). |
+| `Kernel/Files.wl` | Add `$deploymentsPath` definition (following the pattern of `$storagePath`, `$rootPath`, `$imagePath`). |
+| `Kernel/CommonSymbols.wl` | Declare `$deploymentsPath` (following the pattern of other shared path variables). Internal helpers (`deleteDeployment`, `ensureDeploymentExists`, `agentToolsDeploymentQ`, `deploymentDirectory`) should remain private to the `DeployAgentTools` context. |
 | `Kernel/Messages.wl` | Add new message definitions. |
 | `PacletInfo.wl` | No changes — symbols already declared. |
 | `Tests/DeployAgentTools.wlt` | **New file.** Tests for deployment, listing, filtering, deletion, and error cases. |
