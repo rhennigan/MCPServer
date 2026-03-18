@@ -6,7 +6,7 @@ BeginPackage[ "Wolfram`MCPServer`" ];
 (* ::Section::Closed:: *)
 (*System Symbols*)
 System`AgentToolsDeployment;
-System`AgentToolsDeployments;
+System`DeployedAgentTools;
 System`DeployAgentTools;
 
 (* ::**************************************************************************************************************:: *)
@@ -111,7 +111,7 @@ $MCPServerProtectedNames = "Wolfram`MCPServer`" <> # & /@ {
 Scan[ Protect, $MCPServerProtectedNames ];
 
 SetAttributes[
-    { AgentToolsDeployment, AgentToolsDeployments, DeployAgentTools },
+    { AgentToolsDeployment, DeployedAgentTools, DeployAgentTools },
     { Protected, ReadProtected }
 ];
 

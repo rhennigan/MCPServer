@@ -392,19 +392,19 @@ configFilesEqual // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*AgentToolsDeployments*)
-AgentToolsDeployments // beginDefinition;
-AgentToolsDeployments[ ] := catchMine @ agentToolsDeployments[ ];
-AgentToolsDeployments[ target_String ] := catchMine @ agentToolsDeployments[ toInstallName @ target ];
-AgentToolsDeployments // endExportedDefinition;
+(*DeployedAgentTools*)
+DeployedAgentTools // beginDefinition;
+DeployedAgentTools[ ] := catchMine @ deployedAgentTools[ ];
+DeployedAgentTools[ target_String ] := catchMine @ deployedAgentTools @ toInstallName @ target;
+DeployedAgentTools // endExportedDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*agentToolsDeployments*)
-agentToolsDeployments // beginDefinition;
+(*deployedAgentTools*)
+deployedAgentTools // beginDefinition;
 
 (* No arguments: scan all client subdirectories *)
-agentToolsDeployments[ ] := Enclose[
+deployedAgentTools[ ] := Enclose[
     Module[ { clientDirs },
         If[ ! DirectoryQ @ $deploymentsPath, Return[ { }, Module ] ];
         clientDirs = Select[ FileNames[ All, $deploymentsPath ], DirectoryQ ];
@@ -414,7 +414,7 @@ agentToolsDeployments[ ] := Enclose[
 ];
 
 (* With client name: scan only the matching subdirectory *)
-agentToolsDeployments[ clientName_String ] := Enclose[
+deployedAgentTools[ clientName_String ] := Enclose[
     Module[ { clientDir },
         clientDir = FileNameJoin @ { $deploymentsPath, clientName };
         If[ ! DirectoryQ @ clientDir, Return[ { }, Module ] ];
@@ -423,7 +423,7 @@ agentToolsDeployments[ clientName_String ] := Enclose[
     throwInternalFailure
 ];
 
-agentToolsDeployments // endDefinition;
+deployedAgentTools // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)

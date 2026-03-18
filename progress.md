@@ -43,7 +43,7 @@ Use the following format incrementing the session number from the latest entry:
 - Implemented `DeleteObject` UpValue with `deleteDeployment`/`ensureDeploymentExists` internals. `deleteDeployment` calls `UninstallMCPServer` (wrapped in `catchAlways`) then removes the deployment directory.
 - Implemented `MakeBoxes` formatting via `BoxForm`ArrangeSummaryBox` with summary rows (Target, Server) and hidden rows (UUID, ConfigFile, Timestamp).
 - Implemented `agentToolsDeploymentQ` and `deploymentDirectory` internal helpers.
-- Key gotcha: System context symbols (`AgentToolsDeployment`, `AgentToolsDeployments`, `DeployAgentTools`) need `Unprotect`/`ClearAll` at the top of the file because `Main.wl` sets `{Protected, ReadProtected}` on them, which persists across `Get` reloads.
+- Key gotcha: System context symbols (`AgentToolsDeployment`, `DeployedAgentTools`, `DeployAgentTools`) need `Unprotect`/`ClearAll` at the top of the file because `Main.wl` sets `{Protected, ReadProtected}` on them, which persists across `Get` reloads.
 - Key gotcha: Error messages are issued on `AgentToolsDeployment` (not `MCPServer`) because `catchTop[..., AgentToolsDeployment]` sets `$messageSymbol` to `AgentToolsDeployment`. The `messageFailure` function automatically copies message text from `MCPServer` to the target symbol. Tests must expect `AgentToolsDeployment::tag` not `MCPServer::tag`.
 - Key gotcha: `MakeBoxes` holds its arguments, so formatting tests must use `With[{obj = AgentToolsDeployment[data]}, MakeBoxes[obj, StandardForm]]` to inject an already-evaluated (valid) object.
 - All 36 DeployAgentTools tests pass. CodeInspector clean on both source and test files. All 196 existing tests (InstallMCPServer + UninstallMCPServer) still pass.
@@ -74,7 +74,7 @@ Use the following format incrementing the session number from the latest entry:
 
 ## Session 7
 
-- Completed Task 7: Implemented `AgentToolsDeployments` listing/query function in `Kernel/DeployAgentTools.wl`.
+- Completed Task 7: Implemented `DeployedAgentTools` listing/query function in `Kernel/DeployAgentTools.wl`.
 - Implemented no-argument form: scans all client subdirectories under `$deploymentsPath`, reads `Deployment.wxf` from each UUID subdirectory, filters out corrupted/invalid records.
 - Implemented single-argument form: resolves the target string through `toInstallName` (alias resolution via `$aliasToCanonicalName`), then scans only the matching `$deploymentsPath/<ClientName>/` subdirectory.
 - Added `deploymentsInClientDir` internal helper that maps `loadDeploymentFromDir` over UUID subdirectories and filters out `Missing` results.

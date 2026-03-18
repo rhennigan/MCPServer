@@ -10,7 +10,7 @@ Three new symbols are introduced, all in the `System` context:
 
 - **`DeployAgentTools`** — Create a deployment
 - **`AgentToolsDeployment`** — Object representing a deployment
-- **`AgentToolsDeployments`** — List and query existing deployments
+- **`DeployedAgentTools`** — List and query existing deployments
 
 ---
 
@@ -273,13 +273,13 @@ The `deleteDeployment` function:
 
 ---
 
-## AgentToolsDeployments
+## DeployedAgentTools
 
 ### Signature
 
 ```wl
-AgentToolsDeployments[]                (* all deployments *)
-AgentToolsDeployments["ClaudeCode"]    (* filter by target client name *)
+DeployedAgentTools[]                (* all deployments *)
+DeployedAgentTools["ClaudeCode"]    (* filter by target client name *)
 ```
 
 ### Behavior
@@ -302,15 +302,15 @@ AgentToolsDeployments["ClaudeCode"]    (* filter by target client name *)
 
 ```wl
 (* List all deployments *)
-AgentToolsDeployments[]
+DeployedAgentTools[]
 (* {AgentToolsDeployment[...], AgentToolsDeployment[...]} *)
 
 (* Filter by client *)
-AgentToolsDeployments["ClaudeDesktop"]
+DeployedAgentTools["ClaudeDesktop"]
 (* {AgentToolsDeployment[...]} *)
 
 (* Aliases are resolved *)
-AgentToolsDeployments["Claude"]  (* same as "ClaudeDesktop" *)
+DeployedAgentTools["Claude"]  (* same as "ClaudeDesktop" *)
 ```
 
 ---
@@ -325,7 +325,7 @@ Deployment records are stored under:
 $UserBaseDirectory/ApplicationData/Wolfram/MCPServer/Deployments/<ClientName>/<uuid>/Deployment.wxf
 ```
 
-The `<ClientName>` directory groups deployments by canonical client name (e.g. `"ClaudeCode"`, `"ClaudeDesktop"`, `"Cursor"`). For `{name, dir}` project-level targets, `<ClientName>` is the resolved canonical client name (e.g. `"ClaudeCode"`). Multiple project-level deployments for the same client (different directories) coexist under the same `<ClientName>` subdirectory. This makes `AgentToolsDeployments["ClientName"]` efficient — it only needs to scan a single subdirectory rather than all deployments.
+The `<ClientName>` directory groups deployments by canonical client name (e.g. `"ClaudeCode"`, `"ClaudeDesktop"`, `"Cursor"`). For `{name, dir}` project-level targets, `<ClientName>` is the resolved canonical client name (e.g. `"ClaudeCode"`). Multiple project-level deployments for the same client (different directories) coexist under the same `<ClientName>` subdirectory. This makes `DeployedAgentTools["ClientName"]` efficient — it only needs to scan a single subdirectory rather than all deployments.
 
 For `File[...]` targets, `<ClientName>` is the inferred client name when one can be determined from the path or file structure; otherwise the fallback directory name `"Other"` is used.
 
@@ -335,7 +335,7 @@ WXF (Wolfram Exchange Format), consistent with existing storage (`Installations.
 
 ### Indexing
 
-No master index file. `AgentToolsDeployments[]` scans all client subdirectories under `Deployments/`. `AgentToolsDeployments["ClientName"]` scans only the matching `Deployments/<ClientName>/` subdirectory. This avoids index-vs-reality consistency issues while keeping filtered queries efficient.
+No master index file. `DeployedAgentTools[]` scans all client subdirectories under `Deployments/`. `DeployedAgentTools["ClientName"]` scans only the matching `Deployments/<ClientName>/` subdirectory. This avoids index-vs-reality consistency issues while keeping filtered queries efficient.
 
 ### Data Versioning
 
@@ -361,7 +361,7 @@ MCPServer::InvalidDeploymentData = "Invalid deployment data: `1`.";
 |---|---|
 | `Kernel/DefaultServers.wl` | Add `"MCPServerName" -> "Wolfram"` to all four built-in server definitions. |
 | `Kernel/InstallMCPServer.wl` | Add `"MCPServerName" -> Automatic` option to both `InstallMCPServer` and `UninstallMCPServer`. Use the resolved MCPServerName as the config file key in `installMCPServer` and `uninstallMCPServer` (but not for JSON extraction from `data["mcpServers", name]`, which must still use `obj["Name"]`). Also clear stale built-in installation records when one built-in Wolfram variant overwrites another under the shared default `"Wolfram"` key. |
-| `Kernel/DeployAgentTools.wl` | **New file.** All definitions for `DeployAgentTools`, `AgentToolsDeployment`, `AgentToolsDeployments`, and internal helpers. Context: ``Wolfram`MCPServer`DeployAgentTools` ``. |
+| `Kernel/DeployAgentTools.wl` | **New file.** All definitions for `DeployAgentTools`, `AgentToolsDeployment`, `DeployedAgentTools`, and internal helpers. Context: ``Wolfram`MCPServer`DeployAgentTools` ``. |
 | `Kernel/Main.wl` | Add ``"Wolfram`MCPServer`DeployAgentTools`"`` to `$MCPServerContexts`. |
 | `Kernel/Files.wl` | Add `$deploymentsPath` definition (following the pattern of `$storagePath`, `$rootPath`, `$imagePath`). |
 | `Kernel/CommonSymbols.wl` | Declare `$deploymentsPath` (following the pattern of other shared path variables). Also declare `toInstallName`, `installLocation`, `projectInstallLocation`, and `guessClientName` — these are currently private to `InstallMCPServer.wl` but `DeployAgentTools.wl` needs them to resolve targets to concrete config file paths before calling `InstallMCPServer` (for duplicate-checking in step 2). Internal helpers (`deleteDeployment`, `ensureDeploymentExists`, `agentToolsDeploymentQ`, `deploymentDirectory`) should remain private to the `DeployAgentTools` context. |
@@ -433,8 +433,8 @@ Each component gets its own cleanup logic in `deleteDeployment`. Components are 
 
 1. Deploy to a supported client; verify an `AgentToolsDeployment` is returned with correct properties.
 2. Verify the client's MCP config file was updated (consistent with `InstallMCPServer` behavior).
-3. Verify `AgentToolsDeployments[]` includes the new deployment.
-4. Verify `AgentToolsDeployments["ClientName"]` filters correctly, including alias resolution.
+3. Verify `DeployedAgentTools[]` includes the new deployment.
+4. Verify `DeployedAgentTools["ClientName"]` filters correctly, including alias resolution.
 5. Verify `DeleteObject` removes the MCP config entry and the deployment directory.
 6. Verify `OverwriteTarget -> False` returns a `Failure` when a deployment already exists for the target.
 7. Verify `OverwriteTarget -> True` replaces the existing deployment.

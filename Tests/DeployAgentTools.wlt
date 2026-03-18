@@ -616,22 +616,22 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*AgentToolsDeployments*)
+(*DeployedAgentTools*)
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*List All Deployments*)
 VerificationTest[
-    $allDeps = AgentToolsDeployments[ ],
+    $allDeps = DeployedAgentTools[ ],
     _List,
     SameTest -> MatchQ,
-    TestID   -> "AgentToolsDeployments-ListAll@@Tests/DeployAgentTools.wlt:624,1-629,2"
+    TestID   -> "DeployedAgentTools-ListAll@@Tests/DeployAgentTools.wlt:624,1-629,2"
 ]
 
 VerificationTest[
     AllTrue[ $allDeps, agentToolsDeploymentQ ],
     True,
-    TestID -> "AgentToolsDeployments-ListAll-AllValid@@Tests/DeployAgentTools.wlt:631,1-635,2"
+    TestID -> "DeployedAgentTools-ListAll-AllValid@@Tests/DeployAgentTools.wlt:631,1-635,2"
 ]
 
 VerificationTest[
@@ -639,30 +639,30 @@ VerificationTest[
     MemberQ[ $allDeps, _? (configFilesEqual[ #[ "ConfigFile" ], $dep2[ "ConfigFile" ] ] &) ] &&
     MemberQ[ $allDeps, _? (configFilesEqual[ #[ "ConfigFile" ], $dep3[ "ConfigFile" ] ] &) ],
     True,
-    TestID -> "AgentToolsDeployments-ListAll-ContainsDeployments@@Tests/DeployAgentTools.wlt:637,1-643,2"
+    TestID -> "DeployedAgentTools-ListAll-ContainsDeployments@@Tests/DeployAgentTools.wlt:637,1-643,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Filter By Client Name*)
 VerificationTest[
-    $ccDeps = AgentToolsDeployments[ "ClaudeCode" ],
+    $ccDeps = DeployedAgentTools[ "ClaudeCode" ],
     _List,
     SameTest -> MatchQ,
-    TestID   -> "AgentToolsDeployments-FilterClaudeCode@@Tests/DeployAgentTools.wlt:648,1-653,2"
+    TestID   -> "DeployedAgentTools-FilterClaudeCode@@Tests/DeployAgentTools.wlt:648,1-653,2"
 ]
 
 VerificationTest[
     MemberQ[ $ccDeps, _? (#[ "UUID" ] === $dep3[ "UUID" ] &) ],
     True,
-    TestID -> "AgentToolsDeployments-FilterClaudeCode-ContainsDep3@@Tests/DeployAgentTools.wlt:655,1-659,2"
+    TestID -> "DeployedAgentTools-FilterClaudeCode-ContainsDep3@@Tests/DeployAgentTools.wlt:655,1-659,2"
 ]
 
 VerificationTest[
     (* $dep2 is a File target - should NOT be in the ClaudeCode list *)
     NoneTrue[ $ccDeps, #[ "UUID" ] === $dep2[ "UUID" ] & ],
     True,
-    TestID -> "AgentToolsDeployments-FilterClaudeCode-ExcludesDep2@@Tests/DeployAgentTools.wlt:661,1-666,2"
+    TestID -> "DeployedAgentTools-FilterClaudeCode-ExcludesDep2@@Tests/DeployAgentTools.wlt:661,1-666,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -670,18 +670,18 @@ VerificationTest[
 (*Alias Resolution*)
 VerificationTest[
     (* "Claude" is an alias for "ClaudeDesktop" - should return the same result *)
-    AgentToolsDeployments[ "Claude" ] === AgentToolsDeployments[ "ClaudeDesktop" ],
+    DeployedAgentTools[ "Claude" ] === DeployedAgentTools[ "ClaudeDesktop" ],
     True,
-    TestID -> "AgentToolsDeployments-AliasResolution@@Tests/DeployAgentTools.wlt:671,1-676,2"
+    TestID -> "DeployedAgentTools-AliasResolution@@Tests/DeployAgentTools.wlt:671,1-676,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Non-Existent Client*)
 VerificationTest[
-    AgentToolsDeployments[ "NonExistentClient" ],
+    DeployedAgentTools[ "NonExistentClient" ],
     { },
-    TestID -> "AgentToolsDeployments-NonExistentClient@@Tests/DeployAgentTools.wlt:681,1-685,2"
+    TestID -> "DeployedAgentTools-NonExistentClient@@Tests/DeployAgentTools.wlt:681,1-685,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -690,10 +690,10 @@ VerificationTest[
 VerificationTest[
     (* With no deployments directory at all, should return empty list *)
     Block[ { Wolfram`MCPServer`Common`$deploymentsPath = FileNameJoin @ { $TemporaryDirectory, "nonexistent_deployments_" <> CreateUUID[ ] } },
-        AgentToolsDeployments[ ]
+        DeployedAgentTools[ ]
     ],
     { },
-    TestID -> "AgentToolsDeployments-EmptyPath@@Tests/DeployAgentTools.wlt:690,1-697,2"
+    TestID -> "DeployedAgentTools-EmptyPath@@Tests/DeployAgentTools.wlt:690,1-697,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -712,12 +712,12 @@ VerificationTest[
         BinaryWrite[ corruptFile, "not valid wxf data" ];
         Close @ corruptFile;
         (* Should still return valid deployments, skipping the corrupted one *)
-        $ccDeps2 = AgentToolsDeployments[ "ClaudeCode" ];
+        $ccDeps2 = DeployedAgentTools[ "ClaudeCode" ];
         Quiet @ DeleteDirectory[ corruptDir, DeleteContents -> True ];
         AllTrue[ $ccDeps2, agentToolsDeploymentQ ]
     ],
     True,
-    TestID -> "AgentToolsDeployments-CorruptedRecordFiltered@@Tests/DeployAgentTools.wlt:702,1-721,2"
+    TestID -> "DeployedAgentTools-CorruptedRecordFiltered@@Tests/DeployAgentTools.wlt:702,1-721,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -757,7 +757,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    MemberQ[ AgentToolsDeployments[ ], _? (#[ "UUID" ] === $deleteDep[ "UUID" ] &) ],
+    MemberQ[ DeployedAgentTools[ ], _? (#[ "UUID" ] === $deleteDep[ "UUID" ] &) ],
     True,
     TestID -> "DeleteObject-InListing@@Tests/DeployAgentTools.wlt:759,1-763,2"
 ]
@@ -791,7 +791,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    NoneTrue[ AgentToolsDeployments[ ], #[ "UUID" ] === $deleteDep[ "UUID" ] & ],
+    NoneTrue[ DeployedAgentTools[ ], #[ "UUID" ] === $deleteDep[ "UUID" ] & ],
     True,
     TestID -> "DeleteObject-NotInListing@@Tests/DeployAgentTools.wlt:793,1-797,2"
 ]
@@ -820,7 +820,7 @@ VerificationTest[
         uuid = dep[ "UUID" ];
 
         (* Verify in listing *)
-        listed = AgentToolsDeployments[ ];
+        listed = DeployedAgentTools[ ];
         If[ ! MemberQ[ listed, _? (#[ "UUID" ] === uuid &) ],
             Quiet @ DeleteDirectory[ dir, DeleteContents -> True ];
             Return[ False, Module ]
@@ -830,7 +830,7 @@ VerificationTest[
         DeleteObject[ dep ];
 
         (* Verify gone from listing *)
-        listedAfter = AgentToolsDeployments[ ];
+        listedAfter = DeployedAgentTools[ ];
         If[ MemberQ[ listedAfter, _? (#[ "UUID" ] === uuid &) ],
             Quiet @ DeleteDirectory[ dir, DeleteContents -> True ];
             Return[ False, Module ]
