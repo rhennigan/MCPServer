@@ -71,16 +71,16 @@ MCPServer::DeploymentNotFound              = "No deployment found with UUID \"`1
 MCPServer::InvalidDeploymentData           = "Invalid deployment data: `1`.";
 
 (* Paclet extension messages *)
-MCPServer::PacletNotInstalled              = "The paclet \"`1`\" is not installed. Evaluate `2` to install it.";
-MCPServer::PacletExtensionNotFound         = "No MCP extension found in paclet \"`1`\".";
-MCPServer::PacletToolNotFound              = "Tool \"`1`\" not found in paclet \"`2`\".";
-MCPServer::PacletServerNotFound            = "Server \"`1`\" not found in paclet \"`2`\".";
-MCPServer::PacletPromptNotFound            = "Prompt \"`1`\" not found in paclet \"`2`\".";
-MCPServer::InvalidPacletToolDefinition     = "Invalid tool definition in `1`.";
-MCPServer::InvalidPacletServerDefinition   = "Invalid server definition in `1`.";
-MCPServer::PacletDependencyMissing         = "Server \"`1`\" references tool \"`2`\" from paclet \"`3`\", which could not be installed.";
-MCPServer::InvalidMCPPacletExtension       = "The MCP extension in paclet \"`1`\" is invalid: `2`.";
-MCPServer::DeletePacletMCPServer           = "Cannot delete paclet-backed server \"`1`\". Evaluate `2` to uninstall the paclet.";
+MCPServer::PacletNotInstalled               = "The paclet \"`1`\" is not installed. Evaluate `2` to install it.";
+MCPServer::PacletExtensionNotFound          = "No AgentTools extension found in paclet \"`1`\".";
+MCPServer::PacletToolNotFound               = "Tool \"`1`\" not found in paclet \"`2`\".";
+MCPServer::PacletServerNotFound             = "Server \"`1`\" not found in paclet \"`2`\".";
+MCPServer::PacletPromptNotFound             = "Prompt \"`1`\" not found in paclet \"`2`\".";
+MCPServer::InvalidPacletToolDefinition      = "Invalid tool definition in `1`.";
+MCPServer::InvalidPacletServerDefinition    = "Invalid server definition in `1`.";
+MCPServer::PacletDependencyMissing          = "Server \"`1`\" references tool \"`2`\" from paclet \"`3`\", which could not be installed.";
+MCPServer::InvalidAgentToolsPacletExtension = "The AgentTools extension in paclet \"`1`\" is invalid: `2`.";
+MCPServer::DeletePacletMCPServer            = "Cannot delete paclet-backed server \"`1`\". Evaluate `2` to uninstall the paclet.";
 
 (* ToolOptions messages *)
 MCPServer::InvalidToolOptions             = "Invalid value for ToolOptions: `1`. Expected an Association.";

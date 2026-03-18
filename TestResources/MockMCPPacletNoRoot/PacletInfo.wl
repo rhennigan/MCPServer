@@ -2,7 +2,7 @@ PacletObject[<|
     "Name" -> "MockMCPPacletNoRoot",
     "Version" -> "1.0.0",
     "Extensions" -> {
-        {"MCP",
+        {"AgentTools",
             "Root" -> "NonExistentDirectory",
             "Tools" -> {"SomeTool"}
         }

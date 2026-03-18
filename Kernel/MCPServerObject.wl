@@ -278,7 +278,7 @@ checkRemotePacletMCPServer[ qualifiedName_String, pacletName_String, serverName_
         If[ ! MatchQ[ remote, { __PacletObject } ], throwFailure[ "MCPServerNotFound", qualifiedName ] ];
 
         paclet = First @ remote;
-        declaredServers = Quiet @ getMCPDeclaredItems[ paclet, "Servers" ];
+        declaredServers = Quiet @ getAgentToolsDeclaredItems[ paclet, "MCPServers" ];
         If[ ! MemberQ[ declaredServers, serverName ], throwFailure[ "MCPServerNotFound", qualifiedName ] ];
 
         metadata = buildRemotePacletServerMetadata[ qualifiedName, paclet, serverName ];
@@ -294,21 +294,21 @@ buildRemotePacletServerMetadata // beginDefinition;
 
 buildRemotePacletServerMetadata[ qualifiedName_String, paclet_PacletObject, serverName_String ] :=
     Module[ { extData, serverDecl, tools, prompts, evaluator },
-        extData = Quiet @ getMCPExtensionData @ paclet;
+        extData = Quiet @ getAgentToolsExtensionData @ paclet;
         serverDecl = If[ AssociationQ @ extData,
             SelectFirst[
-                Lookup[ extData, "Servers", { } ],
+                Lookup[ extData, "MCPServers", { } ],
                 MatchQ[ #, serverName | { serverName, _ } | KeyValuePattern[ "Name" -> serverName ] ] &
             ],
             Missing[ "NotAvailable" ]
         ];
         tools = If[ MatchQ[ serverDecl, _Association ] && KeyExistsQ[ serverDecl, "Tools" ],
             serverDecl[ "Tools" ],
-            getMCPDeclaredItems[ paclet, "Tools" ]
+            getAgentToolsDeclaredItems[ paclet, "Tools" ]
         ];
         prompts = If[ MatchQ[ serverDecl, _Association ] && KeyExistsQ[ serverDecl, "Prompts" ],
             serverDecl[ "Prompts" ],
-            getMCPDeclaredItems[ paclet, "Prompts" ]
+            getAgentToolsDeclaredItems[ paclet, "MCPPrompts" ]
         ];
         evaluator = <| "Tools" -> tools, "MCPPrompts" -> prompts |>;
         <|
@@ -829,7 +829,7 @@ getInstalledPacletServers // beginDefinition;
 
 getInstalledPacletServers[ pattern_ ] :=
     Catch @ Module[ { paclets, servers },
-        paclets = Quiet @ findMCPPaclets[ ];
+        paclets = Quiet @ findAgentToolsPaclets[ ];
         If[ ! MatchQ[ paclets, { __PacletObject } ], Throw @ { } ];
         servers = Flatten[ installedPacletToServers /@ paclets ];
         filterServersByPattern[ servers, pattern ]
@@ -845,7 +845,7 @@ installedPacletToServers // beginDefinition;
 installedPacletToServers[ paclet_PacletObject ] :=
     Catch @ Module[ { pacletName, declaredServers },
         pacletName = paclet[ "Name" ];
-        declaredServers = Quiet @ getMCPDeclaredItems[ paclet, "Servers" ];
+        declaredServers = Quiet @ getAgentToolsDeclaredItems[ paclet, "MCPServers" ];
         If[ ! ListQ @ declaredServers, Throw @ { } ];
         Select[
             Quiet @ catchAlways @ MCPServerObject[ pacletName <> "/" <> # ] & /@ declaredServers,
@@ -870,9 +870,9 @@ getRemotePacletServers // beginDefinition;
 
 getRemotePacletServers[ pattern_, updateSites_ ] :=
     Catch @ Module[ { remotePaclets, installedNames, uninstalledPaclets, servers },
-        remotePaclets = Quiet @ findRemoteMCPPaclets[ updateSites ];
+        remotePaclets = Quiet @ findRemoteAgentToolsPaclets[ updateSites ];
         If[ ! MatchQ[ remotePaclets, { __PacletObject } ], Throw @ { } ];
-        installedNames = Quiet[ #[ "Name" ] & /@ findMCPPaclets[ ] ] /. Except[ { __String } ] -> { };
+        installedNames = Quiet[ #[ "Name" ] & /@ findAgentToolsPaclets[ ] ] /. Except[ { __String } ] -> { };
         uninstalledPaclets = Select[ remotePaclets, !MemberQ[ installedNames, #[ "Name" ] ] & ];
         servers = Flatten[ remotePacletToServers /@ uninstalledPaclets ];
         filterServersByPattern[ servers, pattern ]
@@ -888,7 +888,7 @@ remotePacletToServers // beginDefinition;
 remotePacletToServers[ paclet_PacletObject ] :=
     Catch @ Module[ { pacletName, declaredServers },
         pacletName = paclet[ "Name" ];
-        declaredServers = Quiet @ getMCPDeclaredItems[ paclet, "Servers" ];
+        declaredServers = Quiet @ getAgentToolsDeclaredItems[ paclet, "MCPServers" ];
         If[ ! ListQ @ declaredServers, Throw @ { } ];
         Function[ serverName,
             MCPServerObject @ buildRemotePacletServerMetadata[

@@ -1,6 +1,6 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`ValidateMCPPacletExtension`" ];
+BeginPackage[ "Wolfram`MCPServer`ValidateAgentToolsPacletExtension`" ];
 Begin[ "`Private`" ];
 
 Needs[ "Wolfram`MCPServer`"        ];
@@ -11,26 +11,26 @@ Needs[ "PacletTools`" -> "pt`" ];
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Argument Patterns*)
-$validExtensionKeys = { "Root", "Servers", "Tools", "Prompts" };
+$validExtensionKeys = { "Root", "MCPServers", "Tools", "MCPPrompts" };
 
 $$declarationItem = _String | { _String, _String } | _Association? (KeyExistsQ[ #, "Name" ] &);
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*ValidateMCPPacletExtension*)
-ValidateMCPPacletExtension // beginDefinition;
+(*ValidateAgentToolsPacletExtension*)
+ValidateAgentToolsPacletExtension // beginDefinition;
 
-ValidateMCPPacletExtension[ paclet_PacletObject ] :=
-    catchMine @ validateMCPPacletExtension @ paclet;
+ValidateAgentToolsPacletExtension[ paclet_PacletObject ] :=
+    catchMine @ validateAgentToolsPacletExtension @ paclet;
 
-ValidateMCPPacletExtension // endExportedDefinition;
+ValidateAgentToolsPacletExtension // endExportedDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*validateMCPPacletExtension*)
-validateMCPPacletExtension // beginDefinition;
+(*validateAgentToolsPacletExtension*)
+validateAgentToolsPacletExtension // beginDefinition;
 
-validateMCPPacletExtension[ paclet_PacletObject ] := Enclose[
+validateAgentToolsPacletExtension[ paclet_PacletObject ] := Enclose[
     Catch @ Module[ { structureResult, extensionData, structureErrors, root, rootErrors,
               servers, tools, prompts, fileErrors, contentErrors, crossRefErrors, allErrors },
 
@@ -50,15 +50,15 @@ validateMCPPacletExtension[ paclet_PacletObject ] := Enclose[
             { }
         ];
 
-        servers = getMCPDeclaredItems[ paclet, "Servers" ];
-        tools   = getMCPDeclaredItems[ paclet, "Tools"   ];
-        prompts = getMCPDeclaredItems[ paclet, "Prompts" ];
+        servers = getAgentToolsDeclaredItems[ paclet, "MCPServers" ];
+        tools   = getAgentToolsDeclaredItems[ paclet, "Tools"      ];
+        prompts = getAgentToolsDeclaredItems[ paclet, "MCPPrompts" ];
 
         fileErrors = If[ StringQ @ root,
             Join[
-                checkFileExistence[ root, "Servers", servers ],
-                checkFileExistence[ root, "Tools"  , tools   ],
-                checkFileExistence[ root, "Prompts", prompts ]
+                checkFileExistence[ root, "MCPServers", servers ],
+                checkFileExistence[ root, "Tools"     , tools   ],
+                checkFileExistence[ root, "MCPPrompts", prompts ]
             ],
             { }
         ];
@@ -66,9 +66,9 @@ validateMCPPacletExtension[ paclet_PacletObject ] := Enclose[
         (* 3. File contents *)
         contentErrors = If[ StringQ @ root && Length @ PacletFind @ paclet[ "Name" ] > 0,
             Join[
-                checkFileContents[ paclet, "Servers", servers ],
-                checkFileContents[ paclet, "Tools"  , tools   ],
-                checkFileContents[ paclet, "Prompts", prompts ]
+                checkFileContents[ paclet, "MCPServers", servers ],
+                checkFileContents[ paclet, "Tools"     , tools   ],
+                checkFileContents[ paclet, "MCPPrompts", prompts ]
             ],
             { }
         ];
@@ -83,17 +83,17 @@ validateMCPPacletExtension[ paclet_PacletObject ] := Enclose[
 
         If[ Length @ allErrors > 0,
             buildFailure[ paclet, allErrors ],
-            Success[ "ValidMCPPacletExtension", <|
-                "Servers" -> servers,
-                "Tools"   -> tools,
-                "Prompts" -> prompts
+            Success[ "ValidAgentToolsPacletExtension", <|
+                "MCPServers" -> servers,
+                "Tools"      -> tools,
+                "MCPPrompts" -> prompts
             |> ]
         ]
     ],
     throwInternalFailure
 ];
 
-validateMCPPacletExtension // endDefinition;
+validateAgentToolsPacletExtension // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -102,7 +102,7 @@ tryGetExtensionDirectory // beginDefinition;
 
 tryGetExtensionDirectory[ paclet_PacletObject ] :=
     Module[ { root },
-        root = Quiet @ catchAlways @ getMCPExtensionDirectory @ paclet;
+        root = Quiet @ catchAlways @ getAgentToolsExtensionDirectory @ paclet;
         If[ StringQ @ root && DirectoryQ @ root,
             root,
             $Failed
@@ -121,18 +121,18 @@ validateExtensionStructure[ paclet_PacletObject ] :=
 
         errors = { };
 
-        (* Check that the paclet has an MCP extension *)
-        extensions = Quiet @ pt`PacletExtensions[ paclet, "MCP" ];
+        (* Check that the paclet has an AgentTools extension *)
+        extensions = Quiet @ pt`PacletExtensions[ paclet, "AgentTools" ];
         If[ ! MatchQ[ extensions, { __List } ],
             Throw @ <| "Data" -> $Failed, "Errors" -> {
-                <| "Type" -> "NoMCPExtension", "Message" -> "PacletInfo does not contain an \"MCP\" extension." |>
+                <| "Type" -> "NoAgentToolsExtension", "Message" -> "PacletInfo does not contain an \"AgentTools\" extension." |>
             } |>
         ];
 
         extension = First @ extensions;
-        If[ ! MatchQ[ extension, { "MCP", _Association } ],
+        If[ ! MatchQ[ extension, { "AgentTools", _Association } ],
             Throw @ <| "Data" -> $Failed, "Errors" -> {
-                <| "Type" -> "MalformedExtension", "Message" -> "MCP extension has unexpected format." |>
+                <| "Type" -> "MalformedExtension", "Message" -> "AgentTools extension has unexpected format." |>
             } |>
         ];
 
@@ -170,7 +170,7 @@ validateExtensionStructure[ paclet_PacletObject ] :=
                     ]
                 ]
             ],
-            { "Servers", "Tools", "Prompts" }
+            { "MCPServers", "Tools", "MCPPrompts" }
         ];
 
         <| "Data" -> data, "Errors" -> errors |>
@@ -251,10 +251,10 @@ checkItemFileContents[ paclet_PacletObject, type_String, name_String ] :=
                      "Message" -> "Definition file for " <> type <> " \"" <> name <> "\" did not evaluate to a valid Association." |> }
         ];
         Switch[ type,
-            "Servers", checkServerDefinition[ name, data ],
-            "Tools"  , checkToolDefinition[ name, data ],
-            "Prompts", checkPromptDefinition[ name, data ],
-            _        , { }
+            "MCPServers", checkServerDefinition[ name, data ],
+            "Tools"     , checkToolDefinition[ name, data ],
+            "MCPPrompts", checkPromptDefinition[ name, data ],
+            _           , { }
         ]
     ];
 
@@ -324,7 +324,7 @@ checkServerCrossReferences // beginDefinition;
 
 checkServerCrossReferences[ paclet_PacletObject, serverName_String, tools_List, prompts_List ] :=
     Catch @ Module[ { data, evaluator, referencedTools, referencedPrompts, toolErrors, promptErrors },
-        data = Quiet @ loadPacletDefinitionFile[ paclet, "Servers", serverName ];
+        data = Quiet @ loadPacletDefinitionFile[ paclet, "MCPServers", serverName ];
         If[ ! AssociationQ @ data, Throw @ { } ];
 
         evaluator = Lookup[ data, "LLMEvaluator", <| |> ];
@@ -372,8 +372,8 @@ buildFailure // beginDefinition;
 buildFailure[ paclet_PacletObject, errors_List ] :=
     Module[ { firstMessage },
         firstMessage = If[ Length @ errors > 0, errors[[ 1, "Message" ]], "Unknown error." ];
-        messagePrint[ "InvalidMCPPacletExtension", paclet[ "Name" ], firstMessage ];
-        Failure[ "InvalidMCPPacletExtension", <| "Errors" -> errors |> ]
+        messagePrint[ "InvalidAgentToolsPacletExtension", paclet[ "Name" ], firstMessage ];
+        Failure[ "InvalidAgentToolsPacletExtension", <| "Errors" -> errors |> ]
     ];
 
 buildFailure // endDefinition;

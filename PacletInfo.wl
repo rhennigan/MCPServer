@@ -43,7 +43,7 @@ PacletObject[ <|
                 "Wolfram`MCPServer`StartMCPServer",
                 "Wolfram`MCPServer`TestReportToolFunction",
                 "Wolfram`MCPServer`UninstallMCPServer",
-                "Wolfram`MCPServer`ValidateMCPPacletExtension"
+                "Wolfram`MCPServer`ValidateAgentToolsPacletExtension"
             }
         },
         { "Documentation",

@@ -107,12 +107,12 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*findMCPPaclets*)
+(*findAgentToolsPaclets*)
 VerificationTest[
-    Wolfram`MCPServer`Common`findMCPPaclets[ ],
+    Wolfram`MCPServer`Common`findAgentToolsPaclets[ ],
     { ___PacletObject },
     SameTest -> MatchQ,
-    TestID   -> "findMCPPaclets-ReturnsList@@Tests/PacletExtension.wlt:111,1-116,2"
+    TestID   -> "findAgentToolsPaclets-ReturnsList@@Tests/PacletExtension.wlt:111,1-116,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -143,43 +143,43 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*getMCPExtension*)
+(*getAgentToolsExtension*)
 VerificationTest[
-    Wolfram`MCPServer`Common`getMCPExtension[ $mockPacletTest ],
-    { "MCP", _Association },
+    Wolfram`MCPServer`Common`getAgentToolsExtension[ $mockPacletTest ],
+    { "AgentTools", _Association },
     SameTest -> MatchQ,
-    TestID   -> "getMCPExtension-Valid@@Tests/PacletExtension.wlt:147,1-152,2"
+    TestID   -> "getAgentToolsExtension-Valid@@Tests/PacletExtension.wlt:147,1-152,2"
 ]
 
 VerificationTest[
     Module[ { nonMCPPaclet },
         nonMCPPaclet = First @ PacletFind[ "PacletTools" ];
-        Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`getMCPExtension[ nonMCPPaclet ]
+        Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`getAgentToolsExtension[ nonMCPPaclet ]
     ],
     _Failure,
     { MCPServer::PacletExtensionNotFound },
     SameTest -> MatchQ,
-    TestID   -> "getMCPExtension-NoExtension@@Tests/PacletExtension.wlt:154,1-163,2"
+    TestID   -> "getAgentToolsExtension-NoExtension@@Tests/PacletExtension.wlt:154,1-163,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*getMCPExtensionData*)
+(*getAgentToolsExtensionData*)
 VerificationTest[
-    Wolfram`MCPServer`Common`getMCPExtensionData[ $mockPacletTest ],
+    Wolfram`MCPServer`Common`getAgentToolsExtensionData[ $mockPacletTest ],
     _Association? (KeyExistsQ[ #, "Tools" ] &),
     SameTest -> MatchQ,
-    TestID   -> "getMCPExtensionData-Valid@@Tests/PacletExtension.wlt:168,1-173,2"
+    TestID   -> "getAgentToolsExtensionData-Valid@@Tests/PacletExtension.wlt:168,1-173,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*getMCPExtensionDirectory*)
+(*getAgentToolsExtensionDirectory*)
 VerificationTest[
-    Wolfram`MCPServer`Common`getMCPExtensionDirectory[ $mockPacletTest ],
+    Wolfram`MCPServer`Common`getAgentToolsExtensionDirectory[ $mockPacletTest ],
     _String? DirectoryQ,
     SameTest -> MatchQ,
-    TestID   -> "getMCPExtensionDirectory-Valid@@Tests/PacletExtension.wlt:178,1-183,2"
+    TestID   -> "getAgentToolsExtensionDirectory-Valid@@Tests/PacletExtension.wlt:178,1-183,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -215,33 +215,33 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*getMCPDeclaredItems*)
+(*getAgentToolsDeclaredItems*)
 VerificationTest[
-    Wolfram`MCPServer`Common`getMCPDeclaredItems[ $mockPacletTest, "Tools" ],
+    Wolfram`MCPServer`Common`getAgentToolsDeclaredItems[ $mockPacletTest, "Tools" ],
     { "TestTool", "DescribedTool", "AssocTool" },
     SameTest -> MatchQ,
-    TestID   -> "getMCPDeclaredItems-Tools@@Tests/PacletExtension.wlt:219,1-224,2"
+    TestID   -> "getAgentToolsDeclaredItems-Tools@@Tests/PacletExtension.wlt:219,1-224,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`getMCPDeclaredItems[ $mockPacletTest, "Servers" ],
+    Wolfram`MCPServer`Common`getAgentToolsDeclaredItems[ $mockPacletTest, "MCPServers" ],
     { "TestServer" },
     SameTest -> MatchQ,
-    TestID   -> "getMCPDeclaredItems-Servers@@Tests/PacletExtension.wlt:226,1-231,2"
+    TestID   -> "getAgentToolsDeclaredItems-MCPServers@@Tests/PacletExtension.wlt:226,1-231,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`getMCPDeclaredItems[ $mockPacletTest, "Prompts" ],
+    Wolfram`MCPServer`Common`getAgentToolsDeclaredItems[ $mockPacletTest, "MCPPrompts" ],
     { "TestPrompt" },
     SameTest -> MatchQ,
-    TestID   -> "getMCPDeclaredItems-Prompts@@Tests/PacletExtension.wlt:233,1-238,2"
+    TestID   -> "getAgentToolsDeclaredItems-MCPPrompts@@Tests/PacletExtension.wlt:233,1-238,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`getMCPDeclaredItems[ $mockPacletTest, "NonExistentType" ],
+    Wolfram`MCPServer`Common`getAgentToolsDeclaredItems[ $mockPacletTest, "NonExistentType" ],
     { },
     SameTest -> MatchQ,
-    TestID   -> "getMCPDeclaredItems-EmptyType@@Tests/PacletExtension.wlt:240,1-245,2"
+    TestID   -> "getAgentToolsDeclaredItems-EmptyType@@Tests/PacletExtension.wlt:240,1-245,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -284,7 +284,7 @@ VerificationTest[
 
 (* Per-item server file *)
 VerificationTest[
-    Wolfram`MCPServer`Common`loadPacletDefinitionFile[ $mockPacletTest, "Servers", "TestServer" ],
+    Wolfram`MCPServer`Common`loadPacletDefinitionFile[ $mockPacletTest, "MCPServers", "TestServer" ],
     _Association? (KeyExistsQ[ #, "LLMEvaluator" ] &),
     SameTest -> MatchQ,
     TestID   -> "loadPacletDefinitionFile-PerItemServer@@Tests/PacletExtension.wlt:286,1-291,2"
@@ -292,7 +292,7 @@ VerificationTest[
 
 (* Per-item prompt file *)
 VerificationTest[
-    Wolfram`MCPServer`Common`loadPacletDefinitionFile[ $mockPacletTest, "Prompts", "TestPrompt" ],
+    Wolfram`MCPServer`Common`loadPacletDefinitionFile[ $mockPacletTest, "MCPPrompts", "TestPrompt" ],
     KeyValuePattern[ { "Name" -> "TestPrompt" } ],
     SameTest -> MatchQ,
     TestID   -> "loadPacletDefinitionFile-PerItemPrompt@@Tests/PacletExtension.wlt:294,1-299,2"

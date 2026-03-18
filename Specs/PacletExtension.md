@@ -2,7 +2,7 @@
 
 ## Overview
 
-External Wolfram paclets can contribute MCP servers, tools, and prompts by declaring a custom `"MCP"` extension in their `PacletInfo.wl`. MCPServer discovers these extensions via the PacletManager and exposes them through the existing APIs (`MCPServerObject`, `InstallMCPServer`, `CreateMCPServer`, etc.). This leverages the Wolfram Paclet Repository as a distribution mechanism for MCP extensions.
+External Wolfram paclets can contribute MCP servers, tools, and prompts by declaring a custom `"AgentTools"` extension in their `PacletInfo.wl`. MCPServer discovers these extensions via the PacletManager and exposes them through the existing APIs (`MCPServerObject`, `InstallMCPServer`, `CreateMCPServer`, etc.). This leverages the Wolfram Paclet Repository as a distribution mechanism for AgentTools extensions.
 
 ---
 
@@ -69,7 +69,7 @@ This means two paclets could both define a tool with the MCP-exposed name `"Sear
 
 ## PacletInfo Extension Declaration
 
-A paclet declares MCP items by adding an `"MCP"` extension to its `PacletInfo.wl`:
+A paclet declares MCP items by adding an `"AgentTools"` extension to its `PacletInfo.wl`:
 
 ```wl
 PacletObject[ <|
@@ -82,16 +82,16 @@ PacletObject[ <|
             "Root"    -> "Kernel",
             "Context" -> { "Wolfram`JIRALink`" }
         },
-        { "MCP",
-            "Root"    -> "MCP",
-            "Servers" -> { "ProjectManagement" },
-            "Tools"   -> {
+        { "AgentTools",
+            "Root"       -> "AgentTools",
+            "MCPServers" -> { "ProjectManagement" },
+            "Tools"      -> {
                 { "CreateIssue",  "Create a new JIRA issue" },
                 { "DeleteIssue",  "Delete a JIRA issue" },
                 { "GetIssue",     "Get a JIRA issue by key" },
                 { "SearchIssues", "Search for JIRA issues" }
             },
-            "Prompts" -> { "IssueText" }
+            "MCPPrompts" -> { "IssueText" }
         }
     }
 |> ]
@@ -101,16 +101,16 @@ PacletObject[ <|
 
 | Property | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `"Root"` | `String` | No | `"MCP"` | Subdirectory for definition files. Resolved by ``PacletTools`PacletExtensionDirectory``. |
-| `"Servers"` | `List` | No | `{}` | Server declarations. |
+| `"Root"` | `String` | No | `"AgentTools"` | Subdirectory for definition files. Resolved by ``PacletTools`PacletExtensionDirectory``. |
+| `"MCPServers"` | `List` | No | `{}` | Server declarations. |
 | `"Tools"` | `List` | No | `{}` | Tool declarations. |
-| `"Prompts"` | `List` | No | `{}` | Prompt declarations. |
+| `"MCPPrompts"` | `List` | No | `{}` | Prompt declarations. |
 
-**PacletTools dependency:** The implementation must call ``Needs["PacletTools`"]`` before using ``PacletTools`PacletExtensions`` (to discover paclets with `"MCP"` extensions) and ``PacletTools`PacletExtensionDirectory`` (to resolve the root directory for definition files). These are not `System` symbols.
+**PacletTools dependency:** The implementation must call ``Needs["PacletTools`"]`` before using ``PacletTools`PacletExtensions`` (to discover paclets with `"AgentTools"` extensions) and ``PacletTools`PacletExtensionDirectory`` (to resolve the root directory for definition files). These are not `System` symbols.
 
 ### Three-Tier Declaration Format
 
-Each of `"Servers"`, `"Tools"`, and `"Prompts"` accepts three declaration forms. All three can be mixed freely within a single list. The name + description form is encouraged but not enforced.
+Each of `"MCPServers"`, `"Tools"`, and `"MCPPrompts"` accepts three declaration forms. All three can be mixed freely within a single list. The name + description form is encouraged but not enforced.
 
 #### Name Only
 
@@ -144,7 +144,7 @@ The association form supports additional keys depending on the item type:
 
 | Item Type | Extra Keys | Description |
 |---|---|---|
-| Servers | `"Tools"`, `"Prompts"` | Lists of tool/prompt names this server uses |
+| Servers | `"Tools"`, `"MCPPrompts"` | Lists of tool/prompt names this server uses |
 | Tools | `"Parameters"` | List of parameter names (strings) or basic parameter associations |
 | Prompts | `"Arguments"` | List of argument names |
 
@@ -163,15 +163,15 @@ MyPaclet/
     PacletInfo.wl
     Kernel/
         ...
-    MCP/                             (* Root from "Root" -> "MCP" *)
-        Servers/
+    AgentTools/                      (* Root from "Root" -> "AgentTools" *)
+        MCPServers/
             ProjectManagement.wl
         Tools/
             CreateIssue.wl
             DeleteIssue.wl
             GetIssue.wl
             SearchIssues.wl
-        Prompts/
+        MCPPrompts/
             IssueText.wl
 ```
 
@@ -181,16 +181,16 @@ For simpler paclets, all items of a type can be defined in a single file. The fi
 
 ```
 MyPaclet/
-    MCP/
-        Servers.wl
+    AgentTools/
+        MCPServers.wl
         Tools.wl
-        Prompts.wl
+        MCPPrompts.wl
 ```
 
 Example combined `Tools.wl`:
 
 ```wl
-(* MCP/Tools.wl *)
+(* AgentTools/Tools.wl *)
 <|
     "CreateIssue" -> <|
         "Name"        -> "CreateIssue",
@@ -222,7 +222,9 @@ When loading a definition for item `"GetIssue"` of type `"Tools"`:
 1. **Per-item file:** `First @ FileNames[ "GetIssue." ~~ ("mx"|"wl"|"wxf"), "<root>/Tools" ]`
 2. **Combined file:** `First @ FileNames[ "Tools." ~~ ("mx"|"wl"|"wxf"), "<root>" ]` — look up `"GetIssue"` key
 
-Per-item files take precedence over combined files. If multiple definition files exist for the same item (e.g., both `GetIssue.wl` and `GetIssue.mx`), the priority order is `.mx` > `.wxf` > `.wl` (preferring compiled formats for performance). `ValidateMCPPacletExtension` warns about duplicate definition files.
+When loading a definition for type `"MCPServers"`, the subdirectory and combined file names use `MCPServers` (e.g., `<root>/MCPServers/` and `MCPServers.wl`). Similarly for `"MCPPrompts"`.
+
+Per-item files take precedence over combined files. If multiple definition files exist for the same item (e.g., both `GetIssue.wl` and `GetIssue.mx`), the priority order is `.mx` > `.wxf` > `.wl` (preferring compiled formats for performance). `ValidateAgentToolsPacletExtension` warns about duplicate definition files.
 
 ---
 
@@ -233,7 +235,7 @@ Per-item files take precedence over combined files. If multiple definition files
 Importing a server definition file must give an `Association`:
 
 ```wl
-(* MCP/Servers/ProjectManagement.wl *)
+(* AgentTools/MCPServers/ProjectManagement.wl *)
 <|
     "Name"           -> "ProjectManagement",
     "Initialization" :> Needs[ "Wolfram`JIRALink`" ],
@@ -259,7 +261,7 @@ Tool and prompt names within `"LLMEvaluator"` use short names that resolve withi
 A tool definition file must evaluate to an `Association` compatible with `LLMTool`:
 
 ```wl
-(* MCP/Tools/GetIssue.wl *)
+(* AgentTools/Tools/GetIssue.wl *)
 <|
     "Name"        -> "GetIssue",
     "Description" -> "Get a JIRA issue by its key",
@@ -289,7 +291,7 @@ A tool definition file must evaluate to an `Association` compatible with `LLMToo
 A prompt definition file must evaluate to an `Association`:
 
 ```wl
-(* MCP/Prompts/IssueText.wl *)
+(* AgentTools/MCPPrompts/IssueText.wl *)
 <|
     "Name"        -> "IssueText",
     "Description" -> "Format a JIRA issue for display",
@@ -368,7 +370,7 @@ When loading a paclet's server definition file, tool and prompt names within `"L
 | **Inspection** | `MCPServerObject["Wolfram/JIRALink/PM"]` | Yes | Yes (installed only) | No |
 | **Execution** | `StartMCPServer`, `InstallMCPServer` | Yes | Yes | Yes |
 
-**Note on definition file loading:** Loading `.wl` definition files for installed paclets uses `Get`, which evaluates the file contents. This is analogous to ``Needs["Wolfram`JIRALink`"]`` — installed paclets are trusted code. Definition files should evaluate to inert data (associations of strings, lists, and delayed rules) and should not have side effects. `ValidateMCPPacletExtension` can verify that definition files produce well-formed associations. The "Tool/Init Execution" column above distinguishes this code-loading step from active execution of tool functions and `"Initialization"` code, which only occurs at the Execution level.
+**Note on definition file loading:** Loading `.wl` definition files for installed paclets uses `Get`, which evaluates the file contents. This is analogous to ``Needs["Wolfram`JIRALink`"]`` — installed paclets are trusted code. Definition files should evaluate to inert data (associations of strings, lists, and delayed rules) and should not have side effects. `ValidateAgentToolsPacletExtension` can verify that definition files produce well-formed associations. The "Tool/Init Execution" column above distinguishes this code-loading step from active execution of tool functions and `"Initialization"` code, which only occurs at the Execution level.
 
 ### Installed = Trusted
 
@@ -416,7 +418,7 @@ Resolution order for `getMCPServerObjectByName`:
 
 1. File-based servers (existing — user-created via `CreateMCPServer`)
 2. Built-in servers (existing — `$DefaultMCPServers`)
-3. Installed paclet servers (new — scan installed paclets with `"MCP"` extension)
+3. Installed paclet servers (new — scan installed paclets with `"AgentTools"` extension)
 4. Remote paclet servers (new — `PacletFindRemote`, metadata only; supports `UpdatePacletSites` option)
 
 The `"Location"` property for paclet-defined servers is `PacletObject["Wolfram/JIRALink"]`:
@@ -546,14 +548,14 @@ New messages to add to `Kernel/Messages.wl`:
 | Tag | Template | Trigger |
 |---|---|---|
 | `PacletNotInstalled` | ``"The paclet \"`1`\" is not installed. Evaluate `2` to install it."`` | `MCPServerObject` accessing definition-file properties of an uninstalled paclet |
-| `PacletExtensionNotFound` | ``"No MCP extension found in paclet \"`1`\"."`` | Referencing a paclet that exists but has no `"MCP"` extension |
+| `PacletExtensionNotFound` | ``"No AgentTools extension found in paclet \"`1`\"."`` | Referencing a paclet that exists but has no `"AgentTools"` extension |
 | `PacletToolNotFound` | ``"Tool \"`1`\" not found in paclet \"`2`\"."`` | Tool name not declared in the paclet's extension |
 | `PacletServerNotFound` | ``"Server \"`1`\" not found in paclet \"`2`\"."`` | Server name not declared in the paclet's extension |
 | `PacletPromptNotFound` | ``"Prompt \"`1`\" not found in paclet \"`2`\"."`` | Prompt name not declared in the paclet's extension |
 | `InvalidPacletToolDefinition` | ``"Invalid tool definition in `1`."`` | Definition file returns malformed data |
 | `InvalidPacletServerDefinition` | ``"Invalid server definition in `1`."`` | Server definition file returns malformed data |
 | `PacletDependencyMissing` | ``"Server \"`1`\" references tool \"`2`\" from paclet \"`3`\", which could not be installed."`` | Cross-paclet tool reference to a paclet that fails to install at start time |
-| `InvalidMCPPacletExtension` | ``"The MCP extension in paclet \"`1`\" is invalid: `2`."`` | `ValidateMCPPacletExtension` finds errors |
+| `InvalidAgentToolsPacletExtension` | ``"The AgentTools extension in paclet \"`1`\" is invalid: `2`."`` | `ValidateAgentToolsPacletExtension` finds errors |
 | `DeletePacletMCPServer` | ``"Cannot delete paclet-backed server \"`1`\". Evaluate `2` to uninstall the paclet."`` | `DeleteObject` on a paclet-backed `MCPServerObject` |
 
 Example error scenarios:
@@ -570,19 +572,19 @@ StartMCPServer @ MCPServerObject["MyServer"]
 
 ## Developer Validation Utility
 
-### ValidateMCPPacletExtension
+### ValidateAgentToolsPacletExtension
 
-New exported function for paclet developers to validate their MCP extension:
+New exported function for paclet developers to validate their AgentTools extension:
 
 ```wl
-ValidateMCPPacletExtension[ PacletObject["Wolfram/JIRALink"] ]
+ValidateAgentToolsPacletExtension[ PacletObject["Wolfram/JIRALink"] ]
 ```
 
 ### Validation Checks
 
 1. **Extension structure**
-   - PacletInfo contains an `"MCP"` extension
-   - Extension properties use valid keys (`"Root"`, `"Servers"`, `"Tools"`, `"Prompts"`)
+   - PacletInfo contains an `"AgentTools"` extension
+   - Extension properties use valid keys (`"Root"`, `"MCPServers"`, `"Tools"`, `"MCPPrompts"`)
    - Each declared item uses a valid declaration form (name-only, name+description, or association)
 
 2. **File existence**
@@ -605,25 +607,25 @@ ValidateMCPPacletExtension[ PacletObject["Wolfram/JIRALink"] ]
 Successful validation:
 
 ```wl
-ValidateMCPPacletExtension[ PacletObject["Wolfram/JIRALink"] ]
-(* Success["ValidMCPPacletExtension", <|
-       "Servers" -> { "ProjectManagement" },
-       "Tools"   -> { "CreateIssue", "DeleteIssue", "GetIssue", "SearchIssues" },
-       "Prompts" -> { "IssueText" }
+ValidateAgentToolsPacletExtension[ PacletObject["Wolfram/JIRALink"] ]
+(* Success["ValidAgentToolsPacletExtension", <|
+       "MCPServers" -> { "ProjectManagement" },
+       "Tools"      -> { "CreateIssue", "DeleteIssue", "GetIssue", "SearchIssues" },
+       "MCPPrompts" -> { "IssueText" }
    |>] *)
 ```
 
 Failed validation:
 
 ```wl
-ValidateMCPPacletExtension[ PacletObject["Wolfram/BrokenPaclet"] ]
-(* MCPServer::InvalidMCPPacletExtension: The MCP extension in paclet
+ValidateAgentToolsPacletExtension[ PacletObject["Wolfram/BrokenPaclet"] ]
+(* MCPServer::InvalidAgentToolsPacletExtension: The AgentTools extension in paclet
    "Wolfram/BrokenPaclet" is invalid: Missing definition file for tool "MyTool". *)
-(* Failure["InvalidMCPPacletExtension", <|
+(* Failure["InvalidAgentToolsPacletExtension", <|
        "Errors" -> {
            <| "Type" -> "MissingDefinitionFile",
               "Item" -> "MyTool",
-              "ExpectedPath" -> "path/to/MCP/Tools/MyTool.wl" |>
+              "ExpectedPath" -> "path/to/AgentTools/Tools/MyTool.wl" |>
        }
    |>] *)
 ```
@@ -638,15 +640,15 @@ Existing files:
 - `Kernel/CreateMCPServer.wl` — store paclet-qualified tool name strings without resolving
 - `Kernel/InstallMCPServer.wl` — support paclet-qualified server names
 - `Kernel/StartMCPServer.wl` — resolve all paclet references at start time, run `"Initialization"` code for all tools at startup (new — currently only done at install time), disambiguate MCP name collisions
-- `Kernel/CommonSymbols.wl` — declare new shared symbols (`resolvePacletTool`, `resolvePacletServer`, `resolvePacletPrompt`, `pacletQualifiedNameQ`, `parsePacletQualifiedName`, `findMCPPaclets`, `loadPacletDefinitionFile`)
-- `Kernel/Main.wl` — add `ValidateMCPPacletExtension` to exports, add new subcontexts ``Wolfram`MCPServer`PacletExtension` `` and ``Wolfram`MCPServer`ValidateMCPPacletExtension` ``
+- `Kernel/CommonSymbols.wl` — declare new shared symbols (`resolvePacletTool`, `resolvePacletServer`, `resolvePacletPrompt`, `pacletQualifiedNameQ`, `parsePacletQualifiedName`, `findAgentToolsPaclets`, `loadPacletDefinitionFile`)
+- `Kernel/Main.wl` — add `ValidateAgentToolsPacletExtension` to exports, add new subcontexts ``Wolfram`MCPServer`PacletExtension` `` and ``Wolfram`MCPServer`ValidateAgentToolsPacletExtension` ``
 - `Kernel/Messages.wl` — add new error messages
-- `PacletInfo.wl` — add `ValidateMCPPacletExtension` to Symbols list
+- `PacletInfo.wl` — add `ValidateAgentToolsPacletExtension` to Symbols list
 
 New files:
 
 - `Kernel/PacletExtension.wl` — core implementation: paclet discovery, name parsing, definition file loading, resolution logic
-- `Kernel/ValidateMCPPacletExtension.wl` — validation utility implementation
+- `Kernel/ValidateAgentToolsPacletExtension.wl` — validation utility implementation
 
 **Note:** `convertStringTools0` and `normalizePromptData` are both defined in `Kernel/MCPServerObject.wl`, not in `Kernel/Tools/Tools.wl` or `Kernel/Prompts/Prompts.wl`. Those files (`Tools.wl`, `Prompts.wl`) only contain `$DefaultMCPTools` / `$DefaultMCPPrompts` initialization and subcontext loading — they do not need changes for paclet extension support. The `insertCatchTop` wrapping in `Tools.wl` is only for built-in tools and does not apply to paclet-loaded tools.
 
@@ -707,8 +709,8 @@ The disambiguation logic lives in `StartMCPServer.wl`, after all tool definition
 
 ## Future Considerations
 
-- Minimum MCPServer version requirements in the `"MCP"` extension
+- Minimum MCPServer version requirements in the `"AgentTools"` extension
 - Tool categories or tag groups in PacletInfo metadata
 - Remote paclet browsing UI
 - Automatic update notifications for extension paclets
-- `"Dependencies"` property in the `"MCP"` extension for declaring required paclets
+- `"Dependencies"` property in the `"AgentTools"` extension for declaring required paclets

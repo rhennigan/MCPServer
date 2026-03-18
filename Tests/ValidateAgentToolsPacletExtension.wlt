@@ -5,14 +5,14 @@ VerificationTest[
     Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
-    TestID   -> "GetDefinitions@@Tests/ValidateMCPPacletExtension.wlt:4,1-9,2"
+    TestID   -> "GetDefinitions@@Tests/ValidateAgentToolsPacletExtension.wlt:4,1-9,2"
 ]
 
 VerificationTest[
     Needs[ "Wolfram`MCPServer`" ],
     Null,
     SameTest -> MatchQ,
-    TestID   -> "LoadContext@@Tests/ValidateMCPPacletExtension.wlt:11,1-16,2"
+    TestID   -> "LoadContext@@Tests/ValidateAgentToolsPacletExtension.wlt:11,1-16,2"
 ]
 
 (* :!CodeAnalysis::BeginBlock:: *)
@@ -31,7 +31,7 @@ VerificationTest[
     $mockValid[ "Name" ],
     "MockMCPPacletTest",
     SameTest -> MatchQ,
-    TestID   -> "Setup-ValidPaclet@@Tests/ValidateMCPPacletExtension.wlt:28,1-35,2"
+    TestID   -> "Setup-ValidPaclet@@Tests/ValidateAgentToolsPacletExtension.wlt:28,1-35,2"
 ]
 
 (* Load mock paclet with invalid extension keys *)
@@ -41,7 +41,7 @@ VerificationTest[
     $mockInvalidKeys[ "Name" ],
     "MockMCPPacletInvalidKeys",
     SameTest -> MatchQ,
-    TestID   -> "Setup-InvalidKeysPaclet@@Tests/ValidateMCPPacletExtension.wlt:38,1-45,2"
+    TestID   -> "Setup-InvalidKeysPaclet@@Tests/ValidateAgentToolsPacletExtension.wlt:38,1-45,2"
 ]
 
 (* Load mock paclet with missing definition files *)
@@ -51,7 +51,7 @@ VerificationTest[
     $mockMissingFiles[ "Name" ],
     "MockMCPPacletMissingFiles",
     SameTest -> MatchQ,
-    TestID   -> "Setup-MissingFilesPaclet@@Tests/ValidateMCPPacletExtension.wlt:48,1-55,2"
+    TestID   -> "Setup-MissingFilesPaclet@@Tests/ValidateAgentToolsPacletExtension.wlt:48,1-55,2"
 ]
 
 (* Load mock paclet with bad definition file contents *)
@@ -61,7 +61,7 @@ VerificationTest[
     $mockBadContents[ "Name" ],
     "MockMCPPacletBadContents",
     SameTest -> MatchQ,
-    TestID   -> "Setup-BadContentsPaclet@@Tests/ValidateMCPPacletExtension.wlt:58,1-65,2"
+    TestID   -> "Setup-BadContentsPaclet@@Tests/ValidateAgentToolsPacletExtension.wlt:58,1-65,2"
 ]
 
 (* Load mock paclet with bad cross-references *)
@@ -71,7 +71,7 @@ VerificationTest[
     $mockBadCrossRef[ "Name" ],
     "MockMCPPacletBadCrossRef",
     SameTest -> MatchQ,
-    TestID   -> "Setup-BadCrossRefPaclet@@Tests/ValidateMCPPacletExtension.wlt:68,1-75,2"
+    TestID   -> "Setup-BadCrossRefPaclet@@Tests/ValidateAgentToolsPacletExtension.wlt:68,1-75,2"
 ]
 
 (* Load mock paclet with invalid declarations *)
@@ -81,7 +81,7 @@ VerificationTest[
     $mockBadDecl[ "Name" ],
     "MockMCPPacletBadDecl",
     SameTest -> MatchQ,
-    TestID   -> "Setup-BadDeclPaclet@@Tests/ValidateMCPPacletExtension.wlt:78,1-85,2"
+    TestID   -> "Setup-BadDeclPaclet@@Tests/ValidateAgentToolsPacletExtension.wlt:78,1-85,2"
 ]
 
 (* Load mock paclet with duplicate definition files *)
@@ -91,7 +91,7 @@ VerificationTest[
     $mockDupFiles[ "Name" ],
     "MockMCPPacletDupFiles",
     SameTest -> MatchQ,
-    TestID   -> "Setup-DupFilesPaclet@@Tests/ValidateMCPPacletExtension.wlt:88,1-95,2"
+    TestID   -> "Setup-DupFilesPaclet@@Tests/ValidateAgentToolsPacletExtension.wlt:88,1-95,2"
 ]
 
 (* Load mock paclet with no root directory *)
@@ -101,7 +101,7 @@ VerificationTest[
     $mockNoRoot[ "Name" ],
     "MockMCPPacletNoRoot",
     SameTest -> MatchQ,
-    TestID   -> "Setup-NoRootPaclet@@Tests/ValidateMCPPacletExtension.wlt:98,1-105,2"
+    TestID   -> "Setup-NoRootPaclet@@Tests/ValidateAgentToolsPacletExtension.wlt:98,1-105,2"
 ]
 
 (* Clear definition cache before validation tests *)
@@ -109,7 +109,7 @@ VerificationTest[
     Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
     <| |>,
     SameTest -> MatchQ,
-    TestID   -> "Setup-ClearCache@@Tests/ValidateMCPPacletExtension.wlt:108,1-113,2"
+    TestID   -> "Setup-ClearCache@@Tests/ValidateAgentToolsPacletExtension.wlt:108,1-113,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -117,31 +117,31 @@ VerificationTest[
 (*Valid Paclet*)
 
 VerificationTest[
-    ValidateMCPPacletExtension[ $mockValid ],
+    ValidateAgentToolsPacletExtension[ $mockValid ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "ValidPaclet-ReturnsSuccess@@Tests/ValidateMCPPacletExtension.wlt:119,1-124,2"
+    TestID   -> "ValidPaclet-ReturnsSuccess@@Tests/ValidateAgentToolsPacletExtension.wlt:119,1-124,2"
 ]
 
 VerificationTest[
-    ValidateMCPPacletExtension[ $mockValid ][ "Servers" ],
+    ValidateAgentToolsPacletExtension[ $mockValid ][ "MCPServers" ],
     { "TestServer" },
     SameTest -> MatchQ,
-    TestID   -> "ValidPaclet-Servers@@Tests/ValidateMCPPacletExtension.wlt:126,1-131,2"
+    TestID   -> "ValidPaclet-MCPServers@@Tests/ValidateAgentToolsPacletExtension.wlt:126,1-131,2"
 ]
 
 VerificationTest[
-    ValidateMCPPacletExtension[ $mockValid ][ "Tools" ],
+    ValidateAgentToolsPacletExtension[ $mockValid ][ "Tools" ],
     { "TestTool", "DescribedTool", "AssocTool" },
     SameTest -> MatchQ,
-    TestID   -> "ValidPaclet-Tools@@Tests/ValidateMCPPacletExtension.wlt:133,1-138,2"
+    TestID   -> "ValidPaclet-Tools@@Tests/ValidateAgentToolsPacletExtension.wlt:133,1-138,2"
 ]
 
 VerificationTest[
-    ValidateMCPPacletExtension[ $mockValid ][ "Prompts" ],
+    ValidateAgentToolsPacletExtension[ $mockValid ][ "MCPPrompts" ],
     { "TestPrompt" },
     SameTest -> MatchQ,
-    TestID   -> "ValidPaclet-Prompts@@Tests/ValidateMCPPacletExtension.wlt:140,1-145,2"
+    TestID   -> "ValidPaclet-MCPPrompts@@Tests/ValidateAgentToolsPacletExtension.wlt:140,1-145,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -149,21 +149,21 @@ VerificationTest[
 (*Extension Structure - Invalid Keys*)
 
 VerificationTest[
-    ValidateMCPPacletExtension[ $mockInvalidKeys ],
+    ValidateAgentToolsPacletExtension[ $mockInvalidKeys ],
     _Failure,
-    { ValidateMCPPacletExtension::InvalidMCPPacletExtension },
+    { ValidateAgentToolsPacletExtension::InvalidAgentToolsPacletExtension },
     SameTest -> MatchQ,
-    TestID   -> "InvalidKeys-ReturnsFailure@@Tests/ValidateMCPPacletExtension.wlt:151,1-157,2"
+    TestID   -> "InvalidKeys-ReturnsFailure@@Tests/ValidateAgentToolsPacletExtension.wlt:151,1-157,2"
 ]
 
 VerificationTest[
     Module[ { result },
-        result = Quiet @ ValidateMCPPacletExtension[ $mockInvalidKeys ];
+        result = Quiet @ ValidateAgentToolsPacletExtension[ $mockInvalidKeys ];
         MemberQ[ result[[ "Errors" ]], KeyValuePattern[ "Type" -> "InvalidExtensionKeys" ] ]
     ],
     True,
     SameTest -> MatchQ,
-    TestID   -> "InvalidKeys-HasInvalidKeysError@@Tests/ValidateMCPPacletExtension.wlt:159,1-167,2"
+    TestID   -> "InvalidKeys-HasInvalidKeysError@@Tests/ValidateAgentToolsPacletExtension.wlt:159,1-167,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -171,48 +171,48 @@ VerificationTest[
 (*Extension Structure - Invalid Declarations*)
 
 VerificationTest[
-    ValidateMCPPacletExtension[ $mockBadDecl ],
+    ValidateAgentToolsPacletExtension[ $mockBadDecl ],
     _Failure,
-    { ValidateMCPPacletExtension::InvalidMCPPacletExtension },
+    { ValidateAgentToolsPacletExtension::InvalidAgentToolsPacletExtension },
     SameTest -> MatchQ,
-    TestID   -> "BadDecl-ReturnsFailure@@Tests/ValidateMCPPacletExtension.wlt:173,1-179,2"
+    TestID   -> "BadDecl-ReturnsFailure@@Tests/ValidateAgentToolsPacletExtension.wlt:173,1-179,2"
 ]
 
 VerificationTest[
     Module[ { result, declErrors },
-        result = Quiet @ ValidateMCPPacletExtension[ $mockBadDecl ];
+        result = Quiet @ ValidateAgentToolsPacletExtension[ $mockBadDecl ];
         declErrors = Select[ result[[ "Errors" ]], #[ "Type" ] === "InvalidDeclaration" & ];
         Length[ declErrors ] >= 1
     ],
     True,
     SameTest -> MatchQ,
-    TestID   -> "BadDecl-HasInvalidDeclarations@@Tests/ValidateMCPPacletExtension.wlt:181,1-190,2"
+    TestID   -> "BadDecl-HasInvalidDeclarations@@Tests/ValidateAgentToolsPacletExtension.wlt:181,1-190,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*Extension Structure - No MCP Extension*)
+(*Extension Structure - No AgentTools Extension*)
 
 VerificationTest[
     Module[ { nonMCPPaclet },
         nonMCPPaclet = First @ PacletFind[ "PacletTools" ];
-        ValidateMCPPacletExtension[ nonMCPPaclet ]
+        ValidateAgentToolsPacletExtension[ nonMCPPaclet ]
     ],
     _Failure,
-    { ValidateMCPPacletExtension::InvalidMCPPacletExtension },
+    { ValidateAgentToolsPacletExtension::InvalidAgentToolsPacletExtension },
     SameTest -> MatchQ,
-    TestID   -> "NoExtension-ReturnsFailure@@Tests/ValidateMCPPacletExtension.wlt:196,1-205,2"
+    TestID   -> "NoExtension-ReturnsFailure@@Tests/ValidateAgentToolsPacletExtension.wlt:196,1-205,2"
 ]
 
 VerificationTest[
     Module[ { nonMCPPaclet, result },
         nonMCPPaclet = First @ PacletFind[ "PacletTools" ];
-        result = Quiet @ ValidateMCPPacletExtension[ nonMCPPaclet ];
-        MemberQ[ result[[ "Errors" ]], KeyValuePattern[ "Type" -> "NoMCPExtension" ] ]
+        result = Quiet @ ValidateAgentToolsPacletExtension[ nonMCPPaclet ];
+        MemberQ[ result[[ "Errors" ]], KeyValuePattern[ "Type" -> "NoAgentToolsExtension" ] ]
     ],
     True,
     SameTest -> MatchQ,
-    TestID   -> "NoExtension-HasNoMCPExtensionError@@Tests/ValidateMCPPacletExtension.wlt:207,1-216,2"
+    TestID   -> "NoExtension-HasNoAgentToolsExtensionError@@Tests/ValidateAgentToolsPacletExtension.wlt:207,1-216,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -220,21 +220,21 @@ VerificationTest[
 (*File Existence - Missing Root Directory*)
 
 VerificationTest[
-    ValidateMCPPacletExtension[ $mockNoRoot ],
+    ValidateAgentToolsPacletExtension[ $mockNoRoot ],
     _Failure,
-    { ValidateMCPPacletExtension::InvalidMCPPacletExtension },
+    { ValidateAgentToolsPacletExtension::InvalidAgentToolsPacletExtension },
     SameTest -> MatchQ,
-    TestID   -> "NoRoot-ReturnsFailure@@Tests/ValidateMCPPacletExtension.wlt:222,1-228,2"
+    TestID   -> "NoRoot-ReturnsFailure@@Tests/ValidateAgentToolsPacletExtension.wlt:222,1-228,2"
 ]
 
 VerificationTest[
     Module[ { result },
-        result = Quiet @ ValidateMCPPacletExtension[ $mockNoRoot ];
+        result = Quiet @ ValidateAgentToolsPacletExtension[ $mockNoRoot ];
         MemberQ[ result[[ "Errors" ]], KeyValuePattern[ "Type" -> "MissingRootDirectory" ] ]
     ],
     True,
     SameTest -> MatchQ,
-    TestID   -> "NoRoot-HasMissingRootError@@Tests/ValidateMCPPacletExtension.wlt:230,1-238,2"
+    TestID   -> "NoRoot-HasMissingRootError@@Tests/ValidateAgentToolsPacletExtension.wlt:230,1-238,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -242,44 +242,44 @@ VerificationTest[
 (*File Existence - Missing Definition Files*)
 
 VerificationTest[
-    ValidateMCPPacletExtension[ $mockMissingFiles ],
+    ValidateAgentToolsPacletExtension[ $mockMissingFiles ],
     _Failure,
-    { ValidateMCPPacletExtension::InvalidMCPPacletExtension },
+    { ValidateAgentToolsPacletExtension::InvalidAgentToolsPacletExtension },
     SameTest -> MatchQ,
-    TestID   -> "MissingFiles-ReturnsFailure@@Tests/ValidateMCPPacletExtension.wlt:244,1-250,2"
+    TestID   -> "MissingFiles-ReturnsFailure@@Tests/ValidateAgentToolsPacletExtension.wlt:244,1-250,2"
 ]
 
 VerificationTest[
     Module[ { result, missingErrors },
-        result = Quiet @ ValidateMCPPacletExtension[ $mockMissingFiles ];
+        result = Quiet @ ValidateAgentToolsPacletExtension[ $mockMissingFiles ];
         missingErrors = Select[ result[[ "Errors" ]], #[ "Type" ] === "MissingDefinitionFile" & ];
         Length[ missingErrors ]
     ],
     3,
     SameTest -> MatchQ,
-    TestID   -> "MissingFiles-ThreeMissingFiles@@Tests/ValidateMCPPacletExtension.wlt:252,1-261,2"
+    TestID   -> "MissingFiles-ThreeMissingFiles@@Tests/ValidateAgentToolsPacletExtension.wlt:252,1-261,2"
 ]
 
 VerificationTest[
     Module[ { result, missingErrors },
-        result = Quiet @ ValidateMCPPacletExtension[ $mockMissingFiles ];
+        result = Quiet @ ValidateAgentToolsPacletExtension[ $mockMissingFiles ];
         missingErrors = Select[ result[[ "Errors" ]], #[ "Type" ] === "MissingDefinitionFile" & ];
         Sort @ Lookup[ missingErrors, "Item" ]
     ],
     { "MissingPrompt", "MissingServer", "MissingTool" },
     SameTest -> MatchQ,
-    TestID   -> "MissingFiles-CorrectItems@@Tests/ValidateMCPPacletExtension.wlt:263,1-272,2"
+    TestID   -> "MissingFiles-CorrectItems@@Tests/ValidateAgentToolsPacletExtension.wlt:263,1-272,2"
 ]
 
 VerificationTest[
     Module[ { result, missingErrors },
-        result = Quiet @ ValidateMCPPacletExtension[ $mockMissingFiles ];
+        result = Quiet @ ValidateAgentToolsPacletExtension[ $mockMissingFiles ];
         missingErrors = Select[ result[[ "Errors" ]], #[ "Type" ] === "MissingDefinitionFile" & ];
         AllTrue[ missingErrors, KeyExistsQ[ #, "ExpectedPath" ] & ]
     ],
     True,
     SameTest -> MatchQ,
-    TestID   -> "MissingFiles-HasExpectedPaths@@Tests/ValidateMCPPacletExtension.wlt:274,1-283,2"
+    TestID   -> "MissingFiles-HasExpectedPaths@@Tests/ValidateAgentToolsPacletExtension.wlt:274,1-283,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -288,12 +288,12 @@ VerificationTest[
 
 VerificationTest[
     Module[ { result },
-        result = Quiet @ ValidateMCPPacletExtension[ $mockDupFiles ];
+        result = Quiet @ ValidateAgentToolsPacletExtension[ $mockDupFiles ];
         MemberQ[ result[[ "Errors" ]], KeyValuePattern[ "Type" -> "DuplicateDefinitionFiles" ] ]
     ],
     True,
     SameTest -> MatchQ,
-    TestID   -> "DupFiles-HasDuplicateWarning@@Tests/ValidateMCPPacletExtension.wlt:289,1-297,2"
+    TestID   -> "DupFiles-HasDuplicateWarning@@Tests/ValidateAgentToolsPacletExtension.wlt:289,1-297,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -301,31 +301,31 @@ VerificationTest[
 (*File Contents - Bad Tool Definition*)
 
 VerificationTest[
-    ValidateMCPPacletExtension[ $mockBadContents ],
+    ValidateAgentToolsPacletExtension[ $mockBadContents ],
     _Failure,
-    { ValidateMCPPacletExtension::InvalidMCPPacletExtension },
+    { ValidateAgentToolsPacletExtension::InvalidAgentToolsPacletExtension },
     SameTest -> MatchQ,
-    TestID   -> "BadContents-ReturnsFailure@@Tests/ValidateMCPPacletExtension.wlt:303,1-309,2"
+    TestID   -> "BadContents-ReturnsFailure@@Tests/ValidateAgentToolsPacletExtension.wlt:303,1-309,2"
 ]
 
 VerificationTest[
     Module[ { result },
-        result = Quiet @ ValidateMCPPacletExtension[ $mockBadContents ];
+        result = Quiet @ ValidateAgentToolsPacletExtension[ $mockBadContents ];
         MemberQ[ result[[ "Errors" ]], KeyValuePattern[ { "Type" -> "InvalidDefinitionContents", "Item" -> "BadTool" } ] ]
     ],
     True,
     SameTest -> MatchQ,
-    TestID   -> "BadContents-BadToolDetected@@Tests/ValidateMCPPacletExtension.wlt:311,1-319,2"
+    TestID   -> "BadContents-BadToolDetected@@Tests/ValidateAgentToolsPacletExtension.wlt:311,1-319,2"
 ]
 
 VerificationTest[
     Module[ { result },
-        result = Quiet @ ValidateMCPPacletExtension[ $mockBadContents ];
+        result = Quiet @ ValidateAgentToolsPacletExtension[ $mockBadContents ];
         MemberQ[ result[[ "Errors" ]], KeyValuePattern[ { "Type" -> "InvalidToolDefinition", "Item" -> "IncompleteTool" } ] ]
     ],
     True,
     SameTest -> MatchQ,
-    TestID   -> "BadContents-IncompleteToolDetected@@Tests/ValidateMCPPacletExtension.wlt:321,1-329,2"
+    TestID   -> "BadContents-IncompleteToolDetected@@Tests/ValidateAgentToolsPacletExtension.wlt:321,1-329,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -333,31 +333,31 @@ VerificationTest[
 (*Cross-References - Invalid References*)
 
 VerificationTest[
-    ValidateMCPPacletExtension[ $mockBadCrossRef ],
+    ValidateAgentToolsPacletExtension[ $mockBadCrossRef ],
     _Failure,
-    { ValidateMCPPacletExtension::InvalidMCPPacletExtension },
+    { ValidateAgentToolsPacletExtension::InvalidAgentToolsPacletExtension },
     SameTest -> MatchQ,
-    TestID   -> "BadCrossRef-ReturnsFailure@@Tests/ValidateMCPPacletExtension.wlt:335,1-341,2"
+    TestID   -> "BadCrossRef-ReturnsFailure@@Tests/ValidateAgentToolsPacletExtension.wlt:335,1-341,2"
 ]
 
 VerificationTest[
     Module[ { result },
-        result = Quiet @ ValidateMCPPacletExtension[ $mockBadCrossRef ];
+        result = Quiet @ ValidateAgentToolsPacletExtension[ $mockBadCrossRef ];
         MemberQ[ result[[ "Errors" ]], KeyValuePattern[ { "Type" -> "InvalidToolReference", "Tool" -> "UndeclaredTool" } ] ]
     ],
     True,
     SameTest -> MatchQ,
-    TestID   -> "BadCrossRef-UndeclaredToolDetected@@Tests/ValidateMCPPacletExtension.wlt:343,1-351,2"
+    TestID   -> "BadCrossRef-UndeclaredToolDetected@@Tests/ValidateAgentToolsPacletExtension.wlt:343,1-351,2"
 ]
 
 VerificationTest[
     Module[ { result },
-        result = Quiet @ ValidateMCPPacletExtension[ $mockBadCrossRef ];
+        result = Quiet @ ValidateAgentToolsPacletExtension[ $mockBadCrossRef ];
         MemberQ[ result[[ "Errors" ]], KeyValuePattern[ { "Type" -> "InvalidPromptReference", "Prompt" -> "UndeclaredPrompt" } ] ]
     ],
     True,
     SameTest -> MatchQ,
-    TestID   -> "BadCrossRef-UndeclaredPromptDetected@@Tests/ValidateMCPPacletExtension.wlt:353,1-361,2"
+    TestID   -> "BadCrossRef-UndeclaredPromptDetected@@Tests/ValidateAgentToolsPacletExtension.wlt:353,1-361,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -365,10 +365,10 @@ VerificationTest[
 (*Cross-References - Valid Short Names*)
 
 VerificationTest[
-    MatchQ[ ValidateMCPPacletExtension[ $mockValid ], _Success ],
+    MatchQ[ ValidateAgentToolsPacletExtension[ $mockValid ], _Success ],
     True,
     SameTest -> MatchQ,
-    TestID   -> "CrossRef-ShortNamesValid@@Tests/ValidateMCPPacletExtension.wlt:367,1-372,2"
+    TestID   -> "CrossRef-ShortNamesValid@@Tests/ValidateAgentToolsPacletExtension.wlt:367,1-372,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -386,7 +386,7 @@ VerificationTest[
     Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
     <| |>,
     SameTest -> MatchQ,
-    TestID   -> "Cleanup@@Tests/ValidateMCPPacletExtension.wlt:377,1-390,2"
+    TestID   -> "Cleanup@@Tests/ValidateAgentToolsPacletExtension.wlt:377,1-390,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

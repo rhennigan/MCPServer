@@ -2,11 +2,11 @@ PacletObject[<|
     "Name" -> "MockMCPPacletMissingFiles",
     "Version" -> "1.0.0",
     "Extensions" -> {
-        {"MCP",
-            "Root" -> "MCP",
+        {"AgentTools",
+            "Root" -> "AgentTools",
             "Tools" -> {"MissingTool"},
-            "Servers" -> {"MissingServer"},
-            "Prompts" -> {"MissingPrompt"}
+            "MCPServers" -> {"MissingServer"},
+            "MCPPrompts" -> {"MissingPrompt"}
         }
     }
 |>]

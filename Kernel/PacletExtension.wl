@@ -52,33 +52,33 @@ parsePacletQualifiedName0 // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*findMCPPaclets*)
-findMCPPaclets // beginDefinition;
+(*findAgentToolsPaclets*)
+findAgentToolsPaclets // beginDefinition;
 
-findMCPPaclets[ ] := Enclose[
-    ConfirmMatch[ PacletFind[ All, <| "Extension" -> "MCP" |> ], { ___PacletObject }, "Result" ],
+findAgentToolsPaclets[ ] := Enclose[
+    ConfirmMatch[ PacletFind[ All, <| "Extension" -> "AgentTools" |> ], { ___PacletObject }, "Result" ],
     throwInternalFailure
 ];
 
-findMCPPaclets // endDefinition;
+findAgentToolsPaclets // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*findRemoteMCPPaclets*)
-findRemoteMCPPaclets // beginDefinition;
+(*findRemoteAgentToolsPaclets*)
+findRemoteAgentToolsPaclets // beginDefinition;
 
-findRemoteMCPPaclets[ ] := findRemoteMCPPaclets @ Automatic;
+findRemoteAgentToolsPaclets[ ] := findRemoteAgentToolsPaclets @ Automatic;
 
-findRemoteMCPPaclets[ updateSites: Automatic|True|False ] := Enclose[
+findRemoteAgentToolsPaclets[ updateSites: Automatic|True|False ] := Enclose[
     Catch @ Module[ { remotePaclets },
-        remotePaclets = Quiet @ PacletFindRemote[ All, <| "Extension" -> "MCP" |>, UpdatePacletSites -> updateSites ];
+        remotePaclets = Quiet @ PacletFindRemote[ All, <| "Extension" -> "AgentTools" |>, UpdatePacletSites -> updateSites ];
         If[ ! MatchQ[ remotePaclets, { ___PacletObject } ], Throw @ { } ];
         ConfirmMatch[ remotePaclets, { ___PacletObject }, "Result" ]
     ],
     throwInternalFailure
 ];
 
-findRemoteMCPPaclets // endDefinition;
+findRemoteAgentToolsPaclets // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -91,46 +91,46 @@ clearPacletDefinitionCache // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*getMCPExtension*)
-getMCPExtension // beginDefinition;
+(*getAgentToolsExtension*)
+getAgentToolsExtension // beginDefinition;
 
-getMCPExtension[ paclet_PacletObject ] := Enclose[
+getAgentToolsExtension[ paclet_PacletObject ] := Enclose[
     Module[ { extensions },
-        extensions = Quiet @ pt`PacletExtensions[ paclet, "MCP" ];
+        extensions = Quiet @ pt`PacletExtensions[ paclet, "AgentTools" ];
         If[ ! MatchQ[ extensions, { __List } ], throwFailure[ "PacletExtensionNotFound", paclet[ "Name" ] ] ];
         First @ extensions
     ],
     throwInternalFailure
 ];
 
-getMCPExtension // endDefinition;
+getAgentToolsExtension // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*getMCPExtensionData*)
-getMCPExtensionData // beginDefinition;
+(*getAgentToolsExtensionData*)
+getAgentToolsExtensionData // beginDefinition;
 
-getMCPExtensionData[ paclet_PacletObject ] := Enclose[
-    Last @ ConfirmMatch[ getMCPExtension @ paclet, { "MCP", _Association }, "Extension" ],
+getAgentToolsExtensionData[ paclet_PacletObject ] := Enclose[
+    Last @ ConfirmMatch[ getAgentToolsExtension @ paclet, { "AgentTools", _Association }, "Extension" ],
     throwInternalFailure
 ];
 
-getMCPExtensionData // endDefinition;
+getAgentToolsExtensionData // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*getMCPExtensionDirectory*)
-getMCPExtensionDirectory // beginDefinition;
+(*getAgentToolsExtensionDirectory*)
+getAgentToolsExtensionDirectory // beginDefinition;
 
-getMCPExtensionDirectory[ paclet_PacletObject ] := Enclose[
+getAgentToolsExtensionDirectory[ paclet_PacletObject ] := Enclose[
     Module[ { extension },
-        extension = ConfirmMatch[ getMCPExtension @ paclet, { "MCP", _Association }, "Extension" ];
+        extension = ConfirmMatch[ getAgentToolsExtension @ paclet, { "AgentTools", _Association }, "Extension" ];
         ConfirmBy[ pt`PacletExtensionDirectory[ paclet, extension ], StringQ, "Directory" ]
     ],
     throwInternalFailure
 ];
 
-getMCPExtensionDirectory // endDefinition;
+getAgentToolsExtensionDirectory // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -144,19 +144,19 @@ extractItemName // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*getMCPDeclaredItems*)
-getMCPDeclaredItems // beginDefinition;
+(*getAgentToolsDeclaredItems*)
+getAgentToolsDeclaredItems // beginDefinition;
 
-getMCPDeclaredItems[ paclet_PacletObject, type_String ] := Enclose[
+getAgentToolsDeclaredItems[ paclet_PacletObject, type_String ] := Enclose[
     Module[ { data, items },
-        data = ConfirmBy[ getMCPExtensionData @ paclet, AssociationQ, "Data" ];
+        data = ConfirmBy[ getAgentToolsExtensionData @ paclet, AssociationQ, "Data" ];
         items = Lookup[ data, type, { } ];
         ConfirmMatch[ DeleteCases[ extractItemName /@ items, $Failed ], { ___String }, "Names" ]
     ],
     throwInternalFailure
 ];
 
-getMCPDeclaredItems // endDefinition;
+getAgentToolsDeclaredItems // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -227,7 +227,7 @@ loadPacletDefinitionFile[ paclet_PacletObject, type_String, name_String ] := Enc
         If[ AssociationQ @ cached, Throw @ cached ];
 
         (* Get root directory *)
-        root = ConfirmBy[ getMCPExtensionDirectory @ paclet, StringQ, "Root" ];
+        root = ConfirmBy[ getAgentToolsExtensionDirectory @ paclet, StringQ, "Root" ];
 
         (* Try per-item file first *)
         perItemFile = findPerItemFile[ root, type, name ];
@@ -299,7 +299,7 @@ resolvePacletTool[ qualifiedName_String ] := Enclose[
             With[ { pn = pacletName }, throwFailure[ "PacletNotInstalled", pn, HoldForm @ PacletInstall @ pn ] ]
         ];
 
-        declaredTools = getMCPDeclaredItems[ paclet, "Tools" ];
+        declaredTools = getAgentToolsDeclaredItems[ paclet, "Tools" ];
         If[ ! MemberQ[ declaredTools, itemName ],
             throwFailure[ "PacletToolNotFound", itemName, pacletName ]
         ];
@@ -331,13 +331,13 @@ resolvePacletServer[ qualifiedName_String ] := Enclose[
             With[ { pn = pacletName }, throwFailure[ "PacletNotInstalled", pn, HoldForm @ PacletInstall @ pn ] ]
         ];
 
-        declaredServers = getMCPDeclaredItems[ paclet, "Servers" ];
+        declaredServers = getAgentToolsDeclaredItems[ paclet, "MCPServers" ];
         If[ ! MemberQ[ declaredServers, itemName ],
             throwFailure[ "PacletServerNotFound", itemName, pacletName ]
         ];
 
         definition = ConfirmBy[
-            loadPacletDefinitionFile[ paclet, "Servers", itemName ],
+            loadPacletDefinitionFile[ paclet, "MCPServers", itemName ],
             AssociationQ,
             "Definition"
         ];
@@ -370,13 +370,13 @@ resolvePacletPrompt[ qualifiedName_String ] := Enclose[
             With[ { pn = pacletName }, throwFailure[ "PacletNotInstalled", pn, HoldForm @ PacletInstall @ pn ] ]
         ];
 
-        declaredPrompts = getMCPDeclaredItems[ paclet, "Prompts" ];
+        declaredPrompts = getAgentToolsDeclaredItems[ paclet, "MCPPrompts" ];
         If[ ! MemberQ[ declaredPrompts, itemName ],
             throwFailure[ "PacletPromptNotFound", itemName, pacletName ]
         ];
 
         ConfirmBy[
-            loadPacletDefinitionFile[ paclet, "Prompts", itemName ],
+            loadPacletDefinitionFile[ paclet, "MCPPrompts", itemName ],
             AssociationQ,
             "Definition"
         ]
