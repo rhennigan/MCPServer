@@ -80,13 +80,50 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*Uninstall Cross-Variant Built-in Server*)
+VerificationTest[
+    (* Install "WolframLanguage" (config key "Wolfram"), then uninstall using "Wolfram" *)
+    crossVariantConfig = testConfigFile[];
+    Export[crossVariantConfig, <| "mcpServers" -> <| |> |>, "RawJSON"];
+    InstallMCPServer[crossVariantConfig, "WolframLanguage"],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "UninstallMCPServer-CrossVariantSetup@@Tests/UninstallMCPServer.wlt:84,1-92,2"
+]
+
+VerificationTest[
+    (* Uninstall using a different built-in variant name that shares the same config key *)
+    UninstallMCPServer[crossVariantConfig, "Wolfram"],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "UninstallMCPServer-CrossVariant@@Tests/UninstallMCPServer.wlt:94,1-100,2"
+]
+
+VerificationTest[
+    (* Verify the "Wolfram" key was removed *)
+    crossVariantJSON = Import[crossVariantConfig, "RawJSON"];
+    crossVariantJSON["mcpServers"] === <||>,
+    True,
+    SameTest -> Equal,
+    TestID   -> "UninstallMCPServer-VerifyCrossVariantRemoval@@Tests/UninstallMCPServer.wlt:102,1-109,2"
+]
+
+VerificationTest[
+    cleanupTestFiles[crossVariantConfig],
+    {Null},
+    SameTest -> MatchQ,
+    TestID   -> "UninstallMCPServer-CrossVariantCleanup@@Tests/UninstallMCPServer.wlt:111,1-116,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*Uninstall All Servers*)
 VerificationTest[
     (* Uninstall all remaining servers *)
     uninstallAllResult = UninstallMCPServer[configFile],
     { ___Success },
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-AllServers@@Tests/UninstallMCPServer.wlt:84,1-90,2"
+    TestID   -> "UninstallMCPServer-AllServers@@Tests/UninstallMCPServer.wlt:121,1-127,2"
 ]
 
 VerificationTest[
@@ -95,7 +132,7 @@ VerificationTest[
     jsonContent["mcpServers"] === <||>,
     True,
     SameTest -> Equal,
-    TestID   -> "UninstallMCPServer-VerifyAllServersRemoval@@Tests/UninstallMCPServer.wlt:92,1-99,2"
+    TestID   -> "UninstallMCPServer-VerifyAllServersRemoval@@Tests/UninstallMCPServer.wlt:129,1-136,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -115,7 +152,7 @@ VerificationTest[
     installResult = InstallMCPServer[configFile, server],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-ServerObjectSetup@@Tests/UninstallMCPServer.wlt:104,1-119,2"
+    TestID   -> "UninstallMCPServer-ServerObjectSetup@@Tests/UninstallMCPServer.wlt:141,1-156,2"
 ]
 
 VerificationTest[
@@ -123,7 +160,7 @@ VerificationTest[
     uninstallObjectResult = UninstallMCPServer[configFile, server],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-ByObject@@Tests/UninstallMCPServer.wlt:121,1-127,2"
+    TestID   -> "UninstallMCPServer-ByObject@@Tests/UninstallMCPServer.wlt:158,1-164,2"
 ]
 
 VerificationTest[
@@ -132,7 +169,7 @@ VerificationTest[
     !KeyExistsQ[jsonContent["mcpServers"], name],
     True,
     SameTest -> Equal,
-    TestID   -> "UninstallMCPServer-VerifyObjectRemoval@@Tests/UninstallMCPServer.wlt:129,1-136,2"
+    TestID   -> "UninstallMCPServer-VerifyObjectRemoval@@Tests/UninstallMCPServer.wlt:166,1-173,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -157,7 +194,7 @@ VerificationTest[
 
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-MultipleInstallsSetup@@Tests/UninstallMCPServer.wlt:141,1-161,2"
+    TestID   -> "UninstallMCPServer-MultipleInstallsSetup@@Tests/UninstallMCPServer.wlt:178,1-198,2"
 ]
 
 VerificationTest[
@@ -165,7 +202,7 @@ VerificationTest[
     uninstallAllInstancesResult = UninstallMCPServer[All, server],
     { _Success, _Success },
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-AllInstances@@Tests/UninstallMCPServer.wlt:163,1-169,2"
+    TestID   -> "UninstallMCPServer-AllInstances@@Tests/UninstallMCPServer.wlt:200,1-206,2"
 ]
 
 VerificationTest[
@@ -178,7 +215,7 @@ VerificationTest[
 
     True,
     SameTest -> Equal,
-    TestID   -> "UninstallMCPServer-VerifyAllInstancesRemoval@@Tests/UninstallMCPServer.wlt:171,1-182,2"
+    TestID   -> "UninstallMCPServer-VerifyAllInstancesRemoval@@Tests/UninstallMCPServer.wlt:208,1-219,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -190,7 +227,7 @@ VerificationTest[
     cleanupTestFiles[{configFile, configFile1, configFile2}],
     {Null..},
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-Cleanup@@Tests/UninstallMCPServer.wlt:187,1-194,2"
+    TestID   -> "UninstallMCPServer-Cleanup@@Tests/UninstallMCPServer.wlt:224,1-231,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -203,7 +240,7 @@ VerificationTest[
     _Failure,
     {UninstallMCPServer::MCPServerNotFound},
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-NonExistentServer@@Tests/UninstallMCPServer.wlt:199,1-207,2"
+    TestID   -> "UninstallMCPServer-NonExistentServer@@Tests/UninstallMCPServer.wlt:236,1-244,2"
 ]
 
 VerificationTest[
@@ -212,12 +249,12 @@ VerificationTest[
     _Missing,
     { },  (* No messages expected since notFoundQ just returns Missing *)
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-NonExistentFile@@Tests/UninstallMCPServer.wlt:209,1-216,2"
+    TestID   -> "UninstallMCPServer-NonExistentFile@@Tests/UninstallMCPServer.wlt:246,1-253,2"
 ]
 
 VerificationTest[
     cleanupTestFiles[configFile],
     {Null},
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-ErrorCleanup@@Tests/UninstallMCPServer.wlt:218,1-223,2"
+    TestID   -> "UninstallMCPServer-ErrorCleanup@@Tests/UninstallMCPServer.wlt:255,1-260,2"
 ]
