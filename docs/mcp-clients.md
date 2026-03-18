@@ -378,7 +378,12 @@ InstallMCPServer["ClaudeDesktop", "WolframLanguage", "MCPServerName" -> "Wolfram
 
 User-created servers are unaffected — they continue to use their `"Name"` as the config key.
 
-This option works with both `InstallMCPServer` and `UninstallMCPServer`.
+This option works with both `InstallMCPServer` and `UninstallMCPServer`. When uninstalling, use the same `"MCPServerName"` override that was used at install time:
+
+```wl
+(* Uninstall the "WolframDev" entry that was installed with a custom name *)
+UninstallMCPServer["ClaudeDesktop", "WolframLanguage", "MCPServerName" -> "WolframDev"]
+```
 
 ### ToolOptions
 
