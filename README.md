@@ -249,6 +249,16 @@ CreateMCPServer["My MCP Server", <|
 | `InstallMCPServer[client, server]` | Install a specific server for a client |
 | `UninstallMCPServer[client]` | Remove all servers from a client |
 | `UninstallMCPServer[client, name]` | Remove a specific server from a client |
+| `DeployAgentTools[target]` | Deploy tools to a client with tracked deployment management |
+| `DeployedAgentTools[]` | List all tracked deployments |
+
+### Deployment Objects
+
+| Symbol | Description |
+|--------|-------------|
+| `AgentToolsDeployment[...]` | Data structure representing a tracked tool deployment |
+| `DeployedAgentTools[]` | List all deployments |
+| `DeployedAgentTools[client]` | List deployments for a specific client |
 
 ### Server Objects
 
@@ -275,6 +285,7 @@ CreateMCPServer["My MCP Server", <|
 |--------|---------|-------------|
 | `"EnableMCPApps"` | `True` | Enable or disable [MCP Apps](docs/mcp-apps.md) UI resources |
 | `"DevelopmentMode"` | `False` | Use local source files instead of installed paclet |
+| `"MCPServerName"` | `Automatic` | Override the config file key for the server entry |
 | `"ToolOptions"` | `<\|\|>` | Customize built-in tool behavior (see [docs/tools.md](docs/tools.md#tool-options)) |
 | `"VerifyLLMKit"` | `True` | Check LLMKit subscription requirements |
 

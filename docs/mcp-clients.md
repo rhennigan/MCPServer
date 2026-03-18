@@ -358,6 +358,28 @@ Controls whether [MCP Apps](mcp-apps.md) UI resources are enabled for the instal
 InstallMCPServer["ClaudeDesktop", "EnableMCPApps" -> False]
 ```
 
+### MCPServerName
+
+Controls the key used for the server entry in the client's configuration file:
+
+| Value | Behavior |
+|-------|----------|
+| `Automatic` (default) | Uses the server's `"MCPServerName"` property if set, otherwise falls back to `"Name"` |
+| `"CustomName"` | Uses the specified string as the config key |
+
+All built-in servers (`Wolfram`, `WolframAlpha`, `WolframLanguage`, `WolframPacletDevelopment`) share the config key `"Wolfram"` by default. This means installing one built-in server variant replaces any previously installed built-in variant in the same client — they are mutually exclusive configurations of the same Wolfram MCP server.
+
+To install multiple built-in servers side by side, override the config key:
+
+```wl
+InstallMCPServer["ClaudeDesktop", "Wolfram", "MCPServerName" -> "WolframBasic"]
+InstallMCPServer["ClaudeDesktop", "WolframLanguage", "MCPServerName" -> "WolframDev"]
+```
+
+User-created servers are unaffected — they continue to use their `"Name"` as the config key.
+
+This option works with both `InstallMCPServer` and `UninstallMCPServer`.
+
 ### ToolOptions
 
 Customizes the behavior of built-in MCP tools at install time. The value is an association mapping tool names to their option overrides:
@@ -477,5 +499,6 @@ convertToClineFormat[ server_Association ] := Enclose[
 
 - `Kernel/SupportedClients.wl` - Supported MCP client definitions and format converters
 - `Kernel/InstallMCPServer.wl` - Installation and uninstallation implementation
+- `Kernel/DeployAgentTools.wl` - Managed deployment of agent tools (see [deploy-agent-tools.md](deploy-agent-tools.md))
 - `Kernel/CreateMCPServer.wl` - Server creation and JSON configuration generation
 - `Kernel/MCPServerObject.wl` - Server object structure

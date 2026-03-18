@@ -135,6 +135,18 @@ Note: The `Search` prompt has different implementations depending on the server:
 - **WolframAlpha**: Searches Wolfram Alpha only
 - **WolframLanguage/WolframPacletDevelopment**: Searches documentation only
 
+## Shared Config Key
+
+All built-in servers share the config key `"Wolfram"` in client configuration files (via the `"MCPServerName"` property). This means they are **mutually exclusive** — installing one built-in server variant replaces any previously installed built-in variant in the same client:
+
+```wl
+InstallMCPServer["ClaudeDesktop", "Wolfram"]
+InstallMCPServer["ClaudeDesktop", "WolframLanguage"]
+(* Only "WolframLanguage" remains, under the "Wolfram" config key *)
+```
+
+This is intentional: the built-in servers are different configurations of the same Wolfram MCP server and should not run simultaneously. To override this behavior, use the `"MCPServerName"` option (see [mcp-clients.md](mcp-clients.md#mcpservername)).
+
 ## Using Predefined Servers
 
 ### Installation
@@ -255,5 +267,6 @@ InstallMCPServer["ClaudeDesktop", "EnableMCPApps" -> False]
 - [tools.md](tools.md) - Detailed tool documentation, [tool options](tools.md#tool-options), and creating custom tools
 - [mcp-prompts.md](mcp-prompts.md) - Prompt system and creating custom prompts
 - [mcp-apps.md](mcp-apps.md) - MCP Apps system for interactive UI resources
-- [mcp-clients.md](mcp-clients.md) - Client installation and configuration
+- [mcp-clients.md](mcp-clients.md) - Client installation, configuration, and the [`"MCPServerName"` option](mcp-clients.md#mcpservername)
+- [deploy-agent-tools.md](deploy-agent-tools.md) - Managed deployment of tools to agent clients
 - [getting-started.md](getting-started.md) - Development setup
