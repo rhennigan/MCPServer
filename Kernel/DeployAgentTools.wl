@@ -235,8 +235,7 @@ makeDeploymentHiddenRows // beginDefinition;
 
 makeDeploymentHiddenRows[ dep_ ] := Flatten @ {
     deploymentSummaryItem[ "UUID"      , dep[ "UUID" ] ],
-    deploymentSummaryItem[ "ConfigFile", dep[ "ConfigFile" ] ],
-    deploymentSummaryItem[ "Timestamp" , dep[ "Timestamp" ] ]
+    deploymentSummaryItem[ "ConfigFile", dep[ "ConfigFile" ] ]
 };
 
 makeDeploymentHiddenRows // endDefinition;
