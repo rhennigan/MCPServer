@@ -200,55 +200,6 @@ AgentToolsDeployment /: MakeBoxes[ dep_AgentToolsDeployment? sp`HoldValidQ, fmt_
     ];
 
 (* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*makeDeploymentBoxes*)
-makeDeploymentBoxes // beginDefinition;
-
-makeDeploymentBoxes[ dep_AgentToolsDeployment, fmt_ ] :=
-    BoxForm`ArrangeSummaryBox[
-        AgentToolsDeployment,
-        dep,
-        None,
-        makeDeploymentSummaryRows @ dep,
-        makeDeploymentHiddenRows @ dep,
-        fmt
-    ];
-
-makeDeploymentBoxes // endDefinition;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*makeDeploymentSummaryRows*)
-makeDeploymentSummaryRows // beginDefinition;
-
-makeDeploymentSummaryRows[ dep_ ] := Flatten @ {
-    deploymentSummaryItem[ "Target", dep[ "Target" ] ],
-    deploymentSummaryItem[ "Server", dep[ "Server" ] ]
-};
-
-makeDeploymentSummaryRows // endDefinition;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*makeDeploymentHiddenRows*)
-makeDeploymentHiddenRows // beginDefinition;
-
-makeDeploymentHiddenRows[ dep_ ] := Flatten @ {
-    deploymentSummaryItem[ "UUID"      , dep[ "UUID" ] ],
-    deploymentSummaryItem[ "ConfigFile", dep[ "ConfigFile" ] ]
-};
-
-makeDeploymentHiddenRows // endDefinition;
-
-(* ::**************************************************************************************************************:: *)
-(* ::Subsubsection::Closed:: *)
-(*deploymentSummaryItem*)
-deploymentSummaryItem // beginDefinition;
-deploymentSummaryItem[ _, _Missing ] := Nothing;
-deploymentSummaryItem[ label_String, value_ ] := { BoxForm`SummaryItem @ { label <> ": ", value } };
-deploymentSummaryItem // endDefinition;
-
-(* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Error Handling*)
 AgentToolsDeployment[ args___ ]? sp`HoldNotValidQ := catchTop[

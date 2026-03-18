@@ -103,6 +103,51 @@ niceLabel // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*AgentToolsDeployment*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*makeDeploymentBoxes*)
+makeDeploymentBoxes // beginDefinition;
+
+makeDeploymentBoxes[ dep_AgentToolsDeployment, fmt_ ] :=
+    BoxForm`ArrangeSummaryBox[
+        AgentToolsDeployment,
+        dep,
+        None,
+        makeDeploymentSummaryRows @ dep,
+        makeDeploymentHiddenRows @ dep,
+        fmt
+    ];
+
+makeDeploymentBoxes // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*makeDeploymentSummaryRows*)
+makeDeploymentSummaryRows // beginDefinition;
+
+makeDeploymentSummaryRows[ dep_ ] := Flatten @ {
+    summaryItem[ "Target", dep[ "Target" ] ],
+    summaryItem[ "Server", dep[ "Server" ] ]
+};
+
+makeDeploymentSummaryRows // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*makeDeploymentHiddenRows*)
+makeDeploymentHiddenRows // beginDefinition;
+
+makeDeploymentHiddenRows[ dep_ ] := Flatten @ {
+    summaryItem[ "UUID"      , dep[ "UUID" ] ],
+    summaryItem[ "ConfigFile", dep[ "ConfigFile" ] ]
+};
+
+makeDeploymentHiddenRows // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Icons*)
 
 (* ::**************************************************************************************************************:: *)
