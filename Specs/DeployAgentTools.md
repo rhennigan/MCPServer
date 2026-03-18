@@ -91,7 +91,7 @@ This is a deliberate minor breaking change. Users who previously had multiple bu
 | File | Change |
 |---|---|
 | `Kernel/DefaultServers.wl` | Add `"MCPServerName" -> "Wolfram"` to all four built-in server definitions. |
-| `Kernel/InstallMCPServer.wl` | Add `"MCPServerName" -> Automatic` option. Resolve the config key using the precedence chain (option, then server property, then `"Name"`). Apply in both `installMCPServer` and `uninstallMCPServer`. |
+| `Kernel/InstallMCPServer.wl` | Add `"MCPServerName" -> Automatic` option to both `InstallMCPServer` and `UninstallMCPServer`. Resolve the config key using the precedence chain (option, then server property, then `"Name"`). Apply in both internal functions `installMCPServer` and `uninstallMCPServer`. **Important:** `obj["Name"]` is currently used for two purposes — (1) extracting the server config from `data["mcpServers", name]` in the MCPServerObject's JSON, and (2) as the key written to the client's config file. Only usage (2) should be replaced with the resolved MCPServerName; usage (1) must continue to use `obj["Name"]`. |
 | `Kernel/MCPServerObject.wl` | Expose `"MCPServerName"` as a readable property on `MCPServerObject`. |
 
 ---
@@ -130,10 +130,10 @@ DeployAgentTools[target, server, opts]
 
 ### Behavior
 
-1. Resolve `target` to a canonical client name via `$aliasToCanonicalName` (e.g. `"Claude"` becomes `"ClaudeDesktop"`). For `File[...]` targets, the file path is used as-is.
-2. Check for an existing deployment for this target:
-   - If one exists and `OverwriteTarget` is `False`: issue message and return `Failure["DeploymentExists", ...]`.
-   - If one exists and `OverwriteTarget` is `True`: delete the existing deployment first (via `deleteDeployment`).
+1. Resolve `target`: apply alias resolution via `toInstallName` (e.g. `"Claude"` becomes `"ClaudeDesktop"`). For `{name, dir}` pairs, resolve the name component. For `File[...]` targets, use as-is.
+2. Check for an existing deployment matching this target. Scan the `<ClientName>` subdirectory under `$deploymentsPath` and compare each deployment's stored `"MCP"/"Target"` against the resolved target (using structural equality, so `{"ClaudeCode", "/project1"}` does not match `{"ClaudeCode", "/project2"}`):
+   - If a match exists and `OverwriteTarget` is `False`: issue message and return `Failure["DeploymentExists", ...]`.
+   - If a match exists and `OverwriteTarget` is `True`: delete the existing deployment first (via `deleteDeployment`).
 3. Call `InstallMCPServer[target, server, <filtered options>]`, passing through only `InstallMCPServer`-valid options.
 4. On success, build a deployment record containing:
    - A new UUID
@@ -197,7 +197,7 @@ AgentToolsDeployment[ <|
 | `"PacletVersion"` | Paclet version string at the time of deployment. |
 | `"CreatedBy"` | Always `"DeployAgentTools"`. |
 | `"MCP"` | MCP server component data. |
-| `"MCP"/"Target"` | Canonical client name (e.g. `"ClaudeDesktop"`) or `File[...]` for direct file targets. |
+| `"MCP"/"Target"` | The target as originally provided (after alias resolution). A canonical client name string (e.g. `"ClaudeDesktop"`), a `{name, dir}` pair for project-level deployments (e.g. `{"ClaudeCode", "/path/to/project"}`), or `File[...]` for direct file targets. This is the value compared when checking for existing deployments. |
 | `"MCP"/"Server"` | Server name string (e.g. `"WolframLanguage"`). |
 | `"MCP"/"ConfigFile"` | `File[...]` pointing to the client's configuration file that was modified. |
 | `"MCP"/"Options"` | The `InstallMCPServer` options that were used, stored for use by `DeleteObject`. |
@@ -249,7 +249,7 @@ AgentToolsDeployment /: DeleteObject[dep_AgentToolsDeployment] := catchTop[
 
 The `deleteDeployment` function:
 
-1. Calls `UninstallMCPServer[dep["ConfigFile"], dep["Server"], <stored options>]` using the options stored in `dep["MCP", "Options"]` (e.g. `"ApplicationName"`). This is wrapped in `catchAlways` to tolerate cases where the config has already been manually modified or removed.
+1. Calls `UninstallMCPServer[dep["ConfigFile"], dep["Server"], <stored options>]` using the options stored in `dep["MCP", "Options"]` (e.g. `"ApplicationName"`, `"MCPServerName"`). This is wrapped in `catchAlways` to tolerate cases where the config has already been manually modified or removed.
 2. Deletes the deployment directory: `DeleteDirectory[deploymentDirectory[dep["UUID"]], DeleteContents -> True]`.
 3. Returns `Null`.
 
@@ -314,7 +314,7 @@ Deployment records are stored under:
 $UserBaseDirectory/ApplicationData/Wolfram/MCPServer/Deployments/<ClientName>/<uuid>/Deployment.wxf
 ```
 
-The `<ClientName>` directory groups deployments by canonical client name (e.g. `"ClaudeCode"`, `"ClaudeDesktop"`, `"Cursor"`). This makes `AgentToolsDeployments["ClientName"]` efficient — it only needs to scan a single subdirectory rather than all deployments. Clients that support project-scoped settings (e.g. Claude Code) may accumulate many deployments, so this grouping avoids unnecessary I/O.
+The `<ClientName>` directory groups deployments by canonical client name (e.g. `"ClaudeCode"`, `"ClaudeDesktop"`, `"Cursor"`). For `{name, dir}` project-level targets, `<ClientName>` is the resolved canonical client name (e.g. `"ClaudeCode"`). Multiple project-level deployments for the same client (different directories) coexist under the same `<ClientName>` subdirectory. This makes `AgentToolsDeployments["ClientName"]` efficient — it only needs to scan a single subdirectory rather than all deployments.
 
 For `File[...]` targets that don't resolve to a known client name, a fallback directory name such as `"Other"` is used.
 
@@ -349,7 +349,7 @@ MCPServer::InvalidDeploymentData = "Invalid deployment data: `1`.";
 | File | Change |
 |---|---|
 | `Kernel/DefaultServers.wl` | Add `"MCPServerName" -> "Wolfram"` to all four built-in server definitions. |
-| `Kernel/InstallMCPServer.wl` | Use `"MCPServerName"` (when present) instead of `"Name"` as the config file key in `installMCPServer` and `uninstallMCPServer`. |
+| `Kernel/InstallMCPServer.wl` | Add `"MCPServerName" -> Automatic` option to both `InstallMCPServer` and `UninstallMCPServer`. Use the resolved MCPServerName as the config file key in `installMCPServer` and `uninstallMCPServer` (but not for JSON extraction from `data["mcpServers", name]`, which must still use `obj["Name"]`). |
 | `Kernel/MCPServerObject.wl` | Expose `"MCPServerName"` as a readable property. |
 | `Kernel/DeployAgentTools.wl` | **New file.** All definitions for `DeployAgentTools`, `AgentToolsDeployment`, `AgentToolsDeployments`, and internal helpers. Context: ``Wolfram`MCPServer`DeployAgentTools` ``. |
 | `Kernel/Main.wl` | Add ``"Wolfram`MCPServer`DeployAgentTools`"`` to `$MCPServerContexts`. |
