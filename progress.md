@@ -35,6 +35,19 @@ Use the following format incrementing the session number from the latest entry:
 - Added `MCPServer::DeploymentExists`, `MCPServer::DeploymentNotFound`, and `MCPServer::InvalidDeploymentData` message definitions.
 - CodeInspector clean.
 
+## Session 5
+
+- Completed Task 5: Implemented `AgentToolsDeployment` object in `Kernel/DeployAgentTools.wl`.
+- Implemented schema validation using `System`Private`HoldSetValid`/`HoldNotValidQ`, following the `MCPServerObject` pattern.
+- Implemented all property access: top-level keys (`UUID`, `Timestamp`, `PacletVersion`, `CreatedBy`, `MCP`, `Skills`, `Hooks`, `Meta`), MCP shortcut properties (`ClientName`, `Target`, `Server`, `ConfigFile`), derived properties (`Data`, `Location`, `Properties`), and two-argument sub-association access (`dep["MCP", "Options"]`).
+- Implemented `DeleteObject` UpValue with `deleteDeployment`/`ensureDeploymentExists` internals. `deleteDeployment` calls `UninstallMCPServer` (wrapped in `catchAlways`) then removes the deployment directory.
+- Implemented `MakeBoxes` formatting via `BoxForm`ArrangeSummaryBox` with summary rows (Target, Server) and hidden rows (UUID, ConfigFile, Timestamp).
+- Implemented `agentToolsDeploymentQ` and `deploymentDirectory` internal helpers.
+- Key gotcha: System context symbols (`AgentToolsDeployment`, `AgentToolsDeployments`, `DeployAgentTools`) need `Unprotect`/`ClearAll` at the top of the file because `Main.wl` sets `{Protected, ReadProtected}` on them, which persists across `Get` reloads.
+- Key gotcha: Error messages are issued on `AgentToolsDeployment` (not `MCPServer`) because `catchTop[..., AgentToolsDeployment]` sets `$messageSymbol` to `AgentToolsDeployment`. The `messageFailure` function automatically copies message text from `MCPServer` to the target symbol. Tests must expect `AgentToolsDeployment::tag` not `MCPServer::tag`.
+- Key gotcha: `MakeBoxes` holds its arguments, so formatting tests must use `With[{obj = AgentToolsDeployment[data]}, MakeBoxes[obj, StandardForm]]` to inject an already-evaluated (valid) object.
+- All 36 DeployAgentTools tests pass. CodeInspector clean on both source and test files. All 196 existing tests (InstallMCPServer + UninstallMCPServer) still pass.
+
 ## Session 3
 
 - Completed Task 3: Exported shared symbols to `CommonSymbols.wl` and added `$deploymentsPath`.

@@ -37,7 +37,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **5. Implement `AgentToolsDeployment` object**
+- [x] **5. Implement `AgentToolsDeployment` object**
 
   Create `Kernel/DeployAgentTools.wl`. Implement the `AgentToolsDeployment` data model: schema validation using `HoldSetValid`/`HoldNotValidQ`, property access (all properties from the spec table), `DeleteObject` UpValue with `deleteDeployment` / `ensureDeploymentExists` internals, and `MakeBoxes` formatting via `ArrangeSummaryBox`. Include internal helpers `agentToolsDeploymentQ` and `deploymentDirectory`. Write and run tests for object construction, property access, validation, and formatting.
 
