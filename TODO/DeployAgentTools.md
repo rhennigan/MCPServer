@@ -5,7 +5,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **1. Add `"MCPServerName"` property to built-in server definitions**
+- [x] **1. Add `"MCPServerName"` property to built-in server definitions**
 
   Add `"MCPServerName" -> "Wolfram"` to all four built-in server definitions in `DefaultServers.wl` (`"Wolfram"`, `"WolframAlpha"`, `"WolframLanguage"`, `"WolframPacletDevelopment"`). This is the prerequisite that makes built-in servers share a single config key by default.
 
