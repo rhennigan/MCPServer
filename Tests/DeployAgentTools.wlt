@@ -633,7 +633,7 @@ VerificationTest[
 VerificationTest[
     AgentToolsDeployments[ "NonExistentClient" ],
     { },
-    Test"AgentToolsDeployments-NonExistentClient@@Tests/DeployAgentTools.wlt:633,1-637,2"637,2"
+    Test"AgentToolsDeployments-NonExistentClient@@Tests/DeployAgentTools.wlt:633,1-637,2"638,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -645,7 +645,7 @@ VerificationTest[
         AgentToolsDeployments[ ]
     ],
     { },
-    Test"AgentToolsDeployments-EmptyPath@@Tests/DeployAgentTools.wlt:642,1-649,2"649,2"
+    Test"AgentToolsDeployments-EmptyPath@@Tests/DeployAgentTools.wlt:642,1-649,2"650,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -674,6 +674,141 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*DeleteObject End-to-End*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Setup*)
+VerificationTest[
+    $deleteTestDir = CreateDirectory[ ];
+    $deleteTestConfig = File[ FileNameJoin @ { $deleteTestDir, "delete_test_config.json" } ];
+    $deleteDep = DeployAgentTools[ $deleteTestConfig, "Wolfram", "VerifyLLMKit" -> False ],
+    _AgentToolsDeployment,
+    SameTest -> MatchQ,
+    TestID"DeleteObject-Setup-Deploy@@Tests/DeployAgentTools.wlt:682,1-689,2"690,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Verify Pre-Delete State*)
+VerificationTest[
+    (* Config file should have the server entry *)
+    Module[ { json },
+        json = Developer`ReadRawJSONString @ ReadString @ First @ $deleteTestConfig;
+        KeyExistsQ[ json, "mcpServers" ] && KeyExistsQ[ json[ "mcpServers" ], "Wolfram" ]
+    ],
+    True,
+    Test"DeleteObject-ConfigHasEntry@@Tests/DeployAgentTools.wlt:694,1-702,2"703,2"
+]
+
+VerificationTest[
+    $deleteDepDir = $deleteDep[ "Location" ];
+    DirectoryQ @ $deleteDepDir,
+    True,
+    Test"DeleteObject-DeploymentDirExists@@Tests/DeployAgentTools.wlt:704,1-709,2"710,2"
+]
+
+VerificationTest[
+    MemberQ[ AgentToolsDeployments[ ], _? (#[ "UUID" ] === $deleteDep[ "UUID" ] &) ],
+    True,
+    Test"DeleteObject-InListing@@Tests/DeployAgentTools.wlt:711,1-715,2"716,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Delete*)
+VerificationTest[
+    DeleteObject[ $deleteDep ],
+    Null,
+    Test"DeleteObject-Delete@@Tests/DeployAgentTools.wlt:720,1-724,2"725,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Verify Post-Delete State*)
+VerificationTest[
+    (* Config file should no longer have the server entry *)
+    Module[ { json },
+        json = Developer`ReadRawJSONString @ ReadString @ First @ $deleteTestConfig;
+        ! KeyExistsQ[ json[ "mcpServers" ], "Wolfram" ]
+    ],
+    True,
+    Test"DeleteObject-ConfigEntryRemoved@@Tests/DeployAgentTools.wlt:729,1-737,2"738,2"
+]
+
+VerificationTest[
+    ! DirectoryQ @ $deleteDepDir,
+    True,
+    Test"DeleteObject-DeploymentDirRemoved@@Tests/DeployAgentTools.wlt:739,1-743,2"744,2"
+]
+
+VerificationTest[
+    NoneTrue[ AgentToolsDeployments[ ], #[ "UUID" ] === $deleteDep[ "UUID" ] & ],
+    True,
+    Test"DeleteObject-NotInListing@@Tests/DeployAgentTools.wlt:745,1-749,2"750,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Delete Again Fails*)
+VerificationTest[
+    DeleteObject[ $deleteDep ],
+    _Failure,
+    { AgentToolsDeployment::DeploymentNotFound },
+    SameTest -> MatchQ,
+    TestID"DeleteObject-DeleteAgainFails@@Tests/DeployAgentTools.wlt:754,1-760,2"762,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Round-Trip: Deploy -> List -> Delete -> Verify Gone*)
+VerificationTest[
+    Module[ { dir, config, dep, uuid, listed, listedAfter, json },
+        dir = CreateDirectory[ ];
+        config = File[ FileNameJoin @ { dir, "roundtrip_config.json" } ];
+
+        (* Deploy *)
+        dep = DeployAgentTools[ config, "Wolfram", "VerifyLLMKit" -> False ];
+        uuid = dep[ "UUID" ];
+
+        (* Verify in listing *)
+        listed = AgentToolsDeployments[ ];
+        If[ ! MemberQ[ listed, _? (#[ "UUID" ] === uuid &) ],
+            Quiet @ DeleteDirectory[ dir, DeleteContents -> True ];
+            Return[ False, Module ]
+        ];
+
+        (* Delete *)
+        DeleteObject[ dep ];
+
+        (* Verify gone from listing *)
+        listedAfter = AgentToolsDeployments[ ];
+        If[ MemberQ[ listedAfter, _? (#[ "UUID" ] === uuid &) ],
+            Quiet @ DeleteDirectory[ dir, DeleteContents -> True ];
+            Return[ False, Module ]
+        ];
+
+        (* Verify config entry removed *)
+        json = Developer`ReadRawJSONString @ ReadString @ First @ config;
+        Quiet @ DeleteDirectory[ dir, DeleteContents -> True ];
+        ! KeyExistsQ[ json[ "mcpServers" ], "Wolfram" ]
+    ],
+    True,
+    Test"DeleteObject-RoundTrip@@Tests/DeployAgentTools.wlt:765,1-798,2"799,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Cleanup*)
+VerificationTest[
+    Quiet @ DeleteDirectory[ $deleteTestDir, DeleteContents -> True ];
+    True,
+    True,
+    Test"DeleteObject-Cleanup@@Tests/DeployAgentTools.wlt:803,1-808,2"809,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Cleanup*)
 
 (* ::**************************************************************************************************************:: *)
@@ -688,7 +823,7 @@ VerificationTest[
     ];
     True,
     True,
-    Test"DeployAgentTools-Cleanup@@Tests/DeployAgentTools.wlt:682,1-692,2"695,2"
+    Test"DeployAgentTools-Cleanup@@Tests/DeployAgentTools.wlt:817,1-827,2"827,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

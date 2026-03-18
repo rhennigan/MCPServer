@@ -84,3 +84,16 @@ Use the following format incrementing the session number from the latest entry:
 - Added 10 new tests covering spec verification items 3-4: list all deployments, filter by client name, alias resolution, non-existent client returns empty list, empty deployments path, and corrupted records filtered out.
 - All 70 DeployAgentTools tests pass. All 196 existing tests (InstallMCPServer + UninstallMCPServer) still pass. CodeInspector clean on both source and test files.
 
+## Session 8
+
+- Completed Task 8: Added end-to-end tests for `DeleteObject` on `AgentToolsDeployment`.
+- The `deleteDeployment` implementation was already complete from Session 5 (calls `UninstallMCPServer` wrapped in `catchAlways`, then removes the deployment directory). This session focused on verification tests.
+- Fixed 12 broken `TestID` syntax issues in the test file from Session 7 (e.g. `TestID -"..."2"` → `TestID -> "..."`). The broken syntax caused tests to run with auto-generated IDs rather than named IDs, but didn't prevent them from passing.
+- Added 11 new tests covering spec verification item 5 and round-trip scenarios:
+  - Pre-delete state verification: config file has entry, deployment directory exists, deployment appears in listing
+  - Delete operation returns `Null`
+  - Post-delete state: config entry removed, deployment directory removed, deployment gone from listing
+  - Delete-again fails with `DeploymentNotFound` message
+  - Full round-trip: deploy → list → delete → verify config and listing both clean
+- All 81 DeployAgentTools tests pass. All 196 existing tests (InstallMCPServer + UninstallMCPServer) still pass. CodeInspector clean on both source and test files.
+

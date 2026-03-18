@@ -61,7 +61,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **8. Implement `DeleteObject` for `AgentToolsDeployment` and end-to-end tests**
+- [x] **8. Implement `DeleteObject` for `AgentToolsDeployment` and end-to-end tests**
 
   Implement the full delete flow: `UninstallMCPServer` call with filtered options (wrapped in `catchAlways`), deployment directory cleanup. Write and run end-to-end tests covering spec verification item 5 (delete removes config entry and deployment directory), plus round-trip deploy → list → delete → verify-gone scenarios.
 
