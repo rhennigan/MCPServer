@@ -113,7 +113,7 @@ getDeploymentProperty[ data_Association, "ConfigFile" ] := data[ "MCP", "ConfigF
 (* Derived properties *)
 getDeploymentProperty[ data_Association, "Data"             ] := data;
 getDeploymentProperty[ data_Association, "LLMConfiguration" ] := getDeploymentProperty[ data, "MCPServerObject" ][ "LLMConfiguration" ];
-getDeploymentProperty[ data_Association, "Location"         ] := deploymentDirectory @ data[ "UUID" ];
+getDeploymentProperty[ data_Association, "Location"         ] := deploymentDirectory[ data[ "MCP", "ClientName" ], data[ "UUID" ] ];
 getDeploymentProperty[ data_Association, "MCPServerObject"  ] := MCPServerObject @ data[ "MCP", "Server" ];
 getDeploymentProperty[ data_Association, "Properties"       ] := $deploymentProperties;
 getDeploymentProperty[ data_Association, "Tools"            ] := getDeploymentProperty[ data, "MCPServerObject" ][ "Tools" ];
@@ -158,7 +158,7 @@ ensureDeploymentExists // beginDefinition;
 ensureDeploymentExists[ dep_AgentToolsDeployment? agentToolsDeploymentQ ] :=
     Module[ { uuid, dir },
         uuid = dep[ "UUID" ];
-        dir = deploymentDirectory @ uuid;
+        dir = deploymentDirectory[ dep[ "ClientName" ], uuid ];
         If[ DirectoryQ @ dir,
             dep,
             throwFailure[ "DeploymentNotFound", uuid ]
@@ -184,7 +184,7 @@ deleteDeployment[ dep_AgentToolsDeployment ] := Enclose[
 
         (* Remove deployment directory *)
         uuid = ConfirmBy[ dep[ "UUID" ], StringQ, "UUID" ];
-        dir = ConfirmBy[ deploymentDirectory @ uuid, fileQ, "Directory" ];
+        dir = ConfirmBy[ deploymentDirectory[ dep[ "ClientName" ], uuid ], fileQ, "Directory" ];
         If[ DirectoryQ @ dir,
             ConfirmMatch[ DeleteDirectory[ dir, DeleteContents -> True ], Null, "Delete" ];
             ConfirmAssert[ ! FileExistsQ @ dir, "Verify" ]
@@ -251,13 +251,14 @@ DeployAgentTools // endExportedDefinition;
 deployAgentTools // beginDefinition;
 
 deployAgentTools[ target_, server_MCPServerObject, opts0: $$deployAgentToolsOptions ] := Enclose[
-    Module[ { opts, resolved, clientName, configFile, normalizedTarget, overwrite,
+    Module[ { opts, appName, resolved, clientName, configFile, normalizedTarget, overwrite,
               existingDep, installOpts, installResult, uuid, deployData, dir },
 
         opts = Sequence @@ FilterRules[ { opts0 }, Options @ DeployAgentTools ];
 
         (* Step 1: Resolve target *)
-        resolved = ConfirmMatch[ resolveDeployTarget @ target, { _String, _File, _ }, "ResolveTarget" ];
+        appName = OptionValue[ InstallMCPServer, FilterRules[ { opts0 }, Options @ InstallMCPServer ], "ApplicationName" ];
+        resolved = ConfirmMatch[ resolveDeployTarget[ target, appName ], { _String, _File, _ }, "ResolveTarget" ];
         { clientName, configFile, normalizedTarget } = resolved;
 
         (* Step 2: Check for existing deployment *)
@@ -323,25 +324,32 @@ deployAgentTools // endDefinition;
 (*resolveDeployTarget*)
 resolveDeployTarget // beginDefinition;
 
-resolveDeployTarget[ name0_String ] :=
+resolveDeployTarget[ name0_String, _ ] :=
     Module[ { name, configFile },
         name = toInstallName @ name0;
         configFile = installLocation @ name;
         { name, configFile, name }
     ];
 
-resolveDeployTarget[ { name0_String, dir_ } ] :=
+resolveDeployTarget[ { name0_String, dir_ }, _ ] :=
     Module[ { name, configFile },
         name = toInstallName @ name0;
         configFile = projectInstallLocation[ name, dir ];
         { name, configFile, { name, dir } }
     ];
 
-resolveDeployTarget[ file_File? fileQ ] :=
+resolveDeployTarget[ file_File? fileQ, Automatic ] :=
     Module[ { configFile, clientName },
         configFile = ensureFilePath @ file;
         clientName = guessClientName @ file;
         { Replace[ clientName, None -> "Other" ], configFile, file }
+    ];
+
+resolveDeployTarget[ file_File? fileQ, appName_String ] :=
+    Module[ { configFile, clientName },
+        configFile = ensureFilePath @ file;
+        clientName = toInstallName @ appName;
+        { clientName, configFile, file }
     ];
 
 resolveDeployTarget // endDefinition;
@@ -446,21 +454,8 @@ deploymentsInClientDir // endDefinition;
 (* ::Subsection::Closed:: *)
 (*deploymentDirectory*)
 deploymentDirectory // beginDefinition;
-
-deploymentDirectory[ uuid_String ] :=
-    Module[ { dirs, result },
-        dirs = FileNames[ All, $deploymentsPath ];
-        result = SelectFirst[
-            Flatten @ Map[ FileNames[ uuid, # ] &, dirs ],
-            DirectoryQ,
-            None
-        ];
-        If[ result === None,
-            fileNameJoin[ $deploymentsPath, "Unknown", uuid ],
-            fileNameJoin @ result
-        ]
-    ];
-
+deploymentDirectory[ clientName_String, uuid_String ] := fileNameJoin[ $deploymentsPath, clientName, uuid ];
+deploymentDirectory[ None, uuid_String ] := deploymentDirectory[ "Other", uuid ];
 deploymentDirectory // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
