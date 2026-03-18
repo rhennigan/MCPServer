@@ -23,6 +23,79 @@ Three new symbols are introduced, all in the `System` context:
 
 ---
 
+## Prerequisite: Unified Config Key for Built-In Servers
+
+### Problem
+
+Currently, `InstallMCPServer` uses the server's `"Name"` property as the key when writing to a client's config file. Since each built-in server has a distinct name (`"Wolfram"`, `"WolframAlpha"`, `"WolframLanguage"`, `"WolframPacletDevelopment"`), multiple built-in servers can be installed to the same client simultaneously:
+
+```wl
+InstallMCPServer["ClaudeDesktop", "Wolfram"]
+InstallMCPServer["ClaudeDesktop", "WolframLanguage"]
+(* Both entries now coexist in claude_desktop_config.json *)
+```
+
+This was never intended. The built-in servers are mutually exclusive variants of the same Wolfram MCP server — they differ only in which tools and prompts are enabled. Running multiple built-in servers simultaneously causes overlapping tools, redundant resource usage, and user confusion.
+
+### Solution
+
+Add an `"MCPServerName"` property to each built-in server definition in `DefaultServers.wl`, set to `"Wolfram"` for all of them:
+
+```wl
+$defaultMCPServers[ "Wolfram" ] := <|
+    "Name"          -> "Wolfram",
+    "MCPServerName" -> "Wolfram",
+    ...
+|>;
+
+$defaultMCPServers[ "WolframLanguage" ] := <|
+    "Name"          -> "WolframLanguage",
+    "MCPServerName" -> "Wolfram",
+    ...
+|>;
+
+(* Same for WolframAlpha, WolframPacletDevelopment *)
+```
+
+The config key is resolved with the following precedence:
+
+1. The `"MCPServerName"` option passed to `InstallMCPServer` (if not `Automatic`).
+2. The `"MCPServerName"` property on the `MCPServerObject` (if present).
+3. The `"Name"` property on the `MCPServerObject` (existing fallback behavior).
+
+Additionally, `InstallMCPServer` gains a new `"MCPServerName"` option (default `Automatic`) that lets users override the config key. This provides an escape hatch for users who want multiple built-in servers installed simultaneously despite the default mutual-exclusivity:
+
+```wl
+(* Default: both write to the "Wolfram" key, so the second overwrites the first *)
+InstallMCPServer["ClaudeDesktop", "Wolfram"]
+InstallMCPServer["ClaudeDesktop", "WolframLanguage"]
+
+(* Override: install under a custom key to keep both *)
+InstallMCPServer["ClaudeDesktop", "Wolfram", "MCPServerName" -> "WolframBasic"]
+InstallMCPServer["ClaudeDesktop", "WolframLanguage", "MCPServerName" -> "WolframDev"]
+```
+
+### Effects
+
+1. **Built-in servers overwrite each other by default.** Installing `"WolframLanguage"` after `"Wolfram"` replaces the existing entry, since both write to the `"Wolfram"` key.
+2. **Consistent client-side naming.** Regardless of which built-in server variant is installed, the MCP client always shows the server as `"Wolfram"`.
+3. **User-created servers are unaffected.** They do not set `"MCPServerName"`, so they continue to use their `"Name"` as the config key.
+4. **Override available.** Users who need multiple built-in servers can use the `"MCPServerName"` option to assign distinct config keys.
+
+### Breaking Change
+
+This is a deliberate minor breaking change. Users who previously had multiple built-in servers installed to the same client will find that only one remains after upgrading and re-installing. This is the intended behavior — those configurations were never supported and could cause issues with overlapping tools. The `"MCPServerName"` option provides a workaround for users who explicitly want the old behavior.
+
+### Implementation
+
+| File | Change |
+|---|---|
+| `Kernel/DefaultServers.wl` | Add `"MCPServerName" -> "Wolfram"` to all four built-in server definitions. |
+| `Kernel/InstallMCPServer.wl` | Add `"MCPServerName" -> Automatic` option. Resolve the config key using the precedence chain (option, then server property, then `"Name"`). Apply in both `installMCPServer` and `uninstallMCPServer`. |
+| `Kernel/MCPServerObject.wl` | Expose `"MCPServerName"` as a readable property on `MCPServerObject`. |
+
+---
+
 ## DeployAgentTools
 
 ### Signature
@@ -47,6 +120,7 @@ DeployAgentTools[target, server, opts]
 | `OverwriteTarget` | `False` | If `True`, replace any existing deployment for the same target. If `False`, return a `Failure` when a deployment already exists. |
 | `"ApplicationName"` | `Automatic` | Passed through to `InstallMCPServer`. |
 | `"DevelopmentMode"` | `False` | Passed through to `InstallMCPServer`. |
+| `"MCPServerName"` | `Automatic` | Passed through to `InstallMCPServer`. Override the config file key for the server entry. |
 | `"EnableMCPApps"` | `True` | Passed through to `InstallMCPServer`. |
 | `"ProcessEnvironment"` | `Automatic` | Passed through to `InstallMCPServer`. |
 | `"ToolOptions"` | `<\|\|>` | Passed through to `InstallMCPServer`. |
@@ -98,21 +172,20 @@ An `AgentToolsDeployment` wraps an association with the following structure:
 
 ```wl
 AgentToolsDeployment[ <|
-    "UUID"    -> "a1b2c3d4-e5f6-...",
-    "Version" -> 1,
-    "MCP"     -> <|
+    "UUID"           -> "a1b2c3d4-e5f6-...",
+    "Version"        -> 1,
+    "Timestamp"      -> DateObject[ ... ],
+    "PacletVersion"  -> "1.8.0",
+    "CreatedBy"      -> "DeployAgentTools",
+    "MCP"            -> <|
         "Target"     -> "ClaudeDesktop",
         "Server"     -> "WolframLanguage",
         "ConfigFile" -> File[ "..." ],
         "Options"    -> <| "DevelopmentMode" -> False, ... |>
     |>,
-    "Skills"  -> <| |>,
-    "Hooks"   -> <| |>,
-    "Meta"    -> <|
-        "Timestamp"     -> DateObject[...],
-        "PacletVersion" -> "1.8.0",
-        "CreatedBy"     -> "DeployAgentTools"
-    |>
+    "Skills"         -> <| |>,
+    "Hooks"          -> <| |>,
+    "Meta"           -> <| |>
 |> ]
 ```
 
@@ -120,6 +193,9 @@ AgentToolsDeployment[ <|
 |---|---|
 | `"UUID"` | A UUID string uniquely identifying this deployment. Generated by `CreateUUID[]`. |
 | `"Version"` | Integer schema version (currently `1`). Enables future data migration. |
+| `"Timestamp"` | `DateObject` recording when the deployment was created. |
+| `"PacletVersion"` | Paclet version string at the time of deployment. |
+| `"CreatedBy"` | Always `"DeployAgentTools"`. |
 | `"MCP"` | MCP server component data. |
 | `"MCP"/"Target"` | Canonical client name (e.g. `"ClaudeDesktop"`) or `File[...]` for direct file targets. |
 | `"MCP"/"Server"` | Server name string (e.g. `"WolframLanguage"`). |
@@ -127,9 +203,7 @@ AgentToolsDeployment[ <|
 | `"MCP"/"Options"` | The `InstallMCPServer` options that were used, stored for use by `DeleteObject`. |
 | `"Skills"` | Reserved for phase 2. Empty association in phase 1. |
 | `"Hooks"` | Reserved for phase 2. Empty association in phase 1. |
-| `"Meta"/"Timestamp"` | `DateObject` recording when the deployment was created. |
-| `"Meta"/"PacletVersion"` | Paclet version string at the time of deployment. |
-| `"Meta"/"CreatedBy"` | Always `"DeployAgentTools"`. |
+| `"Meta"` | Reserved for user-defined metadata. Empty association initially. |
 
 ### Object Validation
 
@@ -147,13 +221,15 @@ dep["PropertyName"]
 | `"Target"` | Client name string or `File` | `data["MCP", "Target"]` |
 | `"Server"` | Server name string | `data["MCP", "Server"]` |
 | `"ConfigFile"` | `File[...]` | `data["MCP", "ConfigFile"]` |
-| `"Timestamp"` | `DateObject` | `data["Meta", "Timestamp"]` |
+| `"Timestamp"` | `DateObject` | `data["Timestamp"]` |
+| `"PacletVersion"` | Version string | `data["PacletVersion"]` |
+| `"CreatedBy"` | `"DeployAgentTools"` | `data["CreatedBy"]` |
 | `"MCP"` | MCP sub-association | `data["MCP"]` |
 | `"Skills"` | Skills sub-association | `data["Skills"]` |
 | `"Hooks"` | Hooks sub-association | `data["Hooks"]` |
-| `"Meta"` | Meta sub-association | `data["Meta"]` |
+| `"Meta"` | User-defined metadata | `data["Meta"]` |
 | `"Data"` | Full internal association | `data` |
-| `"Location"` | `File[...]` deployment directory | Derived from ID |
+| `"Location"` | `File[...]` deployment directory | Derived from UUID |
 | `"Properties"` | List of all property names | Static list |
 
 ### DeleteObject
@@ -182,7 +258,7 @@ The `deleteDeployment` function:
 `MakeBoxes` is defined via an UpValue using ``BoxForm`ArrangeSummaryBox``:
 
 - **Summary rows**: Target, Server
-- **Hidden rows**: ID, ConfigFile, Timestamp
+- **Hidden rows**: UUID, ConfigFile, Timestamp
 
 ---
 
@@ -199,15 +275,17 @@ AgentToolsDeployments["ClaudeCode"]    (* filter by target client name *)
 
 **No arguments** — returns a list of all `AgentToolsDeployment` objects:
 
-1. Scan `$deploymentsPath` for subdirectories (each named by UUID).
-2. For each, read `Deployment.wxf` and construct an `AgentToolsDeployment`.
-3. Filter out any corrupted or invalid records.
-4. Return a `List` of `AgentToolsDeployment` objects.
+1. Scan `$deploymentsPath` for client subdirectories (e.g. `ClaudeCode/`, `Cursor/`).
+2. Within each, scan for UUID subdirectories containing `Deployment.wxf`.
+3. Read each record and construct an `AgentToolsDeployment`.
+4. Filter out any corrupted or invalid records.
+5. Return a `List` of `AgentToolsDeployment` objects.
 
 **With target string** — filters by client name:
 
 1. Resolve the target string through `$aliasToCanonicalName` (e.g. `"Claude"` becomes `"ClaudeDesktop"`).
-2. Return only deployments whose `"MCP"/"Target"` matches.
+2. Scan only `$deploymentsPath/<ClientName>/` for UUID subdirectories.
+3. Read and return the matching `AgentToolsDeployment` objects.
 
 ### Examples
 
@@ -233,10 +311,12 @@ AgentToolsDeployments["Claude"]  (* same as "ClaudeDesktop" *)
 Deployment records are stored under:
 
 ```
-$UserBaseDirectory/ApplicationData/Wolfram/MCPServer/Deployments/<uuid>/Deployment.wxf
+$UserBaseDirectory/ApplicationData/Wolfram/MCPServer/Deployments/<ClientName>/<uuid>/Deployment.wxf
 ```
 
-This is a subdirectory of the existing `$rootPath` (`$UserBaseDirectory/ApplicationData/Wolfram/MCPServer`), alongside the existing `Installations.wxf` and server metadata.
+The `<ClientName>` directory groups deployments by canonical client name (e.g. `"ClaudeCode"`, `"ClaudeDesktop"`, `"Cursor"`). This makes `AgentToolsDeployments["ClientName"]` efficient — it only needs to scan a single subdirectory rather than all deployments. Clients that support project-scoped settings (e.g. Claude Code) may accumulate many deployments, so this grouping avoids unnecessary I/O.
+
+For `File[...]` targets that don't resolve to a known client name, a fallback directory name such as `"Other"` is used.
 
 ### Format
 
@@ -244,7 +324,7 @@ WXF (Wolfram Exchange Format), consistent with existing storage (`Installations.
 
 ### Indexing
 
-No master index file. `AgentToolsDeployments` scans the `Deployments/` directory for UUID subdirectories. The expected deployment count is small (order of ~10), so scanning is simple and avoids index-vs-reality consistency issues.
+No master index file. `AgentToolsDeployments[]` scans all client subdirectories under `Deployments/`. `AgentToolsDeployments["ClientName"]` scans only the matching `Deployments/<ClientName>/` subdirectory. This avoids index-vs-reality consistency issues while keeping filtered queries efficient.
 
 ### Data Versioning
 
@@ -258,7 +338,7 @@ The following messages should be added to `Kernel/Messages.wl`:
 
 ```wl
 MCPServer::DeploymentExists      = "A deployment already exists for target `1`. Use OverwriteTarget -> True to replace it.";
-MCPServer::DeploymentNotFound    = "No deployment found with ID \"`1`\".";
+MCPServer::DeploymentNotFound    = "No deployment found with UUID \"`1`\".";
 MCPServer::InvalidDeploymentData = "Invalid deployment data: `1`.";
 ```
 
@@ -268,6 +348,9 @@ MCPServer::InvalidDeploymentData = "Invalid deployment data: `1`.";
 
 | File | Change |
 |---|---|
+| `Kernel/DefaultServers.wl` | Add `"MCPServerName" -> "Wolfram"` to all four built-in server definitions. |
+| `Kernel/InstallMCPServer.wl` | Use `"MCPServerName"` (when present) instead of `"Name"` as the config file key in `installMCPServer` and `uninstallMCPServer`. |
+| `Kernel/MCPServerObject.wl` | Expose `"MCPServerName"` as a readable property. |
 | `Kernel/DeployAgentTools.wl` | **New file.** All definitions for `DeployAgentTools`, `AgentToolsDeployment`, `AgentToolsDeployments`, and internal helpers. Context: ``Wolfram`MCPServer`DeployAgentTools` ``. |
 | `Kernel/Main.wl` | Add ``"Wolfram`MCPServer`DeployAgentTools`"`` to `$MCPServerContexts`. |
 | `Kernel/CommonSymbols.wl` | Add shared symbols needed across files (e.g. `$deploymentsPath`, `agentToolsDeploymentQ`, `deleteDeployment`, `ensureDeploymentExists`). |
@@ -322,6 +405,17 @@ Each component gets its own cleanup logic in `deleteDeployment`. Components are 
 ---
 
 ## Verification
+
+### MCPServerName (InstallMCPServer change)
+
+1. Install a built-in server (e.g. `"WolframLanguage"`); verify the config file key is `"Wolfram"`, not `"WolframLanguage"`.
+2. Install a different built-in server to the same client; verify it overwrites the existing `"Wolfram"` entry rather than creating a second entry.
+3. Install a user-created server (no `"MCPServerName"`); verify its `"Name"` is used as the config key (unchanged behavior).
+4. Uninstall a built-in server by name; verify it removes the `"Wolfram"` key from the config file.
+5. Install with `"MCPServerName" -> "CustomName"`; verify the config file key is `"CustomName"`.
+6. Install two built-in servers with different `"MCPServerName"` overrides; verify both coexist in the config file.
+
+### DeployAgentTools
 
 1. Deploy to a supported client; verify an `AgentToolsDeployment` is returned with correct properties.
 2. Verify the client's MCP config file was updated (consistent with `InstallMCPServer` behavior).
