@@ -65,6 +65,11 @@ MCPServer::CodeInspectorNoFilesFound       = "No .wl, .m, or .wls files found in
 MCPServer::CodeInspectorFailed             = "CodeInspector failed: `1`.";
 MCPServer::CodeInspectorInvalidConfidence  = "Confidence level must be between 0 and 1, got `1`.";
 
+(* DeployAgentTools messages *)
+MCPServer::DeploymentExists                = "A deployment already exists for target `1`. Use OverwriteTarget -> True to replace it.";
+MCPServer::DeploymentNotFound              = "No deployment found with UUID \"`1`\".";
+MCPServer::InvalidDeploymentData           = "Invalid deployment data: `1`.";
+
 (* Paclet extension messages *)
 MCPServer::PacletNotInstalled              = "The paclet \"`1`\" is not installed. Evaluate `2` to install it.";
 MCPServer::PacletExtensionNotFound         = "No MCP extension found in paclet \"`1`\".";

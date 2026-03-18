@@ -159,13 +159,23 @@ cicd`ConsoleLog[ "Loading paclet..." ];
 PacletDirectoryUnload @ $pacletDir;
 cicd`ScriptConfirmBy[ PacletDirectoryLoad @ tmp, MemberQ @ tmp ];
 
+$systemSymbols = {
+    "System`AgentToolsDeployment",
+    "System`DeployAgentTools",
+    "System`DeployedAgentTools"
+};
+
 Quiet[
     Unprotect[ "Wolfram`MCPServer`*" ];
     Remove[ "Wolfram`MCPServer`*" ];
     Remove[ "Wolfram`MCPServer`*`*" ];
+    Unprotect @@ $systemSymbols;
+    Remove @@ $systemSymbols;
 ];
 
 cicd`ScriptConfirmAssert[ Names[ "Wolfram`MCPServer`*" ] === Names[ "Wolfram`MCPServer`*`*" ] === { }, "Names" ];
+cicd`ScriptConfirmAssert[ ! AnyTrue[ $systemSymbols, NameQ ], "SystemSymbols" ];
+
 Quiet[
     cicd`ScriptConfirm @ CheckAbort[ Get[ "Wolfram`MCPServer`" ], $Failed ],
     {
@@ -182,7 +192,7 @@ $mxDir = cDir @ gu`EnsureDirectory @ DirectoryName @ $mxFile;
 cicd`ConsoleLog @ SequenceForm[ "MX target directory: ", $mxDir  ];
 cicd`ConsoleLog @ SequenceForm[ "Building MX file: "   , $mxFile ];
 
-DumpSave[ $mxFile, { "Wolfram`MCPServer`" }, "SymbolAttributes" -> False ];
+DumpSave[ $mxFile, Evaluate @ Flatten @ { "Wolfram`MCPServer`", $systemSymbols }, "SymbolAttributes" -> False ];
 
 PacletDirectoryUnload @ tmp;
 PacletDirectoryLoad @ $pacletDir;

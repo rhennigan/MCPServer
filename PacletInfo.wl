@@ -13,11 +13,16 @@ PacletObject[ <|
     "CommitURL"        -> "$COMMIT_URL$",
     "PrimaryContext"   -> "Wolfram`MCPServer`",
     "DocumentationURL" -> "https://paclets.com",
+    "Loading"          -> Automatic,
     "Extensions"       -> {
         { "Kernel",
-            "Root"    -> "Kernel",
-            "Context" -> { "Wolfram`MCPServer`" },
-            "Symbols" -> {
+            "HiddenImport" -> None,
+            "Root"         -> "Kernel",
+            "Context"      -> { "Wolfram`MCPServer`" },
+            "Symbols"      -> {
+                "System`AgentToolsDeployment",
+                "System`DeployAgentTools",
+                "System`DeployedAgentTools",
                 "Wolfram`MCPServer`$DefaultMCPPrompts",
                 "Wolfram`MCPServer`$DefaultMCPServers",
                 "Wolfram`MCPServer`$DefaultMCPToolOptions",
@@ -28,6 +33,7 @@ PacletObject[ <|
                 "Wolfram`MCPServer`$MCPServerProtectedNames",
                 "Wolfram`MCPServer`$MCPServerSymbolNames",
                 "Wolfram`MCPServer`$SupportedMCPClients",
+                "Wolfram`MCPServer`CodeInspectorToolFunction",
                 "Wolfram`MCPServer`CreateMCPServer",
                 "Wolfram`MCPServer`InstallMCPServer",
                 "Wolfram`MCPServer`MCPServer",
@@ -35,6 +41,7 @@ PacletObject[ <|
                 "Wolfram`MCPServer`MCPServerObjectQ",
                 "Wolfram`MCPServer`MCPServerObjects",
                 "Wolfram`MCPServer`StartMCPServer",
+                "Wolfram`MCPServer`TestReportToolFunction",
                 "Wolfram`MCPServer`UninstallMCPServer",
                 "Wolfram`MCPServer`ValidateMCPPacletExtension"
             }
@@ -46,9 +53,9 @@ PacletObject[ <|
         { "Asset",
             "Assets" -> {
                 { "Apps"               , "Assets/Apps"                    },
-                { "SymbolPageTemplate" , "Assets/Templates/SymbolPage.wl"},
-                { "TestReportScript"   , "Assets/TestReport.wls"         },
-                { "AGENTS.md"          , "AGENTS.md"                     }
+                { "SymbolPageTemplate" , "Assets/Templates/SymbolPage.wl" },
+                { "TestReportScript"   , "Assets/TestReport.wls"          },
+                { "AGENTS.md"          , "AGENTS.md"                      }
             }
         }
     }

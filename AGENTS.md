@@ -43,6 +43,7 @@ See [building.md](docs/building.md) for detailed instructions.
   - `CommonSymbols.wl`: Any symbols shared between paclet files must be declared here
   - `CreateMCPServer.wl`: Implementation for creating MCP servers
   - `DefaultServers.wl`: Defines several predefined named MCP servers
+  - `DeployAgentTools.wl`: Implementation for deploying and managing agent tool deployments
   - `Files.wl`: Helper functions for file operations
   - `Formatting.wl`: Definitions for formatting in notebooks
   - `InstallMCPServer.wl`: Implementation for installing MCP servers for use in some common MCP client applications
@@ -90,6 +91,7 @@ See [building.md](docs/building.md) for detailed instructions.
   - `mcp-apps.md`: MCP Apps system for interactive UI resources
   - `code-inspector-rules.md`: Adding custom CodeInspector rules
   - `agent-skills.md`: Agent skills system, build process, and how to add new skills
+  - `deploy-agent-tools.md`: Deployment management for agent tools
 
 ### MCP Documentation
 

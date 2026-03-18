@@ -71,7 +71,7 @@ makeHiddenSummaryRows[ name_String, tools_List, location: _File | "BuiltIn" | _P
         copyJSONButton = clickToCopy[ "{\[Ellipsis]}", json ];
         Flatten @ {
             summaryItem[ "JSON Configuration", copyJSONButton ],
-            If[ Length @ toolNames > 0, summaryItem[ "Tool Names", Multicolumn[ toolNames, 5 ] ], Nothing ],
+            If[ Length @ toolNames > 0, summaryItem[ "Tools", Multicolumn[ toolNames, 5 ] ], Nothing ],
             summaryItem[ "Location", location ]
         }
     ];
@@ -100,6 +100,57 @@ summaryItem // endDefinition;
 niceLabel // beginDefinition;
 niceLabel[ label_String ] := StringJoin[ label, ": " ];
 niceLabel // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*AgentToolsDeployment*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*makeDeploymentBoxes*)
+makeDeploymentBoxes // beginDefinition;
+
+makeDeploymentBoxes[ dep_AgentToolsDeployment, fmt_ ] :=
+    BoxForm`ArrangeSummaryBox[
+        AgentToolsDeployment,
+        dep,
+        None,
+        makeDeploymentSummaryRows @ dep,
+        makeDeploymentHiddenRows @ dep,
+        fmt
+    ];
+
+makeDeploymentBoxes // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*makeDeploymentSummaryRows*)
+makeDeploymentSummaryRows // beginDefinition;
+
+makeDeploymentSummaryRows[ dep_ ] := Flatten @ {
+    summaryItem[ "Target", dep[ "Target" ] ],
+    summaryItem[ "Server", dep[ "Server" ] ]
+};
+
+makeDeploymentSummaryRows // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*makeDeploymentHiddenRows*)
+makeDeploymentHiddenRows // beginDefinition;
+
+makeDeploymentHiddenRows[ dep_ ] :=
+    Module[ { tools, toolNames },
+        tools = dep[ "Tools" ];
+        toolNames = Select[ Cases[ tools, tool: $$llmTool :> toolName @ tool ], StringQ ];
+        Flatten @ {
+            If[ Length @ toolNames > 0, summaryItem[ "Tools", Multicolumn[ toolNames, 5 ] ], Nothing ],
+            summaryItem[ "UUID"      , dep[ "UUID" ] ],
+            summaryItem[ "ConfigFile", dep[ "ConfigFile" ] ]
+        }
+    ];
+
+makeDeploymentHiddenRows // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
