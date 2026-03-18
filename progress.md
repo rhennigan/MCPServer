@@ -29,6 +29,12 @@ Use the following format incrementing the session number from the latest entry:
 - Added new "MCPServerName Option" test section covering all 7 spec verification items: built-in key resolution, overwrite behavior, custom server unchanged, uninstall by resolved key, option override, two built-in with different overrides coexisting, and stale record clearing.
 - All 179 InstallMCPServer tests and 17 UninstallMCPServer tests pass. CodeInspector clean.
 
+## Session 4
+
+- Completed Task 4: Added deployment-related messages to `Messages.wl`.
+- Added `MCPServer::DeploymentExists`, `MCPServer::DeploymentNotFound`, and `MCPServer::InvalidDeploymentData` message definitions.
+- CodeInspector clean.
+
 ## Session 3
 
 - Completed Task 3: Exported shared symbols to `CommonSymbols.wl` and added `$deploymentsPath`.

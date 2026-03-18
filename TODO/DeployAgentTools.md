@@ -29,7 +29,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **4. Add deployment-related messages**
+- [x] **4. Add deployment-related messages**
 
   Add `MCPServer::DeploymentExists`, `MCPServer::DeploymentNotFound`, and `MCPServer::InvalidDeploymentData` message definitions.
 
