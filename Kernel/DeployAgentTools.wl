@@ -347,7 +347,7 @@ resolveDeployTarget[ { name0_String, dir_ }, _ ] :=
 resolveDeployTarget[ file_File? fileQ, Automatic ] :=
     Module[ { configFile, clientName },
         configFile = ensureFilePath @ file;
-        clientName = guessClientName @ file;
+        clientName = guessClientName @ configFile;
         { Replace[ clientName, None -> "Other" ], configFile, file }
     ];
 
