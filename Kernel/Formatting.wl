@@ -146,8 +146,7 @@ makeDeploymentHiddenRows[ dep_ ] :=
         Flatten @ {
             If[ Length @ toolNames > 0, summaryItem[ "Tools", Multicolumn[ toolNames, 5 ] ], Nothing ],
             summaryItem[ "UUID"      , dep[ "UUID" ] ],
-            summaryItem[ "ConfigFile", dep[ "ConfigFile" ] ],
-            summaryItem[ "Timestamp" , dep[ "Timestamp" ] ]
+            summaryItem[ "ConfigFile", dep[ "ConfigFile" ] ]
         }
     ];
 
