@@ -37,8 +37,10 @@ $deploymentProperties = {
     "CreatedBy",
     "Data",
     "Hooks",
+    "LLMConfiguration",
     "Location",
     "MCP",
+    "MCPServerObject",
     "Meta",
     "PacletVersion",
     "Properties",
@@ -46,6 +48,7 @@ $deploymentProperties = {
     "Skills",
     "Target",
     "Timestamp",
+    "Tools",
     "UUID"
 };
 
@@ -108,9 +111,12 @@ getDeploymentProperty[ data_Association, "Server"     ] := data[ "MCP", "Server"
 getDeploymentProperty[ data_Association, "ConfigFile" ] := data[ "MCP", "ConfigFile" ];
 
 (* Derived properties *)
-getDeploymentProperty[ data_Association, "Data"       ] := data;
-getDeploymentProperty[ data_Association, "Location"   ] := deploymentDirectory @ data[ "UUID" ];
-getDeploymentProperty[ data_Association, "Properties" ] := $deploymentProperties;
+getDeploymentProperty[ data_Association, "Data"             ] := data;
+getDeploymentProperty[ data_Association, "LLMConfiguration" ] := getDeploymentProperty[ data, "MCPServerObject" ][ "LLMConfiguration" ];
+getDeploymentProperty[ data_Association, "Location"         ] := deploymentDirectory @ data[ "UUID" ];
+getDeploymentProperty[ data_Association, "MCPServerObject"  ] := MCPServerObject @ data[ "MCP", "Server" ];
+getDeploymentProperty[ data_Association, "Properties"       ] := $deploymentProperties;
+getDeploymentProperty[ data_Association, "Tools"            ] := getDeploymentProperty[ data, "MCPServerObject" ][ "Tools" ];
 
 (* Sub-association access *)
 getDeploymentProperty[ data_Association, key_String, subKey_String ] := data[ key, subKey ];
