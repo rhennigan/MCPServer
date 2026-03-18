@@ -17,7 +17,11 @@ PacletObject[ <|
         { "Kernel",
             "Root"    -> "Kernel",
             "Context" -> { "Wolfram`MCPServer`" },
+            "Loading" -> Automatic,
             "Symbols" -> {
+                "System`AgentToolsDeployment",
+                "System`AgentToolsDeployments",
+                "System`DeployAgentTools",
                 "Wolfram`MCPServer`$DefaultMCPPrompts",
                 "Wolfram`MCPServer`$DefaultMCPServers",
                 "Wolfram`MCPServer`$DefaultMCPToolOptions",
