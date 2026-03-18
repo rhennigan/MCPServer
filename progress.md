@@ -17,3 +17,15 @@ Use the following format incrementing the session number from the latest entry:
 - Verified via CodeInspector (no issues) and WolframLanguageEvaluator (all servers return `"Wolfram"` for `"MCPServerName"` while retaining their distinct `"Name"` values).
 - The `MCPServerObject` generic property handling already exposes `"MCPServerName"` without any changes to `MCPServerObject.wl`.
 
+## Session 2
+
+- Completed Task 2: Added `"MCPServerName" -> Automatic` option to both `InstallMCPServer` and `UninstallMCPServer`.
+- Implemented `resolveMCPServerName` with the precedence chain: option value → `obj["MCPServerName"]` property → `obj["Name"]` fallback.
+- Added `$installMCPServerName` Block variable threaded through both install and uninstall dispatches.
+- Both `installMCPServer` and `uninstallMCPServer` now use the resolved MCPServerName as the config file key (usage 2) while preserving `obj["Name"]` for JSON extraction (usage 1), in both JSON and Codex TOML paths.
+- Implemented `clearStaleBuiltInRecords` to clear installation records from other built-in Wolfram variants when one is installed under the shared `"Wolfram"` key.
+- Key gotcha: `$defaultMCPServers` (lowercase, plural) is private to `DefaultServers.wl`. Must use `$DefaultMCPServers` (uppercase, public) instead.
+- Updated 20+ existing tests in `InstallMCPServer.wlt` and restructured `UninstallMCPServer.wlt` to reflect the shared `"Wolfram"` config key behavior.
+- Added new "MCPServerName Option" test section covering all 7 spec verification items: built-in key resolution, overwrite behavior, custom server unchanged, uninstall by resolved key, option override, two built-in with different overrides coexisting, and stale record clearing.
+- All 179 InstallMCPServer tests and 17 UninstallMCPServer tests pass. CodeInspector clean.
+

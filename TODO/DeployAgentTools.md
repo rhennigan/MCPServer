@@ -13,7 +13,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **2. Add `"MCPServerName"` option to `InstallMCPServer` / `UninstallMCPServer`**
+- [x] **2. Add `"MCPServerName"` option to `InstallMCPServer` / `UninstallMCPServer`**
 
   Add `"MCPServerName" -> Automatic` option to both functions. Implement the config-key resolution precedence chain (option → server property → `"Name"`). Replace the config-file key usage (usage 2) with the resolved MCPServerName in both the JSON path and the Codex TOML path, while preserving `obj["Name"]` for JSON extraction (usage 1). Add logic to clear stale built-in installation records when one built-in variant overwrites another under the shared `"Wolfram"` key. Write and run tests covering the verification cases in the spec (items 1–7).
 
