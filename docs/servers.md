@@ -262,6 +262,22 @@ To disable MCP Apps for a specific installation, use:
 InstallMCPServer["ClaudeDesktop", "EnableMCPApps" -> False]
 ```
 
+## Paclet-Backed Servers
+
+Third-party paclets can contribute MCP servers via the `"AgentTools"` paclet extension. These servers are referenced using paclet-qualified names:
+
+```wl
+(* View a paclet-backed server *)
+MCPServerObject["PublisherID/MyPaclet/ServerName"]
+
+(* Install a paclet-backed server *)
+InstallMCPServer["ClaudeCode", "PublisherID/MyPaclet/ServerName"]
+```
+
+Paclet servers appear alongside file-based and built-in servers when listing with `MCPServerObjects[]`. Use `"IncludeRemotePaclets" -> True` to also discover servers from uninstalled paclets in the Paclet Repository.
+
+See [paclet-extensions.md](paclet-extensions.md) for details on how paclets declare servers, tools, and prompts.
+
 ## Related Documentation
 
 - [tools.md](tools.md) - Detailed tool documentation, [tool options](tools.md#tool-options), and creating custom tools
@@ -269,4 +285,5 @@ InstallMCPServer["ClaudeDesktop", "EnableMCPApps" -> False]
 - [mcp-apps.md](mcp-apps.md) - MCP Apps system for interactive UI resources
 - [mcp-clients.md](mcp-clients.md) - Client installation, configuration, and the [`"MCPServerName"` option](mcp-clients.md#mcpservername)
 - [deploy-agent-tools.md](deploy-agent-tools.md) - Managed deployment of tools to agent clients
+- [paclet-extensions.md](paclet-extensions.md) - Third-party paclet extension system
 - [getting-started.md](getting-started.md) - Development setup

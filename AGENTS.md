@@ -49,7 +49,9 @@ See [building.md](docs/building.md) for detailed instructions.
   - `InstallMCPServer.wl`: Implementation for installing MCP servers for use in some common MCP client applications
   - `MCPServerObject.wl`: Defines the MCP server object format
   - `Messages.wl`: Definitions for error messages
+  - `PacletExtension.wl`: Paclet discovery, name resolution, and definition loading for the [paclet extension](docs/paclet-extensions.md) system
   - `StartMCPServer.wl`: Implementation for starting MCP servers
+  - `ValidateAgentToolsPacletExtension.wl`: Validation of `"AgentTools"` [paclet extensions](docs/paclet-extensions.md)
   - `UIResources.wl`: [MCP Apps](docs/mcp-apps.md) UI resource registry and client capability detection
   - `Tools/`: Contains several files defining predefined MCP tools used by default servers
   - `Prompts/`: Contains files defining predefined [MCP prompts](docs/mcp-prompts.md) used by default servers
@@ -76,6 +78,8 @@ See [building.md](docs/building.md) for detailed instructions.
     - `ReferencePages/Symbols/`: Reference pages for exported symbols
     - Use the ReadNotebook tool to read documentation notebooks as markdown text
 
+- `TestResources/`: Mock paclets and other test fixtures
+
 - `Tests/`: Contains test files (.wlt)
 
 - `Specs/`: Design specifications for features
@@ -92,6 +96,7 @@ See [building.md](docs/building.md) for detailed instructions.
   - `code-inspector-rules.md`: Adding custom CodeInspector rules
   - `agent-skills.md`: Agent skills system, build process, and how to add new skills
   - `deploy-agent-tools.md`: Deployment management for agent tools
+  - `paclet-extensions.md`: Third-party paclet extension system for contributing tools, prompts, and servers
 
 ### MCP Documentation
 

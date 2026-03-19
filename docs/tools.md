@@ -272,6 +272,21 @@ CreateMCPServer[ "MyServer", <|
 |> ]
 ```
 
+### Reference Paclet Tools
+
+Tools contributed by third-party paclets can be referenced using paclet-qualified names:
+
+```wl
+CreateMCPServer[ "MyServer", <|
+    "Tools" -> {
+        "WolframLanguageEvaluator",
+        "PublisherID/MyPaclet/CustomTool"
+    }
+|> ]
+```
+
+See [paclet-extensions.md](paclet-extensions.md) for details on how paclets declare tools.
+
 ### Inline Definition
 
 ```wl
@@ -500,6 +515,7 @@ InstallMCPServer[
 - `Kernel/StartMCPServer.wl` - Protocol handling for `tools/list` and `tools/call`
 - `Kernel/DefaultServers.wl` - Server configurations with `"Tools"` settings
 - `Assets/Apps/` - HTML and JSON files for MCP Apps UI resources
+- `Kernel/PacletExtension.wl` - Paclet-qualified tool resolution (see [paclet-extensions.md](paclet-extensions.md))
 - `Tests/Tools.wlt` - Tests for tool functionality
 - `Tests/ToolOptions.wlt` - Tests for tool options system
 - `Specs/ToolOptions.md` - Design specification for tool options

@@ -197,6 +197,21 @@ CreateMCPServer[ "MyServer", <|
 |> ]
 ```
 
+### Reference Paclet Prompts
+
+Prompts contributed by third-party paclets can be referenced using paclet-qualified names:
+
+```wl
+CreateMCPServer[ "MyServer", <|
+    "MCPPrompts" -> {
+        "WolframLanguageSearch",
+        "PublisherID/MyPaclet/CustomPrompt"
+    }
+|> ]
+```
+
+See [paclet-extensions.md](paclet-extensions.md) for details on how paclets declare prompts.
+
 ### Inline Definition
 
 ```wl
@@ -271,6 +286,7 @@ yourFunction[ args_ ] := Enclose[
 - `Kernel/Prompts/Prompts.wl` - Main prompts module, defines `$DefaultMCPPrompts`
 - `Kernel/Prompts/Search.wl` - Search prompt implementations
 - `Kernel/Prompts/Notebook.wl` - Notebook prompt implementation
+- `Kernel/PacletExtension.wl` - Paclet-qualified prompt resolution (see [paclet-extensions.md](paclet-extensions.md))
 - `Kernel/MCPServerObject.wl` - Prompt validation and normalization
 - `Kernel/StartMCPServer.wl` - Protocol handling for `prompts/list` and `prompts/get`
 - `Kernel/DefaultServers.wl` - Server configurations with `"MCPPrompts"` settings
