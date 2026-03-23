@@ -475,32 +475,39 @@ VerificationTest[
 
 (* Use the real remote paclet from the Paclet Repository *)
 VerificationTest[
-    $remotePaclet = First @ PacletFindRemote[ "SamplePublisher/SamplePaclet", <| "Extension" -> "AgentTools" |> ];
+    $remotePaclet = First @ Replace[
+        PacletFindRemote[ "SamplePublisher/SamplePaclet", <| "Extension" -> "AgentTools" |> ],
+        { } :> PacletFindRemote[
+            "SamplePublisher/SamplePaclet",
+            <| "Extension" -> "AgentTools" |>,
+            UpdatePacletSites -> True
+        ]
+    ];
     PacletObjectQ @ $remotePaclet,
     True,
     SameTest -> MatchQ,
-    TestID -> "RemotePacletFallback-Setup@@Tests/PacletExtension.wlt:477,1-483,2"
+    TestID -> "RemotePacletFallback-Setup@@Tests/PacletExtension.wlt:477,1-490,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`Common`getAgentToolsDeclaredItems[ $remotePaclet, "MCPServers" ],
     { "SampleServer" },
     SameTest -> MatchQ,
-    TestID -> "RemotePacletFallback-MCPServers@@Tests/PacletExtension.wlt:485,1-490,2"
+    TestID -> "RemotePacletFallback-MCPServers@@Tests/PacletExtension.wlt:492,1-497,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`Common`getAgentToolsDeclaredItems[ $remotePaclet, "Tools" ],
     { "Identity", "PrimeFinder" },
     SameTest -> MatchQ,
-    TestID -> "RemotePacletFallback-Tools@@Tests/PacletExtension.wlt:492,1-497,2"
+    TestID -> "RemotePacletFallback-Tools@@Tests/PacletExtension.wlt:499,1-504,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`Common`getAgentToolsDeclaredItems[ $remotePaclet, "MCPPrompts" ],
     { },
     SameTest -> MatchQ,
-    TestID -> "RemotePacletFallback-EmptyPrompts@@Tests/PacletExtension.wlt:499,1-504,2"
+    TestID -> "RemotePacletFallback-EmptyPrompts@@Tests/PacletExtension.wlt:506,1-511,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -512,21 +519,21 @@ VerificationTest[
     Head @ $remoteServer,
     MCPServerObject,
     SameTest -> MatchQ,
-    TestID -> "RemoteServerResolution-NoFailure@@Tests/PacletExtension.wlt:510,1-516,2"
+    TestID -> "RemoteServerResolution-NoFailure@@Tests/PacletExtension.wlt:517,1-523,2"
 ]
 
 VerificationTest[
     $remoteServer[ "ToolNames" ],
     { "SamplePublisher/SamplePaclet/Identity", "SamplePublisher/SamplePaclet/PrimeFinder" },
     SameTest -> MatchQ,
-    TestID -> "RemoteServerResolution-ToolNames@@Tests/PacletExtension.wlt:518,1-523,2"
+    TestID -> "RemoteServerResolution-ToolNames@@Tests/PacletExtension.wlt:525,1-530,2"
 ]
 
 VerificationTest[
     $remoteServer[ "Tools" ],
     { __LLMTool },
     SameTest -> MatchQ,
-    TestID -> "RemoteServerResolution-Tools@@Tests/PacletExtension.wlt:525,1-530,2"
+    TestID -> "RemoteServerResolution-Tools@@Tests/PacletExtension.wlt:532,1-537,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -538,7 +545,7 @@ VerificationTest[
     Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
     <| |>,
     SameTest -> MatchQ,
-    TestID   -> "MockPacletCleanup@@Tests/PacletExtension.wlt:535,1-542,2"
+    TestID   -> "MockPacletCleanup@@Tests/PacletExtension.wlt:542,1-549,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
