@@ -261,7 +261,7 @@ The `Initialization` option accepts an expression that will be evaluated at serv
 
 ## LLMKit Requirements
 
-Some tools require an [LLMKit subscription](https://www.wolfram.com/llmkit/) for full functionality:
+Some tools require an [LLMKit subscription](https://www.wolfram.com/notebook-assistant-llm-kit/) for full functionality:
 
 | Tool | LLMKit Dependency |
 |------|-------------------|
