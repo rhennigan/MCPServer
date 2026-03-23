@@ -65,6 +65,16 @@ CreateMCPServer["MyServer", <|
 
 This means two paclets could both define a tool with the MCP-exposed name `"Search"` without conflict at the WL level (they have distinct qualified keys), but would conflict if included in the same MCP server (duplicate MCP names). When this occurs, `StartMCPServer` automatically disambiguates by appending numeric suffixes (e.g., `"Search1"`, `"Search2"`). The tool descriptions already contain enough context for the AI to select the correct tool. See [MCP Name Collision Handling](#mcp-name-collision-handling) for details.
 
+### Config Key (MCPServerName)
+
+When a paclet extension server is installed via `InstallMCPServer`, the key used in the client configuration file (e.g., `claude_desktop_config.json`) defaults to the **short server name** (the item name part), not the fully qualified name. For example, installing `"Wolfram/JIRALink/ProjectManagement"` produces a config entry keyed as `"ProjectManagement"`.
+
+This keeps tool names well within MCP's character limits and produces cleaner configuration files. The fully qualified name is still used internally for server lookup and the `MCP_SERVER_NAME` environment variable.
+
+The config key can be overridden:
+- By specifying `"MCPServerName"` in the server definition file
+- By passing the `"MCPServerName"` option to `InstallMCPServer`
+
 ---
 
 ## PacletInfo Extension Declaration
@@ -251,6 +261,7 @@ Tool and prompt names within `"LLMEvaluator"` use short names that resolve withi
 | Key | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `"Name"` | `String` | No | Extension item name | Server display name |
+| `"MCPServerName"` | `String` | No | Short server name | Config key used when installing via `InstallMCPServer` |
 | `"Initialization"` | `RuleDelayed` | No | `None` | Delayed initialization code |
 | `"LLMEvaluator"` | `Association` | Yes | — | Server configuration (tools, prompts) |
 | `"Transport"` | `String` | No | `"StandardInputOutput"` | Transport protocol |
@@ -533,6 +544,8 @@ InstallMCPServer[ "ClaudeCode", "Wolfram/JIRALink/ProjectManagement" ]
 4. Validates tool options for paclet-defined tools.
 
 If any step fails, `InstallMCPServer` reports the error immediately rather than deferring it to `StartMCPServer` time when the user is no longer present. However, the server configuration still stores paclet-qualified names as plain strings (not resolved `LLMTool` objects), consistent with `CreateMCPServer`. This ensures that paclet updates are picked up on next start without reinstalling.
+
+**Config key:** The key used in the client config file defaults to the short server name (e.g., `"ProjectManagement"` for `"Wolfram/JIRALink/ProjectManagement"`), not the fully qualified name. This is controlled by the `"MCPServerName"` metadata property, which is automatically set to the short name for paclet extension servers. Server definition files can override this with an explicit `"MCPServerName"` key. Users can also override via the `"MCPServerName"` option on `InstallMCPServer`.
 
 ### StartMCPServer
 

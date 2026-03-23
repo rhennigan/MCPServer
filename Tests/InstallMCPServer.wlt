@@ -1678,12 +1678,34 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*MCPServerName property for paclet server*)
+VerificationTest[
+    MCPServerObject[ "MockMCPPacletTest/TestServer" ][ "MCPServerName" ],
+    "TestServer",
+    SameTest -> Equal,
+    TestID   -> "MCPServerName-PacletServerProperty@@Tests/InstallMCPServer.wlt:1682,1-1687,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*resolveMCPServerName - paclet server uses short name*)
+VerificationTest[
+    Block[ { Wolfram`MCPServer`InstallMCPServer`Private`$installMCPServerName = Automatic },
+        Wolfram`MCPServer`InstallMCPServer`Private`resolveMCPServerName @ MCPServerObject[ "MockMCPPacletTest/TestServer" ]
+    ],
+    "TestServer",
+    SameTest -> Equal,
+    TestID   -> "ResolveMCPServerName-PacletServerShortName@@Tests/InstallMCPServer.wlt:1692,1-1699,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*ensurePacletForInstall - already installed*)
 VerificationTest[
     Wolfram`MCPServer`Common`ensurePacletForInstall[ "MockMCPPacletTest/TestServer" ],
     _PacletObject,
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-EnsurePacletAlreadyInstalled@@Tests/InstallMCPServer.wlt:1682,1-1687,2"
+    TestID   -> "InstallPacletServer-EnsurePacletAlreadyInstalled@@Tests/InstallMCPServer.wlt:1704,1-1709,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1695,7 +1717,7 @@ VerificationTest[
     _Failure,
     { MCPServer::PacletNotInstalled },
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-EnsurePacletThreeSegment@@Tests/InstallMCPServer.wlt:1692,1-1699,2"
+    TestID   -> "InstallPacletServer-EnsurePacletThreeSegment@@Tests/InstallMCPServer.wlt:1714,1-1721,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1706,7 +1728,7 @@ VerificationTest[
     $pacletInstallResult = InstallMCPServer[ $pacletConfigFile, "MockMCPPacletTest/TestServer", "VerifyLLMKit" -> False ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-Install@@Tests/InstallMCPServer.wlt:1704,1-1710,2"
+    TestID   -> "InstallPacletServer-Install@@Tests/InstallMCPServer.wlt:1726,1-1732,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1716,7 +1738,7 @@ VerificationTest[
     FileExistsQ @ $pacletConfigFile,
     True,
     SameTest -> Equal,
-    TestID   -> "InstallPacletServer-ConfigFileExists@@Tests/InstallMCPServer.wlt:1715,1-1720,2"
+    TestID   -> "InstallPacletServer-ConfigFileExists@@Tests/InstallMCPServer.wlt:1737,1-1742,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1724,20 +1746,20 @@ VerificationTest[
 (*Config file has correct server name as key*)
 VerificationTest[
     $pacletConfigJSON = Import[ $pacletConfigFile, "RawJSON" ];
-    KeyExistsQ[ $pacletConfigJSON[ "mcpServers" ], "MockMCPPacletTest/TestServer" ],
+    KeyExistsQ[ $pacletConfigJSON[ "mcpServers" ], "TestServer" ],
     True,
     SameTest -> Equal,
-    TestID   -> "InstallPacletServer-ConfigHasServerName@@Tests/InstallMCPServer.wlt:1725,1-1731,2"
+    TestID   -> "InstallPacletServer-ConfigHasServerName@@Tests/InstallMCPServer.wlt:1747,1-1753,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Config server entry has correct MCP_SERVER_NAME env var*)
 VerificationTest[
-    $pacletConfigJSON[ "mcpServers", "MockMCPPacletTest/TestServer", "env", "MCP_SERVER_NAME" ],
+    $pacletConfigJSON[ "mcpServers", "TestServer", "env", "MCP_SERVER_NAME" ],
     "MockMCPPacletTest/TestServer",
     SameTest -> Equal,
-    TestID   -> "InstallPacletServer-ConfigEnvServerName@@Tests/InstallMCPServer.wlt:1736,1-1741,2"
+    TestID   -> "InstallPacletServer-ConfigEnvServerName@@Tests/InstallMCPServer.wlt:1758,1-1763,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1747,7 +1769,7 @@ VerificationTest[
     UninstallMCPServer[ $pacletConfigFile, MCPServerObject[ "MockMCPPacletTest/TestServer" ] ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-Uninstall@@Tests/InstallMCPServer.wlt:1746,1-1751,2"
+    TestID   -> "InstallPacletServer-Uninstall@@Tests/InstallMCPServer.wlt:1768,1-1773,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1755,10 +1777,10 @@ VerificationTest[
 (*Config no longer has server after uninstall*)
 VerificationTest[
     updatedJSON = Import[ $pacletConfigFile, "RawJSON" ];
-    KeyExistsQ[ updatedJSON[ "mcpServers" ], "MockMCPPacletTest/TestServer" ],
+    KeyExistsQ[ updatedJSON[ "mcpServers" ], "TestServer" ],
     False,
     SameTest -> Equal,
-    TestID   -> "InstallPacletServer-VerifyUninstall@@Tests/InstallMCPServer.wlt:1756,1-1762,2"
+    TestID   -> "InstallPacletServer-VerifyUninstall@@Tests/InstallMCPServer.wlt:1778,1-1784,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1769,7 +1791,7 @@ VerificationTest[
     $pacletInstallResult2[ "MCPServerObject" ],
     _MCPServerObject? MCPServerObjectQ,
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-ResultHasMCPServerObject@@Tests/InstallMCPServer.wlt:1767,1-1773,2"
+    TestID   -> "InstallPacletServer-ResultHasMCPServerObject@@Tests/InstallMCPServer.wlt:1789,1-1795,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1780,7 +1802,7 @@ VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`validatePacletServerDefinitions @ obj,
     Null,
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-ValidateDefinitionsValid@@Tests/InstallMCPServer.wlt:1778,1-1784,2"
+    TestID   -> "InstallPacletServer-ValidateDefinitionsValid@@Tests/InstallMCPServer.wlt:1800,1-1806,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1796,7 +1818,7 @@ VerificationTest[
     result,
     Null,
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-ValidateDefinitionsNoOp@@Tests/InstallMCPServer.wlt:1789,1-1800,2"
+    TestID   -> "InstallPacletServer-ValidateDefinitionsNoOp@@Tests/InstallMCPServer.wlt:1811,1-1822,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1816,7 +1838,7 @@ VerificationTest[
     _Failure,
     { MCPServer::PacletNotInstalled },
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-ValidateToolError@@Tests/InstallMCPServer.wlt:1805,1-1820,2"
+    TestID   -> "InstallPacletServer-ValidateToolError@@Tests/InstallMCPServer.wlt:1827,1-1842,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1836,7 +1858,7 @@ VerificationTest[
     _Failure,
     { MCPServer::PacletNotInstalled },
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-ValidatePromptError@@Tests/InstallMCPServer.wlt:1825,1-1840,2"
+    TestID   -> "InstallPacletServer-ValidatePromptError@@Tests/InstallMCPServer.wlt:1847,1-1862,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1847,7 +1869,7 @@ VerificationTest[
     Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
     <| |>,
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-Cleanup@@Tests/InstallMCPServer.wlt:1845,1-1851,2"
+    TestID   -> "InstallPacletServer-Cleanup@@Tests/InstallMCPServer.wlt:1867,1-1873,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
@@ -1864,7 +1886,7 @@ VerificationTest[
     InstallMCPServer[ mcpNameConfigFile, "WolframLanguage", "VerifyLLMKit" -> False ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerName-BuiltInUsesWolframKey-Install@@Tests/InstallMCPServer.wlt:1862,1-1868,2"
+    TestID   -> "MCPServerName-BuiltInUsesWolframKey-Install@@Tests/InstallMCPServer.wlt:1884,1-1890,2"
 ]
 
 VerificationTest[
@@ -1873,7 +1895,7 @@ VerificationTest[
     ! KeyExistsQ[ jsonContent[ "mcpServers" ], "WolframLanguage" ],
     True,
     SameTest -> Equal,
-    TestID   -> "MCPServerName-BuiltInUsesWolframKey-Verify@@Tests/InstallMCPServer.wlt:1870,1-1877,2"
+    TestID   -> "MCPServerName-BuiltInUsesWolframKey-Verify@@Tests/InstallMCPServer.wlt:1892,1-1899,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1883,7 +1905,7 @@ VerificationTest[
     InstallMCPServer[ mcpNameConfigFile, "WolframAlpha", "VerifyLLMKit" -> False ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerName-SecondBuiltInOverwrites-Install@@Tests/InstallMCPServer.wlt:1882,1-1887,2"
+    TestID   -> "MCPServerName-SecondBuiltInOverwrites-Install@@Tests/InstallMCPServer.wlt:1904,1-1909,2"
 ]
 
 VerificationTest[
@@ -1892,7 +1914,7 @@ VerificationTest[
     KeyExistsQ[ jsonContent[ "mcpServers" ], "Wolfram" ],
     True,
     SameTest -> Equal,
-    TestID   -> "MCPServerName-SecondBuiltInOverwrites-Verify@@Tests/InstallMCPServer.wlt:1889,1-1896,2"
+    TestID   -> "MCPServerName-SecondBuiltInOverwrites-Verify@@Tests/InstallMCPServer.wlt:1911,1-1918,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1902,7 +1924,7 @@ VerificationTest[
     UninstallMCPServer[ mcpNameConfigFile, "WolframAlpha" ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerName-UninstallBuiltIn@@Tests/InstallMCPServer.wlt:1901,1-1906,2"
+    TestID   -> "MCPServerName-UninstallBuiltIn@@Tests/InstallMCPServer.wlt:1923,1-1928,2"
 ]
 
 VerificationTest[
@@ -1910,7 +1932,7 @@ VerificationTest[
     ! KeyExistsQ[ jsonContent[ "mcpServers" ], "Wolfram" ],
     True,
     SameTest -> Equal,
-    TestID   -> "MCPServerName-UninstallBuiltIn-Verify@@Tests/InstallMCPServer.wlt:1908,1-1914,2"
+    TestID   -> "MCPServerName-UninstallBuiltIn-Verify@@Tests/InstallMCPServer.wlt:1930,1-1936,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1925,7 +1947,7 @@ VerificationTest[
     InstallMCPServer[ mcpNameConfigFile, mcpNameCustomServer, "VerifyLLMKit" -> False ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerName-CustomServerUsesName-Install@@Tests/InstallMCPServer.wlt:1919,1-1929,2"
+    TestID   -> "MCPServerName-CustomServerUsesName-Install@@Tests/InstallMCPServer.wlt:1941,1-1951,2"
 ]
 
 VerificationTest[
@@ -1933,7 +1955,7 @@ VerificationTest[
     KeyExistsQ[ jsonContent[ "mcpServers" ], mcpNameCustomName ],
     True,
     SameTest -> Equal,
-    TestID   -> "MCPServerName-CustomServerUsesName-Verify@@Tests/InstallMCPServer.wlt:1931,1-1937,2"
+    TestID   -> "MCPServerName-CustomServerUsesName-Verify@@Tests/InstallMCPServer.wlt:1953,1-1959,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1943,7 +1965,7 @@ VerificationTest[
     InstallMCPServer[ mcpNameConfigFile, "WolframLanguage", "MCPServerName" -> "WolframDev", "VerifyLLMKit" -> False ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerName-OptionOverride-Install@@Tests/InstallMCPServer.wlt:1942,1-1947,2"
+    TestID   -> "MCPServerName-OptionOverride-Install@@Tests/InstallMCPServer.wlt:1964,1-1969,2"
 ]
 
 VerificationTest[
@@ -1951,7 +1973,7 @@ VerificationTest[
     KeyExistsQ[ jsonContent[ "mcpServers" ], "WolframDev" ],
     True,
     SameTest -> Equal,
-    TestID   -> "MCPServerName-OptionOverride-Verify@@Tests/InstallMCPServer.wlt:1949,1-1955,2"
+    TestID   -> "MCPServerName-OptionOverride-Verify@@Tests/InstallMCPServer.wlt:1971,1-1977,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1963,7 +1985,7 @@ VerificationTest[
     InstallMCPServer[ mcpNameConfigFile2, "WolframLanguage", "MCPServerName" -> "WolframDev2", "VerifyLLMKit" -> False ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerName-TwoBuiltInWithOverrides-Install@@Tests/InstallMCPServer.wlt:1960,1-1967,2"
+    TestID   -> "MCPServerName-TwoBuiltInWithOverrides-Install@@Tests/InstallMCPServer.wlt:1982,1-1989,2"
 ]
 
 VerificationTest[
@@ -1972,7 +1994,7 @@ VerificationTest[
     KeyExistsQ[ jsonContent[ "mcpServers" ], "WolframDev2" ],
     True,
     SameTest -> Equal,
-    TestID   -> "MCPServerName-TwoBuiltInWithOverrides-Verify@@Tests/InstallMCPServer.wlt:1969,1-1976,2"
+    TestID   -> "MCPServerName-TwoBuiltInWithOverrides-Verify@@Tests/InstallMCPServer.wlt:1991,1-1998,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1985,7 +2007,7 @@ VerificationTest[
     MemberQ[ wolframInstalls, KeyValuePattern[ "ConfigurationFile" -> mcpNameConfigFile3 ] ],
     True,
     SameTest -> Equal,
-    TestID   -> "MCPServerName-StaleRecordClearing-Setup@@Tests/InstallMCPServer.wlt:1981,1-1989,2"
+    TestID   -> "MCPServerName-StaleRecordClearing-Setup@@Tests/InstallMCPServer.wlt:2003,1-2011,2"
 ]
 
 VerificationTest[
@@ -1997,7 +2019,7 @@ VerificationTest[
     MemberQ[ wlInstalls, KeyValuePattern[ "ConfigurationFile" -> mcpNameConfigFile3 ] ],
     True,
     SameTest -> Equal,
-    TestID   -> "MCPServerName-StaleRecordClearing-Verify@@Tests/InstallMCPServer.wlt:1991,1-2001,2"
+    TestID   -> "MCPServerName-StaleRecordClearing-Verify@@Tests/InstallMCPServer.wlt:2013,1-2023,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -2011,5 +2033,5 @@ VerificationTest[
     cleanupTestFiles[ { mcpNameConfigFile, mcpNameConfigFile2, mcpNameConfigFile3 } ],
     { Null.. },
     SameTest -> MatchQ,
-    TestID   -> "MCPServerName-Cleanup@@Tests/InstallMCPServer.wlt:2006,1-2015,2"
+    TestID   -> "MCPServerName-Cleanup@@Tests/InstallMCPServer.wlt:2028,1-2037,2"
 ]

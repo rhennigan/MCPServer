@@ -271,6 +271,7 @@ buildPacletServerMetadata[ qualifiedName_String, paclet_PacletObject, serverDef_
     <|
         "LLMEvaluator"  -> Lookup[ serverDef, "LLMEvaluator", <| |> ],
         "Location"      -> paclet,
+        "MCPServerName" -> Lookup[ serverDef, "MCPServerName", Last @ StringSplit[ qualifiedName, "/" ] ],
         "Name"          -> qualifiedName,
         "ObjectVersion" -> $objectVersion,
         "ServerVersion" -> Lookup[ serverDef, "ServerVersion", paclet[ "Version" ] ],
@@ -326,6 +327,10 @@ buildRemotePacletServerMetadata[ qualifiedName_String, paclet_PacletObject, serv
         <|
             "LLMEvaluator"  -> evaluator,
             "Location"      -> paclet,
+            "MCPServerName" -> If[ MatchQ[ serverDecl, _Association ],
+                                   Lookup[ serverDecl, "MCPServerName", serverName ],
+                                   serverName
+                               ],
             "Name"          -> qualifiedName,
             "ObjectVersion" -> $objectVersion,
             "ServerVersion" -> paclet[ "Version" ],
