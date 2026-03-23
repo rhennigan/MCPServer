@@ -194,7 +194,7 @@ MCPServerObjects["IncludeRemotePaclets" -> True]
 |--------|---------|-------------|
 | `"IncludeBuiltIn"` | `False` | Include built-in servers from `$DefaultMCPServers` |
 | `"IncludeRemotePaclets"` | `False` | Include servers from uninstalled paclets in the Paclet Repository |
-| `UpdatePacletSites` | `False` | Force refresh of cached remote paclet data |
+| `UpdatePacletSites` | `Automatic` | Force refresh of cached remote paclet data |
 
 ### Inspecting a Paclet Server
 
