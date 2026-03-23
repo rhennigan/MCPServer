@@ -471,6 +471,40 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Remote Paclet Fallback*)
+
+(* Use the real remote paclet from the Paclet Repository *)
+VerificationTest[
+    $remotePaclet = First @ PacletFindRemote[ "SamplePublisher/SamplePaclet", <| "Extension" -> "AgentTools" |> ];
+    PacletObjectQ @ $remotePaclet,
+    True,
+    SameTest -> MatchQ,
+    TestID -> "RemotePacletFallback-Setup@@Tests/PacletExtension.wlt:477,1-483,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Common`getAgentToolsDeclaredItems[ $remotePaclet, "MCPServers" ],
+    { "SampleServer" },
+    SameTest -> MatchQ,
+    TestID -> "RemotePacletFallback-MCPServers@@Tests/PacletExtension.wlt:485,1-490,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Common`getAgentToolsDeclaredItems[ $remotePaclet, "Tools" ],
+    { "Identity", "PrimeFinder" },
+    SameTest -> MatchQ,
+    TestID -> "RemotePacletFallback-Tools@@Tests/PacletExtension.wlt:492,1-497,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Common`getAgentToolsDeclaredItems[ $remotePaclet, "MCPPrompts" ],
+    { },
+    SameTest -> MatchQ,
+    TestID -> "RemotePacletFallback-EmptyPrompts@@Tests/PacletExtension.wlt:499,1-504,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Mock Paclet Cleanup*)
 VerificationTest[
     PacletDirectoryUnload @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletTest" };
@@ -478,7 +512,7 @@ VerificationTest[
     Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
     <| |>,
     SameTest -> MatchQ,
-    TestID   -> "MockPacletCleanup@@Tests/PacletExtension.wlt:475,1-482,2"
+    TestID   -> "MockPacletCleanup@@Tests/PacletExtension.wlt:509,1-516,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

@@ -102,7 +102,19 @@ getAgentToolsExtension // beginDefinition;
 getAgentToolsExtension[ paclet_PacletObject ] := Enclose[
     Module[ { extensions },
         extensions = Quiet @ pt`PacletExtensions[ paclet, "AgentTools" ];
+
+        If[ ! MatchQ[ extensions, { __List } ],
+            extensions = Cases[
+                paclet[ "Extensions" ],
+                { "AgentTools", rules___ } :>
+                    With[ { as = <| rules |> },
+                        { "AgentTools", as } /; AssociationQ @ as
+                    ]
+            ]
+        ];
+
         If[ ! MatchQ[ extensions, { __List } ], throwFailure[ "PacletExtensionNotFound", paclet[ "Name" ] ] ];
+
         First @ extensions
     ],
     throwInternalFailure
