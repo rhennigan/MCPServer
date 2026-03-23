@@ -70,7 +70,7 @@ createMCPServer[ name_String, evaluator_Association ] := Enclose[
 
         exported = ConfirmBy[ exportBinary[ path, wxf ], FileExistsQ, "Exported" ];
 
-        ConfirmAssert[ Developer`ReadWXFFile @ exported === data, "ExportCheck" ];
+        ConfirmBy[ Developer`ReadWXFFile @ exported, SameAs @ data, "ExportCheck" ];
 
         ConfirmBy[ MCPServerObject @ data, MCPServerObjectQ, "MCPServerObject" ]
     ],
