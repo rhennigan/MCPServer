@@ -239,6 +239,26 @@ CreateMCPServer["MyServer", <|
 
 See [tools.md](tools.md) and [mcp-prompts.md](mcp-prompts.md) for details on creating custom tools and prompts.
 
+### Server Initialization
+
+Custom servers can include initialization code that runs when the server starts:
+
+```wl
+CreateMCPServer["MyServer", <|
+    "Tools" -> {"WolframLanguageEvaluator"}
+|>, Initialization :> Needs["MyPackage`"]]
+```
+
+The `Initialization` option accepts an expression that will be evaluated at server start time before any tools are invoked.
+
+### CreateMCPServer Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `OverwriteTarget` | `False` | Overwrite an existing server with the same name |
+| `IncludeDefinitions` | `True` | Include function definitions in the serialized server |
+| `Initialization` | `None` | Code to evaluate when the server starts |
+
 ## LLMKit Requirements
 
 Some tools require an [LLMKit subscription](https://www.wolfram.com/llmkit/) for full functionality:

@@ -281,6 +281,14 @@ CreateMCPServer["My MCP Server", <|
 
 ### Options
 
+#### `CreateMCPServer`
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `OverwriteTarget` | `False` | Overwrite an existing server with the same name |
+| `IncludeDefinitions` | `True` | Include function definitions in the serialized server |
+| `Initialization` | `None` | Code to evaluate when the server starts |
+
 #### `InstallMCPServer`
 
 | Option | Default | Description |

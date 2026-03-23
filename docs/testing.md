@@ -110,6 +110,53 @@ You can write unit tests for private symbols. Suppress linting errors by wrappin
 (* :!CodeAnalysis::EndBlock:: *)
 ```
 
+## Testing Paclet Extensions
+
+The paclet extension system has dedicated test files and mock paclets for testing:
+
+- `Tests/PacletExtension.wlt` - Tests for paclet discovery, name parsing, definition loading, and resolution
+- `Tests/ValidateAgentToolsPacletExtension.wlt` - Tests for extension validation
+
+### Mock Paclets
+
+The `TestResources/` directory contains mock paclets that simulate various extension configurations:
+
+| Mock Paclet | Purpose |
+|-------------|---------|
+| `MockMCPPacletTest` | Valid extension with per-item definition files (tools, servers, prompts) |
+| `MockMCPPacletCombined` | Valid extension using combined definition files (e.g., `Tools.wl`) |
+| `MockMCPPacletBadContents` | Definition files with invalid contents |
+| `MockMCPPacletBadCrossRef` | Server referencing non-existent tools/prompts |
+| `MockMCPPacletBadDecl` | Invalid declaration format in PacletInfo.wl |
+| `MockMCPPacletDupFiles` | Duplicate definition files (`.wl` + `.wxf`) |
+| `MockMCPPacletInvalidKeys` | Invalid keys in the extension block |
+| `MockMCPPacletMissingFiles` | Declared items with no corresponding definition files |
+| `MockMCPPacletNoRoot` | Extension without a root directory |
+
+### Loading Mock Paclets in Tests
+
+Use `PacletDirectoryLoad` to make mock paclets discoverable in tests:
+
+```wl
+$testResourceDirectory = FileNameJoin @ { DirectoryName[ $TestFileName, 2 ], "TestResources" };
+
+PacletDirectoryLoad @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletTest" };
+$mockPaclet = PacletObject[ "MockMCPPacletTest" ];
+```
+
+For tests that expect failures (e.g., validation errors), wrap the test input with `catchTop` so that `throwFailure` throws properly:
+
+```wl
+VerificationTest[
+    catchTop @ MCPServerObject[ "MockMCPPacletBadDecl/BadServer" ],
+    _Failure,
+    SameTest -> MatchQ,
+    TestID   -> "BadDecl-Fails"
+]
+```
+
+See [paclet-extensions.md](paclet-extensions.md) for details on the extension system.
+
 ## Troubleshooting
 
 If tests fail, consider:
@@ -123,4 +170,5 @@ If tests fail, consider:
 - [Getting Started](getting-started.md) - Development environment setup
 - [Building](building.md) - Building the paclet
 - [Error Handling](error-handling.md) - Error handling architecture and patterns
+- [Paclet Extensions](paclet-extensions.md) - Extension system and validation
 - [AGENTS.md](../AGENTS.md) - Detailed development guidelines
