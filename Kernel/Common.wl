@@ -30,7 +30,7 @@ $internalFailureLogDirectory := FileNameJoin @ { $UserBaseDirectory, "Logs", "MC
 
 $resourceVersions = <|
     "ASTPattern"                     -> "1.0.0",
-    "BinarySerializeWithDefinitions" -> "1.0.0",
+    "BinarySerializeWithDefinitions" -> "2.0.0",
     "ExportMarkdownString"           -> "1.0.0",
     "ImportMarkdownString"           -> "1.0.0",
     "MessageFailure"                 -> "1.0.1",
