@@ -136,6 +136,82 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*Initialization Option*)
+
+(* Default Initialization is None *)
+VerificationTest[
+    name = CreateUUID[ ];
+    server = CreateMCPServer[
+        name,
+        <| "Tools" -> { LLMTool[ "Echo", { "x" -> "String" }, #x & ] } |>
+    ];
+    server[ "Data" ][ "Initialization" ],
+    None,
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-InitializationDefaultNone@@Tests/CreateMCPServer.wlt:142,1-152,2"
+]
+
+VerificationTest[
+    DeleteObject @ server,
+    Null,
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-InitializationDefaultCleanup@@Tests/CreateMCPServer.wlt:154,1-159,2"
+]
+
+(* Initialization expression is held during creation when using RuleDelayed *)
+VerificationTest[
+    $mcpTestInitRan = False;
+    name = CreateUUID[ ];
+    server = CreateMCPServer[
+        name,
+        <| "Tools" -> { LLMTool[ "Echo", { "x" -> "String" }, #x & ] } |>,
+        Initialization :> ($mcpTestInitRan = True)
+    ];
+    { MCPServerObjectQ @ server, $mcpTestInitRan },
+    { True, False },
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-InitializationHeld@@Tests/CreateMCPServer.wlt:162,1-174,2"
+]
+
+(* Initialization is present in server data *)
+VerificationTest[
+    server[ "Data" ],
+    KeyValuePattern[ "Initialization" :> ($mcpTestInitRan = True) ],
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-InitializationInData@@Tests/CreateMCPServer.wlt:177,1-182,2"
+]
+
+VerificationTest[
+    DeleteObject @ server;
+    ClearAll @ $mcpTestInitRan,
+    Null,
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-InitializationHeldCleanup@@Tests/CreateMCPServer.wlt:184,1-190,2"
+]
+
+(* Explicit Initialization -> None is stored correctly *)
+VerificationTest[
+    name = CreateUUID[ ];
+    server = CreateMCPServer[
+        name,
+        <| "Tools" -> { LLMTool[ "Echo", { "x" -> "String" }, #x & ] } |>,
+        Initialization -> None
+    ];
+    server[ "Data" ],
+    KeyValuePattern[ "Initialization" -> None ],
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-InitializationExplicitNone@@Tests/CreateMCPServer.wlt:193,1-204,2"
+]
+
+VerificationTest[
+    DeleteObject @ server,
+    Null,
+    SameTest -> MatchQ,
+    TestID   -> "CreateMCPServer-InitializationExplicitNoneCleanup@@Tests/CreateMCPServer.wlt:206,1-211,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*Server Properties*)
 VerificationTest[
     name = CreateUUID[ ];
@@ -149,42 +225,42 @@ VerificationTest[
     ],
     _MCPServerObject? MCPServerObjectQ,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-WithProperties@@Tests/CreateMCPServer.wlt:140,1-153,2"
+    TestID   -> "CreateMCPServer-WithProperties@@Tests/CreateMCPServer.wlt:216,1-229,2"
 ]
 
 VerificationTest[
     server["Temperature"],
     0.7,
     SameTest -> Equal,
-    TestID   -> "CreateMCPServer-VerifyTemperature@@Tests/CreateMCPServer.wlt:155,1-160,2"
+    TestID   -> "CreateMCPServer-VerifyTemperature@@Tests/CreateMCPServer.wlt:231,1-236,2"
 ]
 
 VerificationTest[
     server["MaxTokens"],
     1000,
     SameTest -> Equal,
-    TestID   -> "CreateMCPServer-VerifyMaxTokens@@Tests/CreateMCPServer.wlt:162,1-167,2"
+    TestID   -> "CreateMCPServer-VerifyMaxTokens@@Tests/CreateMCPServer.wlt:238,1-243,2"
 ]
 
 VerificationTest[
     server["ServerVersion"],
     _String? StringQ,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-ServerVersion@@Tests/CreateMCPServer.wlt:169,1-174,2"
+    TestID   -> "CreateMCPServer-ServerVersion@@Tests/CreateMCPServer.wlt:245,1-250,2"
 ]
 
 VerificationTest[
     server["Location"],
     _File? FileExistsQ,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-VerifyLocation@@Tests/CreateMCPServer.wlt:176,1-181,2"
+    TestID   -> "CreateMCPServer-VerifyLocation@@Tests/CreateMCPServer.wlt:252,1-257,2"
 ]
 
 VerificationTest[
     DeleteObject @ server,
     Null,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-PropertiesCleanup@@Tests/CreateMCPServer.wlt:183,1-188,2"
+    TestID   -> "CreateMCPServer-PropertiesCleanup@@Tests/CreateMCPServer.wlt:259,1-264,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -196,21 +272,21 @@ VerificationTest[
     server = CreateMCPServer[name, config],
     _MCPServerObject? MCPServerObjectQ,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-FromAssociation@@Tests/CreateMCPServer.wlt:193,1-200,2"
+    TestID   -> "CreateMCPServer-FromAssociation@@Tests/CreateMCPServer.wlt:269,1-276,2"
 ]
 
 VerificationTest[
     server["LLMConfiguration"],
     _LLMConfiguration,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-LLMConfigurationProperty@@Tests/CreateMCPServer.wlt:202,1-207,2"
+    TestID   -> "CreateMCPServer-LLMConfigurationProperty@@Tests/CreateMCPServer.wlt:278,1-283,2"
 ]
 
 VerificationTest[
     DeleteObject @ server,
     Null,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-ConfigCleanup@@Tests/CreateMCPServer.wlt:209,1-214,2"
+    TestID   -> "CreateMCPServer-ConfigCleanup@@Tests/CreateMCPServer.wlt:285,1-290,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -226,14 +302,14 @@ VerificationTest[
     SameQ[ server1[ "Tools" ], server2[ "Tools" ] ],
     True,
     SameTest -> Equal,
-    TestID   -> "CreateMCPServer-RewriteChatbookTools-WLEvaluatorEquivalence@@Tests/CreateMCPServer.wlt:221,1-230,2"
+    TestID   -> "CreateMCPServer-RewriteChatbookTools-WLEvaluatorEquivalence@@Tests/CreateMCPServer.wlt:297,1-306,2"
 ]
 
 VerificationTest[
     { DeleteObject @ server1, DeleteObject @ server2 },
     { Null, Null },
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-RewriteChatbookTools-WLEvaluatorCleanup@@Tests/CreateMCPServer.wlt:232,1-237,2"
+    TestID   -> "CreateMCPServer-RewriteChatbookTools-WLEvaluatorCleanup@@Tests/CreateMCPServer.wlt:308,1-313,2"
 ]
 
 VerificationTest[
@@ -244,14 +320,14 @@ VerificationTest[
     SameQ[ server1[ "Tools" ], server2[ "Tools" ] ],
     True,
     SameTest -> Equal,
-    TestID   -> "CreateMCPServer-RewriteChatbookTools-WolframAlphaEquivalence@@Tests/CreateMCPServer.wlt:239,1-248,2"
+    TestID   -> "CreateMCPServer-RewriteChatbookTools-WolframAlphaEquivalence@@Tests/CreateMCPServer.wlt:315,1-324,2"
 ]
 
 VerificationTest[
     { DeleteObject @ server1, DeleteObject @ server2 },
     { Null, Null },
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-RewriteChatbookTools-WolframAlphaCleanup@@Tests/CreateMCPServer.wlt:250,1-255,2"
+    TestID   -> "CreateMCPServer-RewriteChatbookTools-WolframAlphaCleanup@@Tests/CreateMCPServer.wlt:326,1-331,2"
 ]
 
 (* Test that both tools together are rewritten correctly *)
@@ -263,14 +339,14 @@ VerificationTest[
     SameQ[ server1[ "Tools" ], server2[ "Tools" ] ],
     True,
     SameTest -> Equal,
-    TestID   -> "CreateMCPServer-RewriteChatbookTools-BothToolsEquivalence@@Tests/CreateMCPServer.wlt:258,1-267,2"
+    TestID   -> "CreateMCPServer-RewriteChatbookTools-BothToolsEquivalence@@Tests/CreateMCPServer.wlt:334,1-343,2"
 ]
 
 VerificationTest[
     { DeleteObject @ server1, DeleteObject @ server2 },
     { Null, Null },
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-RewriteChatbookTools-BothToolsCleanup@@Tests/CreateMCPServer.wlt:269,1-274,2"
+    TestID   -> "CreateMCPServer-RewriteChatbookTools-BothToolsCleanup@@Tests/CreateMCPServer.wlt:345,1-350,2"
 ]
 
 (* Test that custom tools are not affected by the rewriting *)
@@ -283,21 +359,21 @@ VerificationTest[
     SameQ[ server1[ "Tools" ], server2[ "Tools" ] ],
     True,
     SameTest -> Equal,
-    TestID   -> "CreateMCPServer-RewriteChatbookTools-CustomToolPreserved@@Tests/CreateMCPServer.wlt:277,1-287,2"
+    TestID   -> "CreateMCPServer-RewriteChatbookTools-CustomToolPreserved@@Tests/CreateMCPServer.wlt:353,1-363,2"
 ]
 
 VerificationTest[
     server1[ "Tools" ][[ 1 ]][ "Name" ],
     "CustomTool",
     SameTest -> Equal,
-    TestID   -> "CreateMCPServer-RewriteChatbookTools-CustomToolName@@Tests/CreateMCPServer.wlt:289,1-294,2"
+    TestID   -> "CreateMCPServer-RewriteChatbookTools-CustomToolName@@Tests/CreateMCPServer.wlt:365,1-370,2"
 ]
 
 VerificationTest[
     { DeleteObject @ server1, DeleteObject @ server2 },
     { Null, Null },
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-RewriteChatbookTools-CustomToolCleanup@@Tests/CreateMCPServer.wlt:296,1-301,2"
+    TestID   -> "CreateMCPServer-RewriteChatbookTools-CustomToolCleanup@@Tests/CreateMCPServer.wlt:372,1-377,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -314,14 +390,14 @@ VerificationTest[
     |> ],
     _MCPServerObject? MCPServerObjectQ,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-PacletQualifiedToolName@@Tests/CreateMCPServer.wlt:310,1-318,2"
+    TestID   -> "CreateMCPServer-PacletQualifiedToolName@@Tests/CreateMCPServer.wlt:386,1-394,2"
 ]
 
 VerificationTest[
     server[ "Data" ][ "LLMEvaluator" ][ "Tools" ],
     { "TestPublisher/TestPaclet/SomeTool" },
     SameTest -> Equal,
-    TestID   -> "CreateMCPServer-PacletToolPreservedInData@@Tests/CreateMCPServer.wlt:320,1-325,2"
+    TestID   -> "CreateMCPServer-PacletToolPreservedInData@@Tests/CreateMCPServer.wlt:396,1-401,2"
 ]
 
 VerificationTest[
@@ -332,14 +408,14 @@ VerificationTest[
     ],
     { "TestPublisher/TestPaclet/SomeTool" },
     SameTest -> Equal,
-    TestID   -> "CreateMCPServer-PacletToolPreservedInWXF@@Tests/CreateMCPServer.wlt:327,1-336,2"
+    TestID   -> "CreateMCPServer-PacletToolPreservedInWXF@@Tests/CreateMCPServer.wlt:403,1-412,2"
 ]
 
 VerificationTest[
     DeleteObject @ server,
     Null,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-PacletToolCleanup@@Tests/CreateMCPServer.wlt:338,1-343,2"
+    TestID   -> "CreateMCPServer-PacletToolCleanup@@Tests/CreateMCPServer.wlt:414,1-419,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -352,21 +428,21 @@ VerificationTest[
     |> ],
     _MCPServerObject? MCPServerObjectQ,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-TwoSegmentPacletName@@Tests/CreateMCPServer.wlt:348,1-356,2"
+    TestID   -> "CreateMCPServer-TwoSegmentPacletName@@Tests/CreateMCPServer.wlt:424,1-432,2"
 ]
 
 VerificationTest[
     server[ "Data" ][ "LLMEvaluator" ][ "Tools" ],
     { "SimplePaclet/MyTool" },
     SameTest -> Equal,
-    TestID   -> "CreateMCPServer-TwoSegmentPreserved@@Tests/CreateMCPServer.wlt:358,1-363,2"
+    TestID   -> "CreateMCPServer-TwoSegmentPreserved@@Tests/CreateMCPServer.wlt:434,1-439,2"
 ]
 
 VerificationTest[
     DeleteObject @ server,
     Null,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-TwoSegmentCleanup@@Tests/CreateMCPServer.wlt:365,1-370,2"
+    TestID   -> "CreateMCPServer-TwoSegmentCleanup@@Tests/CreateMCPServer.wlt:441,1-446,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -384,7 +460,7 @@ VerificationTest[
     |> ],
     _MCPServerObject? MCPServerObjectQ,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-MixedToolTypes@@Tests/CreateMCPServer.wlt:375,1-388,2"
+    TestID   -> "CreateMCPServer-MixedToolTypes@@Tests/CreateMCPServer.wlt:451,1-464,2"
 ]
 
 VerificationTest[
@@ -397,14 +473,14 @@ VerificationTest[
     ],
     { True, "TestPublisher/TestPaclet/ToolA", "OtherPaclet/ToolB" },
     SameTest -> Equal,
-    TestID   -> "CreateMCPServer-MixedToolTypesPreserved@@Tests/CreateMCPServer.wlt:390,1-401,2"
+    TestID   -> "CreateMCPServer-MixedToolTypesPreserved@@Tests/CreateMCPServer.wlt:466,1-477,2"
 ]
 
 VerificationTest[
     DeleteObject @ server,
     Null,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-MixedToolTypesCleanup@@Tests/CreateMCPServer.wlt:403,1-408,2"
+    TestID   -> "CreateMCPServer-MixedToolTypesCleanup@@Tests/CreateMCPServer.wlt:479,1-484,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -421,21 +497,21 @@ VerificationTest[
     |> ],
     _MCPServerObject? MCPServerObjectQ,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-MultiplePacletTools@@Tests/CreateMCPServer.wlt:413,1-425,2"
+    TestID   -> "CreateMCPServer-MultiplePacletTools@@Tests/CreateMCPServer.wlt:489,1-501,2"
 ]
 
 VerificationTest[
     server[ "Data" ][ "LLMEvaluator" ][ "Tools" ],
     { "Publisher/PacletA/Tool1", "Publisher/PacletA/Tool2", "PacletB/Tool3" },
     SameTest -> Equal,
-    TestID   -> "CreateMCPServer-MultiplePacletToolsPreserved@@Tests/CreateMCPServer.wlt:427,1-432,2"
+    TestID   -> "CreateMCPServer-MultiplePacletToolsPreserved@@Tests/CreateMCPServer.wlt:503,1-508,2"
 ]
 
 VerificationTest[
     DeleteObject @ server,
     Null,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-MultiplePacletToolsCleanup@@Tests/CreateMCPServer.wlt:434,1-439,2"
+    TestID   -> "CreateMCPServer-MultiplePacletToolsCleanup@@Tests/CreateMCPServer.wlt:510,1-515,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -449,21 +525,21 @@ VerificationTest[
     |> ],
     _MCPServerObject? MCPServerObjectQ,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-PacletPromptName@@Tests/CreateMCPServer.wlt:444,1-453,2"
+    TestID   -> "CreateMCPServer-PacletPromptName@@Tests/CreateMCPServer.wlt:520,1-529,2"
 ]
 
 VerificationTest[
     server[ "Data" ][ "LLMEvaluator" ][ "MCPPrompts" ],
     { "TestPublisher/TestPaclet/SomePrompt" },
     SameTest -> Equal,
-    TestID   -> "CreateMCPServer-PacletPromptPreservedInData@@Tests/CreateMCPServer.wlt:455,1-460,2"
+    TestID   -> "CreateMCPServer-PacletPromptPreservedInData@@Tests/CreateMCPServer.wlt:531,1-536,2"
 ]
 
 VerificationTest[
     DeleteObject @ server,
     Null,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-PacletPromptCleanup@@Tests/CreateMCPServer.wlt:462,1-467,2"
+    TestID   -> "CreateMCPServer-PacletPromptCleanup@@Tests/CreateMCPServer.wlt:538,1-543,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -481,7 +557,7 @@ VerificationTest[
     $mockPaclet[ "Name" ],
     "MockMCPPacletTest",
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-MockPacletSetup@@Tests/CreateMCPServer.wlt:478,1-485,2"
+    TestID   -> "CreateMCPServer-MockPacletSetup@@Tests/CreateMCPServer.wlt:554,1-561,2"
 ]
 
 VerificationTest[
@@ -491,7 +567,7 @@ VerificationTest[
     |> ],
     _MCPServerObject? MCPServerObjectQ,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-WithMockPacletTool@@Tests/CreateMCPServer.wlt:487,1-495,2"
+    TestID   -> "CreateMCPServer-WithMockPacletTool@@Tests/CreateMCPServer.wlt:563,1-571,2"
 ]
 
 (* Raw data has string *)
@@ -499,7 +575,7 @@ VerificationTest[
     server[ "Data" ][ "LLMEvaluator" ][ "Tools" ],
     { "MockMCPPacletTest/TestTool" },
     SameTest -> Equal,
-    TestID   -> "CreateMCPServer-MockPacletToolStringInData@@Tests/CreateMCPServer.wlt:498,1-503,2"
+    TestID   -> "CreateMCPServer-MockPacletToolStringInData@@Tests/CreateMCPServer.wlt:574,1-579,2"
 ]
 
 (* Tools property resolves to LLMTool *)
@@ -507,21 +583,21 @@ VerificationTest[
     server[ "Tools" ],
     { _LLMTool },
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-MockPacletToolResolves@@Tests/CreateMCPServer.wlt:506,1-511,2"
+    TestID   -> "CreateMCPServer-MockPacletToolResolves@@Tests/CreateMCPServer.wlt:582,1-587,2"
 ]
 
 VerificationTest[
     server[ "Tools" ][[ 1 ]][ "Name" ],
     "TestTool",
     SameTest -> Equal,
-    TestID   -> "CreateMCPServer-MockPacletToolResolvedName@@Tests/CreateMCPServer.wlt:513,1-518,2"
+    TestID   -> "CreateMCPServer-MockPacletToolResolvedName@@Tests/CreateMCPServer.wlt:589,1-594,2"
 ]
 
 VerificationTest[
     DeleteObject @ server,
     Null,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-MockPacletToolCleanup@@Tests/CreateMCPServer.wlt:520,1-525,2"
+    TestID   -> "CreateMCPServer-MockPacletToolCleanup@@Tests/CreateMCPServer.wlt:596,1-601,2"
 ]
 
 VerificationTest[
@@ -529,7 +605,7 @@ VerificationTest[
     Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
     <| |>,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-MockPacletCleanup@@Tests/CreateMCPServer.wlt:527,1-533,2"
+    TestID   -> "CreateMCPServer-MockPacletCleanup@@Tests/CreateMCPServer.wlt:603,1-609,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
