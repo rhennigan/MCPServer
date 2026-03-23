@@ -288,7 +288,7 @@ VerificationTest[
 
 VerificationTest[
     Wolfram`MCPServer`Common`findInstalledPaclet[ "CompletelyNonExistentPaclet12345" ],
-    $Failed,
+    _Failure,
     SameTest -> MatchQ,
     TestID   -> "findInstalledPaclet-NotFound@@Tests/PacletExtension.wlt:289,1-294,2"
 ]

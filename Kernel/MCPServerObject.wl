@@ -781,7 +781,12 @@ mcpServerExistsQ // beginDefinition;
 mcpServerExistsQ[ HoldPattern @ MCPServerObject[ as_Association ] ] := mcpServerExistsQ[ as, as[ "Location" ] ];
 mcpServerExistsQ[ as_, "BuiltIn" ] := True;
 mcpServerExistsQ[ as_, location_File ] := FileExistsQ @ location;
-mcpServerExistsQ[ as_, paclet_PacletObject ] := Length @ PacletFind @ paclet[ "Name" ] > 0;
+
+mcpServerExistsQ[ as_, paclet_PacletObject ] := MemberQ[
+    paclet[ "StructuredExtensions" ],
+    { "AgentTools", KeyValuePattern[ "MCPServers" -> { __ } ] }
+];
+
 mcpServerExistsQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)

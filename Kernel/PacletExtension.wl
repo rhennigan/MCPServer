@@ -167,12 +167,7 @@ getAgentToolsDeclaredItems // endDefinition;
 (* ::Section::Closed:: *)
 (*findInstalledPaclet*)
 findInstalledPaclet // beginDefinition;
-
-findInstalledPaclet[ pacletName_String ] := Replace[
-    PacletFind @ pacletName,
-    { { paclet_PacletObject, ___ } :> paclet, _ :> $Failed }
-];
-
+findInstalledPaclet[ pacletName_String ] := PacletObject @ pacletName;
 findInstalledPaclet // endDefinition;
 
 (* ::**************************************************************************************************************:: *)

@@ -20,8 +20,16 @@ $$declarationItem = _String | { _String, _String } | _Association? (KeyExistsQ[ 
 (*ValidateAgentToolsPacletExtension*)
 ValidateAgentToolsPacletExtension // beginDefinition;
 
-ValidateAgentToolsPacletExtension[ paclet_PacletObject ] :=
+ValidateAgentToolsPacletExtension[ paclet_PacletObject? PacletObjectQ ] :=
     catchMine @ validateAgentToolsPacletExtension @ paclet;
+
+ValidateAgentToolsPacletExtension[ spec_ ] :=
+    catchMine @ With[ { paclet = Quiet @ PacletObject @ spec },
+        If[ PacletObjectQ @ paclet,
+            validateAgentToolsPacletExtension @ paclet,
+            throwFailure[ "InvalidPacletSpecification", spec ]
+        ]
+    ];
 
 ValidateAgentToolsPacletExtension // endExportedDefinition;
 
@@ -64,7 +72,7 @@ validateAgentToolsPacletExtension[ paclet_PacletObject ] := Enclose[
         ];
 
         (* 3. File contents *)
-        contentErrors = If[ StringQ @ root && Length @ PacletFind @ paclet[ "Name" ] > 0,
+        contentErrors = If[ StringQ @ root,
             Join[
                 checkFileContents[ paclet, "MCPServers", servers ],
                 checkFileContents[ paclet, "Tools"     , tools   ],
@@ -74,7 +82,7 @@ validateAgentToolsPacletExtension[ paclet_PacletObject ] := Enclose[
         ];
 
         (* 4. Cross-references *)
-        crossRefErrors = If[ StringQ @ root && Length @ PacletFind @ paclet[ "Name" ] > 0,
+        crossRefErrors = If[ StringQ @ root,
             checkCrossReferences[ paclet, servers, tools, prompts ],
             { }
         ];

@@ -80,6 +80,7 @@ MCPServer::InvalidPacletToolDefinition      = "Invalid tool definition in `1`.";
 MCPServer::InvalidPacletServerDefinition    = "Invalid server definition in `1`.";
 MCPServer::PacletDependencyMissing          = "Server \"`1`\" references tool \"`2`\" from paclet \"`3`\", which could not be installed.";
 MCPServer::InvalidAgentToolsPacletExtension = "The AgentTools extension in paclet \"`1`\" is invalid: `2`.";
+MCPServer::InvalidPacletSpecification       = "Invalid paclet specification: `1`. Expected a PacletObject or a valid paclet name.";
 MCPServer::DeletePacletMCPServer            = "Cannot delete paclet-backed server \"`1`\". Evaluate `2` to uninstall the paclet.";
 
 (* ToolOptions messages *)
