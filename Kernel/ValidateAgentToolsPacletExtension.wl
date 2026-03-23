@@ -210,7 +210,7 @@ checkItemFileExistence[ root_String, type_String, name_String ] :=
         dir = FileNameJoin @ { root, type };
         perItemFiles = If[ DirectoryQ @ dir, FileNames[ { name<>".mx", name<>".wxf", name<>".wl" }, dir ], { } ];
 
-        hasCombined = StringQ @ findCombinedFile[ root, type ];
+        hasCombined = Length @ FileNames[ { type <> ".mx", type <> ".wxf", type <> ".wl" }, root ] > 0;
 
         If[ Length @ perItemFiles > 1,
             AppendTo[ errors, <|
