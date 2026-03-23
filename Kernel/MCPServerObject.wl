@@ -561,7 +561,9 @@ getToolList // beginDefinition;
 getToolList[ as_Association ] := getToolList[ as, as[ "Location" ] ];
 
 getToolList[ as_Association, paclet_PacletObject ] /; ! DirectoryQ @ paclet[ "Location" ] :=
-    Replace[ as[ "LLMEvaluator", "Tools" ], _Missing -> { } ];
+    With[ { pn = paclet[ "Name" ] },
+        throwFailure[ "PacletNotInstalled", pn, HoldForm @ PacletInstall @ pn ]
+    ];
 
 getToolList[ as_Association, _ ] := Enclose[
     ConfirmMatch[
