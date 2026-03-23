@@ -287,11 +287,11 @@ checkRemotePacletMCPServer // beginDefinition;
 
 checkRemotePacletMCPServer[ qualifiedName_String, pacletName_String, serverName_String ] :=
     Module[ { remote, paclet, declaredServers, metadata },
-        remote = Quiet @ PacletFindRemote @ pacletName;
+        remote = Quiet @ PacletFindRemote[ pacletName, <| "Extension" -> "AgentTools" |> ];
         If[ ! MatchQ[ remote, { __PacletObject } ], throwFailure[ "MCPServerNotFound", qualifiedName ] ];
 
         paclet = First @ remote;
-        declaredServers = Quiet @ getAgentToolsDeclaredItems[ paclet, "MCPServers" ];
+        declaredServers = Quiet @ catchAlways @ getAgentToolsDeclaredItems[ paclet, "MCPServers" ];
         If[ ! MemberQ[ declaredServers, serverName ], throwFailure[ "MCPServerNotFound", qualifiedName ] ];
 
         metadata = buildRemotePacletServerMetadata[ qualifiedName, paclet, serverName ];
