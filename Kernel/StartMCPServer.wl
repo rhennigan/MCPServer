@@ -281,14 +281,21 @@ disambiguateToolNames // beginDefinition;
 disambiguateToolNames[ { } ] := <| |>;
 
 disambiguateToolNames[ tools: { __LLMTool } ] :=
-    Module[ { names, nameCounts, indices = <| |>, mcpName },
+    Module[ { names, nameCounts, usedNames, indices = <| |>, mcpName, suffix },
         names = #[ "Name" ] & /@ tools;
         nameCounts = Counts @ names;
+        usedNames = Association[ # -> True & /@ DeleteDuplicates @ names ];
         Association @ Table[
             mcpName = names[[ i ]];
             If[ nameCounts[ mcpName ] > 1,
                 indices[ mcpName ] = Lookup[ indices, mcpName, 0 ] + 1;
-                (mcpName <> ToString @ indices[ mcpName ]) -> tools[[ i ]],
+                suffix = indices[ mcpName ];
+                While[ Lookup[ usedNames, mcpName <> ToString @ suffix, False ],
+                    suffix++
+                ];
+                indices[ mcpName ] = suffix;
+                usedNames[ mcpName <> ToString @ suffix ] = True;
+                (mcpName <> ToString @ suffix) -> tools[[ i ]],
                 mcpName -> tools[[ i ]]
             ],
             { i, Length @ tools }
