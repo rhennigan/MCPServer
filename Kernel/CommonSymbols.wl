@@ -127,6 +127,7 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `loadPacletDefinitionFile;
 `pacletQualifiedNameQ;
 `parsePacletQualifiedName;
+`qualifyNamesInLLMEvaluator;
 `resolvePacletPrompt;
 `resolvePacletServer;
 `resolvePacletTool;

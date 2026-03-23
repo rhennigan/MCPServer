@@ -505,6 +505,32 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Remote Server Resolution*)
+
+VerificationTest[
+    $remoteServer = MCPServerObject[ "SamplePublisher/SamplePaclet/SampleServer" ];
+    Head @ $remoteServer,
+    MCPServerObject,
+    SameTest -> MatchQ,
+    TestID -> "RemoteServerResolution-NoFailure@@Tests/PacletExtension.wlt:510,1-516,2"
+]
+
+VerificationTest[
+    $remoteServer[ "ToolNames" ],
+    { "SamplePublisher/SamplePaclet/Identity", "SamplePublisher/SamplePaclet/PrimeFinder" },
+    SameTest -> MatchQ,
+    TestID -> "RemoteServerResolution-ToolNames@@Tests/PacletExtension.wlt:518,1-523,2"
+]
+
+VerificationTest[
+    $remoteServer[ "Tools" ],
+    { "SamplePublisher/SamplePaclet/Identity", "SamplePublisher/SamplePaclet/PrimeFinder" },
+    SameTest -> MatchQ,
+    TestID -> "RemoteServerResolution-Tools@@Tests/PacletExtension.wlt:525,1-530,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Mock Paclet Cleanup*)
 VerificationTest[
     PacletDirectoryUnload @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletTest" };
@@ -512,7 +538,7 @@ VerificationTest[
     Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
     <| |>,
     SameTest -> MatchQ,
-    TestID   -> "MockPacletCleanup@@Tests/PacletExtension.wlt:509,1-516,2"
+    TestID   -> "MockPacletCleanup@@Tests/PacletExtension.wlt:535,1-542,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

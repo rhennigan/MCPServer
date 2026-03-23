@@ -307,7 +307,9 @@ buildRemotePacletServerMetadata // beginDefinition;
 
 buildRemotePacletServerMetadata[ qualifiedName_String, paclet_PacletObject, serverName_String ] :=
     Module[ { extData, serverDecl, tools, prompts, evaluator },
+
         extData = Quiet @ getAgentToolsExtensionData @ paclet;
+
         serverDecl = If[ AssociationQ @ extData,
             SelectFirst[
                 Lookup[ extData, "MCPServers", { } ],
@@ -315,15 +317,19 @@ buildRemotePacletServerMetadata[ qualifiedName_String, paclet_PacletObject, serv
             ],
             Missing[ "NotAvailable" ]
         ];
+
         tools = If[ MatchQ[ serverDecl, _Association ] && KeyExistsQ[ serverDecl, "Tools" ],
             serverDecl[ "Tools" ],
             getAgentToolsDeclaredItems[ paclet, "Tools" ]
         ];
+
         prompts = If[ MatchQ[ serverDecl, _Association ] && KeyExistsQ[ serverDecl, "Prompts" ],
             serverDecl[ "Prompts" ],
             getAgentToolsDeclaredItems[ paclet, "MCPPrompts" ]
         ];
-        evaluator = <| "Tools" -> tools, "MCPPrompts" -> prompts |>;
+
+        evaluator = qualifyNamesInLLMEvaluator[ <| "Tools" -> tools, "MCPPrompts" -> prompts |>, paclet[ "Name" ] ];
+
         <|
             "LLMEvaluator"  -> evaluator,
             "Location"      -> paclet,
@@ -552,7 +558,12 @@ determinePromptType // endDefinition;
 (*getToolList*)
 getToolList // beginDefinition;
 
-getToolList[ as_Association ] := Enclose[
+getToolList[ as_Association ] := getToolList[ as, as[ "Location" ] ];
+
+getToolList[ as_Association, paclet_PacletObject ] /; ! DirectoryQ @ paclet[ "Location" ] :=
+    Replace[ as[ "LLMEvaluator", "Tools" ], _Missing -> { } ];
+
+getToolList[ as_Association, _ ] := Enclose[
     ConfirmMatch[
         toLLMTools @ as[ "LLMEvaluator" ][ "Tools" ],
         { ___LLMTool },
