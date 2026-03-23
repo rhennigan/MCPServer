@@ -46,9 +46,10 @@ InstallMCPServer[ target_File? fileQ, server0_String? pacletQualifiedNameQ, opts
         With[ { server = ensureMCPServerExists @ MCPServerObject @ server0 },
             Block[
                 {
-                    $installClientName  = validateInstallClientName[ OptionValue[ "ApplicationName" ], target ],
-                    $enableMCPApps      = OptionValue[ "EnableMCPApps" ],
-                    $installToolOptions = validateToolOptions[ OptionValue[ "ToolOptions" ], server ]
+                    $installClientName    = validateInstallClientName[ OptionValue[ "ApplicationName" ], target ],
+                    $enableMCPApps        = OptionValue[ "EnableMCPApps" ],
+                    $installToolOptions   = validateToolOptions[ OptionValue[ "ToolOptions" ], server ],
+                    $installMCPServerName = OptionValue[ "MCPServerName" ]
                 },
                 installMCPServer[
                     target,
