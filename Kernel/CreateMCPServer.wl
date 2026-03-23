@@ -182,7 +182,23 @@ binarySerializeWithDefinitions // beginDefinition;
 binarySerializeWithDefinitions[ data_Association ] := binarySerializeWithDefinitions0 @ unpackNoEntry @ data;
 binarySerializeWithDefinitions // endDefinition;
 
-importResourceFunction[ binarySerializeWithDefinitions0, "BinarySerializeWithDefinitions" ];
+binarySerializeWithDefinitions0 // beginDefinition;
+
+binarySerializeWithDefinitions0[ data_Association ] := Enclose[
+    Module[ { defs },
+        defs = ConfirmMatch[ Language`ExtendedFullDefinition @ data, _Language`DefinitionList, "Definitions" ];
+        With[ { d = defs },
+            ConfirmBy[
+                BinarySerialize @ Unevaluated[ Language`ExtendedFullDefinition[ ] = d; data ],
+                ByteArrayQ,
+                "Result"
+            ]
+        ]
+    ],
+    throwInternalFailure
+];
+
+binarySerializeWithDefinitions0 // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
