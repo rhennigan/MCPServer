@@ -78,7 +78,7 @@ validateMCPServerObjectData // beginDefinition;
 
 validateMCPServerObjectData[ data_Association? AssociationQ ] :=
     Module[ { valid, combined },
-        valid = Association @ KeyValueMap[ #1 -> validateMCPServerObjectData0[ #1, #2 ] &, data ];
+        valid = Association @ KeyValueMap[ validateMCPServerObjectData0, data ];
         combined = <| $defaultMetadata, valid |>;
         If[ MatchQ[ combined, $$metadata ], combined, $Failed ]
     ];
@@ -90,9 +90,21 @@ validateMCPServerObjectData // endDefinition;
 
 
 validateMCPServerObjectData0 // beginDefinition;
-validateMCPServerObjectData0[ "LLMEvaluator", config_ ] := validateLLMEvaluator @ config;
-validateMCPServerObjectData0[ key_String, value_ ] := value;
+validateMCPServerObjectData0 // Attributes = { HoldAllComplete };
+validateMCPServerObjectData0[ "Initialization", init_ ] := validateInitialization @ init;
+validateMCPServerObjectData0[ "LLMEvaluator", config_ ] := "LLMEvaluator" -> validateLLMEvaluator @ config;
+validateMCPServerObjectData0[ key_String, value_ ] := key -> value;
 validateMCPServerObjectData0 // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*validateInitialization*)
+validateInitialization // beginDefinition;
+validateInitialization // Attributes = { HoldAllComplete };
+validateInitialization[ HoldComplete[ init_ ] ] := validateInitialization @ init;
+validateInitialization[ None  ] := "Initialization" -> None;
+validateInitialization[ init_ ] := "Initialization" :> init;
+validateInitialization // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)

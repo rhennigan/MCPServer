@@ -8,7 +8,6 @@ Needs[ "Wolfram`MCPServer`Common`" ];
 
 (* TODO:
     - Support "Remote" type (deploy as cloud API)
-    - Add Initialization option
     - Add developer mode option to start from script instead
 *)
 
@@ -26,7 +25,8 @@ $includeDefinitions = True;
 CreateMCPServer // beginDefinition;
 CreateMCPServer // Options = {
     OverwriteTarget    -> $overwriteTarget,
-    IncludeDefinitions -> $includeDefinitions
+    IncludeDefinitions -> $includeDefinitions,
+    Initialization     -> None
 };
 
 CreateMCPServer[ name_String, opts: OptionsPattern[ ] ] :=
@@ -39,7 +39,8 @@ CreateMCPServer[ name_String, evaluator_Association, opts: OptionsPattern[ ] ] :
     catchMine @ Block[
         {
             $overwriteTarget    = TrueQ @ OptionValue @ OverwriteTarget,
-            $includeDefinitions = TrueQ @ OptionValue @ IncludeDefinitions
+            $includeDefinitions = TrueQ @ OptionValue @ IncludeDefinitions,
+            $initialization     = OptionValue[ Automatic, Automatic, Initialization, HoldComplete ]
         },
         createMCPServer[ name, evaluator ]
     ];
@@ -151,15 +152,17 @@ exportBinary // endDefinition;
 createMCPServerData // beginDefinition;
 
 createMCPServerData[ name_String, evaluator_Association ] := Enclose[
-    Module[ { dir, validated },
+    Module[ { dir, init, validated },
         dir = ConfirmBy[ ensureDirectory @ mcpServerDirectory @ name, directoryQ, "Directory" ];
+        init = ConfirmMatch[ $initialization, HoldComplete[ _ ], "Initialization" ];
         validated = catchAlways @ validateMCPServerObjectData @ <|
-            "Name"          -> name,
-            "LLMEvaluator"  -> evaluator,
-            "Location"      -> dir,
-            "Transport"     -> "StandardInputOutput",
-            "ServerVersion" -> $serverVersion,
-            "ObjectVersion" -> $objectVersion
+            "Name"           -> name,
+            "LLMEvaluator"   -> evaluator,
+            "Location"       -> dir,
+            "Transport"      -> "StandardInputOutput",
+            "ServerVersion"  -> $serverVersion,
+            "ObjectVersion"  -> $objectVersion,
+            "Initialization" -> init
         |>;
         If[ AssociationQ @ validated,
             validated,

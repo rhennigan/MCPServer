@@ -6,7 +6,7 @@ Consolidated list of TODO/FIXME items from the codebase.
 
 - [ ] Support "Remote" type for server deployment (deploy as cloud API)
   - Source: `Kernel/CreateMCPServer.wl`
-- [ ] Add `Initialization` option to `CreateMCPServer`
+- [x] Add `Initialization` option to `CreateMCPServer`
   - Source: `Kernel/CreateMCPServer.wl`
 - [ ] Add `ProcessDirectory` option to `InstallMCPServer` ([See Issue #69](https://github.com/rhennigan/MCPServer/issues/69))
 - [ ] Add `EnabledTools` and `DisabledTools` options to `InstallMCPServer`

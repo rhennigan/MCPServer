@@ -114,10 +114,10 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
         (* Ensure referenced paclets are installed before tool/prompt resolution *)
         ensurePacletsForStart @ obj;
 
-        (* Run server-level initialization for paclet-backed servers *)
+        (* Run server-level initialization for custom and paclet-backed servers *)
         runServerInitialization @ obj;
 
-        llmTools     = disambiguateToolNames @ ConfirmMatch[ obj[ "Tools" ], { ___LLMTool }, "Tools" ];
+        llmTools = disambiguateToolNames @ ConfirmMatch[ obj[ "Tools" ], { ___LLMTool }, "Tools" ];
 
         (* Run tool initialization for all tools at startup *)
         runToolInitialization @ Values @ llmTools;
@@ -189,7 +189,6 @@ ensurePacletsForStart[ serverName_String, data_Association ] :=
 
 ensurePacletsForStart // endDefinition;
 
-
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
 (*ensurePacletForStart*)
@@ -214,7 +213,6 @@ ensurePacletForStart[ serverName_String, qualifiedName_String ] :=
 
 ensurePacletForStart // endDefinition;
 
-
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
 (*runServerInitialization*)
@@ -225,6 +223,10 @@ runServerInitialization[ obj_MCPServerObject ] :=
 
 runServerInitialization[ data_Association ] :=
     Catch @ Module[ { location, qualifiedName, serverDef },
+
+        (* Run initialization specified via the Initialization option of CreateMCPServer: *)
+        Lookup[ data, "Initialization", Null ];
+
         location = Lookup[ data, "Location" ];
         If[ ! MatchQ[ location, _PacletObject ], Throw @ Null ];
 
@@ -242,7 +244,6 @@ runServerInitialization[ data_Association ] :=
     ];
 
 runServerInitialization // endDefinition;
-
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -277,7 +278,6 @@ disambiguateToolNames[ tools: { __LLMTool } ] :=
     ];
 
 disambiguateToolNames // endDefinition;
-
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
