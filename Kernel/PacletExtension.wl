@@ -10,6 +10,11 @@ Needs[ "PacletTools`" -> "pt`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Config*)
+$toolDefaults = <| "Options" -> { }, "Parameters" -> { }, "Description" -> "" |>;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*pacletQualifiedNameQ*)
 pacletQualifiedNameQ // beginDefinition;
 pacletQualifiedNameQ[ name_String ] := StringContainsQ[ name, "/" ];
@@ -289,7 +294,7 @@ qualifyNamesInLLMEvaluator // endDefinition;
 resolvePacletTool // beginDefinition;
 
 resolvePacletTool[ qualifiedName_String ] := Enclose[
-    Module[ { parsed, pacletName, itemName, paclet, declaredTools },
+    Module[ { parsed, pacletName, itemName, paclet, declaredTools, definition },
         parsed = ConfirmBy[ parsePacletQualifiedName @ qualifiedName, AssociationQ, "Parse" ];
         pacletName = parsed[ "PacletName" ];
         itemName = parsed[ "ItemName" ];
@@ -304,10 +309,15 @@ resolvePacletTool[ qualifiedName_String ] := Enclose[
             throwFailure[ "PacletToolNotFound", itemName, pacletName ]
         ];
 
-        ConfirmBy[
+        definition = ConfirmMatch[
             loadPacletDefinitionFile[ paclet, "Tools", itemName ],
-            AssociationQ,
+            _Association | $Failed,
             "Definition"
+        ];
+
+        If[ AssociationQ @ definition,
+            KeySort @ <| $toolDefaults, definition |>,
+            $Failed
         ]
     ],
     throwInternalFailure
@@ -321,7 +331,7 @@ resolvePacletTool // endDefinition;
 resolvePacletServer // beginDefinition;
 
 resolvePacletServer[ qualifiedName_String ] := Enclose[
-    Module[ { parsed, pacletName, itemName, paclet, declaredServers, definition },
+    Catch @ Module[ { parsed, pacletName, itemName, paclet, declaredServers, definition },
         parsed = ConfirmBy[ parsePacletQualifiedName @ qualifiedName, AssociationQ, "Parse" ];
         pacletName = parsed[ "PacletName" ];
         itemName = parsed[ "ItemName" ];
@@ -336,18 +346,20 @@ resolvePacletServer[ qualifiedName_String ] := Enclose[
             throwFailure[ "PacletServerNotFound", itemName, pacletName ]
         ];
 
-        definition = ConfirmBy[
+        definition = ConfirmMatch[
             loadPacletDefinitionFile[ paclet, "MCPServers", itemName ],
-            AssociationQ,
+            _Association | $Failed,
             "Definition"
         ];
+
+        If[ ! AssociationQ @ definition, Throw @ $Failed ];
 
         (* Pre-qualify short names in LLMEvaluator *)
         If[ KeyExistsQ[ definition, "LLMEvaluator" ] && AssociationQ @ definition[ "LLMEvaluator" ],
             definition[ "LLMEvaluator" ] = qualifyNamesInLLMEvaluator[ definition[ "LLMEvaluator" ], pacletName ]
         ];
 
-        definition
+        KeySort @ definition
     ],
     throwInternalFailure
 ];
