@@ -588,7 +588,11 @@ getToolNames[ as_Association, _ ] :=
     Replace[
         as[ "LLMEvaluator", "Tools" ],
         {
-            tools_List :> Cases[ tools, _String | _LLMTool ],
+            tools_List :> Replace[
+                tools,
+                { s_String :> s, tool_LLMTool :> tool[ "Name" ], _ :> Nothing },
+                { 1 }
+            ],
             _ -> { }
         }
     ];
@@ -609,7 +613,11 @@ getPromptNames[ as_Association, _ ] :=
     Replace[
         as[ "LLMEvaluator", "MCPPrompts" ],
         {
-            prompts_List :> Cases[ prompts, _String | _Association ],
+            prompts_List :> Replace[
+                prompts,
+                { s_String :> s, as2_Association :> Lookup[ as2, "Name", Nothing ], _ :> Nothing },
+                { 1 }
+            ],
             _ -> { }
         }
     ];
