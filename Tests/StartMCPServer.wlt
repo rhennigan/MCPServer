@@ -375,75 +375,39 @@ VerificationTest[
     Wolfram`MCPServer`StartMCPServer`Private`ensurePacletsForStart[
         MCPServerObject[ "MockMCPPacletTest/TestServer" ]
     ],
-    Null,
+    _MCPServerObject? MCPServerObjectQ,
     SameTest -> MatchQ,
     TestID   -> "EnsurePacletsForStart-InstalledPacletSucceeds@@Tests/StartMCPServer.wlt:374,1-381,2"
 ]
 
 VerificationTest[
-    builtInData = <|
-        "Name" -> "TestBuiltIn",
-        "LLMEvaluator" -> <| "Tools" -> { "WolframAlpha", "WolframLanguageEvaluator" } |>,
-        "Location" -> "BuiltIn"
-    |>;
-    Wolfram`MCPServer`StartMCPServer`Private`ensurePacletsForStart[ "TestBuiltIn", builtInData ],
-    Null,
+    Wolfram`MCPServer`StartMCPServer`Private`ensurePacletsForStart[
+        MCPServerObject[ "WolframLanguage" ]
+    ],
+    _MCPServerObject? MCPServerObjectQ,
     SameTest -> MatchQ,
-    TestID   -> "EnsurePacletsForStart-NoPacletToolsIsNoOp@@Tests/StartMCPServer.wlt:383,1-393,2"
-]
-
-VerificationTest[
-    emptyData = <| "Name" -> "Empty", "LLMEvaluator" -> <| |> |>;
-    Wolfram`MCPServer`StartMCPServer`Private`ensurePacletsForStart[ "Empty", emptyData ],
-    Null,
-    SameTest -> MatchQ,
-    TestID   -> "EnsurePacletsForStart-EmptyEvaluatorIsNoOp@@Tests/StartMCPServer.wlt:395,1-401,2"
-]
-
-VerificationTest[
-    noEvalData = <| "Name" -> "NoEval" |>;
-    Wolfram`MCPServer`StartMCPServer`Private`ensurePacletsForStart[ "NoEval", noEvalData ],
-    Null,
-    SameTest -> MatchQ,
-    TestID   -> "EnsurePacletsForStart-NoEvaluatorIsNoOp@@Tests/StartMCPServer.wlt:403,1-409,2"
-]
-
-VerificationTest[
-    pacletData = <|
-        "Name" -> "TestServer",
-        "LLMEvaluator" -> <|
-            "Tools" -> { "MockMCPPacletTest/TestTool", "MockMCPPacletTest/DescribedTool" },
-            "MCPPrompts" -> { "MockMCPPacletTest/TestPrompt" }
-        |>
-    |>;
-    Wolfram`MCPServer`StartMCPServer`Private`ensurePacletsForStart[ "TestServer", pacletData ],
-    Null,
-    SameTest -> MatchQ,
-    TestID   -> "EnsurePacletsForStart-PacletToolsSucceeds@@Tests/StartMCPServer.wlt:411,1-423,2"
+    TestID   -> "EnsurePacletsForStart-BuiltInServerSucceeds@@Tests/StartMCPServer.wlt:383,1-390,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*ensurePacletForStart*)
+(*ensureDependenciesForStart*)
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`ensurePacletForStart[
-        "TestServer", "MockMCPPacletTest/TestTool"
+    Wolfram`MCPServer`StartMCPServer`Private`ensureDependenciesForStart[
+        MCPServerObject[ "MockMCPPacletTest/TestServer" ]
     ],
-    _PacletObject,
+    _MCPServerObject? MCPServerObjectQ,
     SameTest -> MatchQ,
-    TestID   -> "EnsurePacletForStart-InstalledPacletReturns@@Tests/StartMCPServer.wlt:428,1-435,2"
+    TestID   -> "EnsureDependenciesForStart-InstalledPacletDeps@@Tests/StartMCPServer.wlt:395,1-402,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`catchAlways[
-        Wolfram`MCPServer`StartMCPServer`Private`ensurePacletForStart[
-            "TestServer", "NonExistentPaclet12345/SomeTool"
-        ]
+    Wolfram`MCPServer`StartMCPServer`Private`ensureDependenciesForStart[
+        MCPServerObject[ "WolframLanguage" ]
     ],
-    _Failure,
-    { MCPServer::PacletDependencyMissing },
+    _MCPServerObject? MCPServerObjectQ,
     SameTest -> MatchQ,
-    TestID   -> "EnsurePacletForStart-MissingPacletFails@@Tests/StartMCPServer.wlt:437,1-447,2"
+    TestID   -> "EnsureDependenciesForStart-NoPacletDepsIsNoOp@@Tests/StartMCPServer.wlt:404,1-411,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -458,7 +422,7 @@ VerificationTest[
     Wolfram`MCPServer`StartMCPServer`Private`runServerInitialization[ builtInServerData ],
     Null,
     SameTest -> MatchQ,
-    TestID   -> "RunServerInitialization-BuiltInIsNoOp@@Tests/StartMCPServer.wlt:452,1-462,2"
+    TestID   -> "RunServerInitialization-BuiltInIsNoOp@@Tests/StartMCPServer.wlt:416,1-426,2"
 ]
 
 VerificationTest[
@@ -470,7 +434,7 @@ VerificationTest[
     Wolfram`MCPServer`StartMCPServer`Private`runServerInitialization[ fileServerData ],
     Null,
     SameTest -> MatchQ,
-    TestID   -> "RunServerInitialization-FileBasedIsNoOp@@Tests/StartMCPServer.wlt:464,1-474,2"
+    TestID   -> "RunServerInitialization-FileBasedIsNoOp@@Tests/StartMCPServer.wlt:428,1-438,2"
 ]
 
 VerificationTest[
@@ -486,7 +450,7 @@ VerificationTest[
     Wolfram`MCPServer`StartMCPServer`Private`runServerInitialization[ pacletServerData ],
     Null,
     SameTest -> MatchQ,
-    TestID   -> "RunServerInitialization-PacletServerNoInit@@Tests/StartMCPServer.wlt:476,1-490,2"
+    TestID   -> "RunServerInitialization-PacletServerNoInit@@Tests/StartMCPServer.wlt:440,1-454,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -496,7 +460,7 @@ VerificationTest[
     Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { } ],
     <| |>,
     SameTest -> MatchQ,
-    TestID   -> "DisambiguateToolNames-EmptyList@@Tests/StartMCPServer.wlt:495,1-500,2"
+    TestID   -> "DisambiguateToolNames-EmptyList@@Tests/StartMCPServer.wlt:459,1-464,2"
 ]
 
 VerificationTest[
@@ -506,7 +470,7 @@ VerificationTest[
     Keys @ result,
     { "Alpha", "Beta" },
     SameTest -> MatchQ,
-    TestID   -> "DisambiguateToolNames-NoCollisions@@Tests/StartMCPServer.wlt:502,1-510,2"
+    TestID   -> "DisambiguateToolNames-NoCollisions@@Tests/StartMCPServer.wlt:466,1-474,2"
 ]
 
 VerificationTest[
@@ -516,7 +480,7 @@ VerificationTest[
     Keys @ result,
     { "Search1", "Search2" },
     SameTest -> MatchQ,
-    TestID   -> "DisambiguateToolNames-TwoCollisions@@Tests/StartMCPServer.wlt:512,1-520,2"
+    TestID   -> "DisambiguateToolNames-TwoCollisions@@Tests/StartMCPServer.wlt:476,1-484,2"
 ]
 
 VerificationTest[
@@ -527,7 +491,7 @@ VerificationTest[
     Keys @ result,
     { "Search1", "Search2", "Search3" },
     SameTest -> MatchQ,
-    TestID   -> "DisambiguateToolNames-ThreeCollisions@@Tests/StartMCPServer.wlt:522,1-531,2"
+    TestID   -> "DisambiguateToolNames-ThreeCollisions@@Tests/StartMCPServer.wlt:486,1-495,2"
 ]
 
 VerificationTest[
@@ -539,7 +503,7 @@ VerificationTest[
     Keys @ result,
     { "Alpha", "Search1", "Beta", "Search2" },
     SameTest -> MatchQ,
-    TestID   -> "DisambiguateToolNames-MixedCollisions@@Tests/StartMCPServer.wlt:533,1-543,2"
+    TestID   -> "DisambiguateToolNames-MixedCollisions@@Tests/StartMCPServer.wlt:497,1-507,2"
 ]
 
 VerificationTest[
@@ -550,7 +514,7 @@ VerificationTest[
     { result["Search1"]["Description"], result["Search2"]["Description"] },
     { "Search JIRA", "Search Slack" },
     SameTest -> MatchQ,
-    TestID   -> "DisambiguateToolNames-ValuesPreserved@@Tests/StartMCPServer.wlt:545,1-554,2"
+    TestID   -> "DisambiguateToolNames-ValuesPreserved@@Tests/StartMCPServer.wlt:509,1-518,2"
 ]
 
 VerificationTest[
@@ -559,7 +523,7 @@ VerificationTest[
     Keys @ result,
     { "Alpha" },
     SameTest -> MatchQ,
-    TestID   -> "DisambiguateToolNames-SingleTool@@Tests/StartMCPServer.wlt:556,1-563,2"
+    TestID   -> "DisambiguateToolNames-SingleTool@@Tests/StartMCPServer.wlt:520,1-527,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -571,7 +535,7 @@ VerificationTest[
     data[ "name" ],
     "Search1",
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPToolData-NameOverride@@Tests/StartMCPServer.wlt:568,1-575,2"
+    TestID   -> "CreateMCPToolData-NameOverride@@Tests/StartMCPServer.wlt:532,1-539,2"
 ]
 
 VerificationTest[
@@ -580,7 +544,7 @@ VerificationTest[
     data[ "description" ],
     "Search things",
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPToolData-DescriptionPreserved@@Tests/StartMCPServer.wlt:577,1-584,2"
+    TestID   -> "CreateMCPToolData-DescriptionPreserved@@Tests/StartMCPServer.wlt:541,1-548,2"
 ]
 
 VerificationTest[
@@ -589,7 +553,7 @@ VerificationTest[
     dataOriginal[ "name" ],
     "MyTool",
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPToolData-SingleArgUsesToolName@@Tests/StartMCPServer.wlt:586,1-593,2"
+    TestID   -> "CreateMCPToolData-SingleArgUsesToolName@@Tests/StartMCPServer.wlt:550,1-557,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -605,7 +569,7 @@ VerificationTest[
     { disambiguated["Search1"]["Description"], disambiguated["Search2"]["Description"] },
     { "Search JIRA", "Search Slack" },
     SameTest -> MatchQ,
-    TestID   -> "DisambiguateIntegration-LookupRouting@@Tests/StartMCPServer.wlt:598,1-609,2"
+    TestID   -> "DisambiguateIntegration-LookupRouting@@Tests/StartMCPServer.wlt:562,1-573,2"
 ]
 
 VerificationTest[
@@ -617,7 +581,7 @@ VerificationTest[
     toolDataList[[ All, "name" ]],
     { "Search1", "Search2" },
     SameTest -> MatchQ,
-    TestID   -> "DisambiguateIntegration-WireNames@@Tests/StartMCPServer.wlt:611,1-621,2"
+    TestID   -> "DisambiguateIntegration-WireNames@@Tests/StartMCPServer.wlt:575,1-585,2"
 ]
 
 VerificationTest[
@@ -631,7 +595,7 @@ VerificationTest[
     Keys @ result,
     { "Search1", "Evaluate1", "Search2", "Evaluate2", "Unique" },
     SameTest -> MatchQ,
-    TestID   -> "DisambiguateToolNames-MultipleGroups@@Tests/StartMCPServer.wlt:623,1-635,2"
+    TestID   -> "DisambiguateToolNames-MultipleGroups@@Tests/StartMCPServer.wlt:587,1-599,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -643,7 +607,7 @@ VerificationTest[
     True,
     True,
     SameTest -> MatchQ,
-    TestID   -> "PacletCleanup-UnloadMockPaclet@@Tests/StartMCPServer.wlt:640,1-647,2"
+    TestID   -> "PacletCleanup-UnloadMockPaclet@@Tests/StartMCPServer.wlt:604,1-611,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

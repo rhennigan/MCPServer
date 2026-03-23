@@ -98,9 +98,11 @@ startMCPServer[ obj_ ] /; $Notebooks :=
 
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
-startMCPServer[ obj_MCPServerObject ] := Enclose[
-    Block[ { $currentMCPServer = obj, $mcpEvaluation = True },
-        superQuiet @ Module[ { logFile, llmTools, toolList, promptList, promptLookup, response },
+startMCPServer[ obj0_MCPServerObject ] := Enclose[
+    Block[ { $currentMCPServer = obj0, $mcpEvaluation = True },
+        superQuiet @ Module[ { obj, logFile, llmTools, toolList, promptList, promptLookup, response },
+
+        obj = obj0;
 
         SetOptions[ First @ Streams[ "stdout" ], CharacterEncoding -> "UTF-8" ];
         SetOptions[ First @ Streams[ "stderr" ], CharacterEncoding -> "UTF-8" ];
@@ -112,7 +114,7 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
         writeLog[ "LogFile" -> logFile ];
 
         (* Ensure referenced paclets are installed before tool/prompt resolution *)
-        ensurePacletsForStart @ obj;
+        obj = ConfirmBy[ ensurePacletsForStart @ obj, MCPServerObjectQ, "EnsurePacletsForStart" ];
 
         (* Run server-level initialization for custom and paclet-backed servers *)
         runServerInitialization @ obj;
@@ -169,49 +171,65 @@ startMCPServer // endDefinition;
 ensurePacletsForStart // beginDefinition;
 
 ensurePacletsForStart[ obj_MCPServerObject ] :=
-    ensurePacletsForStart[ obj[ "Name" ], obj[ "Data" ] ];
+    ensurePacletsForStart[ obj, obj[ "Location" ] ];
 
-ensurePacletsForStart[ serverName_String, data_Association ] :=
-    Catch @ Module[ { evaluator, tools, prompts, qualifiedNames },
-        evaluator = Lookup[ data, "LLMEvaluator", <| |> ];
-        If[ ! AssociationQ @ evaluator, Throw @ Null ];
+(* For paclet-based servers, we need to ensure that the primary paclet and all dependencies are installed *)
+ensurePacletsForStart[ obj_MCPServerObject, paclet_PacletObject ] := Enclose[
+    Catch @ Module[ { location, installed, name, new },
+        location = paclet[ "Location" ];
 
-        tools = Flatten @ { Lookup[ evaluator, "Tools", { } ] };
-        prompts = Flatten @ { Lookup[ evaluator, "MCPPrompts", { } ] };
-        qualifiedNames = Select[
-            Join[ tools, prompts ],
-            StringQ[ # ] && pacletQualifiedNameQ[ # ] &
-        ];
+        (* Already installed? *)
+        If[ DirectoryQ @ location, Throw @ ensureDependenciesForStart @ obj ];
 
-        ensurePacletForStart[ serverName, # ] & /@ qualifiedNames;
-        Null
-    ];
+        (* Install the paclet *)
+        installed = ConfirmBy[ PacletInstall @ paclet, PacletObjectQ, "Installed" ];
+
+        (* Generate a new server object with full metadata *)
+        name = obj[ "Name" ];
+        new = ConfirmBy[ MCPServerObject @ name, MCPServerObjectQ, "New" ];
+
+        (* Ensure dependencies are installed too *)
+        $currentMCPServer = ConfirmBy[ ensureDependenciesForStart @ new, MCPServerObjectQ, "EnsureDependencies" ]
+    ],
+    throwInternalFailure
+];
+
+(* For other servers, we just ensure dependencies are installed *)
+ensurePacletsForStart[ obj_MCPServerObject, _ ] :=
+    ensureDependenciesForStart @ obj;
 
 ensurePacletsForStart // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
-(*ensurePacletForStart*)
-ensurePacletForStart // beginDefinition;
+(*ensureDependenciesForStart*)
+(* Tools and prompts may be defined in other paclets, so we make sure they are all installed here *)
+ensureDependenciesForStart // beginDefinition;
 
-ensurePacletForStart[ serverName_String, qualifiedName_String ] :=
-    Catch @ Module[ { parsed, pacletName, paclet },
-        parsed = parsePacletQualifiedName @ qualifiedName;
-        If[ ! AssociationQ @ parsed, Throw @ Null ];
-        pacletName = parsed[ "PacletName" ];
+ensureDependenciesForStart[ obj_MCPServerObject ] := Enclose[
+    Catch @ Module[ { names, qualified, parsed, paclets },
 
-        (* Already installed? *)
-        paclet = findInstalledPaclet @ pacletName;
-        If[ MatchQ[ paclet, _PacletObject ], Throw @ paclet ];
+        names = ConfirmMatch[ Union[ obj[ "ToolNames" ], obj[ "PromptNames" ] ], { ___String }, "Names" ];
+        qualified = Select[ names, pacletQualifiedNameQ ];
+        If[ qualified === { }, Throw @ obj ];
 
-        (* Try to install *)
-        paclet = Quiet @ PacletInstall[ pacletName ];
-        If[ MatchQ[ paclet, _PacletObject ], Throw @ paclet ];
+        (* Get the list of paclet names that need to be installed *)
+        parsed = ConfirmMatch[ parsePacletQualifiedName /@ qualified, { __Association }, "Parsed" ];
+        paclets = ConfirmMatch[
+            Union @ Cases[ parsed, KeyValuePattern[ "PacletName" -> name_String ] :> name ],
+            { __String },
+            "Paclets"
+        ];
 
-        throwFailure[ "PacletDependencyMissing", serverName, qualifiedName, pacletName ]
-    ];
+        (* PacletInstall is very fast for already installed paclets *)
+        ConfirmMatch[ PacletInstall /@ paclets, { __PacletObject }, "Installed" ];
 
-ensurePacletForStart // endDefinition;
+        obj
+    ],
+    throwInternalFailure
+];
+
+ensureDependenciesForStart // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)

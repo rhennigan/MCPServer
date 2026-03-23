@@ -524,7 +524,7 @@ VerificationTest[
 
 VerificationTest[
     $remoteServer[ "Tools" ],
-    { "SamplePublisher/SamplePaclet/Identity", "SamplePublisher/SamplePaclet/PrimeFinder" },
+    { __LLMTool },
     SameTest -> MatchQ,
     TestID -> "RemoteServerResolution-Tools@@Tests/PacletExtension.wlt:525,1-530,2"
 ]
