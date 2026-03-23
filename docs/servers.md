@@ -265,12 +265,17 @@ Some tools require an [LLMKit subscription](https://www.wolfram.com/llmkit/) for
 
 | Tool | LLMKit Dependency |
 |------|-------------------|
-| `WolframContext` | Required |
+| `WolframContext` | Suggested |
 | `WolframAlphaContext` | Required |
-| `WolframLanguageContext` | Required |
+| `WolframLanguageContext` | Suggested |
 | Other tools | Not required |
 
-The context tools use semantic search powered by LLMKit. Without a subscription, these tools will not function. Code execution tools (`WolframLanguageEvaluator`, `WolframAlpha`) work without LLMKit.
+Not having an LLMKit subscription will have the following effects:
+- `WolframContext` will not provide reranking or filtering and will not include any Wolfram\|Alpha results
+- `WolframAlphaContext` will not function at all
+- `WolframLanguageContext` will only provide basic semantic search without reranking or filtering
+
+Other tools (e.g. `WolframLanguageEvaluator`, `WolframAlpha`) do not depend on LLMKit.
 
 ## MCP Apps Support
 
