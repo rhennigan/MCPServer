@@ -132,7 +132,7 @@ VerificationTest[
 
 VerificationTest[
     ValidateAgentToolsPacletExtension[ $mockValid ][ "Tools" ],
-    { "TestTool", "DescribedTool", "AssocTool" },
+    { "TestTool", "DescribedTool", "AssocTool", "LLMToolTest" },
     SameTest -> MatchQ,
     TestID   -> "ValidPaclet-Tools@@Tests/ValidateAgentToolsPacletExtension.wlt:133,1-138,2"
 ]

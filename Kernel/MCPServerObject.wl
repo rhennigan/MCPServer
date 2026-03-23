@@ -663,11 +663,20 @@ convertStringTools // endDefinition;
 
 convertStringTools0 // beginDefinition;
 convertStringTools0[ name_String ] /; KeyExistsQ[ $DefaultMCPTools, name ] := $DefaultMCPTools[ name ];
-convertStringTools0[ name_String ] /; pacletQualifiedNameQ @ name := LLMTool @ resolvePacletTool @ name;
+convertStringTools0[ name_String ] /; pacletQualifiedNameQ @ name := convertPacletTool @ resolvePacletTool @ name;
 convertStringTools0[ name_String ] := Lookup[ cb`$AvailableTools, name, tryResourceTool @ name ];
 convertStringTools0[ template_TemplateObject ] := TemplateApply @ template;
 convertStringTools0[ tool_ ] := tool;
 convertStringTools0 // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*convertPacletTool*)
+convertPacletTool // beginDefinition;
+convertPacletTool[ tool_LLMTool      ] := tool;
+convertPacletTool[ as_Association    ] := LLMTool @ as;
+convertPacletTool[ $Failed           ] := $Failed;
+convertPacletTool // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)

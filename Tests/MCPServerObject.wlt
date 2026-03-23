@@ -291,7 +291,7 @@ VerificationTest[
 (*ToolNames and PromptNames Properties*)
 VerificationTest[
     $pacletServer[ "ToolNames" ],
-    { "MockMCPPacletTest/TestTool", "MockMCPPacletTest/DescribedTool" },
+    { "MockMCPPacletTest/TestTool", "MockMCPPacletTest/DescribedTool", "MockMCPPacletTest/LLMToolTest" },
     SameTest -> MatchQ,
     TestID   -> "PacletServer-ToolNames@@Tests/MCPServerObject.wlt:292,1-297,2"
 ]
@@ -325,7 +325,7 @@ VerificationTest[
 (*LLMEvaluator Contains Pre-Qualified Names*)
 VerificationTest[
     $pacletServer[ "LLMEvaluator" ][ "Tools" ],
-    { "MockMCPPacletTest/TestTool", "MockMCPPacletTest/DescribedTool" },
+    { "MockMCPPacletTest/TestTool", "MockMCPPacletTest/DescribedTool", "MockMCPPacletTest/LLMToolTest" },
     SameTest -> MatchQ,
     TestID   -> "PacletServer-LLMEvaluatorQualifiedTools@@Tests/MCPServerObject.wlt:326,1-331,2"
 ]
@@ -450,7 +450,7 @@ VerificationTest[
 (*getToolList Resolves Paclet Tools to LLMTool Objects*)
 VerificationTest[
     $pacletServer[ "Tools" ],
-    { _LLMTool, _LLMTool },
+    { _LLMTool, _LLMTool, _LLMTool },
     SameTest -> MatchQ,
     TestID   -> "PacletServer-GetTools@@Tests/MCPServerObject.wlt:451,1-456,2"
 ]

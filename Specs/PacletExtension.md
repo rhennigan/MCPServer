@@ -258,7 +258,11 @@ Tool and prompt names within `"LLMEvaluator"` use short names that resolve withi
 
 ### Tool Definitions
 
-A tool definition file must evaluate to an `Association` compatible with `LLMTool`:
+A tool definition file must evaluate to either an `Association` compatible with `LLMTool` or an explicit `LLMTool[...]` expression.
+
+#### Association Form
+
+The association form is recommended for most cases, as it separates metadata from implementation and supports additional keys like `"Initialization"` and `"Options"`:
 
 ```wl
 (* AgentTools/Tools/GetIssue.wl *)
@@ -285,6 +289,27 @@ A tool definition file must evaluate to an `Association` compatible with `LLMToo
 | `"DisplayName"` | `String` | No | Human-readable display name |
 | `"Initialization"` | `RuleDelayed` | No | Delayed initialization code |
 | `"Options"` | `List` | No | Tool options |
+
+#### Explicit LLMTool Form
+
+Definition files may also evaluate directly to an `LLMTool[...]` expression. This is convenient for simple tools where the standard `LLMTool` constructor arguments are sufficient:
+
+```wl
+(* AgentTools/Tools/Increment.wl *)
+LLMTool[ "Increment", { "x" -> "Integer" }, #x + 1 & ]
+```
+
+When a definition file evaluates to an `LLMTool[...]`, the tool is used as-is without further construction. The tool name for resolution purposes is extracted from the `LLMTool` expression (i.e., the first argument). Extension-level keys like `"Initialization"` and `"Options"` are not available in this form — use the association form if those are needed.
+
+In combined definition files (`Tools.wl`), values may also be `LLMTool[...]` expressions:
+
+```wl
+(* AgentTools/Tools.wl *)
+<|
+    "Increment" -> LLMTool[ "Increment", { "x" -> "Integer" }, #x + 1 & ],
+    "GetIssue"  -> <| "Name" -> "GetIssue", ... |>
+|>
+```
 
 ### Prompt Definitions
 
@@ -370,7 +395,7 @@ When loading a paclet's server definition file, tool and prompt names within `"L
 | **Inspection** | `MCPServerObject["Wolfram/JIRALink/PM"]` | Yes | Yes (installed only) | No |
 | **Execution** | `StartMCPServer`, `InstallMCPServer` | Yes | Yes | Yes |
 
-**Note on definition file loading:** Loading `.wl` definition files for installed paclets uses `Get`, which evaluates the file contents. This is analogous to ``Needs["Wolfram`JIRALink`"]`` — installed paclets are trusted code. Definition files should evaluate to inert data (associations of strings, lists, and delayed rules) and should not have side effects. `ValidateAgentToolsPacletExtension` can verify that definition files produce well-formed associations. The "Tool/Init Execution" column above distinguishes this code-loading step from active execution of tool functions and `"Initialization"` code, which only occurs at the Execution level.
+**Note on definition file loading:** Loading `.wl` definition files for installed paclets uses `Get`, which evaluates the file contents. This is analogous to ``Needs["Wolfram`JIRALink`"]`` — installed paclets are trusted code. Definition files should evaluate to inert data (associations of strings, lists, and delayed rules) or standard `LLMTool[...]` expressions, and should not have side effects. `ValidateAgentToolsPacletExtension` can verify that definition files produce well-formed associations. The "Tool/Init Execution" column above distinguishes this code-loading step from active execution of tool functions and `"Initialization"` code, which only occurs at the Execution level.
 
 ### Installed = Trusted
 
@@ -504,7 +529,7 @@ InstallMCPServer[ "ClaudeCode", "Wolfram/JIRALink/ProjectManagement" ]
 
 1. Ensures the referenced paclet is installed (via `PacletInstall` if needed).
 2. Loads definition files for all paclet-qualified tool and prompt strings.
-3. Verifies that each definition produces a valid `LLMTool` / prompt association.
+3. Verifies that each definition produces a valid `LLMTool` expression or association / prompt association.
 4. Validates tool options for paclet-defined tools.
 
 If any step fails, `InstallMCPServer` reports the error immediately rather than deferring it to `StartMCPServer` time when the user is no longer present. However, the server configuration still stores paclet-qualified names as plain strings (not resolved `LLMTool` objects), consistent with `CreateMCPServer`. This ensures that paclet updates are picked up on next start without reinstalling.
@@ -518,7 +543,7 @@ At start time, all paclet tool and prompt references are fully resolved: definit
 1. Installing any referenced paclets that are not yet locally available.
 2. Loading definition files for all paclet-qualified tool and prompt strings.
 3. Running `"Initialization"` code from paclet server definitions and from all tool definitions (see behavioral change note below).
-4. Constructing `LLMTool` objects and prompt data from the loaded definitions.
+4. Constructing `LLMTool` objects from association-form definitions (definitions that are already `LLMTool[...]` expressions are used as-is) and assembling prompt data.
 5. Disambiguating MCP name collisions by appending numeric suffixes (see [MCP Name Collision Handling](#mcp-name-collision-handling)).
 
 **Behavioral change — start-time initialization:** Currently, tool `"Initialization"` code (e.g., `initializeVectorDatabases` for the context tools) is executed only at install time by `InstallMCPServer` via `initializeTools`. As part of this spec, `StartMCPServer` will also execute `"Initialization"` code for all tools at server startup. This ensures that initialization runs even when a server is started without a preceding `InstallMCPServer` call (e.g., when launched directly by an MCP client from an existing config file). Only built-in tools currently use the `"Initialization"` property, so this is not a breaking change. Install-time initialization in `InstallMCPServer` is retained as-is — it serves as an early validation step to surface errors while the user is present.
@@ -595,7 +620,7 @@ ValidateAgentToolsPacletExtension[ PacletObject["Wolfram/JIRALink"] ]
 3. **File contents** (for installed paclets)
    - Each definition file evaluates without error
    - Server definitions produce valid associations with required keys
-   - Tool definitions produce valid associations that can construct `LLMTool` objects
+   - Tool definitions produce valid associations that can construct `LLMTool` objects, or are valid `LLMTool[...]` expressions
    - Prompt definitions produce valid associations with required keys
 
 4. **Cross-references**
@@ -647,7 +672,7 @@ Existing files:
 
 New files:
 
-- `Kernel/PacletExtension.wl` — core implementation: paclet discovery, name parsing, definition file loading, resolution logic
+- `Kernel/PacletExtension.wl` — core implementation: paclet discovery, name parsing, definition file loading (handling both association and `LLMTool[...]` results), resolution logic
 - `Kernel/ValidateAgentToolsPacletExtension.wl` — validation utility implementation
 
 **Note:** `convertStringTools0` and `normalizePromptData` are both defined in `Kernel/MCPServerObject.wl`, not in `Kernel/Tools/Tools.wl` or `Kernel/Prompts/Prompts.wl`. Those files (`Tools.wl`, `Prompts.wl`) only contain `$DefaultMCPTools` / `$DefaultMCPPrompts` initialization and subcontext loading — they do not need changes for paclet extension support. The `insertCatchTop` wrapping in `Tools.wl` is only for built-in tools and does not apply to paclet-loaded tools.

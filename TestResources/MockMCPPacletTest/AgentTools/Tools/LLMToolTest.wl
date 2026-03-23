@@ -1,0 +1,1 @@
+LLMTool[ "LLMToolTest", { "x" -> "Integer" }, #x + 1 & ]

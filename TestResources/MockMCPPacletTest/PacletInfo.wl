@@ -5,7 +5,7 @@ PacletObject[<|
         {"AgentTools",
             "Root" -> "AgentTools",
             "MCPServers" -> {"TestServer"},
-            "Tools" -> {"TestTool", {"DescribedTool", "A described tool"}, <|"Name" -> "AssocTool"|>},
+            "Tools" -> {"TestTool", {"DescribedTool", "A described tool"}, <|"Name" -> "AssocTool"|>, "LLMToolTest"},
             "MCPPrompts" -> {"TestPrompt"}
         }
     }

@@ -246,6 +246,8 @@ checkItemFileContents // beginDefinition;
 checkItemFileContents[ paclet_PacletObject, type_String, name_String ] :=
     Catch @ Module[ { data },
         data = Quiet @ loadPacletDefinitionFile[ paclet, type, name ];
+        (* LLMTool expressions are valid tool definitions that need no further checking *)
+        If[ type === "Tools" && MatchQ[ data, _LLMTool ], Throw @ { } ];
         If[ ! AssociationQ @ data,
             Throw @ { <| "Type" -> "InvalidDefinitionContents", "Item" -> name, "ItemType" -> type,
                      "Message" -> "Definition file for " <> type <> " \"" <> name <> "\" did not evaluate to a valid Association." |> }

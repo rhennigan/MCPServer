@@ -229,7 +229,7 @@ loadPacletDefinitionFile[ paclet_PacletObject, type_String, name_String ] := Enc
         (* Check cache *)
         cacheKey = { paclet[ "Name" ], paclet[ "Version" ], type, name };
         cached = $pacletDefinitionCache[ cacheKey ];
-        If[ AssociationQ @ cached, Throw @ cached ];
+        If[ cacheableResultQ @ cached, Throw @ cached ];
 
         (* Get root directory *)
         root = ConfirmBy[ getAgentToolsExtensionDirectory @ paclet, StringQ, "Root" ];
@@ -238,7 +238,7 @@ loadPacletDefinitionFile[ paclet_PacletObject, type_String, name_String ] := Enc
         perItemFile = findPerItemFile[ root, type, name ];
         If[ StringQ @ perItemFile,
             result = loadFile @ perItemFile;
-            If[ AssociationQ @ result, $pacletDefinitionCache[ cacheKey ] = result ];
+            If[ cacheableResultQ @ result, $pacletDefinitionCache[ cacheKey ] = result ];
             Throw @ result
         ];
 
@@ -248,7 +248,7 @@ loadPacletDefinitionFile[ paclet_PacletObject, type_String, name_String ] := Enc
             data = loadFile @ combinedFile;
             If[ AssociationQ @ data,
                 result = Lookup[ data, name, $Failed ];
-                If[ AssociationQ @ result, $pacletDefinitionCache[ cacheKey ] = result ];
+                If[ cacheableResultQ @ result, $pacletDefinitionCache[ cacheKey ] = result ];
                 Throw @ result
             ]
         ];
@@ -259,6 +259,15 @@ loadPacletDefinitionFile[ paclet_PacletObject, type_String, name_String ] := Enc
 ];
 
 loadPacletDefinitionFile // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*cacheableResultQ*)
+cacheableResultQ // beginDefinition;
+cacheableResultQ[ _Association ] := True;
+cacheableResultQ[ _LLMTool     ] := True;
+cacheableResultQ[ ___          ] := False;
+cacheableResultQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -311,19 +320,25 @@ resolvePacletTool[ qualifiedName_String ] := Enclose[
 
         definition = ConfirmMatch[
             loadPacletDefinitionFile[ paclet, "Tools", itemName ],
-            _Association | $Failed,
+            _Association | _LLMTool | $Failed,
             "Definition"
         ];
 
-        If[ AssociationQ @ definition,
-            KeySort @ <| $toolDefaults, definition |>,
-            $Failed
-        ]
+        toResolvedToolDefinition @ definition
     ],
     throwInternalFailure
 ];
 
 resolvePacletTool // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*toResolvedToolDefinition*)
+toResolvedToolDefinition // beginDefinition;
+toResolvedToolDefinition[ tool_LLMTool     ] := tool;
+toResolvedToolDefinition[ as_Association   ] := KeySort @ <| $toolDefaults, as |>;
+toResolvedToolDefinition[ $Failed          ] := $Failed;
+toResolvedToolDefinition // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
