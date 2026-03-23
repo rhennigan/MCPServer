@@ -101,6 +101,7 @@ getAgentToolsExtension // beginDefinition;
 
 getAgentToolsExtension[ paclet_PacletObject ] := Enclose[
     Module[ { extensions },
+        Needs[ "PacletTools`" -> None ];
         extensions = Quiet @ pt`PacletExtensions[ paclet, "AgentTools" ];
 
         If[ ! MatchQ[ extensions, { __List } ],
@@ -142,6 +143,7 @@ getAgentToolsExtensionDirectory // beginDefinition;
 getAgentToolsExtensionDirectory[ paclet_PacletObject ] := Enclose[
     Module[ { extension },
         extension = ConfirmMatch[ getAgentToolsExtension @ paclet, { "AgentTools", _Association }, "Extension" ];
+        Needs[ "PacletTools`" -> None ];
         ConfirmBy[ pt`PacletExtensionDirectory[ paclet, extension ], StringQ, "Directory" ]
     ],
     throwInternalFailure

@@ -130,6 +130,7 @@ validateExtensionStructure[ paclet_PacletObject ] :=
         errors = { };
 
         (* Check that the paclet has an AgentTools extension *)
+        Needs[ "PacletTools`" -> None ];
         extensions = Quiet @ pt`PacletExtensions[ paclet, "AgentTools" ];
         If[ ! MatchQ[ extensions, { __List } ],
             Throw @ <| "Data" -> $Failed, "Errors" -> {
