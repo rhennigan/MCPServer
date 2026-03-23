@@ -124,7 +124,7 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
 
         If[ verifyLLMKit, ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ] ];
         initializeTools @ obj;
-        validatePacletServerDefinitions @ obj;
+        Confirm[ validatePacletServerDefinitions @ obj, "ValidatePacletServerDefinitions" ];
 
         target     = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
         name       = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
@@ -160,7 +160,7 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
 
         If[ verifyLLMKit, ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ] ];
         initializeTools @ obj;
-        validatePacletServerDefinitions @ obj;
+        Confirm[ validatePacletServerDefinitions @ obj, "ValidatePacletServerDefinitions" ];
 
         target     = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
         name       = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
