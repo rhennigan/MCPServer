@@ -17,7 +17,7 @@ $toolDefaults = <| "Options" -> { }, "Parameters" -> { }, "Description" -> "" |>
 (* ::Section::Closed:: *)
 (*pacletQualifiedNameQ*)
 pacletQualifiedNameQ // beginDefinition;
-pacletQualifiedNameQ[ name_String ] := StringContainsQ[ name, "/" ];
+pacletQualifiedNameQ[ name_String ] := MatchQ[ StringSplit[ name, "/" ], { _String, _String } | { _String, _String, _String } ];
 pacletQualifiedNameQ[ ___ ] := False;
 pacletQualifiedNameQ // endDefinition;
 
