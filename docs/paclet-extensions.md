@@ -151,18 +151,22 @@ A prompt definition file must evaluate to an association with a `"Name"` key:
 
 ## Qualified Names
 
-Paclet-contributed items are referenced using qualified names with the format `"PacletName/ItemName"`:
+Paclet-contributed items are referenced using qualified names. Two formats are supported:
+
+- **2-segment**: `"PacletName/ItemName"` — for paclets without a publisher ID
+- **3-segment**: `"PublisherID/PacletShortName/ItemName"` — for paclets with a publisher ID (the first two segments form the paclet name `"PublisherID/PacletShortName"`)
 
 ```wl
-(* Reference a tool from a paclet *)
+(* 2-segment: paclet without publisher ID *)
+MCPServerObject["MyPaclet/MyServer"]
+
+(* 3-segment: paclet with publisher ID *)
 CreateMCPServer["MyServer", <|
     "Tools" -> { "PublisherID/MyPaclet/MyTool" }
 |>]
 
-(* Reference a paclet-backed server *)
 MCPServerObject["PublisherID/MyPaclet/MyServer"]
 
-(* Install a paclet-backed server *)
 InstallMCPServer["ClaudeCode", "PublisherID/MyPaclet/MyServer"]
 ```
 
@@ -246,7 +250,7 @@ Operations on paclet extensions follow three trust levels:
 
 | Level | Operations | Behavior |
 |-------|-----------|----------|
-| **Discovery** | `MCPServerObjects[]`, `PacletFind` | Reads PacletInfo metadata only; never installs paclets |
+| **Discovery** | `MCPServerObjects[]`, `PacletFind` | Reads PacletInfo metadata; may load definition files for installed paclets; never installs paclets |
 | **Inspection** | `MCPServerObject[...]["Tools"]` | Loads definition files from installed paclets |
 | **Execution** | `StartMCPServer`, `InstallMCPServer` | Executes tool functions and initialization; auto-installs referenced paclets |
 
