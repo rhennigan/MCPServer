@@ -323,8 +323,8 @@ buildRemotePacletServerMetadata[ qualifiedName_String, paclet_PacletObject, serv
             getAgentToolsDeclaredItems[ paclet, "Tools" ]
         ];
 
-        prompts = If[ MatchQ[ serverDecl, _Association ] && KeyExistsQ[ serverDecl, "Prompts" ],
-            serverDecl[ "Prompts" ],
+        prompts = If[ MatchQ[ serverDecl, _Association ] && KeyExistsQ[ serverDecl, "MCPPrompts" ],
+            serverDecl[ "MCPPrompts" ],
             getAgentToolsDeclaredItems[ paclet, "MCPPrompts" ]
         ];
 
