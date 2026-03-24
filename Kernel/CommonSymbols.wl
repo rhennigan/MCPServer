@@ -114,4 +114,22 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `$defaultToolOptions;
 `toolOptionValue;
 
+(* Paclet extension support: *)
+`clearPacletDefinitionCache;
+`ensurePacletForInstall;
+`findAgentToolsPaclets;
+`findInstalledPaclet;
+`findRemoteAgentToolsPaclets;
+`getAgentToolsDeclaredItems;
+`getAgentToolsExtension;
+`getAgentToolsExtensionData;
+`getAgentToolsExtensionDirectory;
+`loadPacletDefinitionFile;
+`pacletQualifiedNameQ;
+`parsePacletQualifiedName;
+`qualifyNamesInLLMEvaluator;
+`resolvePacletPrompt;
+`resolvePacletServer;
+`resolvePacletTool;
+
 EndPackage[ ];

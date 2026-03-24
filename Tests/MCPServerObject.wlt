@@ -218,3 +218,477 @@ VerificationTest[
     SameTest -> MatchQ,
     TestID   -> "MCPServerObject-InvalidAssociation@@Tests/MCPServerObject.wlt:214,1-220,2"
 ]
+
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Paclet-Backed Server Support*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Mock Paclet Setup*)
+
+$testResourceDirectory = FileNameJoin @ { DirectoryName[ $TestFileName, 2 ], "TestResources" };
+
+VerificationTest[
+    PacletDirectoryLoad @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletTest" };
+    $mockPaclet = First @ PacletFind[ "MockMCPPacletTest" ];
+    $mockPaclet[ "Name" ],
+    "MockMCPPacletTest",
+    SameTest -> MatchQ,
+    TestID   -> "PacletServer-MockSetup@@Tests/MCPServerObject.wlt:235,1-242,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*MCPServerObject with Paclet-Qualified Name*)
+VerificationTest[
+    $pacletServer = MCPServerObject[ "MockMCPPacletTest/TestServer" ],
+    _MCPServerObject? MCPServerObjectQ,
+    SameTest -> MatchQ,
+    TestID   -> "PacletServer-ObjectCreation@@Tests/MCPServerObject.wlt:247,1-252,2"
+]
+
+VerificationTest[
+    $pacletServer[ "Name" ],
+    "MockMCPPacletTest/TestServer",
+    SameTest -> Equal,
+    TestID   -> "PacletServer-Name@@Tests/MCPServerObject.wlt:254,1-259,2"
+]
+
+VerificationTest[
+    $pacletServer[ "Location" ],
+    _PacletObject,
+    SameTest -> MatchQ,
+    TestID   -> "PacletServer-Location@@Tests/MCPServerObject.wlt:261,1-266,2"
+]
+
+VerificationTest[
+    $pacletServer[ "Location" ][ "Name" ],
+    "MockMCPPacletTest",
+    SameTest -> Equal,
+    TestID   -> "PacletServer-LocationPacletName@@Tests/MCPServerObject.wlt:268,1-273,2"
+]
+
+VerificationTest[
+    $pacletServer[ "ServerVersion" ],
+    _String? StringQ,
+    SameTest -> MatchQ,
+    TestID   -> "PacletServer-ServerVersion@@Tests/MCPServerObject.wlt:275,1-280,2"
+]
+
+VerificationTest[
+    $pacletServer[ "Transport" ],
+    "StandardInputOutput",
+    SameTest -> Equal,
+    TestID   -> "PacletServer-Transport@@Tests/MCPServerObject.wlt:282,1-287,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*ToolNames and PromptNames Properties*)
+VerificationTest[
+    $pacletServer[ "ToolNames" ],
+    { "MockMCPPacletTest/TestTool", "MockMCPPacletTest/DescribedTool", "MockMCPPacletTest/LLMToolTest" },
+    SameTest -> MatchQ,
+    TestID   -> "PacletServer-ToolNames@@Tests/MCPServerObject.wlt:292,1-297,2"
+]
+
+VerificationTest[
+    $pacletServer[ "PromptNames" ],
+    { "MockMCPPacletTest/TestPrompt" },
+    SameTest -> MatchQ,
+    TestID   -> "PacletServer-PromptNames@@Tests/MCPServerObject.wlt:299,1-304,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Properties List Includes New Properties*)
+VerificationTest[
+    MemberQ[ $pacletServer[ "Properties" ], "ToolNames" ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "PacletServer-PropertiesIncludesToolNames@@Tests/MCPServerObject.wlt:309,1-314,2"
+]
+
+VerificationTest[
+    MemberQ[ $pacletServer[ "Properties" ], "PromptNames" ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "PacletServer-PropertiesIncludesPromptNames@@Tests/MCPServerObject.wlt:316,1-321,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*LLMEvaluator Contains Pre-Qualified Names*)
+VerificationTest[
+    $pacletServer[ "LLMEvaluator" ][ "Tools" ],
+    { "MockMCPPacletTest/TestTool", "MockMCPPacletTest/DescribedTool", "MockMCPPacletTest/LLMToolTest" },
+    SameTest -> MatchQ,
+    TestID   -> "PacletServer-LLMEvaluatorQualifiedTools@@Tests/MCPServerObject.wlt:326,1-331,2"
+]
+
+VerificationTest[
+    $pacletServer[ "LLMEvaluator" ][ "MCPPrompts" ],
+    { "MockMCPPacletTest/TestPrompt" },
+    SameTest -> MatchQ,
+    TestID   -> "PacletServer-LLMEvaluatorQualifiedPrompts@@Tests/MCPServerObject.wlt:333,1-338,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*MCPServerObjectQ for Paclet-Backed Servers*)
+VerificationTest[
+    MCPServerObjectQ @ $pacletServer,
+    True,
+    SameTest -> Equal,
+    TestID   -> "PacletServer-MCPServerObjectQ@@Tests/MCPServerObject.wlt:343,1-348,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*DeleteObject Refused for Paclet Servers*)
+VerificationTest[
+    DeleteObject @ $pacletServer,
+    _Failure,
+    { MCPServerObject::DeletePacletMCPServer },
+    SameTest -> MatchQ,
+    TestID   -> "PacletServer-DeleteObjectRefused@@Tests/MCPServerObject.wlt:353,1-359,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Non-Existent Paclet Server*)
+VerificationTest[
+    MCPServerObject[ "CompletelyNonExistentPaclet12345/SomeServer" ],
+    _Failure,
+    { MCPServerObject::MCPServerNotFound },
+    SameTest -> MatchQ,
+    TestID   -> "PacletServer-NonExistentPaclet@@Tests/MCPServerObject.wlt:364,1-370,2"
+]
+
+VerificationTest[
+    MCPServerObject[ "MockMCPPacletTest/NonExistentServer" ],
+    _Failure,
+    { MCPServerObject::PacletServerNotFound },
+    SameTest -> MatchQ,
+    TestID   -> "PacletServer-NonExistentServer@@Tests/MCPServerObject.wlt:372,1-378,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*ToolNames and PromptNames for Non-Paclet Servers*)
+VerificationTest[
+    builtIn = MCPServerObject[ "WolframLanguage" ];
+    builtIn[ "ToolNames" ],
+    _List,
+    SameTest -> MatchQ,
+    TestID   -> "ToolNames-BuiltInServer@@Tests/MCPServerObject.wlt:383,1-389,2"
+]
+
+VerificationTest[
+    builtIn = MCPServerObject[ "WolframLanguage" ];
+    builtIn[ "PromptNames" ],
+    _List,
+    SameTest -> MatchQ,
+    TestID   -> "PromptNames-BuiltInServer@@Tests/MCPServerObject.wlt:391,1-397,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Multiple Properties Request*)
+VerificationTest[
+    props = $pacletServer[ { "Name", "ToolNames", "PromptNames", "Transport" } ];
+    AssociationQ @ props && props[ "Name" ] === "MockMCPPacletTest/TestServer",
+    True,
+    SameTest -> Equal,
+    TestID   -> "PacletServer-MultipleProperties@@Tests/MCPServerObject.wlt:402,1-408,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Paclet Tool String Resolution via convertStringTools0*)
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`convertStringTools0[ "MockMCPPacletTest/TestTool" ],
+    _LLMTool,
+    SameTest -> MatchQ,
+    TestID   -> "ConvertStringTools0-PacletTool@@Tests/MCPServerObject.wlt:413,1-418,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`convertStringTools0[ "MockMCPPacletTest/DescribedTool" ],
+    _LLMTool,
+    SameTest -> MatchQ,
+    TestID   -> "ConvertStringTools0-PacletDescribedTool@@Tests/MCPServerObject.wlt:420,1-425,2"
+]
+
+(* Built-in tools still take precedence over paclet resolution *)
+VerificationTest[
+    MatchQ[
+        Wolfram`MCPServer`MCPServerObject`Private`convertStringTools0[ "WolframAlpha" ],
+        _LLMTool
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "ConvertStringTools0-BuiltInPrecedence@@Tests/MCPServerObject.wlt:428,1-436,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Paclet Prompt String Resolution via normalizePromptData*)
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`normalizePromptData[ "MockMCPPacletTest/TestPrompt" ],
+    KeyValuePattern[ { "Name" -> "TestPrompt", "Type" -> "Text" } ],
+    SameTest -> MatchQ,
+    TestID   -> "NormalizePromptData-PacletPrompt@@Tests/MCPServerObject.wlt:441,1-446,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*getToolList Resolves Paclet Tools to LLMTool Objects*)
+VerificationTest[
+    $pacletServer[ "Tools" ],
+    { _LLMTool, _LLMTool, _LLMTool },
+    SameTest -> MatchQ,
+    TestID   -> "PacletServer-GetTools@@Tests/MCPServerObject.wlt:451,1-456,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*PromptData Resolves Paclet Prompts*)
+VerificationTest[
+    $pacletServer[ "PromptData" ],
+    { KeyValuePattern[ { "Name" -> "TestPrompt", "Type" -> "Text" } ] },
+    SameTest -> MatchQ,
+    TestID   -> "PacletServer-GetPromptData@@Tests/MCPServerObject.wlt:461,1-466,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*LLMConfiguration Resolves Paclet Tools*)
+VerificationTest[
+    $pacletServer[ "LLMConfiguration" ],
+    _LLMConfiguration,
+    SameTest -> MatchQ,
+    TestID   -> "PacletServer-LLMConfiguration@@Tests/MCPServerObject.wlt:471,1-476,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Error Cases for Paclet Tool/Prompt Resolution*)
+(* Note: these internal functions are designed to run inside catchAlways/catchMine *)
+VerificationTest[
+    Wolfram`MCPServer`Common`catchAlways @
+        Wolfram`MCPServer`MCPServerObject`Private`convertStringTools0[ "MockMCPPacletTest/NonExistentTool" ],
+    _Failure,
+    { MCPServer::PacletToolNotFound },
+    SameTest -> MatchQ,
+    TestID   -> "ConvertStringTools0-PacletToolNotFound@@Tests/MCPServerObject.wlt:482,1-489,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Common`catchAlways @
+        Wolfram`MCPServer`MCPServerObject`Private`normalizePromptData[ "MockMCPPacletTest/NonExistentPrompt" ],
+    _Failure,
+    { MCPServer::PacletPromptNotFound },
+    SameTest -> MatchQ,
+    TestID   -> "NormalizePromptData-PacletPromptNotFound@@Tests/MCPServerObject.wlt:491,1-498,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Common`catchAlways @
+        Wolfram`MCPServer`MCPServerObject`Private`convertStringTools0[ "NonExistentPaclet12345/SomeTool" ],
+    _Failure,
+    { MCPServer::PacletNotInstalled },
+    SameTest -> MatchQ,
+    TestID   -> "ConvertStringTools0-PacletNotInstalled@@Tests/MCPServerObject.wlt:500,1-507,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Common`catchAlways @
+        Wolfram`MCPServer`MCPServerObject`Private`normalizePromptData[ "NonExistentPaclet12345/SomePrompt" ],
+    _Failure,
+    { MCPServer::PacletNotInstalled },
+    SameTest -> MatchQ,
+    TestID   -> "NormalizePromptData-PacletNotInstalled@@Tests/MCPServerObject.wlt:509,1-516,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*getToolList - PacletNotInstalled for Missing Location*)
+VerificationTest[
+    Block[ { PacletObject }, (* Block to prevent it from evaluating to a Failure[...] *)
+        Wolfram`MCPServer`Common`catchAlways @
+            Wolfram`MCPServer`MCPServerObject`Private`getToolList[
+                <|
+                    "Location" -> PacletObject[ "NonExistentPaclet12345" ],
+                    "LLMEvaluator" -> <| "Tools" -> { "tool1" } |>
+                |>
+            ]
+    ],
+    _Failure,
+    { MCPServer::PacletNotInstalled },
+    SameTest -> MatchQ,
+    TestID   -> "getToolList-PacletNotInstalled@@Tests/MCPServerObject.wlt:521,1-535,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*validateTool Passes Through Paclet-Qualified Names*)
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`validateTool[ "MockMCPPacletTest/TestTool" ],
+    "MockMCPPacletTest/TestTool",
+    SameTest -> Equal,
+    TestID   -> "ValidateTool-PacletPassthrough@@Tests/MCPServerObject.wlt:540,1-545,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*validateMCPPrompt Passes Through Paclet-Qualified Names*)
+VerificationTest[
+    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompt[ "MockMCPPacletTest/TestPrompt" ],
+    "MockMCPPacletTest/TestPrompt",
+    SameTest -> Equal,
+    TestID   -> "ValidateMCPPrompt-PacletPassthrough@@Tests/MCPServerObject.wlt:550,1-555,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*MCPServerObjects Includes Installed Paclet Servers*)
+VerificationTest[
+    $allServers = MCPServerObjects[];
+    MemberQ[ #[ "Name" ] & /@ $allServers, "MockMCPPacletTest/TestServer" ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "MCPServerObjects-IncludesPacletServers@@Tests/MCPServerObject.wlt:560,1-566,2"
+]
+
+VerificationTest[
+    MatchQ[ $allServers, { ___MCPServerObject? MCPServerObjectQ } ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "MCPServerObjects-AllAreValidObjects@@Tests/MCPServerObject.wlt:568,1-573,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*MCPServerObjects Options - IncludeBuiltIn*)
+VerificationTest[
+    $withBuiltIn = MCPServerObjects[ "IncludeBuiltIn" -> True ];
+    MemberQ[ #[ "Name" ] & /@ $withBuiltIn, "WolframLanguage" ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "MCPServerObjects-IncludeBuiltIn@@Tests/MCPServerObject.wlt:578,1-584,2"
+]
+
+VerificationTest[
+    (* Built-in servers should NOT be in default listing *)
+    defaultNames = #[ "Name" ] & /@ MCPServerObjects[];
+    !MemberQ[ defaultNames, "WolframLanguage" ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "MCPServerObjects-ExcludesBuiltInByDefault@@Tests/MCPServerObject.wlt:586,1-593,2"
+]
+
+VerificationTest[
+    (* IncludeBuiltIn with explicit All pattern *)
+    $withBuiltInAll = MCPServerObjects[ All, "IncludeBuiltIn" -> True ];
+    builtInNames = #[ "Name" ] & /@ $withBuiltInAll;
+    AllTrue[ { "Wolfram", "WolframLanguage", "WolframAlpha" }, MemberQ[ builtInNames, # ] & ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "MCPServerObjects-IncludeBuiltInWithAll@@Tests/MCPServerObject.wlt:595,1-603,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*MCPServerObjects Options - Pattern Matching*)
+VerificationTest[
+    $mockFiltered = MCPServerObjects[ "MockMCPPacletTest*" ];
+    #[ "Name" ] & /@ $mockFiltered,
+    { "MockMCPPacletTest/TestServer" },
+    SameTest -> MatchQ,
+    TestID   -> "MCPServerObjects-PatternMatchesPacletServers@@Tests/MCPServerObject.wlt:608,1-614,2"
+]
+
+VerificationTest[
+    (* Pattern with IncludeBuiltIn *)
+    wolfServers = MCPServerObjects[ "Wolfram*", "IncludeBuiltIn" -> True ];
+    wolfNames = #[ "Name" ] & /@ wolfServers;
+    MemberQ[ wolfNames, "Wolfram" ] && MemberQ[ wolfNames, "WolframLanguage" ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "MCPServerObjects-PatternWithIncludeBuiltIn@@Tests/MCPServerObject.wlt:616,1-624,2"
+]
+
+VerificationTest[
+    (* Pattern that matches nothing *)
+    MCPServerObjects[ "ZZZNonExistentPattern12345*" ],
+    { },
+    SameTest -> MatchQ,
+    TestID   -> "MCPServerObjects-PatternNoMatch@@Tests/MCPServerObject.wlt:626,1-632,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*MCPServerObjects Options - IncludeRemotePaclets*)
+VerificationTest[
+    (* IncludeRemotePaclets should not error *)
+    $withRemote = MCPServerObjects[ "IncludeRemotePaclets" -> True ];
+    MatchQ[ $withRemote, { ___MCPServerObject } ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "MCPServerObjects-IncludeRemotePacletsNoError@@Tests/MCPServerObject.wlt:637,1-644,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*MCPServerObjects Options Declaration*)
+VerificationTest[
+    Options @ MCPServerObjects,
+    KeyValuePattern @ {
+        "IncludeBuiltIn"       -> False,
+        "IncludeRemotePaclets" -> False,
+        UpdatePacletSites      -> Automatic
+    },
+    SameTest -> MatchQ,
+    TestID   -> "MCPServerObjects-OptionsDeclaration@@Tests/MCPServerObject.wlt:649,1-658,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*MCPServerObjects Deduplication*)
+VerificationTest[
+    (* Verify no duplicate server names in results *)
+    allWithBuiltIn = MCPServerObjects[ "IncludeBuiltIn" -> True ];
+    names = #[ "Name" ] & /@ allWithBuiltIn;
+    names === DeleteDuplicates[ names ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "MCPServerObjects-NoDuplicates@@Tests/MCPServerObject.wlt:663,1-671,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*MCPServerObjects All Equivalence*)
+VerificationTest[
+    MCPServerObjects[ All ] === MCPServerObjects[ ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "MCPServerObjects-AllEquivalence@@Tests/MCPServerObject.wlt:676,1-681,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Mock Paclet Cleanup*)
+VerificationTest[
+    PacletDirectoryUnload @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletTest" };
+    Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
+    <| |>,
+    SameTest -> MatchQ,
+    TestID   -> "PacletServer-MockCleanup@@Tests/MCPServerObject.wlt:686,1-692,2"
+]
+
+(* :!CodeAnalysis::EndBlock:: *)

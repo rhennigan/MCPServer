@@ -29,6 +29,7 @@ System`DeployAgentTools;
 `StartMCPServer;
 `TestReportToolFunction;
 `UninstallMCPServer;
+`ValidateAgentToolsPacletExtension;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -66,13 +67,15 @@ $MCPServerContexts = {
     "Wolfram`MCPServer`Graphics`",
     "Wolfram`MCPServer`InstallMCPServer`",
     "Wolfram`MCPServer`MCPServerObject`",
+    "Wolfram`MCPServer`PacletExtension`",
     "Wolfram`MCPServer`Prompts`",
     "Wolfram`MCPServer`StartMCPServer`",
     "Wolfram`MCPServer`SupportedClients`",
     "Wolfram`MCPServer`TOML`",
     "Wolfram`MCPServer`Tools`",
     "Wolfram`MCPServer`UIResources`",
-    "Wolfram`MCPServer`Utilities`"
+    "Wolfram`MCPServer`Utilities`",
+    "Wolfram`MCPServer`ValidateAgentToolsPacletExtension`"
 };
 
 Scan[ Needs[ # -> None ] &, $MCPServerContexts ];
@@ -105,7 +108,8 @@ $MCPServerProtectedNames = "Wolfram`MCPServer`" <> # & /@ {
     "MCPServerObjects",
     "StartMCPServer",
     "TestReportToolFunction",
-    "UninstallMCPServer"
+    "UninstallMCPServer",
+    "ValidateAgentToolsPacletExtension"
 };
 
 Scan[ Protect, $MCPServerProtectedNames ];

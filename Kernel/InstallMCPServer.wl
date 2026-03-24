@@ -40,6 +40,28 @@ InstallMCPServer[ target_, opts: OptionsPattern[ ] ] :=
 InstallMCPServer[ target_, Automatic, opts: OptionsPattern[ ] ] :=
     catchMine @ InstallMCPServer[ target, $defaultMCPServer, opts ];
 
+InstallMCPServer[ target_File? fileQ, server0_String? pacletQualifiedNameQ, opts: OptionsPattern[ ] ] :=
+    catchMine @ (
+        ensurePacletForInstall @ server0;
+        With[ { server = ensureMCPServerExists @ MCPServerObject @ server0 },
+            Block[
+                {
+                    $installClientName    = validateInstallClientName[ OptionValue[ "ApplicationName" ], target ],
+                    $enableMCPApps        = OptionValue[ "EnableMCPApps" ],
+                    $installToolOptions   = validateToolOptions[ OptionValue[ "ToolOptions" ], server ],
+                    $installMCPServerName = OptionValue[ "MCPServerName" ]
+                },
+                installMCPServer[
+                    target,
+                    server,
+                    OptionValue @ ProcessEnvironment,
+                    OptionValue @ VerifyLLMKit,
+                    OptionValue[ "DevelopmentMode" ]
+                ]
+            ]
+        ]
+    );
+
 InstallMCPServer[ target_File? fileQ, server0_, opts: OptionsPattern[ ] ] :=
     catchMine @ With[ { server = ensureMCPServerExists @ MCPServerObject @ server0 },
         Block[
@@ -102,6 +124,7 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
 
         If[ verifyLLMKit, ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ] ];
         initializeTools @ obj;
+        Confirm[ validatePacletServerDefinitions @ obj, "ValidatePacletServerDefinitions" ];
 
         target     = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
         name       = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
@@ -137,6 +160,7 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
 
         If[ verifyLLMKit, ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ] ];
         initializeTools @ obj;
+        Confirm[ validatePacletServerDefinitions @ obj, "ValidatePacletServerDefinitions" ];
 
         target     = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
         name       = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
@@ -179,6 +203,36 @@ initializeTools[ tools_List ] := initializeTools /@ tools;
 initializeTools[ tool_LLMTool ] := initializeTools @ tool[ "Data" ];
 initializeTools[ as_Association ] := Lookup[ as, "Initialization", Null ];
 initializeTools // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*validatePacletServerDefinitions*)
+
+(* Validates paclet-qualified tool and prompt definitions at install time.
+   Bypasses obj["Tools"] (which catches errors via catchTop) and instead resolves
+   each paclet-qualified name directly so that throwFailure propagates to catchMine. *)
+validatePacletServerDefinitions // beginDefinition;
+
+validatePacletServerDefinitions[ obj_MCPServerObject ] :=
+    validatePacletServerDefinitions @ obj[ "Data" ];
+
+validatePacletServerDefinitions[ data_Association ] :=
+    Catch @ Module[ { evaluator, tools, prompts },
+        evaluator = Lookup[ data, "LLMEvaluator", <| |> ];
+        If[ ! AssociationQ @ evaluator, Throw @ Null ];
+
+        (* Validate paclet-qualified tools *)
+        tools = Flatten @ { Lookup[ evaluator, "Tools", { } ] };
+        resolvePacletTool /@ Select[ tools, pacletQualifiedNameQ ];
+
+        (* Validate paclet-qualified prompts *)
+        prompts = Flatten @ { Lookup[ evaluator, "MCPPrompts", { } ] };
+        resolvePacletPrompt /@ Select[ prompts, pacletQualifiedNameQ ];
+
+        Null
+    ];
+
+validatePacletServerDefinitions // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)

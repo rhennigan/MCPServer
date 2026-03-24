@@ -239,18 +239,43 @@ CreateMCPServer["MyServer", <|
 
 See [tools.md](tools.md) and [mcp-prompts.md](mcp-prompts.md) for details on creating custom tools and prompts.
 
+### Server Initialization
+
+Custom servers can include initialization code that runs when the server starts:
+
+```wl
+CreateMCPServer["MyServer", <|
+    "Tools" -> {"WolframLanguageEvaluator"}
+|>, Initialization :> Needs["MyPackage`"]]
+```
+
+The `Initialization` option accepts an expression that will be evaluated at server start time before any tools are invoked.
+
+### CreateMCPServer Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `OverwriteTarget` | `False` | Overwrite an existing server with the same name |
+| `IncludeDefinitions` | `True` | Include function definitions in the serialized server |
+| `Initialization` | `None` | Code to evaluate when the server starts |
+
 ## LLMKit Requirements
 
-Some tools require an [LLMKit subscription](https://www.wolfram.com/llmkit/) for full functionality:
+Some tools require an [LLMKit subscription](https://www.wolfram.com/notebook-assistant-llm-kit/) for full functionality:
 
 | Tool | LLMKit Dependency |
 |------|-------------------|
-| `WolframContext` | Required |
+| `WolframContext` | Suggested |
 | `WolframAlphaContext` | Required |
-| `WolframLanguageContext` | Required |
+| `WolframLanguageContext` | Suggested |
 | Other tools | Not required |
 
-The context tools use semantic search powered by LLMKit. Without a subscription, these tools will not function. Code execution tools (`WolframLanguageEvaluator`, `WolframAlpha`) work without LLMKit.
+Not having an LLMKit subscription will have the following effects:
+- `WolframContext` will not provide reranking or filtering and will not include any Wolfram\|Alpha results
+- `WolframAlphaContext` will not function at all
+- `WolframLanguageContext` will only provide basic semantic search without reranking or filtering
+
+Other tools (e.g. `WolframLanguageEvaluator`, `WolframAlpha`) do not depend on LLMKit.
 
 ## MCP Apps Support
 
@@ -262,6 +287,22 @@ To disable MCP Apps for a specific installation, use:
 InstallMCPServer["ClaudeDesktop", "EnableMCPApps" -> False]
 ```
 
+## Paclet-Backed Servers
+
+Third-party paclets can contribute MCP servers via the `"AgentTools"` paclet extension. These servers are referenced using paclet-qualified names:
+
+```wl
+(* View a paclet-backed server *)
+MCPServerObject["PublisherID/MyPaclet/ServerName"]
+
+(* Install a paclet-backed server *)
+InstallMCPServer["ClaudeCode", "PublisherID/MyPaclet/ServerName"]
+```
+
+Paclet servers appear alongside file-based and built-in servers when listing with `MCPServerObjects[]`. Use `"IncludeRemotePaclets" -> True` to also discover servers from uninstalled paclets in the Paclet Repository.
+
+See [paclet-extensions.md](paclet-extensions.md) for details on how paclets declare servers, tools, and prompts.
+
 ## Related Documentation
 
 - [tools.md](tools.md) - Detailed tool documentation, [tool options](tools.md#tool-options), and creating custom tools
@@ -269,4 +310,5 @@ InstallMCPServer["ClaudeDesktop", "EnableMCPApps" -> False]
 - [mcp-apps.md](mcp-apps.md) - MCP Apps system for interactive UI resources
 - [mcp-clients.md](mcp-clients.md) - Client installation, configuration, and the [`"MCPServerName"` option](mcp-clients.md#mcpservername)
 - [deploy-agent-tools.md](deploy-agent-tools.md) - Managed deployment of tools to agent clients
+- [paclet-extensions.md](paclet-extensions.md) - Third-party paclet extension system
 - [getting-started.md](getting-started.md) - Development setup

@@ -77,7 +77,7 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*toolOptionValue*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$toolOptions = <||> },
+    Block[ { Wolfram`MCPServer`Common`$toolOptions = <| |> },
         Wolfram`MCPServer`Common`toolOptionValue[ "WolframLanguageEvaluator", "Method" ]
     ],
     "Session",
@@ -85,7 +85,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$toolOptions = <||> },
+    Block[ { Wolfram`MCPServer`Common`$toolOptions = <| |> },
         Wolfram`MCPServer`Common`toolOptionValue[ "WolframLanguageEvaluator", "TimeConstraint" ]
     ],
     60,
@@ -93,7 +93,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$toolOptions = <||> },
+    Block[ { Wolfram`MCPServer`Common`$toolOptions = <| |> },
         Wolfram`MCPServer`Common`toolOptionValue[ "WolframLanguageContext", "MaxItems" ]
     ],
     10,
@@ -119,7 +119,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$toolOptions = <||> },
+    Block[ { Wolfram`MCPServer`Common`$toolOptions = <| |> },
         Wolfram`MCPServer`Common`toolOptionValue[ "NonexistentTool", "SomeOption" ]
     ],
     _Missing,
@@ -128,7 +128,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$toolOptions = <||> },
+    Block[ { Wolfram`MCPServer`Common`$toolOptions = <| |> },
         Wolfram`MCPServer`Common`toolOptionValue[ "WolframLanguageEvaluator", "NonexistentOption" ]
     ],
     _Missing,
@@ -336,7 +336,7 @@ VerificationTest[
         ];
         result = InstallMCPServer[
             configFile, server,
-            "ToolOptions" -> <||>,
+            "ToolOptions" -> <| |>,
             "VerifyLLMKit" -> False
         ];
         data = Developer`ReadRawJSONString @ ReadString @ First @ configFile;

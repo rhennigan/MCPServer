@@ -30,7 +30,7 @@ If[ MemberQ[ $ScriptCommandLine, "--usage" ],
 Module[ { rawArgs, positional, flags, i, key, value },
 
     rawArgs = Drop[ $ScriptCommandLine, 1 ];
-    positional = {};
+    positional = { };
     flags = <| |>;
     i = 1;
 

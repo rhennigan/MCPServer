@@ -86,7 +86,7 @@ VerificationTest[
 
 VerificationTest[
     Wolfram`MCPServer`Tools`SymbolDefinition`Private`parseSymbolNames[ "" ],
-    {},
+    { },
     SameTest -> MatchQ,
     TestID   -> "ParseEmptyInput@@Tests/SymbolDefinition.wlt:87,1-92,2"
 ]
@@ -240,7 +240,7 @@ VerificationTest[
 
 VerificationTest[
     Wolfram`MCPServer`Tools`SymbolDefinition`Private`extractDefinition[ "NonExistent12345`Symbol" ],
-    {},
+    { },
     SameTest -> MatchQ,
     TestID   -> "ExtractNonexistent@@Tests/SymbolDefinition.wlt:241,1-246,2"
 ]
@@ -279,7 +279,7 @@ VerificationTest[
 VerificationTest[
     (* Paclet symbols have no kernel code *)
     Wolfram`MCPServer`Tools`SymbolDefinition`Private`getKernelCodeDefinitions[ "Wolfram`MCPServer`CreateMCPServer" ],
-    {},
+    { },
     SameTest -> MatchQ,
     TestID   -> "KernelCode-PacletSymbolEmpty@@Tests/SymbolDefinition.wlt:279,1-285,2"
 ]
@@ -338,7 +338,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`generateContextMap[ {} ],
+    Wolfram`MCPServer`Tools`SymbolDefinition`Private`generateContextMap[ { } ],
     "",
     SameTest -> SameQ,
     TestID   -> "GenerateContextMapEmpty@@Tests/SymbolDefinition.wlt:340,1-345,2"
@@ -568,7 +568,7 @@ VerificationTest[
 
 VerificationTest[
     Wolfram`MCPServer`Tools`SymbolDefinition`Private`findSuggestions[ "Nonexistent`NonexistentSymbol98765" ],
-    {},
+    { },
     SameTest -> MatchQ,
     TestID   -> "FindSuggestions-NoMatch@@Tests/SymbolDefinition.wlt:569,1-574,2"
 ]

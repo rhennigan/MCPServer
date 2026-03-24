@@ -2,8 +2,8 @@ PacletObject[ <|
     "Name"             -> "Wolfram/MCPServer",
     "Description"      -> "Implements a model context protocol server using Wolfram Language",
     "Creator"          -> "Richard Hennigan (Wolfram Research)",
-    "Version"          -> "1.8.0",
-    "WolframVersion"   -> "14.2+",
+    "Version"          -> "1.8.1",
+    "WolframVersion"   -> "14.3+",
     "PublisherID"      -> "Wolfram",
     "License"          -> "MIT",
     "ReleaseID"        -> "$RELEASE_ID$",
@@ -42,7 +42,8 @@ PacletObject[ <|
                 "Wolfram`MCPServer`MCPServerObjects",
                 "Wolfram`MCPServer`StartMCPServer",
                 "Wolfram`MCPServer`TestReportToolFunction",
-                "Wolfram`MCPServer`UninstallMCPServer"
+                "Wolfram`MCPServer`UninstallMCPServer",
+                "Wolfram`MCPServer`ValidateAgentToolsPacletExtension"
             }
         },
         { "Documentation",

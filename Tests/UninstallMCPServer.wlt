@@ -129,7 +129,7 @@ VerificationTest[
 VerificationTest[
     (* Verify that all servers were removed *)
     jsonContent = Import[configFile, "RawJSON"];
-    jsonContent["mcpServers"] === <||>,
+    jsonContent["mcpServers"] === <| |>,
     True,
     SameTest -> Equal,
     TestID   -> "UninstallMCPServer-VerifyAllServersRemoval@@Tests/UninstallMCPServer.wlt:129,1-136,2"

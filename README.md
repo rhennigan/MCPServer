@@ -30,6 +30,7 @@ Implements a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) ser
 - **MCP prompts** for enhanced context and workflows
 - **MCP Apps** for interactive UI resources in supported clients (e.g., embedded notebook viewers, Wolfram\|Alpha result displays)
 - **Agent Skills** for distributing Wolfram tools as portable skills to AI coding agents (Claude Code, Cursor, Gemini CLI, VS Code, and [more](https://agentskills.io/))
+- **Paclet extensions** allowing third-party paclets to contribute MCP tools, prompts, and servers via the `"AgentTools"` extension
 
 ## Requirements
 
@@ -250,6 +251,7 @@ CreateMCPServer["My MCP Server", <|
 | `UninstallMCPServer[client]` | Remove all servers from a client |
 | `UninstallMCPServer[client, name]` | Remove a specific server from a client |
 | `DeployAgentTools[target]` | Deploy tools to a client with tracked deployment management |
+| `ValidateAgentToolsPacletExtension[paclet]` | Validate an `"AgentTools"` paclet extension |
 | `DeployedAgentTools[]` | List all tracked deployments |
 
 ### Deployment Objects
@@ -266,7 +268,7 @@ CreateMCPServer["My MCP Server", <|
 |--------|-------------|
 | `MCPServerObject[...]` | Data structure representing an MCP server |
 | `MCPServerObjectQ[expr]` | Test if an expression is a valid server object |
-| `MCPServerObjects[]` | List all created server objects |
+| `MCPServerObjects[]` | List all created server objects (includes paclet-backed servers) |
 
 ### Predefined Resources
 
@@ -278,6 +280,14 @@ CreateMCPServer["My MCP Server", <|
 | `$DefaultMCPPrompts` | Association of available prompt definitions |
 
 ### Options
+
+#### `CreateMCPServer`
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `OverwriteTarget` | `False` | Overwrite an existing server with the same name |
+| `IncludeDefinitions` | `True` | Include function definitions in the serialized server |
+| `Initialization` | `None` | Code to evaluate when the server starts |
 
 #### `InstallMCPServer`
 
@@ -298,6 +308,7 @@ See the [developer documentation](docs/README.md) for information on:
 - [Building the paclet](docs/building.md)
 - [Adding new tools](docs/tools.md)
 - [Agent skills](docs/agent-skills.md) for distributing tools to AI coding agents
+- [Paclet extensions](docs/paclet-extensions.md) for third-party tool/prompt/server contributions
 - [Error handling](docs/error-handling.md)
 
 For AI agents working on this codebase, see [AGENTS.md](AGENTS.md).

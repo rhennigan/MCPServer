@@ -48,7 +48,7 @@ mcpServerDirectory[ name_String ] :=
 
 mcpServerDirectory[ obj_MCPServerObject? MCPServerObjectQ ] :=
     With[ { location = obj[ "Location" ] },
-        If[ location === "BuiltIn",
+        If[ location === "BuiltIn" || MatchQ[ location, _PacletObject ],
             mcpServerDirectory @ obj[ "Name" ],
             location
         ]
@@ -65,11 +65,13 @@ mcpServerLogFile[ name_String ] :=
     fileNameJoin[ mcpServerDirectory @ name, "Log.wl" ];
 
 mcpServerLogFile[ obj_MCPServerObject? MCPServerObjectQ ] :=
-    With[ { location = obj[ "Location" ] },
-        If[ location === "BuiltIn",
-            mcpServerLogFile @ obj[ "Name" ],
-            fileNameJoin[ location, "Log.wl" ]
-        ]
+    Replace[
+        obj[ "Location" ],
+        {
+            "BuiltIn"     :> mcpServerLogFile @ obj[ "Name" ],
+            _PacletObject :> mcpServerLogFile @ obj[ "Name" ],
+            location_     :> fileNameJoin[ location, "Log.wl" ]
+        }
     ];
 
 mcpServerLogFile // endDefinition;

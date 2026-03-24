@@ -98,9 +98,11 @@ startMCPServer[ obj_ ] /; $Notebooks :=
 
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
-startMCPServer[ obj_MCPServerObject ] := Enclose[
-    Block[ { $currentMCPServer = obj, $mcpEvaluation = True },
-        superQuiet @ Module[ { logFile, llmTools, toolList, promptList, promptLookup, response },
+startMCPServer[ obj0_MCPServerObject ] := Enclose[
+    Block[ { $currentMCPServer = obj0, $mcpEvaluation = True },
+        superQuiet @ Module[ { obj, logFile, llmTools, toolList, promptList, promptLookup, response },
+
+        obj = obj0;
 
         SetOptions[ First @ Streams[ "stdout" ], CharacterEncoding -> "UTF-8" ];
         SetOptions[ First @ Streams[ "stderr" ], CharacterEncoding -> "UTF-8" ];
@@ -111,8 +113,18 @@ startMCPServer[ obj_MCPServerObject ] := Enclose[
         If[ FileExistsQ @ logFile, DeleteFile @ logFile ];
         writeLog[ "LogFile" -> logFile ];
 
-        llmTools     = Association[ #[ "Name" ] -> # & /@ ConfirmMatch[ obj[ "Tools" ], { ___LLMTool }, "Tools" ] ];
-        toolList     = ConfirmMatch[ createMCPToolData /@ Values @ llmTools, { ___Association }, "ToolList" ];
+        (* Ensure referenced paclets are installed before tool/prompt resolution *)
+        obj = ConfirmBy[ ensurePacletsForStart @ obj, MCPServerObjectQ, "EnsurePacletsForStart" ];
+
+        (* Run server-level initialization for custom and paclet-backed servers *)
+        runServerInitialization @ obj;
+
+        llmTools = disambiguateToolNames @ ConfirmMatch[ obj[ "Tools" ], { ___LLMTool }, "Tools" ];
+
+        (* Run tool initialization for all tools at startup *)
+        runToolInitialization @ Values @ llmTools;
+
+        toolList     = ConfirmMatch[ KeyValueMap[ createMCPToolData, llmTools ], { ___Association }, "ToolList" ];
         promptList   = ConfirmMatch[ makePromptData @ obj[ "PromptData" ], { ___Association }, "PromptData" ];
         promptLookup = ConfirmBy[ makePromptLookup @ obj[ "PromptData" ], AssociationQ, "PromptLookup" ];
 
@@ -155,14 +167,155 @@ startMCPServer // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*ensurePacletsForStart*)
+ensurePacletsForStart // beginDefinition;
+
+ensurePacletsForStart[ obj_MCPServerObject ] :=
+    ensurePacletsForStart[ obj, obj[ "Location" ] ];
+
+(* For paclet-based servers, we need to ensure that the primary paclet and all dependencies are installed *)
+ensurePacletsForStart[ obj_MCPServerObject, paclet_PacletObject ] := Enclose[
+    Catch @ Module[ { location, installed, name, new },
+        location = paclet[ "Location" ];
+
+        (* Already installed? *)
+        If[ DirectoryQ @ location, Throw @ ensureDependenciesForStart @ obj ];
+
+        (* Install the paclet *)
+        installed = ConfirmBy[ PacletInstall @ paclet, PacletObjectQ, "Installed" ];
+
+        (* Generate a new server object with full metadata *)
+        name = obj[ "Name" ];
+        new = ConfirmBy[ MCPServerObject @ name, MCPServerObjectQ, "New" ];
+
+        (* Ensure dependencies are installed too *)
+        $currentMCPServer = ConfirmBy[ ensureDependenciesForStart @ new, MCPServerObjectQ, "EnsureDependencies" ]
+    ],
+    throwInternalFailure
+];
+
+(* For other servers, we just ensure dependencies are installed *)
+ensurePacletsForStart[ obj_MCPServerObject, _ ] :=
+    ensureDependenciesForStart @ obj;
+
+ensurePacletsForStart // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*ensureDependenciesForStart*)
+(* Tools and prompts may be defined in other paclets, so we make sure they are all installed here *)
+ensureDependenciesForStart // beginDefinition;
+
+ensureDependenciesForStart[ obj_MCPServerObject ] := Enclose[
+    Catch @ Module[ { names, qualified, parsed, paclets },
+
+        names = ConfirmMatch[ Union[ obj[ "ToolNames" ], obj[ "PromptNames" ] ], { ___String }, "Names" ];
+        qualified = Select[ names, pacletQualifiedNameQ ];
+        If[ qualified === { }, Throw @ obj ];
+
+        (* Get the list of paclet names that need to be installed *)
+        parsed = ConfirmMatch[ parsePacletQualifiedName /@ qualified, { __Association }, "Parsed" ];
+        paclets = ConfirmMatch[
+            Union @ Cases[ parsed, KeyValuePattern[ "PacletName" -> name_String ] :> name ],
+            { __String },
+            "Paclets"
+        ];
+
+        (* PacletInstall is very fast for already installed paclets *)
+        ConfirmMatch[ PacletInstall /@ paclets, { __PacletObject }, "Installed" ];
+
+        obj
+    ],
+    throwInternalFailure
+];
+
+ensureDependenciesForStart // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*runServerInitialization*)
+runServerInitialization // beginDefinition;
+
+runServerInitialization[ obj_MCPServerObject ] :=
+    runServerInitialization @ obj[ "Data" ];
+
+runServerInitialization[ data_Association ] :=
+    Catch @ Module[ { location, qualifiedName, serverDef },
+
+        (* Run initialization specified via the Initialization option of CreateMCPServer: *)
+        Lookup[ data, "Initialization", Null ];
+
+        location = Lookup[ data, "Location" ];
+        If[ ! MatchQ[ location, _PacletObject ], Throw @ Null ];
+
+        qualifiedName = data[ "Name" ];
+        If[ ! StringQ @ qualifiedName || ! pacletQualifiedNameQ @ qualifiedName,
+            Throw @ Null
+        ];
+
+        (* Load server definition to access Initialization code *)
+        serverDef = Quiet @ resolvePacletServer @ qualifiedName;
+        If[ ! AssociationQ @ serverDef, Throw @ Null ];
+
+        (* Initialization uses RuleDelayed, so accessing the key evaluates it *)
+        Lookup[ serverDef, "Initialization", Null ]
+    ];
+
+runServerInitialization // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*runToolInitialization*)
+runToolInitialization // beginDefinition;
+runToolInitialization[ tools_List ] := runToolInitialization /@ tools;
+runToolInitialization[ tool_LLMTool ] := runToolInitialization @ tool[ "Data" ];
+runToolInitialization[ as_Association ] := Lookup[ as, "Initialization", Null ];
+runToolInitialization[ _ ] := Null;
+runToolInitialization // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*disambiguateToolNames*)
+disambiguateToolNames // beginDefinition;
+
+disambiguateToolNames[ { } ] := <| |>;
+
+disambiguateToolNames[ tools: { __LLMTool } ] :=
+    Module[ { names, nameCounts, usedNames, indices = <| |>, mcpName, suffix },
+        names = #[ "Name" ] & /@ tools;
+        nameCounts = Counts @ names;
+        usedNames = Association[ # -> True & /@ DeleteDuplicates @ names ];
+        Association @ Table[
+            mcpName = names[[ i ]];
+            If[ nameCounts[ mcpName ] > 1,
+                indices[ mcpName ] = Lookup[ indices, mcpName, 0 ] + 1;
+                suffix = indices[ mcpName ];
+                While[ Lookup[ usedNames, mcpName <> ToString @ suffix, False ],
+                    suffix++
+                ];
+                indices[ mcpName ] = suffix;
+                usedNames[ mcpName <> ToString @ suffix ] = True;
+                (mcpName <> ToString @ suffix) -> tools[[ i ]],
+                mcpName -> tools[[ i ]]
+            ],
+            { i, Length @ tools }
+        ]
+    ];
+
+disambiguateToolNames // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*createMCPToolData*)
 createMCPToolData // beginDefinition;
 
-createMCPToolData[ tool: HoldPattern[ _LLMTool ] ] := Enclose[
-    Module[ { data, name, description, inputSchema, title, annotations },
+createMCPToolData[ tool: HoldPattern[ _LLMTool ] ] :=
+    createMCPToolData[ tool[ "Name" ], tool ];
+
+createMCPToolData[ mcpName_String, tool: HoldPattern[ _LLMTool ] ] := Enclose[
+    Module[ { data, description, inputSchema, title, annotations },
 
         data = ConfirmBy[ tool[ "Data" ], AssociationQ, "Data" ];
-        name = safeString @ ConfirmBy[ tool[ "Name" ], StringQ, "Name" ];
         description = safeString @ ConfirmBy[ tool[ "Description" ], StringQ, "Description" ];
         inputSchema = ConfirmBy[ tool[ "JSONSchema" ], AssociationQ, "InputSchema" ];
 
@@ -172,7 +325,7 @@ createMCPToolData[ tool: HoldPattern[ _LLMTool ] ] := Enclose[
         annotations = If[ StringQ @ title, <| "title" -> title |>, Missing[ ] ];
 
         DeleteMissing @ <|
-            "name"        -> name,
+            "name"        -> safeString @ mcpName,
             "title"       -> title,
             "description" -> description,
             "inputSchema" -> inputSchema,
@@ -569,7 +722,7 @@ extractWolframAlphaImages[ str_String ] := Enclose[
                     (* URL: import image and create both text + image content *)
                     hasImages = True;
                     Module[ { img, imageContent },
-                        img = Quiet @ Import[ item, "Image" ];
+                        img = Quiet @ TimeConstrained[ Import[ item, "Image" ], 5, $Failed ];
                         imageContent = If[ ImageQ @ img, graphicsToImageContent @ img, $Failed ];
                         Flatten @ {
                             (* Always include the markdown link as text *)

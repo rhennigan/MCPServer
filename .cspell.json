@@ -33,6 +33,7 @@
         "shdw",
         "skeletonize",
         "Skeletonizer",
+        "stackdump",
         "streamable",
         "Stylesheet",
         "subcontext",
@@ -48,6 +49,7 @@
         "wolframengine",
         "WOLFRAMINIT",
         "wolframresearch",
+        "worktrees",
         "zoomable"
     ],
     "ignoreRegExpList": [

@@ -63,11 +63,15 @@ makeSummaryRows // endDefinition;
 makeHiddenSummaryRows // beginDefinition;
 
 makeHiddenSummaryRows[ obj_ ] :=
-    makeHiddenSummaryRows[ obj[ "Name" ], obj[ "Tools" ], obj[ "Location" ], obj[ "JSONConfiguration" ] ];
+    makeHiddenSummaryRows[ obj[ "Name" ], obj[ "ToolNames" ], obj[ "Location" ], obj[ "JSONConfiguration" ] ];
 
-makeHiddenSummaryRows[ name_String, tools_List, location: _File | "BuiltIn", json_String ] :=
-    Module[ { toolNames, copyJSONButton },
-        toolNames = Select[ Cases[ tools, tool: $$llmTool :> toolName @ tool ], StringQ ];
+makeHiddenSummaryRows[
+    name_String,
+    toolNames: { ___String },
+    location: _File | "BuiltIn" | _PacletObject,
+    json_String
+] :=
+    Module[ { copyJSONButton },
         copyJSONButton = clickToCopy[ "{\[Ellipsis]}", json ];
         Flatten @ {
             summaryItem[ "JSON Configuration", copyJSONButton ],
