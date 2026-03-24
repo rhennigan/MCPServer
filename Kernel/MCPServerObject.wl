@@ -112,7 +112,7 @@ validateInitialization // endDefinition;
 validateLLMEvaluator // beginDefinition;
 
 validateLLMEvaluator[ Automatic ] :=
-    validateLLMEvaluator @ $LLMEvaluator;
+    validateLLMEvaluator @ Symbol[ "System`$LLMEvaluator" ];
 
 validateLLMEvaluator[ HoldPattern @ LLMConfiguration[ config_ ] ] :=
     validateLLMEvaluator @ config;

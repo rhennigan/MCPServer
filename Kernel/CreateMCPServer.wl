@@ -30,7 +30,7 @@ CreateMCPServer // Options = {
 };
 
 CreateMCPServer[ name_String, opts: OptionsPattern[ ] ] :=
-    catchMine @ CreateMCPServer[ name, $LLMEvaluator, opts ];
+    catchMine @ CreateMCPServer[ name, Symbol[ "System`$LLMEvaluator" ], opts ];
 
 CreateMCPServer[ name_String, evaluator_LLMConfiguration, opts: OptionsPattern[ ] ] :=
     catchMine @ CreateMCPServer[ name, rewriteChatbookTools @ evaluator[ "Data" ], opts ];
