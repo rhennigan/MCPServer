@@ -12,8 +12,6 @@ If[ ! PacletObjectQ @ PacletObject[ "Wolfram/PacletCICD" ],
     PacletInstall[ "https://github.com/WolframResearch/PacletCICD/releases/download/v0.36.2/Wolfram__PacletCICD-0.36.2.paclet" ]
 ];
 
-PacletInstall[ "Wolfram/LLMFunctions" -> "2.2.6" ];
-
 Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
 
 cFile = cicd`ScriptConfirmBy[ #, FileExistsQ ] &;

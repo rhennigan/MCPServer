@@ -59,30 +59,30 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Create MCP Server from Default $LLMEvaluator*)
 
-LLMSynthesize; (* Trigger auto-load of LLMFunctions paclet *)
+(* Using $LLMEvaluator in a Block doesn't work in the version of LLMFunctions that's available on GitHub Actions *)
 
-VerificationTest[
+skipIfGitHubActions @ VerificationTest[
     Block[{$LLMEvaluator = LLMConfiguration @ <| "Tools" -> { LLMTool[ "Calculator", { "expr" -> "String" }, ToExpression[ #expr ] & ] } |>},
         name = CreateUUID[ ];
         server = CreateMCPServer[name]
     ],
     _MCPServerObject? MCPServerObjectQ,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-FromDefaultEvaluator@@Tests/CreateMCPServer.wlt:64,1-72,2"
+    TestID   -> "CreateMCPServer-FromDefaultEvaluator@@Tests/CreateMCPServer.wlt:64,23-72,2"
 ]
 
-VerificationTest[
+skipIfGitHubActions @ VerificationTest[
     server["Tools"],
     { _LLMTool },
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-DefaultEvaluatorTools@@Tests/CreateMCPServer.wlt:74,1-79,2"
+    TestID   -> "CreateMCPServer-DefaultEvaluatorTools@@Tests/CreateMCPServer.wlt:74,23-79,2"
 ]
 
-VerificationTest[
+skipIfGitHubActions @ VerificationTest[
     DeleteObject @ server,
     Null,
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPServer-DefaultEvaluatorCleanup@@Tests/CreateMCPServer.wlt:81,1-86,2"
+    TestID   -> "CreateMCPServer-DefaultEvaluatorCleanup@@Tests/CreateMCPServer.wlt:81,23-86,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
