@@ -44,9 +44,10 @@ result = Quiet[
     {
         (* :!CodeAnalysis::BeginBlock:: *)
         (* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
+        CloudObject`Private`webLoginDialogInput::ninit,
         DocumentationSearch`Skeletonizer`Private`convertToString::unke,
         DocumentationSearch`Skeletonizer`Private`skeletonizeFiles::msgs,
-        CloudObject`Private`webLoginDialogInput::ninit
+        WaitAll::nopar
         (* :!CodeAnalysis::EndBlock:: *)
     }
 ];
