@@ -251,13 +251,14 @@ VerificationTest[
 
 VerificationTest[
     Module[ { result, missingErrors },
+        GeneralUtilities`EnsureDirectory @ { $testResourceDirectory, "MockMCPPacletMissingFiles", "AgentTools" };
         result = Quiet @ ValidateAgentToolsPacletExtension[ $mockMissingFiles ];
         missingErrors = Select[ result[[ "Errors" ]], #[ "Type" ] === "MissingDefinitionFile" & ];
         Length[ missingErrors ]
     ],
     3,
     SameTest -> MatchQ,
-    TestID   -> "MissingFiles-ThreeMissingFiles@@Tests/ValidateAgentToolsPacletExtension.wlt:252,1-261,2"
+    TestID   -> "MissingFiles-ThreeMissingFiles@@Tests/ValidateAgentToolsPacletExtension.wlt:252,1-262,2"
 ]
 
 VerificationTest[
@@ -268,7 +269,7 @@ VerificationTest[
     ],
     { "MissingPrompt", "MissingServer", "MissingTool" },
     SameTest -> MatchQ,
-    TestID   -> "MissingFiles-CorrectItems@@Tests/ValidateAgentToolsPacletExtension.wlt:263,1-272,2"
+    TestID   -> "MissingFiles-CorrectItems@@Tests/ValidateAgentToolsPacletExtension.wlt:264,1-273,2"
 ]
 
 VerificationTest[
@@ -279,7 +280,7 @@ VerificationTest[
     ],
     True,
     SameTest -> MatchQ,
-    TestID   -> "MissingFiles-HasExpectedPaths@@Tests/ValidateAgentToolsPacletExtension.wlt:274,1-283,2"
+    TestID   -> "MissingFiles-HasExpectedPaths@@Tests/ValidateAgentToolsPacletExtension.wlt:275,1-284,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -293,7 +294,7 @@ VerificationTest[
     ],
     True,
     SameTest -> MatchQ,
-    TestID   -> "DupFiles-HasDuplicateWarning@@Tests/ValidateAgentToolsPacletExtension.wlt:289,1-297,2"
+    TestID   -> "DupFiles-HasDuplicateWarning@@Tests/ValidateAgentToolsPacletExtension.wlt:290,1-298,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -305,7 +306,7 @@ VerificationTest[
     _Failure,
     { ValidateAgentToolsPacletExtension::InvalidAgentToolsPacletExtension },
     SameTest -> MatchQ,
-    TestID   -> "BadContents-ReturnsFailure@@Tests/ValidateAgentToolsPacletExtension.wlt:303,1-309,2"
+    TestID   -> "BadContents-ReturnsFailure@@Tests/ValidateAgentToolsPacletExtension.wlt:304,1-310,2"
 ]
 
 VerificationTest[
@@ -315,7 +316,7 @@ VerificationTest[
     ],
     True,
     SameTest -> MatchQ,
-    TestID   -> "BadContents-BadToolDetected@@Tests/ValidateAgentToolsPacletExtension.wlt:311,1-319,2"
+    TestID   -> "BadContents-BadToolDetected@@Tests/ValidateAgentToolsPacletExtension.wlt:312,1-320,2"
 ]
 
 VerificationTest[
@@ -325,7 +326,7 @@ VerificationTest[
     ],
     True,
     SameTest -> MatchQ,
-    TestID   -> "BadContents-IncompleteToolDetected@@Tests/ValidateAgentToolsPacletExtension.wlt:321,1-329,2"
+    TestID   -> "BadContents-IncompleteToolDetected@@Tests/ValidateAgentToolsPacletExtension.wlt:322,1-330,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -337,7 +338,7 @@ VerificationTest[
     _Failure,
     { ValidateAgentToolsPacletExtension::InvalidAgentToolsPacletExtension },
     SameTest -> MatchQ,
-    TestID   -> "BadCrossRef-ReturnsFailure@@Tests/ValidateAgentToolsPacletExtension.wlt:335,1-341,2"
+    TestID   -> "BadCrossRef-ReturnsFailure@@Tests/ValidateAgentToolsPacletExtension.wlt:336,1-342,2"
 ]
 
 VerificationTest[
@@ -347,7 +348,7 @@ VerificationTest[
     ],
     True,
     SameTest -> MatchQ,
-    TestID   -> "BadCrossRef-UndeclaredToolDetected@@Tests/ValidateAgentToolsPacletExtension.wlt:343,1-351,2"
+    TestID   -> "BadCrossRef-UndeclaredToolDetected@@Tests/ValidateAgentToolsPacletExtension.wlt:344,1-352,2"
 ]
 
 VerificationTest[
@@ -357,7 +358,7 @@ VerificationTest[
     ],
     True,
     SameTest -> MatchQ,
-    TestID   -> "BadCrossRef-UndeclaredPromptDetected@@Tests/ValidateAgentToolsPacletExtension.wlt:353,1-361,2"
+    TestID   -> "BadCrossRef-UndeclaredPromptDetected@@Tests/ValidateAgentToolsPacletExtension.wlt:354,1-362,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -368,7 +369,7 @@ VerificationTest[
     MatchQ[ ValidateAgentToolsPacletExtension[ $mockValid ], _Success ],
     True,
     SameTest -> MatchQ,
-    TestID   -> "CrossRef-ShortNamesValid@@Tests/ValidateAgentToolsPacletExtension.wlt:367,1-372,2"
+    TestID   -> "CrossRef-ShortNamesValid@@Tests/ValidateAgentToolsPacletExtension.wlt:368,1-373,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -386,7 +387,7 @@ VerificationTest[
     Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
     <| |>,
     SameTest -> MatchQ,
-    TestID   -> "Cleanup@@Tests/ValidateAgentToolsPacletExtension.wlt:377,1-390,2"
+    TestID   -> "Cleanup@@Tests/ValidateAgentToolsPacletExtension.wlt:378,1-391,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

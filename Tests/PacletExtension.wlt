@@ -529,11 +529,15 @@ VerificationTest[
     TestID -> "RemoteServerResolution-ToolNames@@Tests/PacletExtension.wlt:525,1-530,2"
 ]
 
+(* If paclet is installed, we get a list of LLMTools, otherwise we should get a Failure *)
 VerificationTest[
-    $remoteServer[ "Tools" ],
-    { __LLMTool },
+    Quiet[ $remoteServer[ "Tools" ], MCPServerObject::PacletNotInstalled ],
+    If[ Quiet @ PacletObjectQ @ PacletObject[ "SamplePublisher/SamplePaclet" ],
+        { __LLMTool },
+        Failure[ "MCPServerObject::PacletNotInstalled", _ ]
+    ],
     SameTest -> MatchQ,
-    TestID -> "RemoteServerResolution-Tools@@Tests/PacletExtension.wlt:532,1-537,2"
+    TestID -> "RemoteServerResolution-Tools@@Tests/PacletExtension.wlt:533,1-541,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -545,7 +549,7 @@ VerificationTest[
     Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
     <| |>,
     SameTest -> MatchQ,
-    TestID   -> "MockPacletCleanup@@Tests/PacletExtension.wlt:542,1-549,2"
+    TestID   -> "MockPacletCleanup@@Tests/PacletExtension.wlt:546,1-553,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
