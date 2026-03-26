@@ -426,10 +426,10 @@ throwFailure // endDefinition;
 (*messageFailure*)
 messageFailure // Attributes = { HoldFirst };
 
-(* messageFailure[ "Internal"|MCPServer::Internal, args___ ] := (
+messageFailure[ "Internal"|MCPServer::Internal, args___ ] := (
     General::MCPServerInternal = MCPServer::Internal;
     messageFailure[ General::MCPServerInternal, args ]
-); *)
+);
 
 messageFailure[ t_String, args___ ] :=
     With[ { s = $messageSymbol },
@@ -448,7 +448,7 @@ messageFailure[ args___ ] :=
         quiet   = If[ TrueQ @ $failed, Quiet, Identity ];
         message = messageFailure0;
         WithCleanup[
-            StackInhibit @ promoteSourceInfo @ convertCloudFailure @ quiet @ message @ args,
+            StackInhibit @ convertCloudFailure @ promoteSourceInfo @ quiet @ message @ args,
             If[ TrueQ @ $catching && ! MatchQ[ Internal`QuietStatus[ ], KeyValuePattern[ "Global" -> "Quiet" ] ],
                 $failed = True
             ]
@@ -485,6 +485,9 @@ convertCloudFailure // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*promoteSourceInfo*)
 promoteSourceInfo // beginDefinition;
+
+promoteSourceInfo[ Failure[ "General::MCPServerInternal", as_ ] ] :=
+    promoteSourceInfo @ Failure[ "MCPServer::Internal", as ];
 
 promoteSourceInfo[ Failure[
     "MCPServer::Internal",

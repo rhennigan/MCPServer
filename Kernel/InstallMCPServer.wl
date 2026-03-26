@@ -1034,6 +1034,7 @@ projectInstallLocation[ name_String, dir_ ] := Enclose[
         If[ ! TrueQ @ clientData[ "ProjectSupport" ], throwFailure[ "UnsupportedMCPClientProject", name ] ];
         path = ConfirmMatch[ Lookup[ clientData, "ProjectPath" ], { __String }, "ProjectPath" ];
         If[ path === None, throwFailure[ "UnknownProjectInstallLocation", name ] ];
+        If[ ! MatchQ[ dir, _String | _File? fileQ ], throwFailure[ "InvalidProjectDirectory", dir ] ];
         fileNameJoin[ dir, path ]
     ],
     throwInternalFailure

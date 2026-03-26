@@ -33,6 +33,7 @@ MCPServer::UnknownInstallLocation        = "Unable to determine install location
 MCPServer::UnknownProjectInstallLocation = "Unable to determine project install location for `1`. Use File[\[Ellipsis]] to specify a custom location.";
 MCPServer::UnsupportedMCPClient          = "No automatic installation support for MCP client `1`.";
 MCPServer::UnsupportedMCPClientProject   = "No automatic project-level installation support for MCP client `1`.";
+MCPServer::InvalidProjectDirectory       = "Invalid project directory specification: `1`. Expected a directory path string or File[\[Ellipsis]].";
 MCPServer::UnsupportedOperatingSystem    = "Unsupported operating system: `1`.";
 MCPServer::MCPTimeout                    = "MCP request `1` timed out after `2` seconds.";
 MCPServer::UnknownTool                   = "Unknown tool: `1`.";
@@ -69,6 +70,7 @@ MCPServer::CodeInspectorInvalidConfidence  = "Confidence level must be between 0
 MCPServer::DeploymentExists                = "A deployment already exists for target `1`. Use OverwriteTarget -> True to replace it.";
 MCPServer::DeploymentNotFound              = "No deployment found with UUID \"`1`\".";
 MCPServer::InvalidDeploymentData           = "Invalid deployment data: `1`.";
+MCPServer::InvalidDeployTarget             = "Invalid deployment target: `1`. Expected a client name string, {name, directory}, or File[\[Ellipsis]].";
 
 (* Paclet extension messages *)
 MCPServer::PacletNotInstalled               = "The paclet \"`1`\" is not installed. Evaluate `2` to install it.";

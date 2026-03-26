@@ -132,8 +132,8 @@ makeDeploymentBoxes // endDefinition;
 makeDeploymentSummaryRows // beginDefinition;
 
 makeDeploymentSummaryRows[ dep_ ] := Flatten @ {
-    summaryItem[ "Target", dep[ "Target" ] ],
-    summaryItem[ "Server", dep[ "Server" ] ]
+    summaryItem[ "ClientName", dep[ "ClientName" ] ],
+    summaryItem[ "Server"    , dep[ "Server"     ] ]
 };
 
 makeDeploymentSummaryRows // endDefinition;
@@ -144,13 +144,14 @@ makeDeploymentSummaryRows // endDefinition;
 makeDeploymentHiddenRows // beginDefinition;
 
 makeDeploymentHiddenRows[ dep_ ] :=
-    Module[ { tools, toolNames },
+    Module[ { tools, toolNames, toolItem },
         tools = dep[ "Tools" ];
         toolNames = Select[ Cases[ tools, tool: $$llmTool :> toolName @ tool ], StringQ ];
+        toolItem = If[ Length @ toolNames > 0, summaryItem[ "Tools", Multicolumn[ toolNames, 5 ] ], Nothing ];
         Flatten @ {
-            If[ Length @ toolNames > 0, summaryItem[ "Tools", Multicolumn[ toolNames, 5 ] ], Nothing ],
-            summaryItem[ "UUID"      , dep[ "UUID" ] ],
-            summaryItem[ "ConfigFile", dep[ "ConfigFile" ] ]
+            summaryItem[ "Scope"     , dep[ "Scope"      ] ],
+            summaryItem[ "ConfigFile", dep[ "ConfigFile" ] ],
+            toolItem
         }
     ];
 

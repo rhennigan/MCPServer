@@ -137,8 +137,8 @@ DeployAgentTools[target, server, opts]
    - Apply alias resolution via `toInstallName` (e.g. `"Claude"` becomes `"ClaudeDesktop"`).
    - For `{name, dir}` pairs, resolve the name component and the concrete project config file path.
    - For `File[...]` targets, canonicalize to an absolute file path and infer the client name with the same logic used by `InstallMCPServer` where possible.
-   - Derive a deployment grouping name: the canonical client name if known, otherwise the inferred client name, otherwise `"Other"`.
-2. Check for an existing deployment matching this config file. Scan the `<ClientName>` (or `"Other"`) subdirectory under `$deploymentsPath` and compare each deployment's stored `"MCP"/"ConfigFile"` against the resolved config file path:
+   - Derive a deployment grouping name: the canonical client name if known, otherwise the inferred client name, otherwise `"Unknown"`.
+2. Check for an existing deployment matching this config file. Scan the `<ClientName>` (or `"Unknown"`) subdirectory under `$deploymentsPath` and compare each deployment's stored `"MCP"/"ConfigFile"` against the resolved config file path:
    - If a match exists and `OverwriteTarget` is `False`: issue message and return `Failure["DeploymentExists", ...]`.
    - If a match exists and `OverwriteTarget` is `True`: delete the existing deployment first (via `deleteDeployment`).
 3. Call `InstallMCPServer[target, server, <filtered options>]`, passing through only `InstallMCPServer`-valid options.
@@ -205,7 +205,7 @@ AgentToolsDeployment[ <|
 | `"PacletVersion"` | Paclet version string at the time of deployment. |
 | `"CreatedBy"` | Always `"DeployAgentTools"`. |
 | `"MCP"` | MCP server component data. |
-| `"MCP"/"ClientName"` | The canonical or inferred client name used for grouping and filtering (e.g. `"ClaudeDesktop"`). Falls back to `"Other"` when no client can be inferred. |
+| `"MCP"/"ClientName"` | The canonical or inferred client name used for grouping and filtering (e.g. `"ClaudeDesktop"`). Falls back to `"Unknown"` when no client can be inferred. |
 | `"MCP"/"Target"` | The normalized user-facing target: a canonical client name string (e.g. `"ClaudeDesktop"`), a `{name, dir}` pair for project-level deployments (e.g. `{"ClaudeCode", "/path/to/project"}`), or `File[...]` for direct file targets. |
 | `"MCP"/"Server"` | Server name string (e.g. `"WolframLanguage"`). |
 | `"MCP"/"ConfigFile"` | `File[...]` pointing to the client's configuration file that was modified. This is the canonical identity used when checking for existing deployments. |
@@ -232,6 +232,7 @@ dep["MCP", "Options"]
 | `"Target"` | Client name string or `File` | `data["MCP", "Target"]` |
 | `"Server"` | Server name string | `data["MCP", "Server"]` |
 | `"ConfigFile"` | `File[...]` | `data["MCP", "ConfigFile"]` |
+| `"Scope"` | `"Global"`, `File[...]`, or `Missing["Unknown"]` | Derived from `data["MCP", "Target"]` |
 | `"Timestamp"` | `DateObject` | `data["Timestamp"]` |
 | `"PacletVersion"` | Version string | `data["PacletVersion"]` |
 | `"CreatedBy"` | `"DeployAgentTools"` | `data["CreatedBy"]` |
@@ -268,8 +269,8 @@ The `deleteDeployment` function:
 
 `MakeBoxes` is defined via an UpValue using ``BoxForm`ArrangeSummaryBox``:
 
-- **Summary rows**: Target, Server
-- **Hidden rows**: Tools, UUID, ConfigFile
+- **Summary rows**: ClientName, Server
+- **Hidden rows**: Scope, ConfigFile, Tools
 
 ---
 
@@ -327,7 +328,7 @@ $UserBaseDirectory/ApplicationData/Wolfram/MCPServer/Deployments/<ClientName>/<u
 
 The `<ClientName>` directory groups deployments by canonical client name (e.g. `"ClaudeCode"`, `"ClaudeDesktop"`, `"Cursor"`). For `{name, dir}` project-level targets, `<ClientName>` is the resolved canonical client name (e.g. `"ClaudeCode"`). Multiple project-level deployments for the same client (different directories) coexist under the same `<ClientName>` subdirectory. This makes `DeployedAgentTools["ClientName"]` efficient — it only needs to scan a single subdirectory rather than all deployments.
 
-For `File[...]` targets, `<ClientName>` is the inferred client name when one can be determined from the path or file structure; otherwise the fallback directory name `"Other"` is used.
+For `File[...]` targets, `<ClientName>` is the inferred client name when one can be determined from the path or file structure; otherwise the fallback directory name `"Unknown"` is used.
 
 ### Format
 

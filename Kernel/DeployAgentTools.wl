@@ -44,6 +44,7 @@ $deploymentProperties = {
     "Meta",
     "PacletVersion",
     "Properties",
+    "Scope",
     "Server",
     "Skills",
     "Target",
@@ -122,6 +123,7 @@ getDeploymentProperty[ data_Association, "LLMConfiguration" ] := getDeploymentPr
 getDeploymentProperty[ data_Association, "Location"         ] := deploymentDirectory[ data[ "MCP", "ClientName" ], data[ "UUID" ] ];
 getDeploymentProperty[ data_Association, "MCPServerObject"  ] := MCPServerObject @ data[ "MCP", "Server" ];
 getDeploymentProperty[ data_Association, "Properties"       ] := $deploymentProperties;
+getDeploymentProperty[ data_Association, "Scope"            ] := getDeploymentScope @ data[ "MCP", "Target" ];
 getDeploymentProperty[ data_Association, "Tools"            ] := getDeploymentProperty[ data, "MCPServerObject" ][ "Tools" ];
 
 (* Sub-association access *)
@@ -131,6 +133,16 @@ getDeploymentProperty[ data_Association, key_String, subKey_String ] := data[ ke
 getDeploymentProperty[ _, prop_ ] := Missing[ "UnknownProperty", prop ];
 
 getDeploymentProperty // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*getDeploymentScope*)
+getDeploymentScope // beginDefinition;
+getDeploymentScope[ target_String ] := "Global";
+getDeploymentScope[ { _, dir_File? fileQ } ] := dir;
+getDeploymentScope[ { _, dir_String } ] := File @ ExpandFileName @ dir;
+getDeploymentScope[ _File? fileQ ] := Missing[ "Unknown" ];
+getDeploymentScope // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -337,26 +349,33 @@ resolveDeployTarget[ name0_String, _ ] :=
         { name, configFile, name }
     ];
 
-resolveDeployTarget[ { name0_String, dir_ }, _ ] :=
-    Module[ { name, configFile },
+resolveDeployTarget[ { name0_String, dir_ }, _ ] := Enclose[
+    Module[ { name, configFile, fullDir },
         name = toInstallName @ name0;
-        configFile = projectInstallLocation[ name, dir ];
-        { name, configFile, { name, dir } }
-    ];
+        configFile = ConfirmBy[ projectInstallLocation[ name, dir ], fileQ, "ConfigFile" ];
+        fullDir = ConfirmBy[ File @ ExpandFileName @ dir, fileQ, "Directory" ];
+        { name, configFile, { name, fullDir } }
+    ],
+    throwInternalFailure
+];
 
 resolveDeployTarget[ file_File? fileQ, Automatic ] :=
     Module[ { configFile, clientName },
         configFile = ensureFilePath @ file;
         clientName = guessClientName @ configFile;
-        { Replace[ clientName, None -> "Other" ], configFile, file }
+        { Replace[ clientName, None -> "Unknown" ], configFile, file }
     ];
 
-resolveDeployTarget[ file_File? fileQ, appName_String ] :=
+resolveDeployTarget[ file_File? fileQ, appName_ ] :=
     Module[ { configFile, clientName },
+        If[ ! StringQ @ appName, throwFailure[ "InvalidApplicationName", appName ] ];
         configFile = ensureFilePath @ file;
         clientName = toInstallName @ appName;
         { clientName, configFile, file }
     ];
+
+resolveDeployTarget[ target_, _ ] :=
+    throwFailure[ "InvalidDeployTarget", target ];
 
 resolveDeployTarget // endDefinition;
 
@@ -461,7 +480,7 @@ deploymentsInClientDir // endDefinition;
 (*deploymentDirectory*)
 deploymentDirectory // beginDefinition;
 deploymentDirectory[ clientName_String, uuid_String ] := fileNameJoin[ $deploymentsPath, clientName, uuid ];
-deploymentDirectory[ None, uuid_String ] := deploymentDirectory[ "Other", uuid ];
+deploymentDirectory[ None, uuid_String ] := deploymentDirectory[ "Unknown", uuid ];
 deploymentDirectory // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
