@@ -486,6 +486,9 @@ convertCloudFailure // endDefinition;
 (*promoteSourceInfo*)
 promoteSourceInfo // beginDefinition;
 
+promoteSourceInfo[ Failure[ "General::MCPServerInternal", as_ ] ] :=
+    promoteSourceInfo @ Failure[ "MCPServer::Internal", as ];
+
 promoteSourceInfo[ Failure[
     "MCPServer::Internal",
     as: KeyValuePattern[ "MessageParameters" :> { _, KeyValuePattern[ "Information" -> info_String ] } ]
