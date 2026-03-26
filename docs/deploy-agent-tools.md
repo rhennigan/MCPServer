@@ -66,11 +66,13 @@ dep = DeployAgentTools["ClaudeCode",
 
 ### Behavior
 
-1. Resolves the target to a concrete config file path (same resolution as `InstallMCPServer`)
-2. Checks for an existing deployment matching the config file; errors if one exists (unless `OverwriteTarget -> True`)
-3. Calls `InstallMCPServer` with the resolved target and filtered options
-4. Creates a persistent deployment record on disk
-5. Returns an `AgentToolsDeployment` object
+1. Validates the target specification; issues `MCPServer::InvalidDeployTarget` for unrecognized forms
+2. Resolves the target to a concrete config file path (same resolution as `InstallMCPServer`)
+3. For `{name, dir}` targets, the directory is expanded to an absolute `File[...]` path in the stored deployment record
+4. Checks for an existing deployment matching the config file; errors if one exists (unless `OverwriteTarget -> True`)
+5. Calls `InstallMCPServer` with the resolved target and filtered options
+6. Creates a persistent deployment record on disk
+7. Returns an `AgentToolsDeployment` object
 
 ## AgentToolsDeployment
 
@@ -93,6 +95,7 @@ dep["MCP", "Options"]
 | `"Timestamp"` | `DateObject` when the deployment was created |
 | `"PacletVersion"` | Paclet version at deployment time |
 | `"MCPServerObject"` | The `MCPServerObject` for the deployed server |
+| `"Scope"` | Deployment scope: `"Global"` for named clients, or `File[...]` directory for project-level deployments |
 | `"Tools"` | List of tools provided by the deployed server |
 | `"LLMConfiguration"` | The `LLMConfiguration` for the deployed server |
 | `"Data"` | Full internal data association |
