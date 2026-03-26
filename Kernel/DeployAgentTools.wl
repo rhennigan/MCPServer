@@ -349,12 +349,15 @@ resolveDeployTarget[ name0_String, _ ] :=
         { name, configFile, name }
     ];
 
-resolveDeployTarget[ { name0_String, dir_ }, _ ] :=
-    Module[ { name, configFile },
+resolveDeployTarget[ { name0_String, dir_ }, _ ] := Enclose[
+    Module[ { name, configFile, fullDir },
         name = toInstallName @ name0;
-        configFile = projectInstallLocation[ name, dir ];
-        { name, configFile, { name, File @ ExpandFileName @ dir } }
-    ];
+        configFile = ConfirmBy[ projectInstallLocation[ name, dir ], fileQ, "ConfigFile" ];
+        fullDir = ConfirmBy[ File @ ExpandFileName @ dir, fileQ, "Directory" ];
+        { name, configFile, { name, fullDir } }
+    ],
+    throwInternalFailure
+];
 
 resolveDeployTarget[ file_File? fileQ, Automatic ] :=
     Module[ { configFile, clientName },
