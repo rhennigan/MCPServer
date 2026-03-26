@@ -1,4 +1,4 @@
-# Agent Skills in MCPServer
+# Agent Skills in AgentTools
 
 This document explains the agent skills system, how skills are structured and built, and how to add new skills.
 
@@ -157,7 +157,7 @@ Generated scripts follow the template at `Scripts/Resources/SkillScriptTemplate.
 
 1. Parses CLI arguments (positional for required params, `--flag value` for optional)
 2. Supports `--usage` to print help text and exit
-3. Installs and loads the MCPServer paclet
+3. Installs and loads the AgentTools paclet
 4. Looks up the tool in `$DefaultMCPTools` and invokes it
 5. Writes the result to stdout and exits with code 0 (success) or 1 (failure)
 6. Replaces any inline data-URI images with `[Image: ...]` text placeholders
@@ -332,7 +332,7 @@ If the skill should be distributed via Claude Code plugins, update `.claude-plug
 
 `Scripts/BuildAgentSkills.wls` orchestrates skill generation:
 
-1. **Load paclet** — Loads the MCPServer paclet via `PacletDirectoryLoad` + ``Get["Wolfram`MCPServer`"]``.
+1. **Load paclet** — Loads the AgentTools paclet via `PacletDirectoryLoad` + ``Get["Wolfram`AgentTools`"]``.
 2. **Read manifest** — Parses `AgentSkills/Manifest.wl` into an Association.
 3. **Generate scripts** — For each unique tool name across all skills:
    - Looks up the tool in `$DefaultMCPTools`
@@ -365,7 +365,7 @@ Each generated script follows this pattern:
 
 1. **Argument parsing** — Positional args for required parameters, `--flag value` pairs for optional parameters. All values are strings (matching MCP tool behavior).
 2. **`--usage` flag** — Prints usage and help text, then exits with code 0.
-3. **Paclet loading** — `PacletInstall["Wolfram/MCPServer"]` + ``Get["Wolfram`MCPServer`"]``.
+3. **Paclet loading** — `PacletInstall["Wolfram/AgentTools"]` + ``Get["Wolfram`AgentTools`"]``.
 4. **Tool invocation** — Looks up the tool in `$DefaultMCPTools` and calls it with the parsed arguments.
 5. **Output** — Writes the result string to stdout. Inline data-URI images are replaced with `[Image: ...]` placeholders.
 6. **Exit code** — 0 on success, 1 on failure or missing arguments.

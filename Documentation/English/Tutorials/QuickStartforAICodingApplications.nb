@@ -118,7 +118,7 @@ Notebook[
              ButtonBox[
               "InstallMCPServer",
               BaseStyle -> "Link",
-              ButtonData -> "paclet:Wolfram/MCPServer/ref/InstallMCPServer"
+              ButtonData -> "paclet:Wolfram/AgentTools/ref/InstallMCPServer"
              ]
             ],
             "InlineFormula"
@@ -1168,7 +1168,9 @@ Notebook[
                    {
                     RowBox[
                      {
-                      RowBox[{"PacletObject", "[", "\"Wolfram/MCPServer\"", "]"}],
+                      RowBox[
+                       {"PacletObject", "[", "\"Wolfram/AgentTools\"", "]"}
+                      ],
                       "[",
                       RowBox[{"\"AssetLocation\"", ",", "\"AGENTS.md\""}],
                       "]"
@@ -1636,13 +1638,13 @@ Notebook[
                   BaseStyle -> "Hyperlink",
                   ButtonData -> {
                    URL[
-                    "https://github.com/rhennigan/MCPServer/blob/feature/quickstart-tutorials/Specs/CodeInspectorTool.md"
+                    "https://github.com/rhennigan/AgentTools/blob/feature/quickstart-tutorials/Specs/CodeInspectorTool.md"
                    ],
                    None
                   },
-                  ButtonNote -> "https://github.com/rhennigan/MCPServer/blob/feature/quickstart-tutorials/Specs/CodeInspectorTool.md"
+                  ButtonNote -> "https://github.com/rhennigan/AgentTools/blob/feature/quickstart-tutorials/Specs/CodeInspectorTool.md"
                  ],
-                 " to view a real example used to implement a feature for the MCPServer paclet."
+                 " to view a real example used to implement a feature for the AgentTools paclet."
                 }
                ],
                "Text",
@@ -2152,7 +2154,7 @@ Notebook[
                 ButtonBox[
                  "InstallMCPServer",
                  BaseStyle -> "Link",
-                 ButtonData -> "paclet:Wolfram/MCPServer/ref/InstallMCPServer"
+                 ButtonData -> "paclet:Wolfram/AgentTools/ref/InstallMCPServer"
                 ]
                ],
                "InlineFormula"
@@ -2254,7 +2256,7 @@ Notebook[
           ButtonBox[
            "Quick Start for Chat Clients",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/tutorial/QuickStartforChatClients"
+           ButtonData -> "paclet:Wolfram/AgentTools/tutorial/QuickStartforChatClients"
           ]
          ],
          "RelatedTutorials",
@@ -2301,19 +2303,19 @@ Notebook[
          CellID -> 556623940
         ],
         Cell[
-         "Wolfram/MCPServer",
+         "Wolfram/AgentTools",
          "Categorization",
          CellLabel -> "Paclet Name",
          CellID -> 908031750
         ],
         Cell[
-         "Wolfram`MCPServer`",
+         "Wolfram`AgentTools`",
          "Categorization",
          CellLabel -> "Context",
          CellID -> 258958626
         ],
         Cell[
-         "Wolfram/MCPServer/tutorial/QuickStartforAICodingApplications",
+         "Wolfram/AgentTools/tutorial/QuickStartforAICodingApplications",
          "Categorization",
          CellLabel -> "URI",
          CellID -> 328724414
@@ -2336,7 +2338,7 @@ Notebook[
    ]
   ]
  },
- TaggingRules -> <|"Paclet" -> "Wolfram/MCPServer"|>,
+ TaggingRules -> <|"Paclet" -> "Wolfram/AgentTools"|>,
  SpellingDictionaries -> {
   "CorrectWords" -> {"tokenizers", "Hennigan", "Keene", "md", "csv", "wlt"}
  },

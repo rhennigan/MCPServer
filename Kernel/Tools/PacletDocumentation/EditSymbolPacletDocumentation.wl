@@ -1,12 +1,12 @@
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Tools`PacletDocumentation`" ];
+BeginPackage[ "Wolfram`AgentTools`Tools`PacletDocumentation`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
-Needs[ "Wolfram`MCPServer`Tools`"  ];
+Needs[ "Wolfram`AgentTools`"        ];
+Needs[ "Wolfram`AgentTools`Common`" ];
+Needs[ "Wolfram`AgentTools`Tools`"  ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

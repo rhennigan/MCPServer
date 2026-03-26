@@ -25,7 +25,7 @@ Notebook[
           ButtonBox[
            "$SupportedMCPClients",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/$SupportedMCPClients"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/$SupportedMCPClients"
           ]
          ],
          "InlineFormula"
@@ -36,7 +36,7 @@ Notebook[
           ButtonBox[
            "InstallMCPServer",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/InstallMCPServer"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/InstallMCPServer"
           ]
          ],
          "InlineFormula"
@@ -56,7 +56,7 @@ Notebook[
           ButtonBox[
            "$SupportedMCPClients",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/$SupportedMCPClients"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/$SupportedMCPClients"
           ]
          ],
          "InlineFormula"
@@ -69,7 +69,7 @@ Notebook[
             ButtonBox[
              "InstallMCPServer",
              BaseStyle -> "Link",
-             ButtonData -> "paclet:Wolfram/MCPServer/ref/InstallMCPServer"
+             ButtonData -> "paclet:Wolfram/AgentTools/ref/InstallMCPServer"
             ],
             "[",
             RowBox[
@@ -154,7 +154,7 @@ Notebook[
             ButtonBox[
              "InstallMCPServer",
              BaseStyle -> "Link",
-             ButtonData -> "paclet:Wolfram/MCPServer/ref/InstallMCPServer"
+             ButtonData -> "paclet:Wolfram/AgentTools/ref/InstallMCPServer"
             ],
             "[",
             RowBox[
@@ -234,7 +234,7 @@ Notebook[
           ButtonBox[
            "InstallMCPServer",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/InstallMCPServer"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/InstallMCPServer"
           ]
          ],
          "InlineSeeAlsoFunction",
@@ -246,7 +246,7 @@ Notebook[
           ButtonBox[
            "UninstallMCPServer",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/UninstallMCPServer"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/UninstallMCPServer"
           ]
          ],
          "InlineSeeAlsoFunction",
@@ -446,7 +446,7 @@ Notebook[
      ],
      Cell[
       BoxData[
-       RowBox[{"Needs", "[", "\"Wolfram`MCPServer`\"", "]"}]
+       RowBox[{"Needs", "[", "\"Wolfram`AgentTools`\"", "]"}]
       ],
       "ExampleInitialization",
       CellID -> 887307835
@@ -499,7 +499,7 @@ Notebook[
             ButtonBox[
              "InstallMCPServer",
              BaseStyle -> "Link",
-             ButtonData -> "paclet:Wolfram/MCPServer/ref/InstallMCPServer"
+             ButtonData -> "paclet:Wolfram/AgentTools/ref/InstallMCPServer"
             ],
             "[",
             RowBox[
@@ -1191,19 +1191,19 @@ Notebook[
          CellID -> 297325831
         ],
         Cell[
-         "Wolfram/MCPServer",
+         "Wolfram/AgentTools",
          "Categorization",
          CellLabel -> "Paclet Name",
          CellID -> 603046235
         ],
         Cell[
-         "Wolfram`MCPServer`",
+         "Wolfram`AgentTools`",
          "Categorization",
          CellLabel -> "Context",
          CellID -> 107898593
         ],
         Cell[
-         "Wolfram/MCPServer/ref/$SupportedMCPClients",
+         "Wolfram/AgentTools/ref/$SupportedMCPClients",
          "Categorization",
          CellLabel -> "URI",
          CellID -> 8449599
@@ -1262,7 +1262,7 @@ Notebook[
    ]
   ]
  },
- TaggingRules -> <|"Paclet" -> "Wolfram/MCPServer"|>,
+ TaggingRules -> <|"Paclet" -> "Wolfram/AgentTools"|>,
  StyleDefinitions ->
   FrontEnd`FileName[
    {"Wolfram"},

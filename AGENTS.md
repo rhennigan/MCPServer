@@ -4,7 +4,7 @@ This file provides guidance to AI agents (Claude Code, GitHub Copilot, etc.) whe
 
 ## Overview
 
-MCPServer is a Wolfram Language package that implements a Model Context Protocol (MCP) server. This enables Wolfram Language to function as a backend for large language models (LLMs) by providing a standardized interface for models to access Wolfram Language computation capabilities.
+AgentTools is a Wolfram Language package that implements a Model Context Protocol (MCP) server. This enables Wolfram Language to function as a backend for large language models (LLMs) by providing a standardized interface for models to access Wolfram Language computation capabilities.
 
 ## Development
 
@@ -14,8 +14,8 @@ When you make changes to paclet source code, you should also write and run tests
 
 If you need to debug code in the WolframLanguageEvaluator tool, you'll first need to evaluate:
 ```wl
-PacletDirectoryLoad[ "path/to/MCPServer" ];
-Get[ "Wolfram`MCPServer`" ]
+PacletDirectoryLoad[ "path/to/AgentTools" ];
+Get[ "Wolfram`AgentTools`" ]
 ```
 
 Note: This is not necessary for the TestReport tool, since the tests load the paclet automatically.
@@ -37,7 +37,7 @@ See [building.md](docs/building.md) for detailed instructions.
 ### Project Structure
 
 - `Kernel/`: Contains the core implementation files
-  - `MCPServer.wl`: Main entry point which loads an MX file if available, otherwise proceeds to `Main.wl`
+  - `AgentTools.wl`: Main entry point which loads an MX file if available, otherwise proceeds to `Main.wl`
   - `Main.wl`: Entry point for loading other package files; exported symbols must be declared here
   - `Common.wl`: Common utilities and [error handling](docs/error-handling.md)
   - `CommonSymbols.wl`: Any symbols shared between paclet files must be declared here

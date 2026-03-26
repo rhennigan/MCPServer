@@ -2,7 +2,7 @@
 
 ## Overview
 
-This specification defines the design for integrating [MCP Apps](https://modelcontextprotocol.io/docs/extensions/apps) into the MCPServer paclet. MCP Apps is the first official MCP extension (`io.modelcontextprotocol/ui`), enabling servers to deliver interactive HTML user interfaces that render inside MCP hosts (Claude Desktop, VS Code, etc.) in sandboxed iframes.
+This specification defines the design for integrating [MCP Apps](https://modelcontextprotocol.io/docs/extensions/apps) into the AgentTools paclet. MCP Apps is the first official MCP extension (`io.modelcontextprotocol/ui`), enabling servers to deliver interactive HTML user interfaces that render inside MCP hosts (Claude Desktop, VS Code, etc.) in sandboxed iframes.
 
 This enables three key use cases for the Wolfram MCP server:
 
@@ -319,7 +319,7 @@ New error message tags:
 
 #### 1.9 PacletInfo.wl Changes
 
-Register the `Apps` asset location so it can be resolved via `PacletObject["Wolfram/MCPServer"]["AssetLocation", "Apps"]`.
+Register the `Apps` asset location so it can be resolved via `PacletObject["Wolfram/AgentTools"]["AssetLocation", "Apps"]`.
 
 ---
 
@@ -804,7 +804,7 @@ When the client supports UI, the WolframAlpha tool prepends a JSON metadata cont
         "content": [
             {
                 "type": "text",
-                "text": "{\"notebookUrl\":\"https://www.wolframcloud.com/obj/user/MCPServer/Notebooks/WolframAlpha/current+distance+to+Mars.nb\"}"
+                "text": "{\"notebookUrl\":\"https://www.wolframcloud.com/obj/user/AgentTools/Notebooks/WolframAlpha/current+distance+to+Mars.nb\"}"
             },
             {
                 "type": "text",

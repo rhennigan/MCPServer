@@ -235,7 +235,7 @@ Prompts can be specified as:
 
 The `"PromptData"` property is deprecated. Using it should:
 
-1. Issue a warning message: `MCPServer::DeprecatedPromptData`
+1. Issue a warning message: `AgentTools::DeprecatedPromptData`
 2. Return a `Failure` object directing users to use `"MCPPrompts"` instead
 
 ---

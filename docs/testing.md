@@ -1,6 +1,6 @@
 # Writing and Running Tests
 
-This guide covers how to write and run tests for MCPServer.
+This guide covers how to write and run tests for AgentTools.
 
 ## Test File Format
 
@@ -21,7 +21,7 @@ You can optionally include expected messages (see [Error Handling](error-handlin
 VerificationTest[
     input,
     expected,
-    { MCPServer::Tag, ... },
+    { AgentTools::Tag, ... },
     SameTest -> MatchQ,
     TestID   -> "AnAppropriateTestID"
 ]
@@ -36,14 +36,14 @@ Always start new test files with the following boilerplate:
 (* ::Section::Closed:: *)
 (*Initialization*)
 VerificationTest[
-    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
+    Needs[ "Wolfram`AgentToolsTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "GetDefinitions"
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext"
@@ -95,7 +95,7 @@ Run multiple test files:
 wolframscript -f Scripts/TestPaclet.wls Tests/CreateMCPServer.wlt Tests/StartMCPServer.wlt
 ```
 
-**Path resolution**: The script accepts both absolute paths and paths relative to the paclet root directory. For example, `Tests/Foo.wlt` is equivalent to the full path `H:\Documents\MCPServer\Tests\Foo.wlt`.
+**Path resolution**: The script accepts both absolute paths and paths relative to the paclet root directory. For example, `Tests/Foo.wlt` is equivalent to the full path `H:\Documents\AgentTools\Tests\Foo.wlt`.
 
 ## Unit Tests for Private Symbols
 
@@ -161,8 +161,8 @@ See [paclet-extensions.md](paclet-extensions.md) for details on the extension sy
 
 If tests fail, consider:
 
-1. **Check for MX file conflicts**: If you've modified source files but an MX file exists, delete `Kernel/64Bit/MCPServer.mx` and reload the paclet
-2. **Reload the paclet**: Changes to source files require reloading with ``PacletDirectoryLoad["path/to/MCPServer"]; Get["Wolfram`MCPServer`"]``
+1. **Check for MX file conflicts**: If you've modified source files but an MX file exists, delete `Kernel/64Bit/AgentTools.mx` and reload the paclet
+2. **Reload the paclet**: Changes to source files require reloading with ``PacletDirectoryLoad["path/to/AgentTools"]; Get["Wolfram`AgentTools`"]``
 3. **Review test output**: The test report will show which tests failed and why
 
 ## See Also

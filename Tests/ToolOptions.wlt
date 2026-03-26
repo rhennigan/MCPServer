@@ -9,7 +9,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/ToolOptions.wlt:11,1-16,2"
@@ -22,21 +22,21 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*$defaultToolOptions*)
 VerificationTest[
-    Wolfram`MCPServer`Common`$defaultToolOptions,
+    Wolfram`AgentTools`Common`$defaultToolOptions,
     _Association? AssociationQ,
     SameTest -> MatchQ,
     TestID   -> "DefaultToolOptions-IsAssociation@@Tests/ToolOptions.wlt:24,1-29,2"
 ]
 
 VerificationTest[
-    Sort @ Keys @ Wolfram`MCPServer`Common`$defaultToolOptions,
+    Sort @ Keys @ Wolfram`AgentTools`Common`$defaultToolOptions,
     { "WolframAlphaContext", "WolframContext", "WolframLanguageContext", "WolframLanguageEvaluator" },
     SameTest -> MatchQ,
     TestID   -> "DefaultToolOptions-Keys@@Tests/ToolOptions.wlt:31,1-36,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`$defaultToolOptions[ "WolframLanguageEvaluator" ],
+    Wolfram`AgentTools`Common`$defaultToolOptions[ "WolframLanguageEvaluator" ],
     KeyValuePattern @ {
         "Method"            -> "Session",
         "ImageExportMethod" -> None,
@@ -47,14 +47,14 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`$defaultToolOptions[ "WolframLanguageContext" ],
+    Wolfram`AgentTools`Common`$defaultToolOptions[ "WolframLanguageContext" ],
     KeyValuePattern[ "MaxItems" -> 10 ],
     SameTest -> MatchQ,
     TestID   -> "DefaultToolOptions-WolframLanguageContext@@Tests/ToolOptions.wlt:49,1-54,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`$defaultToolOptions[ "WolframAlphaContext" ],
+    Wolfram`AgentTools`Common`$defaultToolOptions[ "WolframAlphaContext" ],
     KeyValuePattern @ {
         "MaxItems"                     -> Automatic,
         "IncludeWolframLanguageResults" -> Automatic
@@ -64,7 +64,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`$defaultToolOptions[ "WolframContext" ],
+    Wolfram`AgentTools`Common`$defaultToolOptions[ "WolframContext" ],
     KeyValuePattern @ {
         "WolframLanguageMaxItems" -> 10,
         "WolframAlphaMaxItems"    -> Automatic
@@ -77,24 +77,24 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*toolOptionValue*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$toolOptions = <| |> },
-        Wolfram`MCPServer`Common`toolOptionValue[ "WolframLanguageEvaluator", "Method" ]
+    Block[ { Wolfram`AgentTools`Common`$toolOptions = <| |> },
+        Wolfram`AgentTools`Common`toolOptionValue[ "WolframLanguageEvaluator", "Method" ]
     ],
     "Session",
     TestID -> "ToolOptionValue-FallbackToDefault@@Tests/ToolOptions.wlt:79,1-85,2"
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$toolOptions = <| |> },
-        Wolfram`MCPServer`Common`toolOptionValue[ "WolframLanguageEvaluator", "TimeConstraint" ]
+    Block[ { Wolfram`AgentTools`Common`$toolOptions = <| |> },
+        Wolfram`AgentTools`Common`toolOptionValue[ "WolframLanguageEvaluator", "TimeConstraint" ]
     ],
     60,
     TestID -> "ToolOptionValue-FallbackToDefault-TimeConstraint@@Tests/ToolOptions.wlt:87,1-93,2"
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$toolOptions = <| |> },
-        Wolfram`MCPServer`Common`toolOptionValue[ "WolframLanguageContext", "MaxItems" ]
+    Block[ { Wolfram`AgentTools`Common`$toolOptions = <| |> },
+        Wolfram`AgentTools`Common`toolOptionValue[ "WolframLanguageContext", "MaxItems" ]
     ],
     10,
     TestID -> "ToolOptionValue-FallbackToDefault-MaxItems@@Tests/ToolOptions.wlt:95,1-101,2"
@@ -102,8 +102,8 @@ VerificationTest[
 
 VerificationTest[
     Block[
-        { Wolfram`MCPServer`Common`$toolOptions = <| "WolframLanguageEvaluator" -> <| "Method" -> "Local" |> |> },
-        Wolfram`MCPServer`Common`toolOptionValue[ "WolframLanguageEvaluator", "Method" ]
+        { Wolfram`AgentTools`Common`$toolOptions = <| "WolframLanguageEvaluator" -> <| "Method" -> "Local" |> |> },
+        Wolfram`AgentTools`Common`toolOptionValue[ "WolframLanguageEvaluator", "Method" ]
     ],
     "Local",
     TestID -> "ToolOptionValue-UserOverride@@Tests/ToolOptions.wlt:103,1-110,2"
@@ -111,16 +111,16 @@ VerificationTest[
 
 VerificationTest[
     Block[
-        { Wolfram`MCPServer`Common`$toolOptions = <| "WolframLanguageEvaluator" -> <| "Method" -> "Local" |> |> },
-        Wolfram`MCPServer`Common`toolOptionValue[ "WolframLanguageEvaluator", "TimeConstraint" ]
+        { Wolfram`AgentTools`Common`$toolOptions = <| "WolframLanguageEvaluator" -> <| "Method" -> "Local" |> |> },
+        Wolfram`AgentTools`Common`toolOptionValue[ "WolframLanguageEvaluator", "TimeConstraint" ]
     ],
     60,
     TestID -> "ToolOptionValue-UserOverridePartial-FallbackForOtherKeys@@Tests/ToolOptions.wlt:112,1-119,2"
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$toolOptions = <| |> },
-        Wolfram`MCPServer`Common`toolOptionValue[ "NonexistentTool", "SomeOption" ]
+    Block[ { Wolfram`AgentTools`Common`$toolOptions = <| |> },
+        Wolfram`AgentTools`Common`toolOptionValue[ "NonexistentTool", "SomeOption" ]
     ],
     _Missing,
     SameTest -> MatchQ,
@@ -128,8 +128,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$toolOptions = <| |> },
-        Wolfram`MCPServer`Common`toolOptionValue[ "WolframLanguageEvaluator", "NonexistentOption" ]
+    Block[ { Wolfram`AgentTools`Common`$toolOptions = <| |> },
+        Wolfram`AgentTools`Common`toolOptionValue[ "WolframLanguageEvaluator", "NonexistentOption" ]
     ],
     _Missing,
     SameTest -> MatchQ,
@@ -138,8 +138,8 @@ VerificationTest[
 
 VerificationTest[
     Block[
-        { Wolfram`MCPServer`Common`$toolOptions = <| "WolframLanguageEvaluator" -> <| "TimeConstraint" -> 120 |> |> },
-        Wolfram`MCPServer`Common`toolOptionValue[ "WolframLanguageEvaluator", "TimeConstraint" ]
+        { Wolfram`AgentTools`Common`$toolOptions = <| "WolframLanguageEvaluator" -> <| "TimeConstraint" -> 120 |> |> },
+        Wolfram`AgentTools`Common`toolOptionValue[ "WolframLanguageEvaluator", "TimeConstraint" ]
     ],
     120,
     TestID -> "ToolOptionValue-CustomTimeConstraint@@Tests/ToolOptions.wlt:139,1-146,2"
@@ -147,8 +147,8 @@ VerificationTest[
 
 VerificationTest[
     Block[
-        { Wolfram`MCPServer`Common`$toolOptions = <| "WolframLanguageContext" -> <| "MaxItems" -> 5 |> |> },
-        Wolfram`MCPServer`Common`toolOptionValue[ "WolframLanguageContext", "MaxItems" ]
+        { Wolfram`AgentTools`Common`$toolOptions = <| "WolframLanguageContext" -> <| "MaxItems" -> 5 |> |> },
+        Wolfram`AgentTools`Common`toolOptionValue[ "WolframLanguageContext", "MaxItems" ]
     ],
     5,
     TestID -> "ToolOptionValue-CustomMaxItems@@Tests/ToolOptions.wlt:148,1-155,2"
@@ -158,35 +158,35 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*parseToolOptions*)
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`parseToolOptions[ $Failed ],
+    Wolfram`AgentTools`StartMCPServer`Private`parseToolOptions[ $Failed ],
     _Association? AssociationQ,
     SameTest -> MatchQ,
     TestID   -> "ParseToolOptions-Failed@@Tests/ToolOptions.wlt:160,1-165,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`parseToolOptions[ $Failed ],
+    Wolfram`AgentTools`StartMCPServer`Private`parseToolOptions[ $Failed ],
     _Association,
     SameTest -> MatchQ,
     TestID   -> "ParseToolOptions-FailedReturnsAssociation@@Tests/ToolOptions.wlt:167,1-172,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`parseToolOptions[ "" ],
+    Wolfram`AgentTools`StartMCPServer`Private`parseToolOptions[ "" ],
     _Association,
     SameTest -> MatchQ,
     TestID   -> "ParseToolOptions-EmptyString@@Tests/ToolOptions.wlt:174,1-179,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`parseToolOptions[ "invalid json" ],
+    Wolfram`AgentTools`StartMCPServer`Private`parseToolOptions[ "invalid json" ],
     _Association,
     SameTest -> MatchQ,
     TestID   -> "ParseToolOptions-InvalidJSON@@Tests/ToolOptions.wlt:181,1-186,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`parseToolOptions[
+    Wolfram`AgentTools`StartMCPServer`Private`parseToolOptions[
         "{\"WolframLanguageEvaluator\":{\"Method\":\"Local\"}}"
     ],
     KeyValuePattern[ "WolframLanguageEvaluator" -> KeyValuePattern[ "Method" -> "Local" ] ],
@@ -195,7 +195,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`parseToolOptions[
+    Wolfram`AgentTools`StartMCPServer`Private`parseToolOptions[
         "{\"WolframLanguageEvaluator\":{\"ImageExportMethod\":\"None\",\"Method\":\"Automatic\"}}"
     ],
     KeyValuePattern[
@@ -206,7 +206,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`parseToolOptions[
+    Wolfram`AgentTools`StartMCPServer`Private`parseToolOptions[
         "{\"WolframLanguageEvaluator\":123,\"WolframAlphaContext\":{\"MaxItems\":3}}"
     ],
     <| "WolframAlphaContext" -> <| "MaxItems" -> 3 |> |>,
@@ -221,9 +221,9 @@ VerificationTest[
     Module[ { opts, json, parsed },
         opts = <| "WolframLanguageEvaluator" -> <| "Method" -> "Local", "TimeConstraint" -> 120 |> |>;
         json = Developer`WriteRawJSONString[ opts, "Compact" -> True ];
-        parsed = Wolfram`MCPServer`StartMCPServer`Private`parseToolOptions @ json;
-        Block[ { Wolfram`MCPServer`Common`$toolOptions = parsed },
-            Wolfram`MCPServer`Common`toolOptionValue[ "WolframLanguageEvaluator", "Method" ]
+        parsed = Wolfram`AgentTools`StartMCPServer`Private`parseToolOptions @ json;
+        Block[ { Wolfram`AgentTools`Common`$toolOptions = parsed },
+            Wolfram`AgentTools`Common`toolOptionValue[ "WolframLanguageEvaluator", "Method" ]
         ]
     ],
     "Local",
@@ -234,9 +234,9 @@ VerificationTest[
     Module[ { opts, json, parsed },
         opts = <| "WolframLanguageEvaluator" -> <| "Method" -> "Local", "TimeConstraint" -> 120 |> |>;
         json = Developer`WriteRawJSONString[ opts, "Compact" -> True ];
-        parsed = Wolfram`MCPServer`StartMCPServer`Private`parseToolOptions @ json;
-        Block[ { Wolfram`MCPServer`Common`$toolOptions = parsed },
-            Wolfram`MCPServer`Common`toolOptionValue[ "WolframLanguageEvaluator", "TimeConstraint" ]
+        parsed = Wolfram`AgentTools`StartMCPServer`Private`parseToolOptions @ json;
+        Block[ { Wolfram`AgentTools`Common`$toolOptions = parsed },
+            Wolfram`AgentTools`Common`toolOptionValue[ "WolframLanguageEvaluator", "TimeConstraint" ]
         ]
     ],
     120,
@@ -247,9 +247,9 @@ VerificationTest[
     Module[ { opts, json, parsed },
         opts = <| "WolframLanguageContext" -> <| "MaxItems" -> 5 |> |>;
         json = Developer`WriteRawJSONString[ opts, "Compact" -> True ];
-        parsed = Wolfram`MCPServer`StartMCPServer`Private`parseToolOptions @ json;
-        Block[ { Wolfram`MCPServer`Common`$toolOptions = parsed },
-            Wolfram`MCPServer`Common`toolOptionValue[ "WolframLanguageContext", "MaxItems" ]
+        parsed = Wolfram`AgentTools`StartMCPServer`Private`parseToolOptions @ json;
+        Block[ { Wolfram`AgentTools`Common`$toolOptions = parsed },
+            Wolfram`AgentTools`Common`toolOptionValue[ "WolframLanguageContext", "MaxItems" ]
         ]
     ],
     5,
@@ -263,13 +263,13 @@ VerificationTest[
             "WolframLanguageContext"   -> <| "MaxItems" -> 20 |>
         |>;
         json = Developer`WriteRawJSONString[ opts, "Compact" -> True ];
-        parsed = Wolfram`MCPServer`StartMCPServer`Private`parseToolOptions @ json;
-        Block[ { Wolfram`MCPServer`Common`$toolOptions = parsed },
+        parsed = Wolfram`AgentTools`StartMCPServer`Private`parseToolOptions @ json;
+        Block[ { Wolfram`AgentTools`Common`$toolOptions = parsed },
             {
-                Wolfram`MCPServer`Common`toolOptionValue[ "WolframLanguageEvaluator", "Method" ],
-                Wolfram`MCPServer`Common`toolOptionValue[ "WolframLanguageContext", "MaxItems" ],
+                Wolfram`AgentTools`Common`toolOptionValue[ "WolframLanguageEvaluator", "Method" ],
+                Wolfram`AgentTools`Common`toolOptionValue[ "WolframLanguageContext", "MaxItems" ],
                 (* Unset options fall back to defaults *)
-                Wolfram`MCPServer`Common`toolOptionValue[ "WolframLanguageEvaluator", "ImageExportMethod" ]
+                Wolfram`AgentTools`Common`toolOptionValue[ "WolframLanguageEvaluator", "ImageExportMethod" ]
             }
         ]
     ],
@@ -352,13 +352,13 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*validateToolOptions*)
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`validateToolOptions[ <| |>, MCPServerObject[ "Wolfram" ] ],
+    Wolfram`AgentTools`InstallMCPServer`Private`validateToolOptions[ <| |>, MCPServerObject[ "Wolfram" ] ],
     <| |>,
     TestID -> "ValidateToolOptions-Empty@@Tests/ToolOptions.wlt:354,1-358,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`validateToolOptions[
+    Wolfram`AgentTools`InstallMCPServer`Private`validateToolOptions[
         <| "WolframLanguageEvaluator" -> <| "Method" -> "Local" |> |>,
         MCPServerObject[ "Wolfram" ]
     ],
@@ -368,64 +368,64 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`validateToolOptions[ "not an association", MCPServerObject[ "Wolfram" ] ],
+    Wolfram`AgentTools`InstallMCPServer`Private`validateToolOptions[ "not an association", MCPServerObject[ "Wolfram" ] ],
     <| |>,
-    { MCPServer::InvalidToolOptions },
+    { AgentTools::InvalidToolOptions },
     SameTest -> MatchQ,
     TestID   -> "ValidateToolOptions-InvalidType@@Tests/ToolOptions.wlt:370,1-376,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`validateToolOptions[
+    Wolfram`AgentTools`InstallMCPServer`Private`validateToolOptions[
         <| "NonexistentTool" -> <| "Foo" -> "Bar" |> |>,
         MCPServerObject[ "Wolfram" ]
     ],
     KeyValuePattern[ "NonexistentTool" -> KeyValuePattern[ "Foo" -> "Bar" ] ],
-    { MCPServer::UnrecognizedToolOption },
+    { AgentTools::UnrecognizedToolOption },
     SameTest -> MatchQ,
     TestID   -> "ValidateToolOptions-UnrecognizedToolName@@Tests/ToolOptions.wlt:378,1-387,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`validateToolOptions[
+    Wolfram`AgentTools`InstallMCPServer`Private`validateToolOptions[
         <| "WolframLanguageEvaluator" -> <| "NonexistentOption" -> "value" |> |>,
         MCPServerObject[ "Wolfram" ]
     ],
     KeyValuePattern[ "WolframLanguageEvaluator" -> KeyValuePattern[ "NonexistentOption" -> "value" ] ],
-    { MCPServer::UnrecognizedToolOptionName },
+    { AgentTools::UnrecognizedToolOptionName },
     SameTest -> MatchQ,
     TestID   -> "ValidateToolOptions-UnrecognizedOptionName@@Tests/ToolOptions.wlt:389,1-398,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`validateToolOptions[
+    Wolfram`AgentTools`InstallMCPServer`Private`validateToolOptions[
         <| "WolframLanguageEvaluator" -> 123 |>,
         MCPServerObject[ "Wolfram" ]
     ],
     <| |>,
-    { MCPServer::InvalidToolOptionValue },
+    { AgentTools::InvalidToolOptionValue },
     SameTest -> MatchQ,
     TestID   -> "ValidateToolOptions-NonAssociationValue@@Tests/ToolOptions.wlt:400,1-409,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`validateToolOptions[
+    Wolfram`AgentTools`InstallMCPServer`Private`validateToolOptions[
         <| "WolframLanguageEvaluator" -> "not an association", "WolframLanguageContext" -> <| "MaxItems" -> 5 |> |>,
         MCPServerObject[ "Wolfram" ]
     ],
     <| "WolframLanguageContext" -> <| "MaxItems" -> 5 |> |>,
-    { MCPServer::InvalidToolOptionValue },
+    { AgentTools::InvalidToolOptionValue },
     SameTest -> MatchQ,
     TestID   -> "ValidateToolOptions-MixedValidAndInvalid@@Tests/ToolOptions.wlt:411,1-420,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`InstallMCPServer`Private`validateToolOptions[
+    Wolfram`AgentTools`InstallMCPServer`Private`validateToolOptions[
         <| "WolframLanguageEvaluator" -> True |>,
         MCPServerObject[ "Wolfram" ]
     ],
     <| |>,
-    { MCPServer::InvalidToolOptionValue },
+    { AgentTools::InvalidToolOptionValue },
     SameTest -> MatchQ,
     TestID   -> "ValidateToolOptions-BooleanValue@@Tests/ToolOptions.wlt:422,1-431,2"
 ]
@@ -434,7 +434,7 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*$toolOptions Initialization*)
 VerificationTest[
-    Wolfram`MCPServer`Common`$toolOptions,
+    Wolfram`AgentTools`Common`$toolOptions,
     _Association? AssociationQ,
     SameTest -> MatchQ,
     TestID   -> "ToolOptionsInitialized@@Tests/ToolOptions.wlt:436,1-441,2"

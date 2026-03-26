@@ -38,7 +38,7 @@ GetMCPCommandLine[ os_String ] := Module[ { wolframScriptCmd },
     {
         wolframScriptCmd,
         "-code",
-        "Needs[\"Wolfram`MCPServer`\"]; Wolfram`MCPServer`StartMCPServer[]"
+        "Needs[\"Wolfram`AgentTools`\"]; Wolfram`AgentTools`StartMCPServer[]"
     }
 ];
 

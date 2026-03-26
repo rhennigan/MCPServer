@@ -1,6 +1,6 @@
-# MCPServer Developer Documentation
+# AgentTools Developer Documentation
 
-This is the developer documentation for contributing to MCPServer. For user documentation, see the [MCPServer paclet documentation](https://paclets.com/Wolfram/MCPServer).
+This is the developer documentation for contributing to AgentTools. For user documentation, see the [AgentTools paclet documentation](https://paclets.com/Wolfram/AgentTools).
 
 ## User Guides
 

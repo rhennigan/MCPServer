@@ -7,8 +7,8 @@
     "long_description" -> TemplateSlot[ "LongDescription" ],
     "author"           -> <| "name" -> "Richard Hennigan (Wolfram Research)", "email" -> "richardh@wolfram.com" |>,
     "repository"       -> <| "type" -> "git", "url" -> "https://github.com/rhennigan/MCPServer" |>,
-    "homepage"         -> "https://paclets.com/Wolfram/MCPServer",
-    "support"          -> "https://github.com/rhennigan/MCPServer/issues",
+    "homepage"         -> "https://paclets.com/Wolfram/AgentTools",
+    "support"          -> "https://github.com/rhennigan/AgentTools/issues",
     "icon"             -> "Images/Icon.png",
     "screenshots"      -> { "Images/Screenshot-1.png" },
     "tools_generated"  -> True,
@@ -23,7 +23,7 @@
             "command" -> "${user_config.wolfram_executable}",
             "args" -> {
                 "-run",
-                "PacletSymbol[\"Wolfram/MCPServer\",\"Wolfram`MCPServer`StartMCPServer\"][]",
+                "PacletSymbol[\"Wolfram/AgentTools\",\"Wolfram`AgentTools`StartMCPServer\"][]",
                 "-noinit",
                 "-noprompt"
             },

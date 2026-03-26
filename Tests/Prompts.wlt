@@ -12,7 +12,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/Prompts.wlt:14,1-19,2"
@@ -184,67 +184,67 @@ VerificationTest[
 (* Validation Functions *)
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompts[ "WolframSearch" ],
+    Wolfram`AgentTools`MCPServerObject`Private`validateMCPPrompts[ "WolframSearch" ],
     { "WolframSearch" },
     SameTest -> SameQ,
     TestID   -> "ValidateMCPPrompts-SingleString@@Tests/Prompts.wlt:186,1-191,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompts[ { "WolframSearch", "WolframLanguageSearch" } ],
+    Wolfram`AgentTools`MCPServerObject`Private`validateMCPPrompts[ { "WolframSearch", "WolframLanguageSearch" } ],
     { "WolframSearch", "WolframLanguageSearch" },
     SameTest -> SameQ,
     TestID   -> "ValidateMCPPrompts-ListOfStrings@@Tests/Prompts.wlt:193,1-198,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompts[ { <| "Name" -> "Custom" |> } ],
+    Wolfram`AgentTools`MCPServerObject`Private`validateMCPPrompts[ { <| "Name" -> "Custom" |> } ],
     { <| "Name" -> "Custom" |> },
     SameTest -> SameQ,
     TestID   -> "ValidateMCPPrompts-InlineAssociation@@Tests/Prompts.wlt:200,1-205,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompts[ { "WolframSearch", <| "Name" -> "Custom" |> } ],
+    Wolfram`AgentTools`MCPServerObject`Private`validateMCPPrompts[ { "WolframSearch", <| "Name" -> "Custom" |> } ],
     { "WolframSearch", <| "Name" -> "Custom" |> },
     SameTest -> SameQ,
     TestID   -> "ValidateMCPPrompts-MixedList@@Tests/Prompts.wlt:207,1-212,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompts[ "NonExistentPrompt" ],
+    Wolfram`AgentTools`MCPServerObject`Private`validateMCPPrompts[ "NonExistentPrompt" ],
     _Failure,
-    { MCPServer::PromptNameNotFound, MCPServer::InvalidMCPPromptsSpecification },
+    { AgentTools::PromptNameNotFound, AgentTools::InvalidMCPPromptsSpecification },
     SameTest -> MatchQ,
     TestID   -> "ValidateMCPPrompts-InvalidName@@Tests/Prompts.wlt:214,1-220,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompts[ 123 ],
+    Wolfram`AgentTools`MCPServerObject`Private`validateMCPPrompts[ 123 ],
     _Failure,
-    { MCPServer::InvalidMCPPromptsSpecification },
+    { AgentTools::InvalidMCPPromptsSpecification },
     SameTest -> MatchQ,
     TestID   -> "ValidateMCPPrompts-InvalidType@@Tests/Prompts.wlt:222,1-228,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompt[ "WolframSearch" ],
+    Wolfram`AgentTools`MCPServerObject`Private`validateMCPPrompt[ "WolframSearch" ],
     "WolframSearch",
     SameTest -> SameQ,
     TestID   -> "ValidateMCPPrompt-ValidString@@Tests/Prompts.wlt:230,1-235,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompt[ <| "Name" -> "Custom" |> ],
+    Wolfram`AgentTools`MCPServerObject`Private`validateMCPPrompt[ <| "Name" -> "Custom" |> ],
     <| "Name" -> "Custom" |>,
     SameTest -> SameQ,
     TestID   -> "ValidateMCPPrompt-Association@@Tests/Prompts.wlt:237,1-242,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompt[ "NonExistent" ],
+    Wolfram`AgentTools`MCPServerObject`Private`validateMCPPrompt[ "NonExistent" ],
     _Failure,
-    { MCPServer::PromptNameNotFound },
+    { AgentTools::PromptNameNotFound },
     SameTest -> MatchQ,
     TestID   -> "ValidateMCPPrompt-InvalidName@@Tests/Prompts.wlt:244,1-250,2"
 ]
@@ -253,30 +253,30 @@ VerificationTest[
 (* normalizePromptData *)
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`normalizePromptData[ "WolframSearch" ],
+    Wolfram`AgentTools`MCPServerObject`Private`normalizePromptData[ "WolframSearch" ],
     $DefaultMCPPrompts[ "WolframSearch" ],
     SameTest -> SameQ,
     TestID   -> "NormalizePromptData-StringLookup@@Tests/Prompts.wlt:255,1-260,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`normalizePromptData[ <| "Name" -> "Test", "Content" -> "Static text" |> ],
+    Wolfram`AgentTools`MCPServerObject`Private`normalizePromptData[ <| "Name" -> "Test", "Content" -> "Static text" |> ],
     <| "Name" -> "Test", "Content" -> "Static text", "Type" -> "Text" |>,
     SameTest -> SameQ,
     TestID   -> "NormalizePromptData-TextType@@Tests/Prompts.wlt:262,1-267,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`normalizePromptData[ <| "Name" -> "Test", "Content" -> Function[ x, x ] |> ],
+    Wolfram`AgentTools`MCPServerObject`Private`normalizePromptData[ <| "Name" -> "Test", "Content" -> Function[ x, x ] |> ],
     KeyValuePattern[ "Type" -> "Function" ],
     SameTest -> MatchQ,
     TestID   -> "NormalizePromptData-FunctionType@@Tests/Prompts.wlt:269,1-274,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`normalizePromptData[ "NonExistent" ],
+    Wolfram`AgentTools`MCPServerObject`Private`normalizePromptData[ "NonExistent" ],
     _Failure,
-    { MCPServer::PromptNameNotFound },
+    { AgentTools::PromptNameNotFound },
     SameTest -> MatchQ,
     TestID   -> "NormalizePromptData-InvalidName@@Tests/Prompts.wlt:276,1-282,2"
 ]
@@ -285,35 +285,35 @@ VerificationTest[
 (* determinePromptType *)
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`determinePromptType[ <| "Type" -> "Function" |> ],
+    Wolfram`AgentTools`MCPServerObject`Private`determinePromptType[ <| "Type" -> "Function" |> ],
     "Function",
     SameTest -> SameQ,
     TestID   -> "DeterminePromptType-ExplicitFunction@@Tests/Prompts.wlt:287,1-292,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`determinePromptType[ <| "Type" -> "Text" |> ],
+    Wolfram`AgentTools`MCPServerObject`Private`determinePromptType[ <| "Type" -> "Text" |> ],
     "Text",
     SameTest -> SameQ,
     TestID   -> "DeterminePromptType-ExplicitText@@Tests/Prompts.wlt:294,1-299,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`determinePromptType[ <| "Content" -> "Some string" |> ],
+    Wolfram`AgentTools`MCPServerObject`Private`determinePromptType[ <| "Content" -> "Some string" |> ],
     "Text",
     SameTest -> SameQ,
     TestID   -> "DeterminePromptType-StringContent@@Tests/Prompts.wlt:301,1-306,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`determinePromptType[ <| "Content" -> Identity |> ],
+    Wolfram`AgentTools`MCPServerObject`Private`determinePromptType[ <| "Content" -> Identity |> ],
     "Function",
     SameTest -> SameQ,
     TestID   -> "DeterminePromptType-FunctionContent@@Tests/Prompts.wlt:308,1-313,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`determinePromptType[ <| |> ],
+    Wolfram`AgentTools`MCPServerObject`Private`determinePromptType[ <| |> ],
     "Text",
     SameTest -> SameQ,
     TestID   -> "DeterminePromptType-EmptyDefault@@Tests/Prompts.wlt:315,1-320,2"
@@ -323,7 +323,7 @@ VerificationTest[
 (* MCPServerObject PromptData Property *)
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`getPromptData[
+    Wolfram`AgentTools`MCPServerObject`Private`getPromptData[
         <| "LLMEvaluator" -> <| "MCPPrompts" -> { "WolframSearch" } |> |>
     ],
     { $DefaultMCPPrompts[ "WolframSearch" ] },
@@ -332,7 +332,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`getPromptData[
+    Wolfram`AgentTools`MCPServerObject`Private`getPromptData[
         <| "LLMEvaluator" -> <| |> |>
     ],
     { },
@@ -341,7 +341,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`getPromptData[
+    Wolfram`AgentTools`MCPServerObject`Private`getPromptData[
         <| "LLMEvaluator" -> <| "MCPPrompts" -> { "WolframSearch", "WolframLanguageSearch" } |> |>
     ],
     { $DefaultMCPPrompts[ "WolframSearch" ], $DefaultMCPPrompts[ "WolframLanguageSearch" ] },
@@ -350,7 +350,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`getPromptData[
+    Wolfram`AgentTools`MCPServerObject`Private`getPromptData[
         <| "LLMEvaluator" -> <| "MCPPrompts" -> { <| "Name" -> "Custom", "Content" -> "Test" |> } |> |>
     ],
     { <| "Name" -> "Custom", "Content" -> "Test", "Type" -> "Text" |> },
@@ -362,11 +362,11 @@ VerificationTest[
 (* Deprecation Warning *)
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`getPromptData[
+    Wolfram`AgentTools`MCPServerObject`Private`getPromptData[
         <| "LLMEvaluator" -> <| "PromptData" -> { <| "Name" -> "Test" |> } |> |>
     ],
     _Failure,
-    { MCPServer::DeprecatedPromptData },
+    { AgentTools::DeprecatedPromptData },
     SameTest -> MatchQ,
     TestID   -> "GetPromptData-DeprecatedPromptDataFails@@Tests/Prompts.wlt:364,1-372,2"
 ]
@@ -375,7 +375,7 @@ VerificationTest[
 (* makePromptContent (Phase 3) *)
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+    Wolfram`AgentTools`StartMCPServer`Private`makePromptContent[
         <| "Type" -> "Function", "Content" -> Function[ args, "Result: " <> args[ "query" ] ] |>,
         <| "query" -> "test" |>
     ],
@@ -385,7 +385,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+    Wolfram`AgentTools`StartMCPServer`Private`makePromptContent[
         <| "Type" -> "Text", "Content" -> "Static content" |>,
         <| |>
     ],
@@ -395,7 +395,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+    Wolfram`AgentTools`StartMCPServer`Private`makePromptContent[
         <| "Content" -> "No explicit type" |>,
         <| |>
     ],
@@ -405,7 +405,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+    Wolfram`AgentTools`StartMCPServer`Private`makePromptContent[
         <| "Content" -> StringTemplate[ "Hello, `name`!" ] |>,
         <| "name" -> "World" |>
     ],
@@ -415,7 +415,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+    Wolfram`AgentTools`StartMCPServer`Private`makePromptContent[
         "Plain string",
         <| |>
     ],
@@ -425,7 +425,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+    Wolfram`AgentTools`StartMCPServer`Private`makePromptContent[
         12345,
         <| |>
     ],
@@ -439,7 +439,7 @@ VerificationTest[
 
 (* Text-only arrays should be consolidated into a single text object *)
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`consolidateTextContent[
+    Wolfram`AgentTools`StartMCPServer`Private`consolidateTextContent[
         {
             <| "type" -> "text", "text" -> "Hello " |>,
             <| "type" -> "text", "text" -> "World!" |>
@@ -452,7 +452,7 @@ VerificationTest[
 
 (* Single text item should be consolidated to object *)
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`consolidateTextContent[
+    Wolfram`AgentTools`StartMCPServer`Private`consolidateTextContent[
         { <| "type" -> "text", "text" -> "Single" |> }
     ],
     <| "type" -> "text", "text" -> "Single" |>,
@@ -462,7 +462,7 @@ VerificationTest[
 
 (* Arrays with non-text items (images) should have text extracted, images dropped *)
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`consolidateTextContent[
+    Wolfram`AgentTools`StartMCPServer`Private`consolidateTextContent[
         {
             <| "type" -> "text", "text" -> "Description: " |>,
             <| "type" -> "image", "data" -> "base64data", "mimeType" -> "image/png" |>
@@ -475,7 +475,7 @@ VerificationTest[
 
 (* makePromptContent should use consolidateTextContent for arrays *)
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+    Wolfram`AgentTools`StartMCPServer`Private`makePromptContent[
         {
             <| "type" -> "text", "text" -> "Part 1 " |>,
             <| "type" -> "text", "text" -> "Part 2" |>
@@ -489,7 +489,7 @@ VerificationTest[
 
 (* makePromptContent with Content key containing array *)
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+    Wolfram`AgentTools`StartMCPServer`Private`makePromptContent[
         <| "Content" -> {
             <| "type" -> "text", "text" -> "A" |>,
             <| "type" -> "text", "text" -> "B" |>
@@ -505,7 +505,7 @@ VerificationTest[
 (* makePromptData (Phase 3) *)
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`makePromptData[ {
+    Wolfram`AgentTools`StartMCPServer`Private`makePromptData[ {
         <| "Name" -> "Test", "Description" -> "A test prompt" |>
     } ],
     { <| "name" -> "Test", "description" -> "A test prompt" |> },
@@ -514,7 +514,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`makePromptData[ {
+    Wolfram`AgentTools`StartMCPServer`Private`makePromptData[ {
         <| "name" -> "Test", "description" -> "A test prompt" |>
     } ],
     { <| "name" -> "Test", "description" -> "A test prompt" |> },
@@ -523,7 +523,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`makePromptData[ {
+    Wolfram`AgentTools`StartMCPServer`Private`makePromptData[ {
         <|
             "Name" -> "Test",
             "Description" -> "A test prompt",
@@ -546,7 +546,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`makePromptData[ {
+    Wolfram`AgentTools`StartMCPServer`Private`makePromptData[ {
         <| "Name" -> "NoArgs" |>
     } ],
     { <| "name" -> "NoArgs", "description" -> "" |> },
@@ -558,7 +558,7 @@ VerificationTest[
 (* normalizeArguments (Phase 3) *)
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`normalizeArguments[ {
+    Wolfram`AgentTools`StartMCPServer`Private`normalizeArguments[ {
         <| "Name" -> "query", "Description" -> "The search query", "Required" -> True |>
     } ],
     { <| "name" -> "query", "description" -> "The search query", "required" -> True |> },
@@ -567,7 +567,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`normalizeArguments[ {
+    Wolfram`AgentTools`StartMCPServer`Private`normalizeArguments[ {
         <| "name" -> "query", "description" -> "The search query", "required" -> True |>
     } ],
     { <| "name" -> "query", "description" -> "The search query", "required" -> True |> },
@@ -576,7 +576,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`normalizeArguments[ {
+    Wolfram`AgentTools`StartMCPServer`Private`normalizeArguments[ {
         <| "Name" -> "arg1" |>,
         <| "Name" -> "arg2", "Required" -> False |>
     } ],
@@ -589,7 +589,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`normalizeArguments[ { } ],
+    Wolfram`AgentTools`StartMCPServer`Private`normalizeArguments[ { } ],
     { },
     SameTest -> SameQ,
     TestID   -> "NormalizeArguments-Empty@@Tests/Prompts.wlt:591,1-596,2"
@@ -599,7 +599,7 @@ VerificationTest[
 (* normalizeArgument (Phase 3) *)
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`normalizeArgument[
+    Wolfram`AgentTools`StartMCPServer`Private`normalizeArgument[
         <| "Name" -> "query", "Description" -> "The query", "Required" -> True |>
     ],
     <| "name" -> "query", "description" -> "The query", "required" -> True |>,
@@ -608,7 +608,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`normalizeArgument[
+    Wolfram`AgentTools`StartMCPServer`Private`normalizeArgument[
         <| "Name" -> "query" |>
     ],
     <| "name" -> "query", "description" -> "", "required" -> False |>,
@@ -617,7 +617,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`normalizeArgument[
+    Wolfram`AgentTools`StartMCPServer`Private`normalizeArgument[
         <| "name" -> "query", "description" -> "Lowercase keys", "required" -> True |>
     ],
     <| "name" -> "query", "description" -> "Lowercase keys", "required" -> True |>,
@@ -725,7 +725,7 @@ VerificationTest[
 (* catchPromptFunction *)
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`catchPromptFunction[
+    Wolfram`AgentTools`StartMCPServer`Private`catchPromptFunction[
         Function[ args, "Success: " <> args[ "query" ] ],
         <| "query" -> "test" |>
     ],
@@ -735,7 +735,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`catchPromptFunction[
+    Wolfram`AgentTools`StartMCPServer`Private`catchPromptFunction[
         Function[ args, Failure[ "TestError", <| "MessageTemplate" -> "Something went wrong" |> ] ],
         <| "query" -> "test" |>
     ],
@@ -745,8 +745,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`catchPromptFunction[
-        Function[ args, Wolfram`MCPServer`Common`throwFailure[ "InvalidArguments", MCPServer, "test" ] ],
+    Wolfram`AgentTools`StartMCPServer`Private`catchPromptFunction[
+        Function[ args, Wolfram`AgentTools`Common`throwFailure[ "InvalidArguments", MCPServer, "test" ] ],
         <| "query" -> "test" |>
     ],
     _String,
@@ -758,7 +758,7 @@ VerificationTest[
 (* formatPromptError *)
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`formatPromptError[
+    Wolfram`AgentTools`StartMCPServer`Private`formatPromptError[
         Failure[ "TestError", <| "MessageTemplate" -> "Test message" |> ]
     ],
     "[Error] Test message",
@@ -768,7 +768,7 @@ VerificationTest[
 
 VerificationTest[
     StringMatchQ[
-        Wolfram`MCPServer`StartMCPServer`Private`formatPromptError[
+        Wolfram`AgentTools`StartMCPServer`Private`formatPromptError[
             Failure[ "TestError", <| |> ]
         ],
         "[Error] " ~~ __
@@ -779,7 +779,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`formatPromptError[ "not a failure" ],
+    Wolfram`AgentTools`StartMCPServer`Private`formatPromptError[ "not a failure" ],
     "[Error] Failed to generate prompt content.",
     SameTest -> SameQ,
     TestID   -> "FormatPromptError-NonFailure@@Tests/Prompts.wlt:781,1-786,2"
@@ -789,7 +789,7 @@ VerificationTest[
 (* makePromptContent with Error Handling *)
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+    Wolfram`AgentTools`StartMCPServer`Private`makePromptContent[
         <| "Type" -> "Function", "Content" -> Function[ args, Failure[ "TestError", <| "MessageTemplate" -> "Function failed" |> ] ] |>,
         <| "query" -> "test" |>
     ],
@@ -799,8 +799,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    StringQ @ Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
-        <| "Type" -> "Function", "Content" -> Function[ args, Wolfram`MCPServer`Common`throwFailure[ "InvalidArguments", MCPServer, "test" ] ] |>,
+    StringQ @ Wolfram`AgentTools`StartMCPServer`Private`makePromptContent[
+        <| "Type" -> "Function", "Content" -> Function[ args, Wolfram`AgentTools`Common`throwFailure[ "InvalidArguments", MCPServer, "test" ] ] |>,
         <| "query" -> "test" |>
     ][ "text" ],
     True,
@@ -815,14 +815,14 @@ VerificationTest[
 (* formatSearchPrompt *)
 
 VerificationTest[
-    Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[ "test query", "some results" ],
+    Wolfram`AgentTools`Prompts`Search`Private`formatSearchPrompt[ "test query", "some results" ],
     "<search-query>test query</search-query>\n<search-results>\nsome results\n</search-results>\nUse the above search results to answer the user's query below.\n<user-query>test query</user-query>",
     SameTest -> SameQ,
     TestID   -> "FormatSearchPrompt-BasicOutput@@Tests/Prompts.wlt:817,1-822,2"
 ]
 
 VerificationTest[
-    StringQ @ Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[ "query", "results" ],
+    StringQ @ Wolfram`AgentTools`Prompts`Search`Private`formatSearchPrompt[ "query", "results" ],
     True,
     SameTest -> SameQ,
     TestID   -> "FormatSearchPrompt-ReturnsString@@Tests/Prompts.wlt:824,1-829,2"
@@ -830,7 +830,7 @@ VerificationTest[
 
 VerificationTest[
     StringContainsQ[
-        Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[ "my query", "my results" ],
+        Wolfram`AgentTools`Prompts`Search`Private`formatSearchPrompt[ "my query", "my results" ],
         "<search-query>my query</search-query>"
     ],
     True,
@@ -840,7 +840,7 @@ VerificationTest[
 
 VerificationTest[
     StringContainsQ[
-        Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[ "my query", "my results" ],
+        Wolfram`AgentTools`Prompts`Search`Private`formatSearchPrompt[ "my query", "my results" ],
         "<search-results>\nmy results\n</search-results>"
     ],
     True,
@@ -850,7 +850,7 @@ VerificationTest[
 
 VerificationTest[
     StringContainsQ[
-        Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[ "my query", "my results" ],
+        Wolfram`AgentTools`Prompts`Search`Private`formatSearchPrompt[ "my query", "my results" ],
         "<user-query>my query</user-query>"
     ],
     True,
@@ -860,7 +860,7 @@ VerificationTest[
 
 VerificationTest[
     StringCount[
-        Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[ "duplicated", "results" ],
+        Wolfram`AgentTools`Prompts`Search`Private`formatSearchPrompt[ "duplicated", "results" ],
         "duplicated"
     ],
     2,
@@ -870,7 +870,7 @@ VerificationTest[
 
 VerificationTest[
     StringContainsQ[
-        Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[ "test", "test" ],
+        Wolfram`AgentTools`Prompts`Search`Private`formatSearchPrompt[ "test", "test" ],
         "Use the above search results to answer the user's query below."
     ],
     True,
@@ -947,14 +947,14 @@ skipIfGitHubActions @ VerificationTest[
 (* formatNotebookPrompt *)
 
 VerificationTest[
-    Wolfram`MCPServer`Prompts`Notebook`Private`formatNotebookPrompt[ "/path/to/file.nb", "# Heading\n\nContent" ],
+    Wolfram`AgentTools`Prompts`Notebook`Private`formatNotebookPrompt[ "/path/to/file.nb", "# Heading\n\nContent" ],
     "<notebook-path>/path/to/file.nb</notebook-path>\n<notebook-content>\n# Heading\n\nContent\n</notebook-content>",
     SameTest -> SameQ,
     TestID   -> "FormatNotebookPrompt-BasicOutput@@Tests/Prompts.wlt:949,1-954,2"
 ]
 
 VerificationTest[
-    StringQ @ Wolfram`MCPServer`Prompts`Notebook`Private`formatNotebookPrompt[ "/path/to/file.nb", "content" ],
+    StringQ @ Wolfram`AgentTools`Prompts`Notebook`Private`formatNotebookPrompt[ "/path/to/file.nb", "content" ],
     True,
     SameTest -> SameQ,
     TestID   -> "FormatNotebookPrompt-ReturnsString@@Tests/Prompts.wlt:956,1-961,2"
@@ -962,7 +962,7 @@ VerificationTest[
 
 VerificationTest[
     StringContainsQ[
-        Wolfram`MCPServer`Prompts`Notebook`Private`formatNotebookPrompt[ "/my/path.nb", "my content" ],
+        Wolfram`AgentTools`Prompts`Notebook`Private`formatNotebookPrompt[ "/my/path.nb", "my content" ],
         "<notebook-path>/my/path.nb</notebook-path>"
     ],
     True,
@@ -972,7 +972,7 @@ VerificationTest[
 
 VerificationTest[
     StringContainsQ[
-        Wolfram`MCPServer`Prompts`Notebook`Private`formatNotebookPrompt[ "/my/path.nb", "my content" ],
+        Wolfram`AgentTools`Prompts`Notebook`Private`formatNotebookPrompt[ "/my/path.nb", "my content" ],
         "<notebook-content>\nmy content\n</notebook-content>"
     ],
     True,
@@ -985,7 +985,7 @@ VerificationTest[
 
 (* Multimodal content arrays are consolidated to single text object, images dropped *)
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+    Wolfram`AgentTools`StartMCPServer`Private`makePromptContent[
         { <| "type" -> "text", "text" -> "hello" |>, <| "type" -> "image", "data" -> "abc", "mimeType" -> "image/png" |> },
         <| |>
     ],
@@ -996,7 +996,7 @@ VerificationTest[
 
 (* Structured content with Content key is also consolidated *)
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`makePromptContent[
+    Wolfram`AgentTools`StartMCPServer`Private`makePromptContent[
         <| "Content" -> { <| "type" -> "text", "text" -> "hello" |> } |>,
         <| |>
     ],
@@ -1006,7 +1006,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[
+    Wolfram`AgentTools`Prompts`Search`Private`formatSearchPrompt[
         "test query",
         <| "Content" -> {
             <| "type" -> "text", "text" -> "some results" |>,
@@ -1022,7 +1022,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[
+    Wolfram`AgentTools`Prompts`Search`Private`formatSearchPrompt[
         "my query",
         <| "Content" -> {
             <| "type" -> "text", "text" -> "text results" |>
@@ -1034,7 +1034,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Length @ Wolfram`MCPServer`Prompts`Search`Private`formatSearchPrompt[
+    Length @ Wolfram`AgentTools`Prompts`Search`Private`formatSearchPrompt[
         "query",
         <| "Content" -> {
             <| "type" -> "text", "text" -> "results" |>,

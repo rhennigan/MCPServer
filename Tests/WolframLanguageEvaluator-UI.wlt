@@ -9,7 +9,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/WolframLanguageEvaluator-UI.wlt:11,1-16,2"
@@ -26,14 +26,14 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*String Input*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`WolframLanguageEvaluator`Private`toContentList[ "hello" ],
+    Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`toContentList[ "hello" ],
     { <| "type" -> "text", "text" -> "hello" |> },
     SameTest -> MatchQ,
     TestID   -> "toContentList-String@@Tests/WolframLanguageEvaluator-UI.wlt:28,1-33,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`WolframLanguageEvaluator`Private`toContentList[ "" ],
+    Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`toContentList[ "" ],
     { <| "type" -> "text", "text" -> "" |> },
     SameTest -> MatchQ,
     TestID   -> "toContentList-EmptyString@@Tests/WolframLanguageEvaluator-UI.wlt:35,1-40,2"
@@ -43,7 +43,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*List Input*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`WolframLanguageEvaluator`Private`toContentList[ { <| "type" -> "text", "text" -> "a" |> } ],
+    Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`toContentList[ { <| "type" -> "text", "text" -> "a" |> } ],
     { <| "type" -> "text", "text" -> "a" |> },
     SameTest -> MatchQ,
     TestID   -> "toContentList-List@@Tests/WolframLanguageEvaluator-UI.wlt:45,1-50,2"
@@ -53,7 +53,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Association with Content Key*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`WolframLanguageEvaluator`Private`toContentList[
+    Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`toContentList[
         <| "Content" -> { <| "type" -> "text", "text" -> "x" |>, <| "type" -> "image", "data" -> "abc" |> } |>
     ],
     { <| "type" -> "text", "text" -> "x" |>, <| "type" -> "image", "data" -> "abc" |> },
@@ -65,14 +65,14 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*toOutputBoxes*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`WolframLanguageEvaluator`Private`toOutputBoxes[ HoldForm[ 1 + 1 ] ],
+    Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`toOutputBoxes[ HoldForm[ 1 + 1 ] ],
     _,
     SameTest -> MatchQ,
     TestID   -> "toOutputBoxes-HoldForm@@Tests/WolframLanguageEvaluator-UI.wlt:67,1-72,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`WolframLanguageEvaluator`Private`toOutputBoxes[ HoldCompleteForm[ {1, 2, 3} ] ],
+    Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`toOutputBoxes[ HoldCompleteForm[ {1, 2, 3} ] ],
     _,
     SameTest -> MatchQ,
     TestID   -> "toOutputBoxes-HoldCompleteForm@@Tests/WolframLanguageEvaluator-UI.wlt:74,1-79,2"
@@ -82,14 +82,14 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*Config Constants*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`WolframLanguageEvaluator`Private`$deployedNotebookRoot,
+    Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`$deployedNotebookRoot,
     _String,
     SameTest -> MatchQ,
     TestID   -> "deployedNotebookRoot-IsString@@Tests/WolframLanguageEvaluator-UI.wlt:84,1-89,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`WolframLanguageEvaluator`Private`$outputSizeLimit,
+    Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`$outputSizeLimit,
     _Integer?Positive,
     SameTest -> MatchQ,
     TestID   -> "outputSizeLimit-IsPositiveInteger@@Tests/WolframLanguageEvaluator-UI.wlt:91,1-96,2"
@@ -103,7 +103,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Without UI Support*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = False },
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = False },
         $DefaultMCPTools[ "WolframLanguageEvaluator" ][ <| "code" -> "1+1", "timeConstraint" -> 30 |> ]
     ],
     _String | KeyValuePattern[ "Content" -> { __Association } ],
@@ -115,7 +115,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*With UI Support - Returns Content*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
         $evalUIResult = $DefaultMCPTools[ "WolframLanguageEvaluator" ][ <| "code" -> "1+1", "timeConstraint" -> 30 |> ]
     ],
     _String | KeyValuePattern[ "Content" -> { __Association } ],
@@ -141,14 +141,14 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Returns $Failed for Non-Matching Input*)
 VerificationTest[
-    Quiet @ Wolfram`MCPServer`Tools`WolframLanguageEvaluator`Private`makeEvaluatorUIResult[ "1+1", "plain string" ],
+    Quiet @ Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`makeEvaluatorUIResult[ "1+1", "plain string" ],
     $Failed | _Failure,
     SameTest -> MatchQ,
     TestID   -> "makeEvaluatorUIResult-PlainStringFails@@Tests/WolframLanguageEvaluator-UI.wlt:143,1-148,2"
 ]
 
 VerificationTest[
-    Quiet @ Wolfram`MCPServer`Tools`WolframLanguageEvaluator`Private`makeEvaluatorUIResult[ "1+1", $Failed ],
+    Quiet @ Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`makeEvaluatorUIResult[ "1+1", $Failed ],
     $Failed | _Failure,
     SameTest -> MatchQ,
     TestID   -> "makeEvaluatorUIResult-FailedInput@@Tests/WolframLanguageEvaluator-UI.wlt:150,1-155,2"
@@ -158,7 +158,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Returns $Failed When Missing Keys*)
 VerificationTest[
-    Quiet @ Wolfram`MCPServer`Tools`WolframLanguageEvaluator`Private`makeEvaluatorUIResult[
+    Quiet @ Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`makeEvaluatorUIResult[
         "1+1",
         <| "String" -> "text only" |>
     ],
@@ -168,7 +168,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Quiet @ Wolfram`MCPServer`Tools`WolframLanguageEvaluator`Private`makeEvaluatorUIResult[
+    Quiet @ Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`makeEvaluatorUIResult[
         "1+1",
         <| "Result" -> HoldForm[ 2 ] |>
     ],

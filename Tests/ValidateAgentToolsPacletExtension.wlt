@@ -9,7 +9,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/ValidateAgentToolsPacletExtension.wlt:11,1-16,2"
@@ -106,7 +106,7 @@ VerificationTest[
 
 (* Clear definition cache before validation tests *)
 VerificationTest[
-    Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
+    Wolfram`AgentTools`Common`clearPacletDefinitionCache[ ],
     <| |>,
     SameTest -> MatchQ,
     TestID   -> "Setup-ClearCache@@Tests/ValidateAgentToolsPacletExtension.wlt:108,1-113,2"
@@ -384,7 +384,7 @@ VerificationTest[
     PacletDirectoryUnload @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletBadDecl" };
     PacletDirectoryUnload @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletDupFiles" };
     PacletDirectoryUnload @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletNoRoot" };
-    Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
+    Wolfram`AgentTools`Common`clearPacletDefinitionCache[ ],
     <| |>,
     SameTest -> MatchQ,
     TestID   -> "Cleanup@@Tests/ValidateAgentToolsPacletExtension.wlt:378,1-391,2"

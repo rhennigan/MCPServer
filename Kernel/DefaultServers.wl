@@ -1,12 +1,12 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`DefaultServers`" ];
+BeginPackage[ "Wolfram`AgentTools`DefaultServers`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
+Needs[ "Wolfram`AgentTools`"        ];
+Needs[ "Wolfram`AgentTools`Common`" ];
 
-Needs[ "Wolfram`MCPServer`CreateMCPServer`" -> None ];
+Needs[ "Wolfram`AgentTools`CreateMCPServer`" -> None ];
 Needs[ "Wolfram`Chatbook`" -> "cb`" ];
 
 (* ::**************************************************************************************************************:: *)

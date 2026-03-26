@@ -1,10 +1,10 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`MCPServerObject`" ];
+BeginPackage[ "Wolfram`AgentTools`MCPServerObject`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
+Needs[ "Wolfram`AgentTools`"        ];
+Needs[ "Wolfram`AgentTools`Common`" ];
 
 $ContextAliases[ "cb`" ] = "Wolfram`Chatbook`";
 $ContextAliases[ "sp`" ] = "System`Private`";
@@ -14,7 +14,7 @@ $ContextAliases[ "sp`" ] = "System`Private`";
 (*Argument Patterns*)
 $defaultCommandLineArguments = {
     "-run",
-    "PacletSymbol[\"Wolfram/MCPServer\",\"Wolfram`MCPServer`StartMCPServer\"][]",
+    "PacletSymbol[\"Wolfram/AgentTools\",\"Wolfram`AgentTools`StartMCPServer\"][]",
     "-noinit",
     "-noprompt"
 };

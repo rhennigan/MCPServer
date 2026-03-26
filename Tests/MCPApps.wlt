@@ -12,7 +12,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/MCPApps.wlt:14,1-19,2"
@@ -30,7 +30,7 @@ VerificationTest[
 (* ::Subsubsection::Closed:: *)
 (*UI-Capable Clients*)
 VerificationTest[
-    Wolfram`MCPServer`Common`clientSupportsUIQ @ <|
+    Wolfram`AgentTools`Common`clientSupportsUIQ @ <|
         "method" -> "initialize",
         "params" -> <|
             "protocolVersion" -> "2024-11-05",
@@ -53,7 +53,7 @@ VerificationTest[
 (* ::Subsubsection::Closed:: *)
 (*Non-UI Clients*)
 VerificationTest[
-    Wolfram`MCPServer`Common`clientSupportsUIQ @ <|
+    Wolfram`AgentTools`Common`clientSupportsUIQ @ <|
         "method" -> "initialize",
         "params" -> <|
             "protocolVersion" -> "2024-11-05",
@@ -67,7 +67,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`clientSupportsUIQ @ <|
+    Wolfram`AgentTools`Common`clientSupportsUIQ @ <|
         "method" -> "initialize",
         "params" -> <|
             "protocolVersion" -> "2024-11-05",
@@ -83,7 +83,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`clientSupportsUIQ @ <|
+    Wolfram`AgentTools`Common`clientSupportsUIQ @ <|
         "method" -> "initialize",
         "params" -> <|
             "protocolVersion" -> "2024-11-05",
@@ -96,7 +96,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`clientSupportsUIQ @ <| "method" -> "initialize" |>,
+    Wolfram`AgentTools`Common`clientSupportsUIQ @ <| "method" -> "initialize" |>,
     False,
     SameTest -> Equal,
     TestID   -> "ClientSupportsUIQ-NoParams@@Tests/MCPApps.wlt:98,1-103,2"
@@ -106,14 +106,14 @@ VerificationTest[
 (* ::Subsubsection::Closed:: *)
 (*Invalid Inputs*)
 VerificationTest[
-    Wolfram`MCPServer`Common`clientSupportsUIQ @ "not an association",
+    Wolfram`AgentTools`Common`clientSupportsUIQ @ "not an association",
     False,
     SameTest -> Equal,
     TestID   -> "ClientSupportsUIQ-NonAssociation@@Tests/MCPApps.wlt:108,1-113,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`clientSupportsUIQ @ Null,
+    Wolfram`AgentTools`Common`clientSupportsUIQ @ Null,
     False,
     SameTest -> Equal,
     TestID   -> "ClientSupportsUIQ-Null@@Tests/MCPApps.wlt:115,1-120,2"
@@ -129,7 +129,7 @@ VerificationTest[
 VerificationTest[
     Block[ { $Environment },
         Unset[ $Environment ];
-        Wolfram`MCPServer`Common`mcpAppsEnabledQ[ ]
+        Wolfram`AgentTools`Common`mcpAppsEnabledQ[ ]
     ],
     True,
     SameTest -> Equal,
@@ -142,7 +142,7 @@ VerificationTest[
 VerificationTest[
     Block[ { Environment },
         Environment[ "MCP_APPS_ENABLED" ] = "false";
-        Wolfram`MCPServer`Common`mcpAppsEnabledQ[ ]
+        Wolfram`AgentTools`Common`mcpAppsEnabledQ[ ]
     ],
     False,
     SameTest -> Equal,
@@ -155,7 +155,7 @@ VerificationTest[
 VerificationTest[
     Block[ { Environment },
         Environment[ "MCP_APPS_ENABLED" ] = "False";
-        Wolfram`MCPServer`Common`mcpAppsEnabledQ[ ]
+        Wolfram`AgentTools`Common`mcpAppsEnabledQ[ ]
     ],
     False,
     SameTest -> Equal,
@@ -165,7 +165,7 @@ VerificationTest[
 VerificationTest[
     Block[ { Environment },
         Environment[ "MCP_APPS_ENABLED" ] = "FALSE";
-        Wolfram`MCPServer`Common`mcpAppsEnabledQ[ ]
+        Wolfram`AgentTools`Common`mcpAppsEnabledQ[ ]
     ],
     False,
     SameTest -> Equal,
@@ -178,7 +178,7 @@ VerificationTest[
 VerificationTest[
     Block[ { Environment },
         Environment[ "MCP_APPS_ENABLED" ] = "true";
-        Wolfram`MCPServer`Common`mcpAppsEnabledQ[ ]
+        Wolfram`AgentTools`Common`mcpAppsEnabledQ[ ]
     ],
     True,
     SameTest -> Equal,
@@ -188,7 +188,7 @@ VerificationTest[
 VerificationTest[
     Block[ { Environment },
         Environment[ "MCP_APPS_ENABLED" ] = "1";
-        Wolfram`MCPServer`Common`mcpAppsEnabledQ[ ]
+        Wolfram`AgentTools`Common`mcpAppsEnabledQ[ ]
     ],
     True,
     SameTest -> Equal,
@@ -200,13 +200,13 @@ VerificationTest[
 (*Integration: Disables $clientSupportsUI*)
 VerificationTest[
     Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI,
+        Wolfram`AgentTools`Common`$clientSupportsUI,
         Environment
     },
         Environment[ "MCP_APPS_ENABLED" ] = "false";
-        Wolfram`MCPServer`Common`$clientSupportsUI =
-            Wolfram`MCPServer`Common`mcpAppsEnabledQ[ ] &&
-            Wolfram`MCPServer`Common`clientSupportsUIQ @ <|
+        Wolfram`AgentTools`Common`$clientSupportsUI =
+            Wolfram`AgentTools`Common`mcpAppsEnabledQ[ ] &&
+            Wolfram`AgentTools`Common`clientSupportsUIQ @ <|
                 "params" -> <|
                     "capabilities" -> <|
                         "extensions" -> <|
@@ -217,7 +217,7 @@ VerificationTest[
                     |>
                 |>
             |>;
-        Wolfram`MCPServer`Common`$clientSupportsUI
+        Wolfram`AgentTools`Common`$clientSupportsUI
     ],
     False,
     SameTest -> Equal,
@@ -232,8 +232,8 @@ VerificationTest[
 (* ::Subsubsection::Closed:: *)
 (*Extensions Included for UI Clients*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
-        result = Wolfram`MCPServer`StartMCPServer`Private`initResponse[
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
+        result = Wolfram`AgentTools`StartMCPServer`Private`initResponse[
             "TestServer", "1.0.0", { }, { }, <| |>
         ];
         ! MissingQ @ result[ "capabilities", "extensions", "io.modelcontextprotocol/ui" ]
@@ -244,8 +244,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
-        result = Wolfram`MCPServer`StartMCPServer`Private`initResponse[
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
+        result = Wolfram`AgentTools`StartMCPServer`Private`initResponse[
             "TestServer", "1.0.0", { }, { }, <| |>
         ];
         result[ "capabilities", "extensions", "io.modelcontextprotocol/ui" ]
@@ -256,8 +256,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
-        result = Wolfram`MCPServer`StartMCPServer`Private`initResponse[
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
+        result = Wolfram`AgentTools`StartMCPServer`Private`initResponse[
             "TestServer", "1.0.0", { }, { }, <| |>
         ];
         result[ "capabilities", "extensions", "io.modelcontextprotocol/ui", "mimeTypes" ]
@@ -271,8 +271,8 @@ VerificationTest[
 (* ::Subsubsection::Closed:: *)
 (*Extensions Omitted for Non-UI Clients*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = False },
-        result = Wolfram`MCPServer`StartMCPServer`Private`initResponse[
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = False },
+        result = Wolfram`AgentTools`StartMCPServer`Private`initResponse[
             "TestServer", "1.0.0", { }, { }, <| |>
         ];
         MissingQ @ result[ "capabilities", "extensions" ]
@@ -283,8 +283,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI },
-        result = Wolfram`MCPServer`StartMCPServer`Private`initResponse[
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI },
+        result = Wolfram`AgentTools`StartMCPServer`Private`initResponse[
             "TestServer", "1.0.0", { }, { }, <| |>
         ];
         MissingQ @ result[ "capabilities", "extensions" ]
@@ -298,8 +298,8 @@ VerificationTest[
 (* ::Subsubsection::Closed:: *)
 (*Standard Response Fields*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
-        result = Wolfram`MCPServer`StartMCPServer`Private`initResponse[
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
+        result = Wolfram`AgentTools`StartMCPServer`Private`initResponse[
             "TestServer", "1.0.0", { }, { }, <| |>
         ];
         { KeyExistsQ[ result, "protocolVersion" ], KeyExistsQ[ result, "capabilities" ], KeyExistsQ[ result, "serverInfo" ] }
@@ -310,8 +310,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = False },
-        result = Wolfram`MCPServer`StartMCPServer`Private`initResponse[
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = False },
+        result = Wolfram`AgentTools`StartMCPServer`Private`initResponse[
             "TestServer", "1.0.0", { }, { }, <| |>
         ];
         result[ "serverInfo" ]
@@ -325,8 +325,8 @@ VerificationTest[
 (* ::Subsubsection::Closed:: *)
 (*Backward Compatibility*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = False },
-        result = Wolfram`MCPServer`StartMCPServer`Private`initResponse[
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = False },
+        result = Wolfram`AgentTools`StartMCPServer`Private`initResponse[
             "TestServer", "1.0.0", { }, { }
         ];
         AssociationQ @ result && KeyExistsQ[ result, "protocolVersion" ]
@@ -349,7 +349,7 @@ VerificationTest[
         htmlFile = FileNameJoin[ { dir, "test-app.html" } ];
         WriteString[ htmlFile, "<!DOCTYPE html><html><body>Test</body></html>" ];
         Close @ htmlFile;
-        result = Wolfram`MCPServer`Common`loadUIResource @ htmlFile;
+        result = Wolfram`AgentTools`Common`loadUIResource @ htmlFile;
         DeleteDirectory[ dir, DeleteContents -> True ];
         result
     ],
@@ -376,7 +376,7 @@ VerificationTest[
         Close @ htmlFile;
         WriteString[ jsonFile, "{\"ui\":{\"prefersBorder\":true,\"csp\":{\"connectDomains\":[]}}}" ];
         Close @ jsonFile;
-        result = Wolfram`MCPServer`Common`loadUIResource @ htmlFile;
+        result = Wolfram`AgentTools`Common`loadUIResource @ htmlFile;
         DeleteDirectory[ dir, DeleteContents -> True ];
         result
     ],
@@ -400,7 +400,7 @@ VerificationTest[
         htmlFile = FileNameJoin[ { dir, "wolframalpha-viewer.html" } ];
         WriteString[ htmlFile, "<html></html>" ];
         Close @ htmlFile;
-        result = Wolfram`MCPServer`Common`loadUIResource @ htmlFile;
+        result = Wolfram`AgentTools`Common`loadUIResource @ htmlFile;
         DeleteDirectory[ dir, DeleteContents -> True ];
         First @ result
     ],
@@ -418,7 +418,7 @@ VerificationTest[
         htmlFile = FileNameJoin[ { dir, "no-meta.html" } ];
         WriteString[ htmlFile, "<html></html>" ];
         Close @ htmlFile;
-        result = Wolfram`MCPServer`Common`loadUIResource @ htmlFile;
+        result = Wolfram`AgentTools`Common`loadUIResource @ htmlFile;
         DeleteDirectory[ dir, DeleteContents -> True ];
         Last[ result ][ "meta" ]
     ],
@@ -435,9 +435,9 @@ VerificationTest[
 (* ::Subsubsection::Closed:: *)
 (*Loads From Paclet Assets*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        AssociationQ @ Wolfram`MCPServer`Common`$uiResourceRegistry
+    Block[ { Wolfram`AgentTools`Common`$uiResourceRegistry },
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        AssociationQ @ Wolfram`AgentTools`Common`$uiResourceRegistry
     ],
     True,
     SameTest -> Equal,
@@ -445,9 +445,9 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Sort @ Keys @ Wolfram`MCPServer`Common`$uiResourceRegistry
+    Block[ { Wolfram`AgentTools`Common`$uiResourceRegistry },
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Sort @ Keys @ Wolfram`AgentTools`Common`$uiResourceRegistry
     ],
     { "ui://wolfram/evaluator-viewer", "ui://wolfram/mcp-apps-test", "ui://wolfram/notebook-viewer", "ui://wolfram/wolframalpha-viewer" },
     SameTest -> Equal,
@@ -455,9 +455,9 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        StringQ @ Wolfram`MCPServer`Common`$uiResourceRegistry[ "ui://wolfram/wolframalpha-viewer", "html" ]
+    Block[ { Wolfram`AgentTools`Common`$uiResourceRegistry },
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        StringQ @ Wolfram`AgentTools`Common`$uiResourceRegistry[ "ui://wolfram/wolframalpha-viewer", "html" ]
     ],
     True,
     SameTest -> Equal,
@@ -465,9 +465,9 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`Common`$uiResourceRegistry[ "ui://wolfram/wolframalpha-viewer", "mimeType" ]
+    Block[ { Wolfram`AgentTools`Common`$uiResourceRegistry },
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`Common`$uiResourceRegistry[ "ui://wolfram/wolframalpha-viewer", "mimeType" ]
     ],
     "text/html;profile=mcp-app",
     SameTest -> Equal,
@@ -478,9 +478,9 @@ VerificationTest[
 (* ::Subsubsection::Closed:: *)
 (*JSON Metadata Loaded*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`Common`$uiResourceRegistry[ "ui://wolfram/evaluator-viewer", "meta" ]
+    Block[ { Wolfram`AgentTools`Common`$uiResourceRegistry },
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`Common`$uiResourceRegistry[ "ui://wolfram/evaluator-viewer", "meta" ]
     ],
     KeyValuePattern[ "ui" -> KeyValuePattern[ "csp" -> _Association ] ],
     SameTest -> MatchQ,
@@ -488,9 +488,9 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`Common`$uiResourceRegistry[
+    Block[ { Wolfram`AgentTools`Common`$uiResourceRegistry },
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`Common`$uiResourceRegistry[
             "ui://wolfram/evaluator-viewer", "meta", "ui", "csp", "frameDomains"
         ]
     ],
@@ -503,13 +503,13 @@ VerificationTest[
 (* ::Subsubsection::Closed:: *)
 (*Graceful Fallback*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
+    Block[ { Wolfram`AgentTools`Common`$uiResourceRegistry },
         (* Use Block to temporarily override the paclet lookup to simulate missing assets *)
         Block[ { PacletObject },
-            PacletObject[ "Wolfram/MCPServer" ][ "AssetLocation", "Apps" ] := $Failed;
-            Wolfram`MCPServer`Common`initializeUIResources[ ]
+            PacletObject[ "Wolfram/AgentTools" ][ "AssetLocation", "Apps" ] := $Failed;
+            Wolfram`AgentTools`Common`initializeUIResources[ ]
         ];
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     ],
     <| |>,
     SameTest -> MatchQ,
@@ -525,11 +525,11 @@ VerificationTest[
 (*Returns Resources When UI Supported*)
 VerificationTest[
     Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`Common`listUIResources[ ]
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`Common`listUIResources[ ]
     ],
     { KeyValuePattern[ { "uri" -> _String, "name" -> _String, "mimeType" -> _String } ].. },
     SameTest -> MatchQ,
@@ -538,11 +538,11 @@ VerificationTest[
 
 VerificationTest[
     Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Length @ Wolfram`MCPServer`Common`listUIResources[ ]
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Length @ Wolfram`AgentTools`Common`listUIResources[ ]
     ],
     4,
     SameTest -> Equal,
@@ -554,11 +554,11 @@ VerificationTest[
 (*Returns Empty When UI Not Supported*)
 VerificationTest[
     Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = False,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = False,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`Common`listUIResources[ ]
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`Common`listUIResources[ ]
     ],
     { },
     SameTest -> Equal,
@@ -567,11 +567,11 @@ VerificationTest[
 
 VerificationTest[
     Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`Common`listUIResources[ ]
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`Common`listUIResources[ ]
     ],
     { },
     SameTest -> Equal,
@@ -583,11 +583,11 @@ VerificationTest[
 (*Resource Structure*)
 VerificationTest[
     Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Sort @ Map[ #[ "uri" ] &, Wolfram`MCPServer`Common`listUIResources[ ] ]
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Sort @ Map[ #[ "uri" ] &, Wolfram`AgentTools`Common`listUIResources[ ] ]
     ],
     { "ui://wolfram/evaluator-viewer", "ui://wolfram/mcp-apps-test", "ui://wolfram/notebook-viewer", "ui://wolfram/wolframalpha-viewer" },
     SameTest -> Equal,
@@ -603,11 +603,11 @@ VerificationTest[
 (*Valid URI Returns Content*)
 VerificationTest[
     Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`Common`readUIResource[
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`Common`readUIResource[
             <| "params" -> <| "uri" -> "ui://wolfram/wolframalpha-viewer" |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 1 |>
         ]
@@ -624,11 +624,11 @@ VerificationTest[
 
 VerificationTest[
     Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        result = Wolfram`MCPServer`Common`readUIResource[
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        result = Wolfram`AgentTools`Common`readUIResource[
             <| "params" -> <| "uri" -> "ui://wolfram/evaluator-viewer" |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 2 |>
         ];
@@ -644,11 +644,11 @@ VerificationTest[
 (*Unknown URI Returns Failure*)
 VerificationTest[
     Quiet @ Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`Common`readUIResource[
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`Common`readUIResource[
             <| "params" -> <| "uri" -> "ui://wolfram/nonexistent" |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 3 |>
         ]
@@ -660,11 +660,11 @@ VerificationTest[
 
 VerificationTest[
     Quiet @ Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`Common`readUIResource[
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`Common`readUIResource[
             <| "params" -> <| "uri" -> 123 |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 4 |>
         ]
@@ -683,11 +683,11 @@ VerificationTest[
 (*Valid URI Returns Result*)
 VerificationTest[
     Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`StartMCPServer`Private`handleResourceRead[
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`StartMCPServer`Private`handleResourceRead[
             <| "params" -> <| "uri" -> "ui://wolfram/wolframalpha-viewer" |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 1 |>
         ]
@@ -706,11 +706,11 @@ VerificationTest[
 (*Unknown URI Returns Error With Code -32602*)
 VerificationTest[
     Quiet @ Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`StartMCPServer`Private`handleResourceRead[
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`StartMCPServer`Private`handleResourceRead[
             <| "params" -> <| "uri" -> "ui://wolfram/nonexistent" |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 2 |>
         ]
@@ -729,11 +729,11 @@ VerificationTest[
 
 VerificationTest[
     Quiet @ Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        response = Wolfram`MCPServer`StartMCPServer`Private`handleResourceRead[
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        response = Wolfram`AgentTools`StartMCPServer`Private`handleResourceRead[
             <| "params" -> <| "uri" -> "ui://wolfram/nonexistent" |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 5 |>
         ];
@@ -749,11 +749,11 @@ VerificationTest[
 (*Invalid Params Returns Internal Error -32603*)
 VerificationTest[
     Quiet @ Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        response = Wolfram`MCPServer`StartMCPServer`Private`handleResourceRead[
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        response = Wolfram`AgentTools`StartMCPServer`Private`handleResourceRead[
             <| "params" -> <| "uri" -> 999 |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 6 |>
         ];
@@ -769,11 +769,11 @@ VerificationTest[
 (*Missing Params Returns Internal Error -32603*)
 VerificationTest[
     Quiet @ Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        response = Wolfram`MCPServer`StartMCPServer`Private`handleResourceRead[
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        response = Wolfram`AgentTools`StartMCPServer`Private`handleResourceRead[
             <| "params" -> <| |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 7 |>
         ];
@@ -790,11 +790,11 @@ VerificationTest[
 
 VerificationTest[
     Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`StartMCPServer`Private`handleMethod[
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`StartMCPServer`Private`handleMethod[
             "resources/list",
             <| "method" -> "resources/list", "params" -> <| |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 1 |>
@@ -809,11 +809,11 @@ VerificationTest[
 
 VerificationTest[
     Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = False,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = False,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`StartMCPServer`Private`handleMethod[
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`StartMCPServer`Private`handleMethod[
             "resources/list",
             <| "method" -> "resources/list", "params" -> <| |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 1 |>
@@ -832,11 +832,11 @@ VerificationTest[
 
 VerificationTest[
     Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`StartMCPServer`Private`handleMethod[
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`StartMCPServer`Private`handleMethod[
             "resources/read",
             <| "method" -> "resources/read", "params" -> <| "uri" -> "ui://wolfram/wolframalpha-viewer" |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 2 |>
@@ -855,11 +855,11 @@ VerificationTest[
 
 VerificationTest[
     Quiet @ Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`StartMCPServer`Private`handleMethod[
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`StartMCPServer`Private`handleMethod[
             "resources/read",
             <| "method" -> "resources/read", "params" -> <| "uri" -> "ui://wolfram/unknown" |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 3 |>
@@ -883,8 +883,8 @@ VerificationTest[
 (* ::Subsubsection::Closed:: *)
 (*Returns _meta for Known Tool When UI Supported*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
-        Wolfram`MCPServer`Common`toolUIMetadata[ "WolframAlpha" ]
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
+        Wolfram`AgentTools`Common`toolUIMetadata[ "WolframAlpha" ]
     ],
     { "_meta" -> _Association },
     SameTest -> MatchQ,
@@ -892,8 +892,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
-        meta = Wolfram`MCPServer`Common`toolUIMetadata[ "WolframAlpha" ];
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
+        meta = Wolfram`AgentTools`Common`toolUIMetadata[ "WolframAlpha" ];
         ("_meta" /. meta)[ "ui", "resourceUri" ]
     ],
     "ui://wolfram/wolframalpha-viewer",
@@ -902,8 +902,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
-        meta = Wolfram`MCPServer`Common`toolUIMetadata[ "WolframAlpha" ];
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
+        meta = Wolfram`AgentTools`Common`toolUIMetadata[ "WolframAlpha" ];
         ("_meta" /. meta)[ "ui", "visibility" ]
     ],
     { "model", "app" },
@@ -912,8 +912,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
-        Wolfram`MCPServer`Common`toolUIMetadata[ "WolframLanguageEvaluator" ]
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
+        Wolfram`AgentTools`Common`toolUIMetadata[ "WolframLanguageEvaluator" ]
     ],
     { "_meta" -> KeyValuePattern[ "ui" -> KeyValuePattern[ "resourceUri" -> "ui://wolfram/evaluator-viewer" ] ] },
     SameTest -> MatchQ,
@@ -924,8 +924,8 @@ VerificationTest[
 (* ::Subsubsection::Closed:: *)
 (*Returns Empty for Unknown or Unsupported Tools*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
-        Wolfram`MCPServer`Common`toolUIMetadata[ "UnknownTool" ]
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
+        Wolfram`AgentTools`Common`toolUIMetadata[ "UnknownTool" ]
     ],
     { },
     SameTest -> Equal,
@@ -933,8 +933,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = False },
-        Wolfram`MCPServer`Common`toolUIMetadata[ "WolframAlpha" ]
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = False },
+        Wolfram`AgentTools`Common`toolUIMetadata[ "WolframAlpha" ]
     ],
     { },
     SameTest -> Equal,
@@ -942,8 +942,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI },
-        Wolfram`MCPServer`Common`toolUIMetadata[ "WolframAlpha" ]
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI },
+        Wolfram`AgentTools`Common`toolUIMetadata[ "WolframAlpha" ]
     ],
     { },
     SameTest -> Equal,
@@ -958,12 +958,12 @@ VerificationTest[
 (* ::Subsubsection::Closed:: *)
 (*Adds _meta When UI Supported*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
         tools = {
             <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |>,
             <| "name" -> "OtherTool",    "description" -> "test", "inputSchema" -> <| |> |>
         };
-        result = Wolfram`MCPServer`Common`withToolUIMetadata @ tools;
+        result = Wolfram`AgentTools`Common`withToolUIMetadata @ tools;
         KeyExistsQ[ result[[ 1 ]], "_meta" ]
     ],
     True,
@@ -972,12 +972,12 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
         tools = {
             <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |>,
             <| "name" -> "OtherTool",    "description" -> "test", "inputSchema" -> <| |> |>
         };
-        result = Wolfram`MCPServer`Common`withToolUIMetadata @ tools;
+        result = Wolfram`AgentTools`Common`withToolUIMetadata @ tools;
         KeyExistsQ[ result[[ 2 ]], "_meta" ]
     ],
     False,
@@ -986,11 +986,11 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
         tools = {
             <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |>
         };
-        result = Wolfram`MCPServer`Common`withToolUIMetadata @ tools;
+        result = Wolfram`AgentTools`Common`withToolUIMetadata @ tools;
         result[[ 1, "_meta", "ui", "resourceUri" ]]
     ],
     "ui://wolfram/wolframalpha-viewer",
@@ -1002,11 +1002,11 @@ VerificationTest[
 (* ::Subsubsection::Closed:: *)
 (*No Changes When UI Not Supported*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = False },
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = False },
         tools = {
             <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |>
         };
-        Wolfram`MCPServer`Common`withToolUIMetadata @ tools
+        Wolfram`AgentTools`Common`withToolUIMetadata @ tools
     ],
     { <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |> },
     SameTest -> Equal,
@@ -1017,11 +1017,11 @@ VerificationTest[
 (* ::Subsubsection::Closed:: *)
 (*Preserves Existing Fields*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
         tools = {
             <| "name" -> "WolframAlpha", "description" -> "WA tool", "inputSchema" -> <| "type" -> "object" |> |>
         };
-        result = Wolfram`MCPServer`Common`withToolUIMetadata @ tools;
+        result = Wolfram`AgentTools`Common`withToolUIMetadata @ tools;
         { result[[ 1, "name" ]], result[[ 1, "description" ]], result[[ 1, "inputSchema" ]] }
     ],
     { "WolframAlpha", "WA tool", <| "type" -> "object" |> },
@@ -1035,13 +1035,13 @@ VerificationTest[
 
 VerificationTest[
     Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`StartMCPServer`Private`$toolList = {
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`StartMCPServer`Private`$toolList = {
             <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |>,
             <| "name" -> "OtherTool",    "description" -> "test", "inputSchema" -> <| |> |>
         }
     },
-        result = Wolfram`MCPServer`StartMCPServer`Private`handleMethod[
+        result = Wolfram`AgentTools`StartMCPServer`Private`handleMethod[
             "tools/list",
             <| "method" -> "tools/list", "params" -> <| |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 1 |>
@@ -1056,13 +1056,13 @@ VerificationTest[
 
 VerificationTest[
     Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`StartMCPServer`Private`$toolList = {
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`StartMCPServer`Private`$toolList = {
             <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |>,
             <| "name" -> "OtherTool",    "description" -> "test", "inputSchema" -> <| |> |>
         }
     },
-        result = Wolfram`MCPServer`StartMCPServer`Private`handleMethod[
+        result = Wolfram`AgentTools`StartMCPServer`Private`handleMethod[
             "tools/list",
             <| "method" -> "tools/list", "params" -> <| |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 1 |>
@@ -1077,12 +1077,12 @@ VerificationTest[
 
 VerificationTest[
     Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = False,
-        Wolfram`MCPServer`StartMCPServer`Private`$toolList = {
+        Wolfram`AgentTools`Common`$clientSupportsUI = False,
+        Wolfram`AgentTools`StartMCPServer`Private`$toolList = {
             <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |>
         }
     },
-        result = Wolfram`MCPServer`StartMCPServer`Private`handleMethod[
+        result = Wolfram`AgentTools`StartMCPServer`Private`handleMethod[
             "tools/list",
             <| "method" -> "tools/list", "params" -> <| |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 1 |>

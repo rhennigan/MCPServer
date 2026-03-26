@@ -9,7 +9,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/PacletDocumentationTools.wlt:11,1-16,2"
@@ -295,7 +295,7 @@ VerificationTest[
         True
     ],
     True,
-    { MCPServer::NotebookFileExists },
+    { AgentTools::NotebookFileExists },
     SameTest -> MatchQ,
     TestID -> "CreateSymbolPacletDocumentation-ErrorFileExists@@Tests/PacletDocumentationTools.wlt:270,1-301,2"
 ]

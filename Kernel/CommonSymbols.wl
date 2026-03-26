@@ -1,4 +1,4 @@
-BeginPackage[ "Wolfram`MCPServer`Common`" ];
+BeginPackage[ "Wolfram`AgentTools`Common`" ];
 
 `$aliasToCanonicalName;
 `$catching;

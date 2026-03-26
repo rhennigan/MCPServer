@@ -23,7 +23,7 @@ Notebook[
             ButtonBox[
              "MCPServerObjects",
              BaseStyle -> "Link",
-             ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObjects"
+             ButtonData -> "paclet:Wolfram/AgentTools/ref/MCPServerObjects"
             ],
             "[",
             "]"
@@ -41,7 +41,7 @@ Notebook[
             ButtonBox[
              "MCPServerObjects",
              BaseStyle -> "Link",
-             ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObjects"
+             ButtonData -> "paclet:Wolfram/AgentTools/ref/MCPServerObjects"
             ],
             "[",
             "\"\!\(\*StyleBox[\"patt\", \"TI\"]\)\"",
@@ -67,7 +67,7 @@ Notebook[
             ButtonBox[
              "MCPServerObjects",
              BaseStyle -> "Link",
-             ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObjects"
+             ButtonData -> "paclet:Wolfram/AgentTools/ref/MCPServerObjects"
             ],
             "[",
             StyleBox["\[Ellipsis]", "TR"],
@@ -83,7 +83,7 @@ Notebook[
           ButtonBox[
            "CreateMCPServer",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/CreateMCPServer"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/CreateMCPServer"
           ]
          ],
          "InlineFormula"
@@ -104,7 +104,7 @@ Notebook[
             ButtonBox[
              "MCPServerObjects",
              BaseStyle -> "Link",
-             ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObjects"
+             ButtonData -> "paclet:Wolfram/AgentTools/ref/MCPServerObjects"
             ],
             "[",
             "]"
@@ -121,7 +121,7 @@ Notebook[
             ButtonBox[
              "MCPServerObjects",
              BaseStyle -> "Link",
-             ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObjects"
+             ButtonData -> "paclet:Wolfram/AgentTools/ref/MCPServerObjects"
             ],
             "[",
             ButtonBox["All", BaseStyle -> "Link"],
@@ -183,7 +183,7 @@ Notebook[
           ButtonBox[
            "MCPServerObject",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObject"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/MCPServerObject"
           ]
          ],
          "InlineSeeAlsoFunction",
@@ -195,7 +195,7 @@ Notebook[
           ButtonBox[
            "CreateMCPServer",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/CreateMCPServer"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/CreateMCPServer"
           ]
          ],
          "InlineSeeAlsoFunction",
@@ -395,7 +395,7 @@ Notebook[
      ],
      Cell[
       BoxData[
-       RowBox[{"Needs", "[", "\"Wolfram`MCPServer`\"", "]"}]
+       RowBox[{"Needs", "[", "\"Wolfram`AgentTools`\"", "]"}]
       ],
       "ExampleInitialization",
       CellID -> 284538935
@@ -854,7 +854,7 @@ Notebook[
                                  ],
                                  ButtonFunction :> {
                                   CopyToClipboard[
-                                   "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                   "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                   ],
                                   NotebookDelete[cellObj],
                                   FrontEndExecute[
@@ -999,7 +999,7 @@ Notebook[
              "]"
             }
            ],
-           Wolfram`MCPServer`MCPServerObject[
+           Wolfram`AgentTools`MCPServerObject[
             <|
              "Name" -> "My MCP Server",
              "LLMEvaluator" -> <|
@@ -1417,7 +1417,7 @@ Notebook[
                                  ],
                                  ButtonFunction :> {
                                   CopyToClipboard[
-                                   "{\n\t\"mcpServers\":{\n\t\t\"Inert MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Inert MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                   "{\n\t\"mcpServers\":{\n\t\t\"Inert MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Inert MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                   ],
                                   NotebookDelete[cellObj],
                                   FrontEndExecute[
@@ -1542,7 +1542,7 @@ Notebook[
              "]"
             }
            ],
-           Wolfram`MCPServer`MCPServerObject[
+           Wolfram`AgentTools`MCPServerObject[
             <|
              "Name" -> "Inert MCP Server",
              "LLMEvaluator" -> <| |>,
@@ -1942,7 +1942,7 @@ Notebook[
                                      ],
                                      ButtonFunction :> {
                                       CopyToClipboard[
-                                       "{\n\t\"mcpServers\":{\n\t\t\"Inert MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Inert MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                       "{\n\t\"mcpServers\":{\n\t\t\"Inert MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Inert MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                       ],
                                       NotebookDelete[cellObj],
                                       FrontEndExecute[
@@ -2067,7 +2067,7 @@ Notebook[
                  "]"
                 }
                ],
-               Wolfram`MCPServer`MCPServerObject[
+               Wolfram`AgentTools`MCPServerObject[
                 <|
                  "Name" -> "Inert MCP Server",
                  "LLMEvaluator" -> <| |>,
@@ -2438,7 +2438,7 @@ Notebook[
                                      ],
                                      ButtonFunction :> {
                                       CopyToClipboard[
-                                       "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                       "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                       ],
                                       NotebookDelete[cellObj],
                                       FrontEndExecute[
@@ -2583,7 +2583,7 @@ Notebook[
                  "]"
                 }
                ],
-               Wolfram`MCPServer`MCPServerObject[
+               Wolfram`AgentTools`MCPServerObject[
                 <|
                  "Name" -> "My MCP Server",
                  "LLMEvaluator" -> <|
@@ -3005,7 +3005,7 @@ Notebook[
                                    ],
                                    ButtonFunction :> {
                                     CopyToClipboard[
-                                     "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                     "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                     ],
                                     NotebookDelete[cellObj],
                                     FrontEndExecute[
@@ -3150,7 +3150,7 @@ Notebook[
                "]"
               }
              ],
-             Wolfram`MCPServer`MCPServerObject[
+             Wolfram`AgentTools`MCPServerObject[
               <|
                "Name" -> "My MCP Server",
                "LLMEvaluator" -> <|
@@ -3458,19 +3458,19 @@ Notebook[
          CellID -> 110822343
         ],
         Cell[
-         "Wolfram/MCPServer",
+         "Wolfram/AgentTools",
          "Categorization",
          CellLabel -> "Paclet Name",
          CellID -> 17656733
         ],
         Cell[
-         "Wolfram`MCPServer`",
+         "Wolfram`AgentTools`",
          "Categorization",
          CellLabel -> "Context",
          CellID -> 176825543
         ],
         Cell[
-         "Wolfram/MCPServer/ref/MCPServerObjects",
+         "Wolfram/AgentTools/ref/MCPServerObjects",
          "Categorization",
          CellLabel -> "URI",
          CellID -> 736645152
@@ -3529,7 +3529,7 @@ Notebook[
    ]
   ]
  },
- TaggingRules -> <|"Paclet" -> "Wolfram/MCPServer"|>,
+ TaggingRules -> <|"Paclet" -> "Wolfram/AgentTools"|>,
  StyleDefinitions ->
   FrontEnd`FileName[
    {"Wolfram"},

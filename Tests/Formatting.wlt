@@ -9,7 +9,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/Formatting.wlt:11,1-16,2"
@@ -67,7 +67,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*makeMCPServerObjectBoxes*)
 VerificationTest[
-    Wolfram`MCPServer`Common`makeMCPServerObjectBoxes[
+    Wolfram`AgentTools`Common`makeMCPServerObjectBoxes[
         MCPServerObject[ "MockMCPPacletTest/TestServer" ],
         StandardForm
     ],

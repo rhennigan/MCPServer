@@ -9,7 +9,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/Tools.wlt:11,1-16,2"
@@ -535,16 +535,16 @@ VerificationTest[
 (* GH#65: Nonexistent path should produce TestFileNotFound, not an internal failure *)
 VerificationTest[
     $testReportTool[ <| "paths" -> CreateUUID[] <> "/does/not/exist.wlt" |> ],
-    Failure[ "MCPServer::TestFileNotFound", _Association ],
-    { MCPServer::TestFileNotFound },
+    Failure[ "AgentTools::TestFileNotFound", _Association ],
+    { AgentTools::TestFileNotFound },
     SameTest -> MatchQ,
     TestID   -> "TestReport-NonexistentFile-GH#65@@Tests/Tools.wlt:536,1-542,2"
 ]
 
 VerificationTest[
     $testReportTool[ <| "paths" -> CreateUUID[] <> "/does/not/exist.wlt" |> ],
-    _? (FreeQ[ "MCPServer::Internal" ]),
-    { MCPServer::TestFileNotFound },
+    _? (FreeQ[ "AgentTools::Internal" ]),
+    { AgentTools::TestFileNotFound },
     SameTest -> MatchQ,
     TestID   -> "TestReport-NoInternalFailure-GH#65@@Tests/Tools.wlt:544,1-550,2"
 ]
@@ -556,8 +556,8 @@ VerificationTest[
             ", " <> CreateUUID[] <> "/does/not/exist.wlt"
         ]
     |>,
-    _? (FreeQ[ "MCPServer::Internal" ]),
-    { MCPServer::TestFileNotFound },
+    _? (FreeQ[ "AgentTools::Internal" ]),
+    { AgentTools::TestFileNotFound },
     SameTest -> MatchQ,
     TestID   -> "TestReport-MixedValidInvalidPaths-GH#65@@Tests/Tools.wlt:552,1-563,2"
 ]

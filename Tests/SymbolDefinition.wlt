@@ -12,14 +12,14 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/SymbolDefinition.wlt:14,1-19,2"
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`Tools`SymbolDefinition`" ],
+    Needs[ "Wolfram`AgentTools`Tools`SymbolDefinition`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadPrivateContext@@Tests/SymbolDefinition.wlt:21,1-26,2"
@@ -64,28 +64,28 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*parseSymbolNames*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`parseSymbolNames[ "System`Plus" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`parseSymbolNames[ "System`Plus" ],
     { "System`Plus" },
     SameTest -> MatchQ,
     TestID   -> "ParseSingleSymbol@@Tests/SymbolDefinition.wlt:66,1-71,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`parseSymbolNames[ "System`Plus, System`Times, System`Map" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`parseSymbolNames[ "System`Plus, System`Times, System`Map" ],
     { "System`Plus", "System`Times", "System`Map" },
     SameTest -> MatchQ,
     TestID   -> "ParseMultipleSymbols@@Tests/SymbolDefinition.wlt:73,1-78,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`parseSymbolNames[ "  System`Plus  ,  System`Times  " ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`parseSymbolNames[ "  System`Plus  ,  System`Times  " ],
     { "System`Plus", "System`Times" },
     SameTest -> MatchQ,
     TestID   -> "ParseWhitespaceHandling@@Tests/SymbolDefinition.wlt:80,1-85,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`parseSymbolNames[ "" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`parseSymbolNames[ "" ],
     { },
     SameTest -> MatchQ,
     TestID   -> "ParseEmptyInput@@Tests/SymbolDefinition.wlt:87,1-92,2"
@@ -99,35 +99,35 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*validateSymbolName*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`validateSymbolName[ "MySymbol" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`validateSymbolName[ "MySymbol" ],
     True,
     SameTest -> SameQ,
     TestID   -> "ValidateSimpleName@@Tests/SymbolDefinition.wlt:101,1-106,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`validateSymbolName[ "System`Plus" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`validateSymbolName[ "System`Plus" ],
     True,
     SameTest -> SameQ,
     TestID   -> "ValidateQualifiedName@@Tests/SymbolDefinition.wlt:108,1-113,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`validateSymbolName[ "My`Context`Symbol" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`validateSymbolName[ "My`Context`Symbol" ],
     True,
     SameTest -> SameQ,
     TestID   -> "ValidateDeepContext@@Tests/SymbolDefinition.wlt:115,1-120,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`validateSymbolName[ "Invalid!Symbol" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`validateSymbolName[ "Invalid!Symbol" ],
     False,
     SameTest -> SameQ,
     TestID   -> "ValidateInvalidChars@@Tests/SymbolDefinition.wlt:122,1-127,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`validateSymbolName[ "123Invalid" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`validateSymbolName[ "123Invalid" ],
     False,
     SameTest -> SameQ,
     TestID   -> "ValidateStartsWithNumber@@Tests/SymbolDefinition.wlt:129,1-134,2"
@@ -137,14 +137,14 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*symbolExistsQ*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`symbolExistsQ[ "System`Plus" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`symbolExistsQ[ "System`Plus" ],
     True,
     SameTest -> SameQ,
     TestID   -> "ExistsSystemSymbol@@Tests/SymbolDefinition.wlt:139,1-144,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`symbolExistsQ[ "NonExistentContext12345`NonExistentSymbol67890" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`symbolExistsQ[ "NonExistentContext12345`NonExistentSymbol67890" ],
     False,
     SameTest -> SameQ,
     TestID   -> "ExistsNonexistent@@Tests/SymbolDefinition.wlt:146,1-151,2"
@@ -154,21 +154,21 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*splitSymbolName*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`splitSymbolName[ "System`Plus" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`splitSymbolName[ "System`Plus" ],
     { "System`", "Plus" },
     SameTest -> MatchQ,
     TestID   -> "SplitName-Simple@@Tests/SymbolDefinition.wlt:156,1-161,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`splitSymbolName[ "My`Deep`Context`Symbol" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`splitSymbolName[ "My`Deep`Context`Symbol" ],
     { "My`Deep`Context`", "Symbol" },
     SameTest -> MatchQ,
     TestID   -> "SplitName-Deep@@Tests/SymbolDefinition.wlt:163,1-168,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`splitSymbolName[ "UnqualifiedSymbol" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`splitSymbolName[ "UnqualifiedSymbol" ],
     { "Global`", "UnqualifiedSymbol" },
     SameTest -> MatchQ,
     TestID   -> "SplitName-Unqualified@@Tests/SymbolDefinition.wlt:170,1-175,2"
@@ -183,7 +183,7 @@ VerificationTest[
 (*isReadProtectedQ*)
 VerificationTest[
     (* AASTriangle is ReadProtected *)
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`isReadProtectedQ[ "System`AASTriangle" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`isReadProtectedQ[ "System`AASTriangle" ],
     True,
     SameTest -> SameQ,
     TestID   -> "IsReadProtected-AASTriangle@@Tests/SymbolDefinition.wlt:184,1-190,2"
@@ -191,7 +191,7 @@ VerificationTest[
 
 VerificationTest[
     (* List is not ReadProtected *)
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`isReadProtectedQ[ "System`List" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`isReadProtectedQ[ "System`List" ],
     False,
     SameTest -> SameQ,
     TestID   -> "IsReadProtected-List@@Tests/SymbolDefinition.wlt:192,1-198,2"
@@ -201,7 +201,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*isLockedQ*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`isLockedQ[ "System`Plus" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`isLockedQ[ "System`Plus" ],
     False,
     SameTest -> SameQ,
     TestID   -> "IsLocked-Plus@@Tests/SymbolDefinition.wlt:203,1-208,2"
@@ -215,7 +215,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*extractDefinition*)
 VerificationTest[
-    $subtractDef = Wolfram`MCPServer`Tools`SymbolDefinition`Private`extractDefinition[ "System`Subtract" ],
+    $subtractDef = Wolfram`AgentTools`Tools`SymbolDefinition`Private`extractDefinition[ "System`Subtract" ],
     { ___ },
     SameTest -> MatchQ,
     TestID   -> "ExtractSubtract@@Tests/SymbolDefinition.wlt:217,1-222,2"
@@ -230,7 +230,7 @@ VerificationTest[
 
 VerificationTest[
     MatchQ[
-        Quiet @ Wolfram`MCPServer`Tools`SymbolDefinition`Private`extractDefinition[ "System`Map" ],
+        Quiet @ Wolfram`AgentTools`Tools`SymbolDefinition`Private`extractDefinition[ "System`Map" ],
         { ___ }
     ],
     True,
@@ -239,7 +239,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`extractDefinition[ "NonExistent12345`Symbol" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`extractDefinition[ "NonExistent12345`Symbol" ],
     { },
     SameTest -> MatchQ,
     TestID   -> "ExtractNonexistent@@Tests/SymbolDefinition.wlt:241,1-246,2"
@@ -253,7 +253,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*getKernelCodeDefinitions*)
 VerificationTest[
-    $plusKernelDefs = Wolfram`MCPServer`Tools`SymbolDefinition`Private`getKernelCodeDefinitions[ "System`Plus" ],
+    $plusKernelDefs = Wolfram`AgentTools`Tools`SymbolDefinition`Private`getKernelCodeDefinitions[ "System`Plus" ],
     { __HoldForm },
     SameTest -> MatchQ,
     TestID   -> "KernelCode-Plus@@Tests/SymbolDefinition.wlt:255,1-260,2"
@@ -270,7 +270,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    $timesKernelDefs = Wolfram`MCPServer`Tools`SymbolDefinition`Private`getKernelCodeDefinitions[ "System`Times" ],
+    $timesKernelDefs = Wolfram`AgentTools`Tools`SymbolDefinition`Private`getKernelCodeDefinitions[ "System`Times" ],
     { __HoldForm },
     SameTest -> MatchQ,
     TestID   -> "KernelCode-Times@@Tests/SymbolDefinition.wlt:272,1-277,2"
@@ -278,7 +278,7 @@ VerificationTest[
 
 VerificationTest[
     (* Paclet symbols have no kernel code *)
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`getKernelCodeDefinitions[ "Wolfram`MCPServer`CreateMCPServer" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`getKernelCodeDefinitions[ "Wolfram`AgentTools`CreateMCPServer" ],
     { },
     SameTest -> MatchQ,
     TestID   -> "KernelCode-PacletSymbolEmpty@@Tests/SymbolDefinition.wlt:279,1-285,2"
@@ -293,7 +293,7 @@ VerificationTest[
 (*extractSymbolsFromDefinition*)
 VerificationTest[
     (* Note: List is also extracted as it's the head of the expression *)
-    $testSymbols = Wolfram`MCPServer`Tools`SymbolDefinition`Private`extractSymbolsFromDefinition[
+    $testSymbols = Wolfram`AgentTools`Tools`SymbolDefinition`Private`extractSymbolsFromDefinition[
         { Plus, Times, Map }
     ],
     { HoldForm[ List ], HoldForm[ Plus ], HoldForm[ Times ], HoldForm[ Map ] },
@@ -305,7 +305,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*getContextsFromSymbols*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`getContextsFromSymbols[
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`getContextsFromSymbols[
         { HoldForm[ Plus ], HoldForm[ Times ], HoldForm[ Map ] }
     ],
     { "System`" },
@@ -317,7 +317,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*buildOptimalContextPath*)
 VerificationTest[
-    $optimalPath = Wolfram`MCPServer`Tools`SymbolDefinition`Private`buildOptimalContextPath[
+    $optimalPath = Wolfram`AgentTools`Tools`SymbolDefinition`Private`buildOptimalContextPath[
         { "MyContext`", "AnotherContext`" }
     ],
     _List? (MemberQ[ #, "System`" ] && MemberQ[ #, "Global`" ] &),
@@ -329,7 +329,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*generateContextMap*)
 VerificationTest[
-    $contextMap = Wolfram`MCPServer`Tools`SymbolDefinition`Private`generateContextMap[
+    $contextMap = Wolfram`AgentTools`Tools`SymbolDefinition`Private`generateContextMap[
         { HoldForm[ Plus ], HoldForm[ Times ] }
     ],
     _String? (StringContainsQ[ #, "System`" ] &),
@@ -338,7 +338,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`generateContextMap[ { } ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`generateContextMap[ { } ],
     "",
     SameTest -> SameQ,
     TestID   -> "GenerateContextMapEmpty@@Tests/SymbolDefinition.wlt:340,1-345,2"
@@ -352,14 +352,14 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*truncateIfNeeded*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`truncateIfNeeded[ "Short string", 1000 ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`truncateIfNeeded[ "Short string", 1000 ],
     "Short string",
     SameTest -> SameQ,
     TestID   -> "Truncate-NoTruncation@@Tests/SymbolDefinition.wlt:354,1-359,2"
 ]
 
 VerificationTest[
-    $truncated = Wolfram`MCPServer`Tools`SymbolDefinition`Private`truncateIfNeeded[
+    $truncated = Wolfram`AgentTools`Tools`SymbolDefinition`Private`truncateIfNeeded[
         StringJoin @ Table[ "x", 500 ],
         100
     ],
@@ -383,14 +383,14 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*formatError*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`formatError[ "System`Plus", "Test error message" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`formatError[ "System`Plus", "Test error message" ],
     "# Plus\n\nError: Test error message",
     SameTest -> SameQ,
     TestID   -> "FormatError-Simple@@Tests/SymbolDefinition.wlt:385,1-390,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`formatError[ "My`Context`Symbol", "Another error" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`formatError[ "My`Context`Symbol", "Another error" ],
     "# Symbol\n\nError: Another error",
     SameTest -> SameQ,
     TestID   -> "FormatError-Qualified@@Tests/SymbolDefinition.wlt:392,1-397,2"
@@ -558,7 +558,7 @@ VerificationTest[
 (*findSuggestions*)
 VerificationTest[
     MemberQ[
-        Wolfram`MCPServer`Tools`SymbolDefinition`Private`findSuggestions[ "BadContext`Plus" ],
+        Wolfram`AgentTools`Tools`SymbolDefinition`Private`findSuggestions[ "BadContext`Plus" ],
         "System`Plus"
     ],
     True,
@@ -567,7 +567,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`SymbolDefinition`Private`findSuggestions[ "Nonexistent`NonexistentSymbol98765" ],
+    Wolfram`AgentTools`Tools`SymbolDefinition`Private`findSuggestions[ "Nonexistent`NonexistentSymbol98765" ],
     { },
     SameTest -> MatchQ,
     TestID   -> "FindSuggestions-NoMatch@@Tests/SymbolDefinition.wlt:569,1-574,2"
@@ -576,7 +576,7 @@ VerificationTest[
 VerificationTest[
     (* Should return fully qualified names *)
     AllTrue[
-        Wolfram`MCPServer`Tools`SymbolDefinition`Private`findSuggestions[ "Bad`Map" ],
+        Wolfram`AgentTools`Tools`SymbolDefinition`Private`findSuggestions[ "Bad`Map" ],
         StringContainsQ[ #, "`" ] &
     ],
     True,
@@ -638,7 +638,7 @@ VerificationTest[
     Module[ { counter },
         counter = 0;
         Wolfram`MCPServerTests`$evalLeakTestSymbol1 := (counter++; "result");
-        Wolfram`MCPServer`Tools`SymbolDefinition`Private`extractDefinition[
+        Wolfram`AgentTools`Tools`SymbolDefinition`Private`extractDefinition[
             "Wolfram`MCPServerTests`$evalLeakTestSymbol1"
         ];
         (* counter should still be 0 if no evaluation leak occurred *)
@@ -725,7 +725,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    $pacletResult = Quiet @ $symbolDefinitionTool[ <| "symbols" -> "Wolfram`MCPServer`CreateMCPServer" |> ],
+    $pacletResult = Quiet @ $symbolDefinitionTool[ <| "symbols" -> "Wolfram`AgentTools`CreateMCPServer" |> ],
     _String? (StringContainsQ[ #, "# CreateMCPServer" ] &),
     SameTest -> MatchQ,
     TestID   -> "Integration-PacletSymbol@@Tests/SymbolDefinition.wlt:727,1-732,2"
@@ -733,7 +733,7 @@ VerificationTest[
 
 VerificationTest[
     (* Use addEnclosureTags which is actually in the Private` context *)
-    $privateResult = Quiet @ $symbolDefinitionTool[ <| "symbols" -> "Wolfram`MCPServer`Common`Private`addEnclosureTags" |> ],
+    $privateResult = Quiet @ $symbolDefinitionTool[ <| "symbols" -> "Wolfram`AgentTools`Common`Private`addEnclosureTags" |> ],
     _String? (StringContainsQ[ #, "# addEnclosureTags" ] &),
     SameTest -> MatchQ,
     TestID   -> "Integration-PrivateSymbol@@Tests/SymbolDefinition.wlt:734,1-740,2"

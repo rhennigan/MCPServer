@@ -1,6 +1,6 @@
 # Building the Paclet
 
-This guide covers how to build MCPServer for distribution.
+This guide covers how to build AgentTools for distribution.
 
 ## Basic Build
 
@@ -54,7 +54,7 @@ MX files are pre-compiled versions of the paclet that load faster. During the MX
 During development, you may want to:
 
 - **Disable MX building** with `--mx=false` for faster build iterations
-- **Delete existing MX files** (`Kernel/64Bit/MCPServer.mx`) when testing source changes
+- **Delete existing MX files** (`Kernel/64Bit/AgentTools.mx`) when testing source changes
 
 See [Getting Started](getting-started.md#important-mx-files) for more details on MX files during development.
 

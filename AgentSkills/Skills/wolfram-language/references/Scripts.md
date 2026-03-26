@@ -58,7 +58,7 @@ wolframscript -f scripts/WolframLanguageEvaluator.wls <code> [--timeConstraint v
 Retrieves the definitions of one or more Wolfram Language symbols and returns them in a readable markdown format.
 The tool generates clean, formatted definition strings by intelligently managing the context path to minimize fully qualified symbol names.
 
-Use fully qualified symbol names (e.g., System`Plus, Wolfram`MCPServer`CreateMCPServer) if the context is known.
+Use fully qualified symbol names (e.g., System`Plus, Wolfram`AgentTools`CreateMCPServer) if the context is known.
 Multiple symbols can be requested by separating them with commas.
 
 **Usage:**

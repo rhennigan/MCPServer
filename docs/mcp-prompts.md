@@ -1,6 +1,6 @@
-# MCP Prompts in MCPServer
+# MCP Prompts in AgentTools
 
-This document explains how MCP prompts work in MCPServer and how to add new prompts.
+This document explains how MCP prompts work in AgentTools and how to add new prompts.
 
 ## Overview
 
@@ -104,12 +104,12 @@ Create a new file in `Kernel/Prompts/` following the pattern of `Search.wl`:
 ```wl
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Prompts`YourPrompt`" ];
+BeginPackage[ "Wolfram`AgentTools`Prompts`YourPrompt`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"         ];
-Needs[ "Wolfram`MCPServer`Common`"  ];
-Needs[ "Wolfram`MCPServer`Prompts`" ];
+Needs[ "Wolfram`AgentTools`"         ];
+Needs[ "Wolfram`AgentTools`Common`"  ];
+Needs[ "Wolfram`AgentTools`Prompts`" ];
 
 (* ::Section::Closed:: *)
 (*Prompt Definition*)
@@ -157,8 +157,8 @@ Add your new subcontext to `Kernel/Prompts/Prompts.wl`:
 
 ```wl
 $subcontexts = {
-    "Wolfram`MCPServer`Prompts`Search`",
-    "Wolfram`MCPServer`Prompts`YourPrompt`"  (* Add your new subcontext *)
+    "Wolfram`AgentTools`Prompts`Search`",
+    "Wolfram`AgentTools`Prompts`YourPrompt`"  (* Add your new subcontext *)
 };
 ```
 

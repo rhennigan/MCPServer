@@ -1,10 +1,10 @@
 # Adding Custom CodeInspector Rules
 
-This document explains how to add custom code inspection rules to the MCPServer CodeInspector tool.
+This document explains how to add custom code inspection rules to the AgentTools CodeInspector tool.
 
 ## Overview
 
-The CodeInspector tool uses the [CodeInspector](https://github.com/WolframResearch/codeinspector) package to analyze Wolfram Language code. MCPServer extends the default rules with custom rules defined in `Kernel/Tools/CodeInspector/Rules.wl`.
+The CodeInspector tool uses the [CodeInspector](https://github.com/WolframResearch/codeinspector) package to analyze Wolfram Language code. AgentTools extends the default rules with custom rules defined in `Kernel/Tools/CodeInspector/Rules.wl`.
 
 There are four types of inspections — three AST-based rule types and one text-level type:
 
@@ -338,8 +338,8 @@ Add tests to `Tests/CodeInspectorTool.wlt`:
 (*Custom Rules - MyRule*)
 
 VerificationTest[
-    $myRuleResult = Wolfram`MCPServer`Common`catchTop @
-        Wolfram`MCPServer`Tools`CodeInspector`Private`codeInspectorTool @ <|
+    $myRuleResult = Wolfram`AgentTools`Common`catchTop @
+        Wolfram`AgentTools`Tools`CodeInspector`Private`codeInspectorTool @ <|
             "code"               -> "problematic code here",
             "file"               -> Missing[ "KeyAbsent" ],
             "tagExclusions"      -> Missing[ "KeyAbsent" ],

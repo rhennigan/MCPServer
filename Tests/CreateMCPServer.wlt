@@ -9,7 +9,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/CreateMCPServer.wlt:11,1-16,2"
@@ -603,7 +603,7 @@ VerificationTest[
 
 VerificationTest[
     PacletDirectoryUnload @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletTest" };
-    Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
+    Wolfram`AgentTools`Common`clearPacletDefinitionCache[ ],
     <| |>,
     SameTest -> MatchQ,
     TestID   -> "CreateMCPServer-MockPacletCleanup@@Tests/CreateMCPServer.wlt:604,1-610,2"

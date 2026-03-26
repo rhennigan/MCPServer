@@ -1,10 +1,10 @@
-# MCP Client Support in MCPServer
+# MCP Client Support in AgentTools
 
-This document explains how MCPServer supports different MCP client applications and how to install MCP servers into them.
+This document explains how AgentTools supports different MCP client applications and how to install MCP servers into them.
 
 ## Overview
 
-MCPServer works with **any MCP client that supports the stdio server transport**. The server communicates via standard input/output using JSON-RPC messages, which is the most common transport mechanism for local MCP servers.
+AgentTools works with **any MCP client that supports the stdio server transport**. The server communicates via standard input/output using JSON-RPC messages, which is the most common transport mechanism for local MCP servers.
 
 For convenience, `InstallMCPServer` and `UninstallMCPServer` functions are provided to automatically configure several popular client applications. These functions handle the different configuration file formats and locations used by each client.
 
@@ -275,7 +275,7 @@ Note: Zed uses `context_servers` instead of `mcpServers`. The inner server entry
 
 ## Using Other MCP Clients
 
-MCPServer can be used with any MCP client that supports the stdio transport. If your client is not listed above, you can manually configure it using the server's command, arguments, and environment variables.
+AgentTools can be used with any MCP client that supports the stdio transport. If your client is not listed above, you can manually configure it using the server's command, arguments, and environment variables.
 
 ### Server Configuration
 
@@ -284,7 +284,7 @@ The basic configuration requires:
 | Field | Value |
 |-------|-------|
 | Command | `/full/path/to/wolfram` (or `wolfram.exe` on Windows) |
-| Arguments | ``-run PacletSymbol["Wolfram/MCPServer","StartMCPServer"][] -noinit -noprompt`` |
+| Arguments | ``-run PacletSymbol["Wolfram/AgentTools","StartMCPServer"][] -noinit -noprompt`` |
 
 ### Environment Variables
 

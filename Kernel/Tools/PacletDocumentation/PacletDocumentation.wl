@@ -1,12 +1,12 @@
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Tools`PacletDocumentation`" ];
+BeginPackage[ "Wolfram`AgentTools`Tools`PacletDocumentation`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
-Needs[ "Wolfram`MCPServer`Tools`"  ];
+Needs[ "Wolfram`AgentTools`"        ];
+Needs[ "Wolfram`AgentTools`Common`" ];
+Needs[ "Wolfram`AgentTools`Tools`"  ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -54,7 +54,7 @@ $defaultMCPTools[ "CreateSymbolDoc" ] := LLMTool @ <|
         |>,
         "pacletName" -> <|
             "Interpreter" -> "String",
-            "Help"        -> "Name of the paclet (e.g., \"MCPServer\" or \"Wolfram/MCPServer\").",
+            "Help"        -> "Name of the paclet (e.g., \"MCPServer\" or \"Wolfram/AgentTools\").",
             "Required"    -> True
         |>,
         "publisherID" -> <|
@@ -195,25 +195,25 @@ $defaultMCPTools[ "EditSymbolDocExamples" ] := LLMTool @ <|
 (* ::Section::Closed:: *)
 (*CreateSymbolPacletDocumentation Implementation*)
 (* Load definitions from ./CreateSymbolPacletDocumentation.wl *)
-<<Wolfram`MCPServer`Tools`PacletDocumentation`CreateSymbolPacletDocumentation`;
+<<Wolfram`AgentTools`Tools`PacletDocumentation`CreateSymbolPacletDocumentation`;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Cell Generation Functions*)
 (* Load definitions from ./CellGenerationFunctions.wl *)
-<<Wolfram`MCPServer`Tools`PacletDocumentation`CellGenerationFunctions`;
+<<Wolfram`AgentTools`Tools`PacletDocumentation`CellGenerationFunctions`;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*EditSymbolPacletDocumentation Implementation*)
 (* Load definitions from ./EditSymbolPacletDocumentation.wl *)
-<<Wolfram`MCPServer`Tools`PacletDocumentation`EditSymbolPacletDocumentation`;
+<<Wolfram`AgentTools`Tools`PacletDocumentation`EditSymbolPacletDocumentation`;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*EditSymbolPacletDocumentationExamples Implementation*)
 (* Load definitions from ./EditSymbolPacletDocumentationExamples.wl *)
-<<Wolfram`MCPServer`Tools`PacletDocumentation`EditSymbolPacletDocumentationExamples`;
+<<Wolfram`AgentTools`Tools`PacletDocumentation`EditSymbolPacletDocumentationExamples`;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

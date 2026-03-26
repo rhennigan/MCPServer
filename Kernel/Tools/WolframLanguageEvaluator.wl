@@ -1,13 +1,13 @@
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Tools`WolframLanguageEvaluator`" ];
+BeginPackage[ "Wolfram`AgentTools`Tools`WolframLanguageEvaluator`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"          ];
-Needs[ "Wolfram`MCPServer`Common`"   ];
-Needs[ "Wolfram`MCPServer`Graphics`" ];
-Needs[ "Wolfram`MCPServer`Tools`"    ];
+Needs[ "Wolfram`AgentTools`"          ];
+Needs[ "Wolfram`AgentTools`Common`"   ];
+Needs[ "Wolfram`AgentTools`Graphics`" ];
+Needs[ "Wolfram`AgentTools`Tools`"    ];
 
 Needs[ "Wolfram`Chatbook`" -> "cb`" ];
 
@@ -505,7 +505,7 @@ initializePacletInLocalKernel[ ] := Enclose[
             cb`WolframLanguageToolEvaluate[
                 HoldComplete @ WithCleanup[
                     PacletDirectoryLoad @ dir;
-                    Block[ { $ContextPath }, Get[ "Wolfram`MCPServer`" ] ],
+                    Block[ { $ContextPath }, Get[ "Wolfram`AgentTools`" ] ],
                     $Line--
                 ],
                 "Result",

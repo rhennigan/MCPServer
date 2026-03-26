@@ -288,7 +288,7 @@ Adjust the template to match your actual project structure, conventions, and req
 
 **Example:** To see a real-world `AGENTS.md` file, view the one used during development of this paclet:
 ```wl
-Import[PacletObject["Wolfram/MCPServer"]["AssetLocation", "AGENTS.md"], "Text"]
+Import[PacletObject["Wolfram/AgentTools"]["AssetLocation", "AGENTS.md"], "Text"]
 ```
 
 ### Keeping AGENTS.md Up to Date

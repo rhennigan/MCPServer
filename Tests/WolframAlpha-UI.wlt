@@ -9,7 +9,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/WolframAlpha-UI.wlt:11,1-16,2"
@@ -26,14 +26,14 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*String Input*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`WolframAlpha`Private`toContentList[ "hello" ],
+    Wolfram`AgentTools`Tools`WolframAlpha`Private`toContentList[ "hello" ],
     { <| "type" -> "text", "text" -> "hello" |> },
     SameTest -> MatchQ,
     TestID   -> "toContentList-String@@Tests/WolframAlpha-UI.wlt:28,1-33,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`WolframAlpha`Private`toContentList[ "" ],
+    Wolfram`AgentTools`Tools`WolframAlpha`Private`toContentList[ "" ],
     { <| "type" -> "text", "text" -> "" |> },
     SameTest -> MatchQ,
     TestID   -> "toContentList-EmptyString@@Tests/WolframAlpha-UI.wlt:35,1-40,2"
@@ -43,7 +43,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*List Input*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`WolframAlpha`Private`toContentList[ { <| "type" -> "text", "text" -> "a" |> } ],
+    Wolfram`AgentTools`Tools`WolframAlpha`Private`toContentList[ { <| "type" -> "text", "text" -> "a" |> } ],
     { <| "type" -> "text", "text" -> "a" |> },
     SameTest -> MatchQ,
     TestID   -> "toContentList-List@@Tests/WolframAlpha-UI.wlt:45,1-50,2"
@@ -53,7 +53,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Association with Content Key*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`WolframAlpha`Private`toContentList[
+    Wolfram`AgentTools`Tools`WolframAlpha`Private`toContentList[
         <| "Content" -> { <| "type" -> "text", "text" -> "x" |>, <| "type" -> "image", "data" -> "abc" |> } |>
     ],
     { <| "type" -> "text", "text" -> "x" |>, <| "type" -> "image", "data" -> "abc" |> },
@@ -70,7 +70,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Without UI Support*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = False },
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = False },
         $DefaultMCPTools[ "WolframAlpha" ][ <| "query" -> "2+2" |> ]
     ],
     _String | KeyValuePattern[ "Content" -> { __Association } ],
@@ -82,7 +82,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*With UI Support - Returns Content*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
         $waUIResult = $DefaultMCPTools[ "WolframAlpha" ][ <| "query" -> "2+2" |> ]
     ],
     _String | KeyValuePattern[ "Content" -> { __Association } ],
@@ -110,7 +110,7 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*$deployedNotebookRoot*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`WolframAlpha`Private`$deployedNotebookRoot,
+    Wolfram`AgentTools`Tools`WolframAlpha`Private`$deployedNotebookRoot,
     _String,
     SameTest -> MatchQ,
     TestID   -> "deployedNotebookRoot-IsString@@Tests/WolframAlpha-UI.wlt:112,1-117,2"

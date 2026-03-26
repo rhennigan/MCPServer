@@ -1,12 +1,12 @@
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Tools`TestReport`" ];
+BeginPackage[ "Wolfram`AgentTools`Tools`TestReport`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
-Needs[ "Wolfram`MCPServer`Tools`"  ];
+Needs[ "Wolfram`AgentTools`"        ];
+Needs[ "Wolfram`AgentTools`Common`" ];
+Needs[ "Wolfram`AgentTools`Tools`"  ];
 
 System`HoldCompleteForm;
 System`TestObject;

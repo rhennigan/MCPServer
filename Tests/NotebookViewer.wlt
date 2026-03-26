@@ -12,7 +12,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/NotebookViewer.wlt:14,1-19,2"
@@ -47,7 +47,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Returns Correct Structure*)
 VerificationTest[
-    result = Wolfram`MCPServer`Tools`NotebookViewer`Private`notebookViewerEvaluate[
+    result = Wolfram`AgentTools`Tools`NotebookViewer`Private`notebookViewerEvaluate[
         <| "url" -> "https://www.wolframcloud.com/obj/test/notebook" |>
     ];
     MatchQ[ result, <| "Content" -> { _Association } |> ],
@@ -57,7 +57,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    result = Wolfram`MCPServer`Tools`NotebookViewer`Private`notebookViewerEvaluate[
+    result = Wolfram`AgentTools`Tools`NotebookViewer`Private`notebookViewerEvaluate[
         <| "url" -> "https://www.wolframcloud.com/obj/test/notebook" |>
     ];
     result[[ "Content", 1, "type" ]],
@@ -70,7 +70,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Response JSON Contains URL*)
 VerificationTest[
-    result = Wolfram`MCPServer`Tools`NotebookViewer`Private`notebookViewerEvaluate[
+    result = Wolfram`AgentTools`Tools`NotebookViewer`Private`notebookViewerEvaluate[
         <| "url" -> "https://www.wolframcloud.com/obj/test/notebook" |>
     ];
     json = Developer`ReadRawJSONString @ result[[ "Content", 1, "text" ]];
@@ -84,7 +84,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Response JSON Contains allowInteract*)
 VerificationTest[
-    result = Wolfram`MCPServer`Tools`NotebookViewer`Private`notebookViewerEvaluate[
+    result = Wolfram`AgentTools`Tools`NotebookViewer`Private`notebookViewerEvaluate[
         <| "url" -> "https://www.wolframcloud.com/obj/test/notebook" |>
     ];
     json = Developer`ReadRawJSONString @ result[[ "Content", 1, "text" ]];
@@ -95,7 +95,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    result = Wolfram`MCPServer`Tools`NotebookViewer`Private`notebookViewerEvaluate[
+    result = Wolfram`AgentTools`Tools`NotebookViewer`Private`notebookViewerEvaluate[
         <| "url" -> "https://www.wolframcloud.com/obj/test/notebook", "allowInteract" -> False |>
     ];
     json = Developer`ReadRawJSONString @ result[[ "Content", 1, "text" ]];
@@ -109,7 +109,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Response JSON Contains maxHeight*)
 VerificationTest[
-    result = Wolfram`MCPServer`Tools`NotebookViewer`Private`notebookViewerEvaluate[
+    result = Wolfram`AgentTools`Tools`NotebookViewer`Private`notebookViewerEvaluate[
         <| "url" -> "https://www.wolframcloud.com/obj/test/notebook" |>
     ];
     json = Developer`ReadRawJSONString @ result[[ "Content", 1, "text" ]];
@@ -120,7 +120,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    result = Wolfram`MCPServer`Tools`NotebookViewer`Private`notebookViewerEvaluate[
+    result = Wolfram`AgentTools`Tools`NotebookViewer`Private`notebookViewerEvaluate[
         <| "url" -> "https://www.wolframcloud.com/obj/test/notebook", "maxHeight" -> 1200 |>
     ];
     json = Developer`ReadRawJSONString @ result[[ "Content", 1, "text" ]];
@@ -134,7 +134,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Optional Parameters Handled*)
 VerificationTest[
-    result = Wolfram`MCPServer`Tools`NotebookViewer`Private`notebookViewerEvaluate[
+    result = Wolfram`AgentTools`Tools`NotebookViewer`Private`notebookViewerEvaluate[
         <| "url" -> "https://www.wolframcloud.com/obj/test/notebook", "allowInteract" -> Missing[ "NoInput" ] |>
     ];
     json = Developer`ReadRawJSONString @ result[[ "Content", 1, "text" ]];
@@ -145,7 +145,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    result = Wolfram`MCPServer`Tools`NotebookViewer`Private`notebookViewerEvaluate[
+    result = Wolfram`AgentTools`Tools`NotebookViewer`Private`notebookViewerEvaluate[
         <| "url" -> "https://www.wolframcloud.com/obj/test/notebook", "maxHeight" -> Missing[ "NoInput" ] |>
     ];
     json = Developer`ReadRawJSONString @ result[[ "Content", 1, "text" ]];
@@ -163,14 +163,14 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Tool UI Associations*)
 VerificationTest[
-    KeyExistsQ[ Wolfram`MCPServer`Common`$toolUIAssociations, "NotebookViewer" ],
+    KeyExistsQ[ Wolfram`AgentTools`Common`$toolUIAssociations, "NotebookViewer" ],
     True,
     SameTest -> Equal,
     TestID   -> "NotebookViewer-InToolUIAssociations@@Tests/NotebookViewer.wlt:165,1-170,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`$toolUIAssociations[ "NotebookViewer" ],
+    Wolfram`AgentTools`Common`$toolUIAssociations[ "NotebookViewer" ],
     "ui://wolfram/notebook-viewer",
     SameTest -> Equal,
     TestID   -> "NotebookViewer-CorrectResourceURI@@Tests/NotebookViewer.wlt:172,1-177,2"
@@ -180,8 +180,8 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*toolUIMetadata*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
-        meta = Wolfram`MCPServer`Common`toolUIMetadata[ "NotebookViewer" ];
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
+        meta = Wolfram`AgentTools`Common`toolUIMetadata[ "NotebookViewer" ];
         ("_meta" /. meta)[ "ui", "resourceUri" ]
     ],
     "ui://wolfram/notebook-viewer",
@@ -190,8 +190,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
-        meta = Wolfram`MCPServer`Common`toolUIMetadata[ "NotebookViewer" ];
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
+        meta = Wolfram`AgentTools`Common`toolUIMetadata[ "NotebookViewer" ];
         ("_meta" /. meta)[ "ui", "visibility" ]
     ],
     { "model", "app" },
@@ -203,9 +203,9 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Resource Registry*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        KeyExistsQ[ Wolfram`MCPServer`Common`$uiResourceRegistry, "ui://wolfram/notebook-viewer" ]
+    Block[ { Wolfram`AgentTools`Common`$uiResourceRegistry },
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        KeyExistsQ[ Wolfram`AgentTools`Common`$uiResourceRegistry, "ui://wolfram/notebook-viewer" ]
     ],
     True,
     SameTest -> Equal,
@@ -213,9 +213,9 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`Common`$uiResourceRegistry[ "ui://wolfram/notebook-viewer", "mimeType" ]
+    Block[ { Wolfram`AgentTools`Common`$uiResourceRegistry },
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`Common`$uiResourceRegistry[ "ui://wolfram/notebook-viewer", "mimeType" ]
     ],
     "text/html;profile=mcp-app",
     SameTest -> Equal,
@@ -227,11 +227,11 @@ VerificationTest[
 (*readUIResource*)
 VerificationTest[
     Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        result = Wolfram`MCPServer`Common`readUIResource[
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        result = Wolfram`AgentTools`Common`readUIResource[
             <| "params" -> <| "uri" -> "ui://wolfram/notebook-viewer" |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 1 |>
         ];
@@ -244,11 +244,11 @@ VerificationTest[
 
 VerificationTest[
     Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        result = Wolfram`MCPServer`Common`readUIResource[
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        result = Wolfram`AgentTools`Common`readUIResource[
             <| "params" -> <| "uri" -> "ui://wolfram/notebook-viewer" |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 1 |>
         ];
@@ -263,9 +263,9 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*JSON Metadata*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`Common`$uiResourceRegistry[ "ui://wolfram/notebook-viewer", "meta" ]
+    Block[ { Wolfram`AgentTools`Common`$uiResourceRegistry },
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`Common`$uiResourceRegistry[ "ui://wolfram/notebook-viewer", "meta" ]
     ],
     KeyValuePattern[ "ui" -> KeyValuePattern[ "prefersBorder" -> True ] ],
     SameTest -> MatchQ,
@@ -273,9 +273,9 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`Common`$uiResourceRegistry[
+    Block[ { Wolfram`AgentTools`Common`$uiResourceRegistry },
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`Common`$uiResourceRegistry[
             "ui://wolfram/notebook-viewer", "meta", "ui", "csp", "frameDomains"
         ]
     ],
@@ -285,9 +285,9 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`Common`$uiResourceRegistry[
+    Block[ { Wolfram`AgentTools`Common`$uiResourceRegistry },
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`Common`$uiResourceRegistry[
             "ui://wolfram/notebook-viewer", "meta", "ui", "csp", "resourceDomains"
         ]
     ],

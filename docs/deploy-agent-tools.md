@@ -66,7 +66,7 @@ dep = DeployAgentTools["ClaudeCode",
 
 ### Behavior
 
-1. Validates the target specification; issues `MCPServer::InvalidDeployTarget` for unrecognized forms
+1. Validates the target specification; issues `AgentTools::InvalidDeployTarget` for unrecognized forms
 2. Resolves the target to a concrete config file path (same resolution as `InstallMCPServer`)
 3. For `{name, dir}` targets, the directory is expanded to an absolute `File[...]` path in the stored deployment record
 4. Checks for an existing deployment matching the config file; errors if one exists (unless `OverwriteTarget -> True`)
@@ -143,7 +143,7 @@ DeployedAgentTools["Claude"]  (* same as "ClaudeDesktop" *)
 Deployment records are stored as WXF files under:
 
 ```
-$UserBaseDirectory/ApplicationData/Wolfram/MCPServer/Deployments/<ClientName>/<UUID>/Deployment.wxf
+$UserBaseDirectory/ApplicationData/Wolfram/AgentTools/Deployments/<ClientName>/<UUID>/Deployment.wxf
 ```
 
 Deployments are grouped by canonical client name. There is no master index file — `DeployedAgentTools` scans the directory structure directly.

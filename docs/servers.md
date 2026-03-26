@@ -1,10 +1,10 @@
 # Predefined MCP Servers
 
-This document describes the predefined MCP servers available in MCPServer and helps you choose the right one for your needs.
+This document describes the predefined MCP servers available in AgentTools and helps you choose the right one for your needs.
 
 ## Overview
 
-MCPServer provides four predefined server configurations, each tailored for different use cases. These are available via `$DefaultMCPServers` and can be installed into MCP clients using `InstallMCPServer`.
+AgentTools provides four predefined server configurations, each tailored for different use cases. These are available via `$DefaultMCPServers` and can be installed into MCP clients using `InstallMCPServer`.
 
 | Server | Primary Use Case |
 |--------|------------------|

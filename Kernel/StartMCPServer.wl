@@ -1,11 +1,11 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`StartMCPServer`" ];
+BeginPackage[ "Wolfram`AgentTools`StartMCPServer`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"          ];
-Needs[ "Wolfram`MCPServer`Common`"   ];
-Needs[ "Wolfram`MCPServer`Graphics`" ];
+Needs[ "Wolfram`AgentTools`"          ];
+Needs[ "Wolfram`AgentTools`Common`"   ];
+Needs[ "Wolfram`AgentTools`Graphics`" ];
 
 Needs[ "Wolfram`Chatbook`" -> "cb`" ];
 
@@ -839,7 +839,7 @@ evaluateTool // endDefinition;
 safeString // beginDefinition;
 
 (* Special handling for internal failures - format cleanly for MCP output *)
-safeString[ failure: Failure[ "MCPServer::Internal" | "General::ChatbookInternal", _ ] ] :=
+safeString[ failure: Failure[ "AgentTools::Internal" | "General::ChatbookInternal", _ ] ] :=
     With[ { formatted = formatInternalFailureForMCP @ failure },
         formatted /; StringQ @ formatted
     ];
@@ -1007,7 +1007,7 @@ writeError // beginDefinition;
 
 writeError[ args___ ] /; stderrEnabledQ[ ] :=
     With[ { time = $logTimeStamp },
-        WriteLine[ "stderr", sequenceString[ time, " [Wolfram/MCPServer] [error] ", args ] ]
+        WriteLine[ "stderr", sequenceString[ time, " [Wolfram/AgentTools] [error] ", args ] ]
     ];
 
 writeError[ ___ ] := Null;
@@ -1028,7 +1028,7 @@ debugPrint // beginDefinition;
 
 debugPrint[ args___ ] /; stderrEnabledQ[ ] :=
     With[ { time = $logTimeStamp },
-        WriteLine[ "stderr", sequenceString[ time, " [Wolfram/MCPServer] [info] ", args ] ]
+        WriteLine[ "stderr", sequenceString[ time, " [Wolfram/AgentTools] [info] ", args ] ]
     ];
 
 debugPrint[ ___ ] := Null;

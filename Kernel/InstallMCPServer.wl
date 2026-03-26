@@ -1,10 +1,10 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`InstallMCPServer`" ];
+BeginPackage[ "Wolfram`AgentTools`InstallMCPServer`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
+Needs[ "Wolfram`AgentTools`"        ];
+Needs[ "Wolfram`AgentTools`Common`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -734,7 +734,7 @@ installSuccess[ serverName_String, installLocation_File? fileQ, obj_MCPServerObj
     Success[
         "InstallMCPServer",
         <|
-            "MessageTemplate"   :> MCPServer::InstallMCPServerNamed,
+            "MessageTemplate"   :> AgentTools::InstallMCPServerNamed,
             "MessageParameters" -> { serverName, installName },
             "Location"          -> installLocation,
             "MCPServerObject"   -> obj
@@ -745,7 +745,7 @@ installSuccess[ serverName_String, installLocation_File? fileQ, obj_MCPServerObj
     Success[
         "InstallMCPServer",
         <|
-            "MessageTemplate"   :> MCPServer::InstallMCPServer,
+            "MessageTemplate"   :> AgentTools::InstallMCPServer,
             "MessageParameters" -> { serverName },
             "Location"          -> installLocation,
             "MCPServerObject"   -> obj
@@ -969,7 +969,7 @@ uninstallSuccess[ serverName_String, installLocation_File? fileQ, obj_MCPServerO
     Success[
         "UninstallMCPServer",
         <|
-            "MessageTemplate"   :> MCPServer::UninstallMCPServerNamed,
+            "MessageTemplate"   :> AgentTools::UninstallMCPServerNamed,
             "MessageParameters" -> { serverName, installName },
             "Location"          -> installLocation,
             "MCPServerObject"   -> obj
@@ -980,7 +980,7 @@ uninstallSuccess[ serverName_String, installLocation_File? fileQ, obj_MCPServerO
     Success[
         "UninstallMCPServer",
         <|
-            "MessageTemplate"   :> MCPServer::UninstallMCPServer,
+            "MessageTemplate"   :> AgentTools::UninstallMCPServer,
             "MessageParameters" -> { serverName },
             "Location"          -> installLocation,
             "MCPServerObject"   -> obj

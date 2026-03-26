@@ -1,4 +1,4 @@
-# [Wolfram/MCPServer](https://paclets.com/Wolfram/MCPServer)
+# [Wolfram/AgentTools](https://paclets.com/Wolfram/AgentTools)
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Wolfram Version](https://img.shields.io/badge/Wolfram-14.2%2B-red.svg)](https://www.wolfram.com/language/)
@@ -43,13 +43,13 @@ Implements a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) ser
 ### Install the Paclet
 
 ```wl
-PacletInstall["Wolfram/MCPServer"]
+PacletInstall["Wolfram/AgentTools"]
 ```
 
 ### Load the Package
 
 ```wl
-Needs["Wolfram`MCPServer`"]
+Needs["Wolfram`AgentTools`"]
 ```
 
 ## Quick Start
@@ -80,7 +80,7 @@ UninstallMCPServer["ClaudeDesktop", "Wolfram"]   (* Remove specific server *)
 
 ## Predefined Servers
 
-MCPServer includes four predefined server configurations, each optimized for different use cases:
+AgentTools includes four predefined server configurations, each optimized for different use cases:
 
 | Server | Best For | Tools |
 |--------|----------|-------|
@@ -101,7 +101,7 @@ See [docs/servers.md](docs/servers.md) for detailed information about each serve
 
 ## Supported Clients
 
-MCPServer can be installed into the following MCP client applications:
+AgentTools can be installed into the following MCP client applications:
 
 | Client | Name | Project Support |
 |--------|------|-----------------|
@@ -128,7 +128,7 @@ InstallMCPServer[{"ClaudeCode", "/path/to/project"}, "WolframLanguage"]
 
 ### Claude Desktop
 
-Claude Desktop offers an excellent integration experience with MCPServer, providing seamless access to Wolfram Language's computational capabilities.
+Claude Desktop offers an excellent integration experience with AgentTools, providing seamless access to Wolfram Language's computational capabilities.
 
 ### Cursor
 
@@ -149,11 +149,11 @@ Your Wolfram tools will now be available in Cursor agent chat:
 
 ### Other Clients
 
-MCPServer works with any stdio-based MCP client. See [docs/mcp-clients.md](docs/mcp-clients.md) for manual configuration instructions.
+AgentTools works with any stdio-based MCP client. See [docs/mcp-clients.md](docs/mcp-clients.md) for manual configuration instructions.
 
 ## Available Tools
 
-MCPServer provides a variety of tools organized by category:
+AgentTools provides a variety of tools organized by category:
 
 ### Context Tools (Semantic Search)
 

@@ -25,7 +25,7 @@ Notebook[
           ButtonBox[
            "$DefaultMCPToolOptions",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/$DefaultMCPToolOptions"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/$DefaultMCPToolOptions"
           ]
          ],
          "InlineFormula"
@@ -43,7 +43,7 @@ Notebook[
         ButtonBox[
          "Default Tools",
          BaseStyle -> "Link",
-         ButtonData -> "paclet:Wolfram/MCPServer/tutorial/DefaultTools"
+         ButtonData -> "paclet:Wolfram/AgentTools/tutorial/DefaultTools"
         ],
         " page for details on available tool options."
        }
@@ -97,7 +97,7 @@ Notebook[
           ButtonBox[
            "$DefaultMCPTools",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/$DefaultMCPTools"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/$DefaultMCPTools"
           ]
          ],
          "InlineSeeAlsoFunction",
@@ -109,7 +109,7 @@ Notebook[
           ButtonBox[
            "InstallMCPServer",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/InstallMCPServer"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/InstallMCPServer"
           ]
          ],
          "InlineSeeAlsoFunction",
@@ -221,7 +221,7 @@ Notebook[
        ButtonBox[
         "Default Tools",
         BaseStyle -> "Link",
-        ButtonData -> "paclet:Wolfram/MCPServer/tutorial/DefaultTools"
+        ButtonData -> "paclet:Wolfram/AgentTools/tutorial/DefaultTools"
        ]
       ],
       "Tutorials",
@@ -319,7 +319,7 @@ Notebook[
      ],
      Cell[
       BoxData[
-       RowBox[{"Needs", "[", "\"Wolfram`MCPServer`\"", "]"}]
+       RowBox[{"Needs", "[", "\"Wolfram`AgentTools`\"", "]"}]
       ],
       "ExampleInitialization",
       CellID -> 264046369
@@ -688,19 +688,19 @@ Notebook[
          CellID -> 362763309
         ],
         Cell[
-         "Wolfram/MCPServer",
+         "Wolfram/AgentTools",
          "Categorization",
          CellLabel -> "Paclet Name",
          CellID -> 575034655
         ],
         Cell[
-         "Wolfram`MCPServer`",
+         "Wolfram`AgentTools`",
          "Categorization",
          CellLabel -> "Context",
          CellID -> 282623659
         ],
         Cell[
-         "Wolfram/MCPServer/ref/$DefaultMCPToolOptions",
+         "Wolfram/AgentTools/ref/$DefaultMCPToolOptions",
          "Categorization",
          CellLabel -> "URI",
          CellID -> 853236353
@@ -759,7 +759,7 @@ Notebook[
    ]
   ]
  },
- TaggingRules -> <|"Paclet" -> "Wolfram/MCPServer"|>,
+ TaggingRules -> <|"Paclet" -> "Wolfram/AgentTools"|>,
  StyleDefinitions ->
   FrontEnd`FileName[
    {"Wolfram"},

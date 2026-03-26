@@ -9,7 +9,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/Files.wlt:11,1-16,2"
@@ -23,8 +23,8 @@ VerificationTest[
 (*ensureFilePath*)
 
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop[
-        Wolfram`MCPServer`Common`ensureFilePath[ FileNameJoin @ { $TemporaryDirectory, "ensureFilePath_test.txt" } ]
+    Wolfram`AgentTools`Common`catchTop[
+        Wolfram`AgentTools`Common`ensureFilePath[ FileNameJoin @ { $TemporaryDirectory, "ensureFilePath_test.txt" } ]
     ],
     _File,
     SameTest -> MatchQ,
@@ -34,8 +34,8 @@ VerificationTest[
 VerificationTest[
     WithCleanup[
         SetDirectory[ $TemporaryDirectory ],
-        Wolfram`MCPServer`Common`catchTop[
-            Wolfram`MCPServer`Common`ensureFilePath[ "ensureFilePath_relative_test.txt" ]
+        Wolfram`AgentTools`Common`catchTop[
+            Wolfram`AgentTools`Common`ensureFilePath[ "ensureFilePath_relative_test.txt" ]
         ],
         ResetDirectory[]
     ],
@@ -45,8 +45,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop[
-        Wolfram`MCPServer`Common`ensureFilePath[ File[ FileNameJoin @ { $TemporaryDirectory, "ensureFilePath_wrapped_test.txt" } ] ]
+    Wolfram`AgentTools`Common`catchTop[
+        Wolfram`AgentTools`Common`ensureFilePath[ File[ FileNameJoin @ { $TemporaryDirectory, "ensureFilePath_wrapped_test.txt" } ] ]
     ],
     _File,
     SameTest -> MatchQ,
@@ -56,8 +56,8 @@ VerificationTest[
 VerificationTest[
     WithCleanup[
         SetDirectory[ $TemporaryDirectory ],
-        Wolfram`MCPServer`Common`catchTop[
-            Wolfram`MCPServer`Common`ensureFilePath[ File[ "ensureFilePath_relative_wrapped_test.txt" ] ]
+        Wolfram`AgentTools`Common`catchTop[
+            Wolfram`AgentTools`Common`ensureFilePath[ File[ "ensureFilePath_relative_wrapped_test.txt" ] ]
         ],
         ResetDirectory[]
     ],
