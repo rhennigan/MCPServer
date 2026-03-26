@@ -4,6 +4,7 @@
         "BUILDKIT",
         "buildx",
         "CICD",
+        "Collatz",
         "dpkg",
         "Embedder",
         "ENTITLEMENTID",
