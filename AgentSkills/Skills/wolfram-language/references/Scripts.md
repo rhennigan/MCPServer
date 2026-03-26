@@ -24,15 +24,19 @@ wolframscript -f scripts/WolframLanguageContext.wls <context>
 ## WolframLanguageEvaluator.wls
 
 Evaluates Wolfram Language code for the user in a Wolfram Language kernel.
-The user does not automatically see the result, so you must include the result in your response in order for them to see it.
-If a formatted result is provided as a markdown link, use that in your response instead of typing out the output.
 Do not ask permission to evaluate code.
 You have read access to local files.
-Parse natural language input with `\[FreeformPrompt]["query"]`, which is analogous to ctrl-= input in notebooks.
-Natural language input is parsed before evaluation, so it works like macro expansion.
-You should ALWAYS use this natural language input to obtain things like `Quantity`, `DateObject`, `Entity`, etc.
-\[FreeformPrompt] should be written as \uf351 in JSON.
 Always use the Wolfram context tool before using this tool to make sure you have the most up-to-date information.
+
+Use `\[FreeformPrompt]["query"]` to parse natural language into Wolfram Language expressions (like ctrl+= in notebooks). Always use this for `Quantity`, `Entity`, `EntityClass`, etc. It composes freely: `ColorNegate[\[FreeformPrompt]["picture of a cat"]]`.
+
+Examples:
+```
+\[FreeformPrompt]["France population"]  (* Entity property value *)
+\[FreeformPrompt]["123 terawatt hours"] (* Quantity *)
+```
+
+The argument MUST be a string literal -- it parses before evaluation, so runtime construction will not work.
 
 **Usage:**
 
