@@ -426,10 +426,10 @@ throwFailure // endDefinition;
 (*messageFailure*)
 messageFailure // Attributes = { HoldFirst };
 
-(* messageFailure[ "Internal"|MCPServer::Internal, args___ ] := (
+messageFailure[ "Internal"|MCPServer::Internal, args___ ] := (
     General::MCPServerInternal = MCPServer::Internal;
     messageFailure[ General::MCPServerInternal, args ]
-); *)
+);
 
 messageFailure[ t_String, args___ ] :=
     With[ { s = $messageSymbol },
