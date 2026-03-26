@@ -28,7 +28,7 @@ Inspects Wolfram Language code using the CodeInspector package and returns a for
 | `code` | String | No* | - | Wolfram Language code string to inspect |
 | `file` | String | No* | - | File or directory path to inspect |
 | `tagExclusions` | String | No | `""` | Comma-separated list of tags to exclude |
-| `severityExclusions` | String | No | `"Formatting,Remark,Scoping"` | Comma-separated list of severities to exclude |
+| `severityExclusions` | String | No | `"Formatting,Scoping"` | Comma-separated list of severities to exclude |
 | `confidenceLevel` | Number | No | `0.75` | Minimum confidence level (0.0 to 1.0) |
 | `limit` | Integer | No | `100` | Maximum number of issues to display |
 
@@ -69,7 +69,7 @@ A comma-separated list of inspection tags to exclude from the results. Tags iden
 
 ##### severityExclusions
 
-A comma-separated list of severity levels to exclude. The default excludes formatting issues, remarks, and scoping warnings to focus on more significant problems.
+A comma-separated list of severity levels to exclude. The default excludes formatting and scoping issues to focus on more significant problems.
 
 **Available severities:**
 - `"Fatal"` - Critical errors that prevent code from running
@@ -216,7 +216,7 @@ No issues found matching the specified criteria.
 
 **Settings:**
 - Confidence Level: 0.75
-- Severity Exclusions: Formatting, Remark, Scoping
+- Severity Exclusions: Formatting, Scoping
 - Tag Exclusions: (none)
 ```
 
@@ -619,7 +619,7 @@ No issues found matching the specified criteria.
 
 **Settings:**
 - Confidence Level: 0.75
-- Severity Exclusions: Formatting, Remark, Scoping
+- Severity Exclusions: Formatting, Scoping
 - Tag Exclusions: (none)
 ````
 

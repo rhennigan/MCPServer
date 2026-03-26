@@ -20,7 +20,8 @@ $wlFilePatterns = { "*.wl", "*.m", "*.wls" };
 codeInspect // beginDefinition;
 
 codeInspect[ code: _String | File[ _String ], opts_Association ] := Enclose[
-    Module[ { abstractRules, concreteRules, aggregateRules, tagExclusions, severityExclusions, confidenceLevel },
+    Module[ { abstractRules, concreteRules, aggregateRules, tagExclusions, severityExclusions, confidenceLevel,
+               ciTagExclusions, splitTagExclusions },
 
         (* We need to make sure CodeInspector is loaded at runtime, since we might be running from an MX build *)
         Needs[ "CodeInspector`" -> None ];
@@ -34,7 +35,8 @@ codeInspect[ code: _String | File[ _String ], opts_Association ] := Enclose[
         severityExclusions = ConfirmMatch[ opts[ "severityExclusions" ], { ___String }, "SeverityExclusions" ];
         confidenceLevel    = ConfirmMatch[ opts[ "confidenceLevel"    ], _Real        , "ConfidenceLevel"    ];
 
-        tagExclusions = StringSplit[ #, "::" ] & /@ tagExclusions;
+        ciTagExclusions    = If[ StringContainsQ[ #, "::" ], StringSplit[ #, "::" ], # ] & /@ tagExclusions;
+        splitTagExclusions = StringSplit[ #, "::" ] & /@ tagExclusions;
 
         Module[ { astInspections, codeString, textInspections },
             astInspections = ci`CodeInspect[
@@ -42,7 +44,7 @@ codeInspect[ code: _String | File[ _String ], opts_Association ] := Enclose[
                 "AbstractRules"      -> abstractRules,
                 "ConcreteRules"      -> concreteRules,
                 "AggregateRules"     -> aggregateRules,
-                "TagExclusions"      -> tagExclusions,
+                "TagExclusions"      -> ciTagExclusions,
                 "SeverityExclusions" -> severityExclusions,
                 "ConfidenceLevel"    -> confidenceLevel
             ];
@@ -50,7 +52,7 @@ codeInspect[ code: _String | File[ _String ], opts_Association ] := Enclose[
             textInspections = If[ StringQ @ codeString,
                 filterTextInspections[
                     textLevelInspections @ codeString,
-                    tagExclusions,
+                    splitTagExclusions,
                     severityExclusions,
                     confidenceLevel
                 ],

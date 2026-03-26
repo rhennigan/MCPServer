@@ -4267,13 +4267,13 @@ Notebook[
                                        TagBox[
                                         TooltipBox[
                                          "\"severityExclusions\"",
-                                         "\"\\\"Help\\\" description sent to the LLM: \\\"Comma-separated list of severities to exclude. Default: \\\"Formatting,Remark,Scoping\\\". Available: Fatal, Error, Warning, Scoping, Remark, Formatting.\\\"\"",
+                                         "\"\\\"Help\\\" description sent to the LLM: \\\"Comma-separated list of severities to exclude. Default: \\\"Formatting,Scoping\\\". Available: Fatal, Error, Warning, Scoping, Remark, Formatting.\\\"\"",
                                          TooltipStyle -> "TextStyling"
                                         ],
                                         Function[
                                          Annotation[
                                           #1,
-                                          "\"Help\" description sent to the LLM: \"Comma-separated list of severities to exclude. Default: \"Formatting,Remark,Scoping\". Available: Fatal, Error, Warning, Scoping, Remark, Formatting.\"",
+                                          "\"Help\" description sent to the LLM: \"Comma-separated list of severities to exclude. Default: \"Formatting,Scoping\". Available: Fatal, Error, Warning, Scoping, Remark, Formatting.\"",
                                           "Tooltip"
                                          ]
                                         ]
@@ -4426,7 +4426,7 @@ Notebook[
                      |>,
                      "severityExclusions" -> <|
                       "Interpreter" -> "String",
-                      "Help" -> "Comma-separated list of severities to exclude. Default: \"Formatting,Remark,Scoping\". Available: Fatal, Error, Warning, Scoping, Remark, Formatting.",
+                      "Help" -> "Comma-separated list of severities to exclude. Default: \"Formatting,Scoping\". Available: Fatal, Error, Warning, Scoping, Remark, Formatting.",
                       "Required" -> False
                      |>,
                      "confidenceLevel" -> <|

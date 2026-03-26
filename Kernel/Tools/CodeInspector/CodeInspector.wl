@@ -12,7 +12,7 @@ Needs[ "Wolfram`MCPServer`Tools`"  ];
 (* ::Section::Closed:: *)
 (*Config*)
 $defaultConfidenceLevel    = 0.75;
-$defaultSeverityExclusions = { "Formatting", "Remark", "Scoping" };
+$defaultSeverityExclusions = { "Formatting", "Scoping" };
 $defaultTagExclusions      = { };
 $defaultLimit              = 100;
 
@@ -64,7 +64,7 @@ $defaultMCPTools[ "CodeInspector" ] := LLMTool @ <|
         |>,
         "severityExclusions" -> <|
             "Interpreter" -> "String",
-            "Help"        -> "Comma-separated list of severities to exclude. Default: \"Formatting,Remark,Scoping\". Available: Fatal, Error, Warning, Scoping, Remark, Formatting.",
+            "Help"        -> "Comma-separated list of severities to exclude. Default: \"Formatting,Scoping\". Available: Fatal, Error, Warning, Scoping, Remark, Formatting.",
             "Required"    -> False
         |>,
         "confidenceLevel" -> <|

@@ -35,8 +35,10 @@ Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
 (*conditionalTest*)
 conditionalTest // Attributes = { HoldAllComplete };
 
-conditionalTest[ condition_ ] :=
-    Function[ test, conditionalTest[ condition, test ], HoldAllComplete ];
+conditionalTest[ condition0_ ] :=
+    With[ { condition = condition0 }, (* Insert the evaluated condition so we don't repeat it every time *)
+        Function[ test, conditionalTest[ condition, test ], HoldAllComplete ]
+    ];
 
 conditionalTest[ condition_, test: VerificationTest[ ___, TestID -> id_String, ___ ] ] :=
     If[ condition,
