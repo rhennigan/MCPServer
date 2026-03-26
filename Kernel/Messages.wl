@@ -33,6 +33,7 @@ MCPServer::UnknownInstallLocation        = "Unable to determine install location
 MCPServer::UnknownProjectInstallLocation = "Unable to determine project install location for `1`. Use File[\[Ellipsis]] to specify a custom location.";
 MCPServer::UnsupportedMCPClient          = "No automatic installation support for MCP client `1`.";
 MCPServer::UnsupportedMCPClientProject   = "No automatic project-level installation support for MCP client `1`.";
+MCPServer::InvalidProjectDirectory       = "Invalid project directory specification: `1`. Expected a directory path string or File[\[Ellipsis]].";
 MCPServer::UnsupportedOperatingSystem    = "Unsupported operating system: `1`.";
 MCPServer::MCPTimeout                    = "MCP request `1` timed out after `2` seconds.";
 MCPServer::UnknownTool                   = "Unknown tool: `1`.";

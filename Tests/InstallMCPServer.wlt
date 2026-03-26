@@ -444,6 +444,34 @@ VerificationTest[
     TestID   -> "ProjectInstallLocation-VisualStudioCode@@Tests/InstallMCPServer.wlt:436,1-445,2"
 ]
 
+VerificationTest[
+    Wolfram`MCPServer`Common`catchAlways[
+        Wolfram`MCPServer`Common`projectInstallLocation[ "ClaudeCode", Symbol[ "xyz" ] ]
+    ],
+    _Failure,
+    { MCPServer::InvalidProjectDirectory },
+    SameTest -> MatchQ,
+    TestID   -> "ProjectInstallLocation-InvalidDirectory-Symbol@@Tests/InstallMCPServer.wlt:447,1-455,2"
+]
+
+VerificationTest[
+    Wolfram`MCPServer`Common`catchAlways[
+        Wolfram`MCPServer`Common`projectInstallLocation[ "ClaudeCode", 123 ]
+    ],
+    _Failure,
+    { MCPServer::InvalidProjectDirectory },
+    SameTest -> MatchQ,
+    TestID   -> "ProjectInstallLocation-InvalidDirectory-Integer@@Tests/InstallMCPServer.wlt:457,1-465,2"
+]
+
+VerificationTest[
+    InstallMCPServer[ { "ClaudeCode", Symbol[ "xyz" ] } ],
+    _Failure,
+    { InstallMCPServer::InvalidProjectDirectory },
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-InvalidProjectDirectory@@Tests/InstallMCPServer.wlt:467,1-473,2"
+]
+
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*makeDevelopmentArgs*)
@@ -451,7 +479,7 @@ VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`makeDevelopmentArgs[ DirectoryName[ $TestFileName, 2 ] ],
     { "-script", _String? FileExistsQ, "-noinit", "-noprompt" },
     SameTest -> MatchQ,
-    TestID   -> "MakeDevelopmentArgs-ValidPath@@Tests/InstallMCPServer.wlt:450,1-455,2"
+    TestID   -> "MakeDevelopmentArgs-ValidPath@@Tests/InstallMCPServer.wlt:478,1-483,2"
 ]
 
 VerificationTest[
@@ -461,7 +489,7 @@ VerificationTest[
     Failure[ "InstallMCPServer::DevelopmentModeUnavailable", _ ],
     { InstallMCPServer::DevelopmentModeUnavailable },
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-DevelopmentMode-InvalidPath@@Tests/InstallMCPServer.wlt:457,1-465,2"
+    TestID   -> "InstallMCPServer-DevelopmentMode-InvalidPath@@Tests/InstallMCPServer.wlt:485,1-493,2"
 ]
 
 VerificationTest[
@@ -470,7 +498,7 @@ VerificationTest[
     Failure[ "InstallMCPServer::InvalidDevelopmentMode", _ ],
     { InstallMCPServer::InvalidDevelopmentMode },
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-DevelopmentMode-InvalidValue@@Tests/InstallMCPServer.wlt:467,1-474,2"
+    TestID   -> "InstallMCPServer-DevelopmentMode-InvalidValue@@Tests/InstallMCPServer.wlt:495,1-502,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
@@ -481,7 +509,7 @@ VerificationTest[
 VerificationTest[
     MemberQ[ Keys @ Options @ InstallMCPServer, "DevelopmentMode" ],
     True,
-    TestID -> "DevelopmentMode-OptionExists@@Tests/InstallMCPServer.wlt:481,1-485,2"
+    TestID -> "DevelopmentMode-OptionExists@@Tests/InstallMCPServer.wlt:509,1-513,2"
 ]
 
 VerificationTest[
@@ -489,7 +517,7 @@ VerificationTest[
     InstallMCPServer[ configFile, "DevelopmentMode" -> DirectoryName[ $TestFileName, 2 ], "VerifyLLMKit" -> False ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-DevelopmentMode-Success@@Tests/InstallMCPServer.wlt:487,1-493,2"
+    TestID   -> "InstallMCPServer-DevelopmentMode-Success@@Tests/InstallMCPServer.wlt:515,1-521,2"
 ]
 
 VerificationTest[
@@ -497,14 +525,14 @@ VerificationTest[
     json[ "mcpServers", "Wolfram", "args" ],
     { "-script", _String, "-noinit", "-noprompt" },
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-DevelopmentMode-Args@@Tests/InstallMCPServer.wlt:495,1-501,2"
+    TestID   -> "InstallMCPServer-DevelopmentMode-Args@@Tests/InstallMCPServer.wlt:523,1-529,2"
 ]
 
 VerificationTest[
     cleanupTestFiles[ configFile ],
     { Null },
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-DevelopmentMode-Cleanup@@Tests/InstallMCPServer.wlt:503,1-508,2"
+    TestID   -> "InstallMCPServer-DevelopmentMode-Cleanup@@Tests/InstallMCPServer.wlt:531,1-536,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -526,21 +554,21 @@ VerificationTest[
     Wolfram`MCPServer`Common`installLocation[ "Codex", "Windows" ],
     _File,
     SameTest -> MatchQ,
-    TestID   -> "InstallLocation-Codex-Windows@@Tests/InstallMCPServer.wlt:525,1-530,2"
+    TestID   -> "InstallLocation-Codex-Windows@@Tests/InstallMCPServer.wlt:553,1-558,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`Common`installLocation[ "Codex", "MacOSX" ],
     _File,
     SameTest -> MatchQ,
-    TestID   -> "InstallLocation-Codex-MacOSX@@Tests/InstallMCPServer.wlt:532,1-537,2"
+    TestID   -> "InstallLocation-Codex-MacOSX@@Tests/InstallMCPServer.wlt:560,1-565,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`Common`installLocation[ "Codex", "Unix" ],
     _File,
     SameTest -> MatchQ,
-    TestID   -> "InstallLocation-Codex-Unix@@Tests/InstallMCPServer.wlt:539,1-544,2"
+    TestID   -> "InstallLocation-Codex-Unix@@Tests/InstallMCPServer.wlt:567,1-572,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -550,21 +578,21 @@ VerificationTest[
     Wolfram`MCPServer`Common`toInstallName[ "OpenAICodex" ],
     "Codex",
     SameTest -> Equal,
-    TestID   -> "ToInstallName-OpenAICodex@@Tests/InstallMCPServer.wlt:549,1-554,2"
+    TestID   -> "ToInstallName-OpenAICodex@@Tests/InstallMCPServer.wlt:577,1-582,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`Common`toInstallName[ "Codex" ],
     "Codex",
     SameTest -> Equal,
-    TestID   -> "ToInstallName-Codex@@Tests/InstallMCPServer.wlt:556,1-561,2"
+    TestID   -> "ToInstallName-Codex@@Tests/InstallMCPServer.wlt:584,1-589,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`installDisplayName[ "Codex" ],
     "Codex CLI",
     SameTest -> Equal,
-    TestID   -> "InstallDisplayName-Codex@@Tests/InstallMCPServer.wlt:563,1-568,2"
+    TestID   -> "InstallDisplayName-Codex@@Tests/InstallMCPServer.wlt:591,1-596,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -575,7 +603,7 @@ VerificationTest[
     toml[ "Data" ],
     <| |>,
     SameTest -> Equal,
-    TestID   -> "ReadTOMLFile-NonExistent@@Tests/InstallMCPServer.wlt:573,1-579,2"
+    TestID   -> "ReadTOMLFile-NonExistent@@Tests/InstallMCPServer.wlt:601,1-607,2"
 ]
 
 VerificationTest[
@@ -590,7 +618,7 @@ VerificationTest[
     ],
     <| "key" -> "value", "number" -> 42, "enabled" -> True |>,
     SameTest -> Equal,
-    TestID   -> "ReadTOMLFile-BasicParsing@@Tests/InstallMCPServer.wlt:581,1-594,2"
+    TestID   -> "ReadTOMLFile-BasicParsing@@Tests/InstallMCPServer.wlt:609,1-622,2"
 ]
 
 VerificationTest[
@@ -610,7 +638,7 @@ VerificationTest[
         "enabled" -> True
     |>,
     SameTest -> Equal,
-    TestID   -> "ReadTOMLFile-MCPServerSection@@Tests/InstallMCPServer.wlt:596,1-614,2"
+    TestID   -> "ReadTOMLFile-MCPServerSection@@Tests/InstallMCPServer.wlt:624,1-642,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -622,14 +650,14 @@ VerificationTest[
     installResult = InstallMCPServer[ codexConfigFile, "WolframLanguage", "VerifyLLMKit" -> False ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-Codex-Basic@@Tests/InstallMCPServer.wlt:619,1-626,2"
+    TestID   -> "InstallMCPServer-Codex-Basic@@Tests/InstallMCPServer.wlt:647,1-654,2"
 ]
 
 VerificationTest[
     FileExistsQ[ codexConfigFile ],
     True,
     SameTest -> Equal,
-    TestID   -> "InstallMCPServer-Codex-FileExists@@Tests/InstallMCPServer.wlt:628,1-633,2"
+    TestID   -> "InstallMCPServer-Codex-FileExists@@Tests/InstallMCPServer.wlt:656,1-661,2"
 ]
 
 VerificationTest[
@@ -640,7 +668,7 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "InstallMCPServer-Codex-VerifyContent@@Tests/InstallMCPServer.wlt:635,1-644,2"
+    TestID   -> "InstallMCPServer-Codex-VerifyContent@@Tests/InstallMCPServer.wlt:663,1-672,2"
 ]
 
 VerificationTest[
@@ -650,7 +678,7 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "InstallMCPServer-Codex-VerifySectionFormat@@Tests/InstallMCPServer.wlt:646,1-654,2"
+    TestID   -> "InstallMCPServer-Codex-VerifySectionFormat@@Tests/InstallMCPServer.wlt:674,1-682,2"
 ]
 
 VerificationTest[
@@ -658,7 +686,7 @@ VerificationTest[
     uninstallResult = UninstallMCPServer[ codexConfigFile, "WolframLanguage" ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-Codex-Basic@@Tests/InstallMCPServer.wlt:656,1-662,2"
+    TestID   -> "UninstallMCPServer-Codex-Basic@@Tests/InstallMCPServer.wlt:684,1-690,2"
 ]
 
 VerificationTest[
@@ -668,14 +696,14 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "UninstallMCPServer-Codex-VerifyRemoval@@Tests/InstallMCPServer.wlt:664,1-672,2"
+    TestID   -> "UninstallMCPServer-Codex-VerifyRemoval@@Tests/InstallMCPServer.wlt:692,1-700,2"
 ]
 
 VerificationTest[
     cleanupTestFiles[ codexConfigFile ],
     { Null },
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-Codex-Cleanup@@Tests/InstallMCPServer.wlt:674,1-679,2"
+    TestID   -> "InstallMCPServer-Codex-Cleanup@@Tests/InstallMCPServer.wlt:702,1-707,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -688,7 +716,7 @@ VerificationTest[
     InstallMCPServer[ codexConfigFile, "WolframLanguage", "VerifyLLMKit" -> False ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-Codex-MultipleServers@@Tests/InstallMCPServer.wlt:684,1-692,2"
+    TestID   -> "InstallMCPServer-Codex-MultipleServers@@Tests/InstallMCPServer.wlt:712,1-720,2"
 ]
 
 VerificationTest[
@@ -699,14 +727,14 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "InstallMCPServer-Codex-VerifyMultipleBuiltInShareKey@@Tests/InstallMCPServer.wlt:694,1-703,2"
+    TestID   -> "InstallMCPServer-Codex-VerifyMultipleBuiltInShareKey@@Tests/InstallMCPServer.wlt:722,1-731,2"
 ]
 
 VerificationTest[
     cleanupTestFiles[ codexConfigFile ],
     { Null },
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-Codex-MultipleServers-Cleanup@@Tests/InstallMCPServer.wlt:705,1-710,2"
+    TestID   -> "InstallMCPServer-Codex-MultipleServers-Cleanup@@Tests/InstallMCPServer.wlt:733,1-738,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -723,7 +751,7 @@ VerificationTest[
     InstallMCPServer[ codexConfigFile, "WolframLanguage", "VerifyLLMKit" -> False ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-Codex-PreserveExisting@@Tests/InstallMCPServer.wlt:715,1-727,2"
+    TestID   -> "InstallMCPServer-Codex-PreserveExisting@@Tests/InstallMCPServer.wlt:743,1-755,2"
 ]
 
 VerificationTest[
@@ -735,14 +763,14 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "InstallMCPServer-Codex-VerifyPreserved@@Tests/InstallMCPServer.wlt:729,1-739,2"
+    TestID   -> "InstallMCPServer-Codex-VerifyPreserved@@Tests/InstallMCPServer.wlt:757,1-767,2"
 ]
 
 VerificationTest[
     cleanupTestFiles[ codexConfigFile ],
     { Null },
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-Codex-PreserveExisting-Cleanup@@Tests/InstallMCPServer.wlt:741,1-746,2"
+    TestID   -> "InstallMCPServer-Codex-PreserveExisting-Cleanup@@Tests/InstallMCPServer.wlt:769,1-774,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -761,7 +789,7 @@ VerificationTest[
         "enabled" -> True
     |>,
     SameTest -> Equal,
-    TestID   -> "ConvertToCodexFormat-Basic@@Tests/InstallMCPServer.wlt:751,1-765,2"
+    TestID   -> "ConvertToCodexFormat-Basic@@Tests/InstallMCPServer.wlt:779,1-793,2"
 ]
 
 VerificationTest[
@@ -770,7 +798,7 @@ VerificationTest[
     |>,
     <| "command" -> "wolfram", "enabled" -> True |>,
     SameTest -> Equal,
-    TestID   -> "ConvertToCodexFormat-MinimalConfig@@Tests/InstallMCPServer.wlt:767,1-774,2"
+    TestID   -> "ConvertToCodexFormat-MinimalConfig@@Tests/InstallMCPServer.wlt:795,1-802,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -784,21 +812,21 @@ VerificationTest[
     Wolfram`MCPServer`Common`installLocation[ "CopilotCLI", "Windows" ],
     _File,
     SameTest -> MatchQ,
-    TestID   -> "InstallLocation-CopilotCLI-Windows@@Tests/InstallMCPServer.wlt:783,1-788,2"
+    TestID   -> "InstallLocation-CopilotCLI-Windows@@Tests/InstallMCPServer.wlt:811,1-816,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`Common`installLocation[ "CopilotCLI", "MacOSX" ],
     _File,
     SameTest -> MatchQ,
-    TestID   -> "InstallLocation-CopilotCLI-MacOSX@@Tests/InstallMCPServer.wlt:790,1-795,2"
+    TestID   -> "InstallLocation-CopilotCLI-MacOSX@@Tests/InstallMCPServer.wlt:818,1-823,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`Common`installLocation[ "CopilotCLI", "Unix" ],
     _File,
     SameTest -> MatchQ,
-    TestID   -> "InstallLocation-CopilotCLI-Unix@@Tests/InstallMCPServer.wlt:797,1-802,2"
+    TestID   -> "InstallLocation-CopilotCLI-Unix@@Tests/InstallMCPServer.wlt:825,1-830,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -808,21 +836,21 @@ VerificationTest[
     Wolfram`MCPServer`Common`toInstallName[ "Copilot" ],
     "CopilotCLI",
     SameTest -> Equal,
-    TestID   -> "ToInstallName-Copilot@@Tests/InstallMCPServer.wlt:807,1-812,2"
+    TestID   -> "ToInstallName-Copilot@@Tests/InstallMCPServer.wlt:835,1-840,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`Common`toInstallName[ "CopilotCLI" ],
     "CopilotCLI",
     SameTest -> Equal,
-    TestID   -> "ToInstallName-CopilotCLI@@Tests/InstallMCPServer.wlt:814,1-819,2"
+    TestID   -> "ToInstallName-CopilotCLI@@Tests/InstallMCPServer.wlt:842,1-847,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`installDisplayName[ "CopilotCLI" ],
     "Copilot CLI",
     SameTest -> Equal,
-    TestID   -> "InstallDisplayName-CopilotCLI@@Tests/InstallMCPServer.wlt:821,1-826,2"
+    TestID   -> "InstallDisplayName-CopilotCLI@@Tests/InstallMCPServer.wlt:849,1-854,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -841,7 +869,7 @@ VerificationTest[
         "tools" -> { "*" }
     |>,
     SameTest -> Equal,
-    TestID   -> "ConvertToCopilotCLIFormat-Basic@@Tests/InstallMCPServer.wlt:831,1-845,2"
+    TestID   -> "ConvertToCopilotCLIFormat-Basic@@Tests/InstallMCPServer.wlt:859,1-873,2"
 ]
 
 VerificationTest[
@@ -850,7 +878,7 @@ VerificationTest[
     |>,
     <| "command" -> "wolfram", "tools" -> { "*" } |>,
     SameTest -> Equal,
-    TestID   -> "ConvertToCopilotCLIFormat-MinimalConfig@@Tests/InstallMCPServer.wlt:847,1-854,2"
+    TestID   -> "ConvertToCopilotCLIFormat-MinimalConfig@@Tests/InstallMCPServer.wlt:875,1-882,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -864,21 +892,21 @@ VerificationTest[
     Wolfram`MCPServer`Common`installLocation[ "Windsurf", "Windows" ],
     _File,
     SameTest -> MatchQ,
-    TestID   -> "InstallLocation-Windsurf-Windows@@Tests/InstallMCPServer.wlt:863,1-868,2"
+    TestID   -> "InstallLocation-Windsurf-Windows@@Tests/InstallMCPServer.wlt:891,1-896,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`Common`installLocation[ "Windsurf", "MacOSX" ],
     _File,
     SameTest -> MatchQ,
-    TestID   -> "InstallLocation-Windsurf-MacOSX@@Tests/InstallMCPServer.wlt:870,1-875,2"
+    TestID   -> "InstallLocation-Windsurf-MacOSX@@Tests/InstallMCPServer.wlt:898,1-903,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`Common`installLocation[ "Windsurf", "Unix" ],
     _File,
     SameTest -> MatchQ,
-    TestID   -> "InstallLocation-Windsurf-Unix@@Tests/InstallMCPServer.wlt:877,1-882,2"
+    TestID   -> "InstallLocation-Windsurf-Unix@@Tests/InstallMCPServer.wlt:905,1-910,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -888,21 +916,21 @@ VerificationTest[
     Wolfram`MCPServer`Common`toInstallName[ "Codeium" ],
     "Windsurf",
     SameTest -> Equal,
-    TestID   -> "ToInstallName-Codeium@@Tests/InstallMCPServer.wlt:887,1-892,2"
+    TestID   -> "ToInstallName-Codeium@@Tests/InstallMCPServer.wlt:915,1-920,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`Common`toInstallName[ "Windsurf" ],
     "Windsurf",
     SameTest -> Equal,
-    TestID   -> "ToInstallName-Windsurf@@Tests/InstallMCPServer.wlt:894,1-899,2"
+    TestID   -> "ToInstallName-Windsurf@@Tests/InstallMCPServer.wlt:922,1-927,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`installDisplayName[ "Windsurf" ],
     "Windsurf",
     SameTest -> Equal,
-    TestID   -> "InstallDisplayName-Windsurf@@Tests/InstallMCPServer.wlt:901,1-906,2"
+    TestID   -> "InstallDisplayName-Windsurf@@Tests/InstallMCPServer.wlt:929,1-934,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -916,21 +944,21 @@ VerificationTest[
     Wolfram`MCPServer`Common`installLocation[ "Cline", "Windows" ],
     _File,
     SameTest -> MatchQ,
-    TestID   -> "InstallLocation-Cline-Windows@@Tests/InstallMCPServer.wlt:915,1-920,2"
+    TestID   -> "InstallLocation-Cline-Windows@@Tests/InstallMCPServer.wlt:943,1-948,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`Common`installLocation[ "Cline", "MacOSX" ],
     _File,
     SameTest -> MatchQ,
-    TestID   -> "InstallLocation-Cline-MacOSX@@Tests/InstallMCPServer.wlt:922,1-927,2"
+    TestID   -> "InstallLocation-Cline-MacOSX@@Tests/InstallMCPServer.wlt:950,1-955,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`Common`installLocation[ "Cline", "Unix" ],
     _File,
     SameTest -> MatchQ,
-    TestID   -> "InstallLocation-Cline-Unix@@Tests/InstallMCPServer.wlt:929,1-934,2"
+    TestID   -> "InstallLocation-Cline-Unix@@Tests/InstallMCPServer.wlt:957,1-962,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -940,14 +968,14 @@ VerificationTest[
     Wolfram`MCPServer`Common`toInstallName[ "Cline" ],
     "Cline",
     SameTest -> Equal,
-    TestID   -> "ToInstallName-Cline@@Tests/InstallMCPServer.wlt:939,1-944,2"
+    TestID   -> "ToInstallName-Cline@@Tests/InstallMCPServer.wlt:967,1-972,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`installDisplayName[ "Cline" ],
     "Cline",
     SameTest -> Equal,
-    TestID   -> "InstallDisplayName-Cline@@Tests/InstallMCPServer.wlt:946,1-951,2"
+    TestID   -> "InstallDisplayName-Cline@@Tests/InstallMCPServer.wlt:974,1-979,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -967,7 +995,7 @@ VerificationTest[
         "autoApprove" -> { }
     |>,
     SameTest -> Equal,
-    TestID   -> "ConvertToClineFormat-Basic@@Tests/InstallMCPServer.wlt:956,1-971,2"
+    TestID   -> "ConvertToClineFormat-Basic@@Tests/InstallMCPServer.wlt:984,1-999,2"
 ]
 
 VerificationTest[
@@ -976,7 +1004,7 @@ VerificationTest[
     |>,
     <| "command" -> "wolfram", "disabled" -> False, "autoApprove" -> { } |>,
     SameTest -> Equal,
-    TestID   -> "ConvertToClineFormat-MinimalConfig@@Tests/InstallMCPServer.wlt:973,1-980,2"
+    TestID   -> "ConvertToClineFormat-MinimalConfig@@Tests/InstallMCPServer.wlt:1001,1-1008,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -987,14 +1015,14 @@ VerificationTest[
     installResult = InstallMCPServer[ clineConfigFile, "WolframLanguage", "VerifyLLMKit" -> False, "ApplicationName" -> "Cline" ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-Cline-Basic@@Tests/InstallMCPServer.wlt:985,1-991,2"
+    TestID   -> "InstallMCPServer-Cline-Basic@@Tests/InstallMCPServer.wlt:1013,1-1019,2"
 ]
 
 VerificationTest[
     FileExistsQ[ clineConfigFile ],
     True,
     SameTest -> Equal,
-    TestID   -> "InstallMCPServer-Cline-FileExists@@Tests/InstallMCPServer.wlt:993,1-998,2"
+    TestID   -> "InstallMCPServer-Cline-FileExists@@Tests/InstallMCPServer.wlt:1021,1-1026,2"
 ]
 
 VerificationTest[
@@ -1004,7 +1032,7 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "InstallMCPServer-Cline-VerifyContent@@Tests/InstallMCPServer.wlt:1000,1-1008,2"
+    TestID   -> "InstallMCPServer-Cline-VerifyContent@@Tests/InstallMCPServer.wlt:1028,1-1036,2"
 ]
 
 VerificationTest[
@@ -1016,14 +1044,14 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "InstallMCPServer-Cline-VerifyClineFields@@Tests/InstallMCPServer.wlt:1010,1-1020,2"
+    TestID   -> "InstallMCPServer-Cline-VerifyClineFields@@Tests/InstallMCPServer.wlt:1038,1-1048,2"
 ]
 
 VerificationTest[
     uninstallResult = UninstallMCPServer[ clineConfigFile, "WolframLanguage", "ApplicationName" -> "Cline" ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-Cline-Basic@@Tests/InstallMCPServer.wlt:1022,1-1027,2"
+    TestID   -> "UninstallMCPServer-Cline-Basic@@Tests/InstallMCPServer.wlt:1050,1-1055,2"
 ]
 
 VerificationTest[
@@ -1033,14 +1061,14 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "UninstallMCPServer-Cline-VerifyRemoval@@Tests/InstallMCPServer.wlt:1029,1-1037,2"
+    TestID   -> "UninstallMCPServer-Cline-VerifyRemoval@@Tests/InstallMCPServer.wlt:1057,1-1065,2"
 ]
 
 VerificationTest[
     cleanupTestFiles[ clineConfigFile ],
     { Null },
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-Cline-Cleanup@@Tests/InstallMCPServer.wlt:1039,1-1044,2"
+    TestID   -> "InstallMCPServer-Cline-Cleanup@@Tests/InstallMCPServer.wlt:1067,1-1072,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1051,14 +1079,14 @@ VerificationTest[
     installResult = InstallMCPServer[ windsurfConfigFile, "WolframLanguage", "VerifyLLMKit" -> False ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-Windsurf-Basic@@Tests/InstallMCPServer.wlt:1049,1-1055,2"
+    TestID   -> "InstallMCPServer-Windsurf-Basic@@Tests/InstallMCPServer.wlt:1077,1-1083,2"
 ]
 
 VerificationTest[
     FileExistsQ[ windsurfConfigFile ],
     True,
     SameTest -> Equal,
-    TestID   -> "InstallMCPServer-Windsurf-FileExists@@Tests/InstallMCPServer.wlt:1057,1-1062,2"
+    TestID   -> "InstallMCPServer-Windsurf-FileExists@@Tests/InstallMCPServer.wlt:1085,1-1090,2"
 ]
 
 VerificationTest[
@@ -1068,14 +1096,14 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "InstallMCPServer-Windsurf-VerifyContent@@Tests/InstallMCPServer.wlt:1064,1-1072,2"
+    TestID   -> "InstallMCPServer-Windsurf-VerifyContent@@Tests/InstallMCPServer.wlt:1092,1-1100,2"
 ]
 
 VerificationTest[
     uninstallResult = UninstallMCPServer[ windsurfConfigFile, "WolframLanguage" ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-Windsurf-Basic@@Tests/InstallMCPServer.wlt:1074,1-1079,2"
+    TestID   -> "UninstallMCPServer-Windsurf-Basic@@Tests/InstallMCPServer.wlt:1102,1-1107,2"
 ]
 
 VerificationTest[
@@ -1085,14 +1113,14 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "UninstallMCPServer-Windsurf-VerifyRemoval@@Tests/InstallMCPServer.wlt:1081,1-1089,2"
+    TestID   -> "UninstallMCPServer-Windsurf-VerifyRemoval@@Tests/InstallMCPServer.wlt:1109,1-1117,2"
 ]
 
 VerificationTest[
     cleanupTestFiles[ windsurfConfigFile ],
     { Null },
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-Windsurf-Cleanup@@Tests/InstallMCPServer.wlt:1091,1-1096,2"
+    TestID   -> "InstallMCPServer-Windsurf-Cleanup@@Tests/InstallMCPServer.wlt:1119,1-1124,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1106,21 +1134,21 @@ VerificationTest[
     Wolfram`MCPServer`Common`installLocation[ "Zed", "Windows" ],
     _File,
     SameTest -> MatchQ,
-    TestID   -> "InstallLocation-Zed-Windows@@Tests/InstallMCPServer.wlt:1105,1-1110,2"
+    TestID   -> "InstallLocation-Zed-Windows@@Tests/InstallMCPServer.wlt:1133,1-1138,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`Common`installLocation[ "Zed", "MacOSX" ],
     _File,
     SameTest -> MatchQ,
-    TestID   -> "InstallLocation-Zed-MacOSX@@Tests/InstallMCPServer.wlt:1112,1-1117,2"
+    TestID   -> "InstallLocation-Zed-MacOSX@@Tests/InstallMCPServer.wlt:1140,1-1145,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`Common`installLocation[ "Zed", "Unix" ],
     _File,
     SameTest -> MatchQ,
-    TestID   -> "InstallLocation-Zed-Unix@@Tests/InstallMCPServer.wlt:1119,1-1124,2"
+    TestID   -> "InstallLocation-Zed-Unix@@Tests/InstallMCPServer.wlt:1147,1-1152,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1130,14 +1158,14 @@ VerificationTest[
     Wolfram`MCPServer`Common`toInstallName[ "Zed" ],
     "Zed",
     SameTest -> Equal,
-    TestID   -> "ToInstallName-Zed@@Tests/InstallMCPServer.wlt:1129,1-1134,2"
+    TestID   -> "ToInstallName-Zed@@Tests/InstallMCPServer.wlt:1157,1-1162,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`installDisplayName[ "Zed" ],
     "Zed",
     SameTest -> Equal,
-    TestID   -> "InstallDisplayName-Zed@@Tests/InstallMCPServer.wlt:1136,1-1141,2"
+    TestID   -> "InstallDisplayName-Zed@@Tests/InstallMCPServer.wlt:1164,1-1169,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1151,7 +1179,7 @@ VerificationTest[
     ],
     FileNameJoin @ { ".zed", "settings.json" },
     SameTest -> Equal,
-    TestID   -> "ProjectInstallLocation-Zed@@Tests/InstallMCPServer.wlt:1146,1-1155,2"
+    TestID   -> "ProjectInstallLocation-Zed@@Tests/InstallMCPServer.wlt:1174,1-1183,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1162,14 +1190,14 @@ VerificationTest[
     installResult = InstallMCPServer[ zedConfigFile, "WolframLanguage", "VerifyLLMKit" -> False, "ApplicationName" -> "Zed" ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-Zed-Basic@@Tests/InstallMCPServer.wlt:1160,1-1166,2"
+    TestID   -> "InstallMCPServer-Zed-Basic@@Tests/InstallMCPServer.wlt:1188,1-1194,2"
 ]
 
 VerificationTest[
     FileExistsQ[ zedConfigFile ],
     True,
     SameTest -> Equal,
-    TestID   -> "InstallMCPServer-Zed-FileExists@@Tests/InstallMCPServer.wlt:1168,1-1173,2"
+    TestID   -> "InstallMCPServer-Zed-FileExists@@Tests/InstallMCPServer.wlt:1196,1-1201,2"
 ]
 
 VerificationTest[
@@ -1179,7 +1207,7 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "InstallMCPServer-Zed-VerifyContent@@Tests/InstallMCPServer.wlt:1175,1-1183,2"
+    TestID   -> "InstallMCPServer-Zed-VerifyContent@@Tests/InstallMCPServer.wlt:1203,1-1211,2"
 ]
 
 VerificationTest[
@@ -1190,14 +1218,14 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "InstallMCPServer-Zed-VerifyServerFields@@Tests/InstallMCPServer.wlt:1185,1-1194,2"
+    TestID   -> "InstallMCPServer-Zed-VerifyServerFields@@Tests/InstallMCPServer.wlt:1213,1-1222,2"
 ]
 
 VerificationTest[
     uninstallResult = UninstallMCPServer[ zedConfigFile, "WolframLanguage", "ApplicationName" -> "Zed" ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-Zed-Basic@@Tests/InstallMCPServer.wlt:1196,1-1201,2"
+    TestID   -> "UninstallMCPServer-Zed-Basic@@Tests/InstallMCPServer.wlt:1224,1-1229,2"
 ]
 
 VerificationTest[
@@ -1207,14 +1235,14 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "UninstallMCPServer-Zed-VerifyRemoval@@Tests/InstallMCPServer.wlt:1203,1-1211,2"
+    TestID   -> "UninstallMCPServer-Zed-VerifyRemoval@@Tests/InstallMCPServer.wlt:1231,1-1239,2"
 ]
 
 VerificationTest[
     cleanupTestFiles[ zedConfigFile ],
     { Null },
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-Zed-Cleanup@@Tests/InstallMCPServer.wlt:1213,1-1218,2"
+    TestID   -> "InstallMCPServer-Zed-Cleanup@@Tests/InstallMCPServer.wlt:1241,1-1246,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1226,7 +1254,7 @@ VerificationTest[
     installResult = InstallMCPServer[ zedConfigFile, "WolframLanguage", "VerifyLLMKit" -> False, "ApplicationName" -> "Zed" ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-Zed-PreserveExisting@@Tests/InstallMCPServer.wlt:1223,1-1230,2"
+    TestID   -> "InstallMCPServer-Zed-PreserveExisting@@Tests/InstallMCPServer.wlt:1251,1-1258,2"
 ]
 
 VerificationTest[
@@ -1237,14 +1265,14 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "InstallMCPServer-Zed-VerifyPreserved@@Tests/InstallMCPServer.wlt:1232,1-1241,2"
+    TestID   -> "InstallMCPServer-Zed-VerifyPreserved@@Tests/InstallMCPServer.wlt:1260,1-1269,2"
 ]
 
 VerificationTest[
     cleanupTestFiles[ zedConfigFile ],
     { Null },
     SameTest -> MatchQ,
-    TestID   -> "InstallMCPServer-Zed-PreserveExisting-Cleanup@@Tests/InstallMCPServer.wlt:1243,1-1248,2"
+    TestID   -> "InstallMCPServer-Zed-PreserveExisting-Cleanup@@Tests/InstallMCPServer.wlt:1271,1-1276,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
@@ -1256,21 +1284,21 @@ VerificationTest[
     $SupportedMCPClients,
     _Association? AssociationQ,
     SameTest -> MatchQ,
-    TestID   -> "SupportedMCPClients-ReturnsAssociation@@Tests/InstallMCPServer.wlt:1255,1-1260,2"
+    TestID   -> "SupportedMCPClients-ReturnsAssociation@@Tests/InstallMCPServer.wlt:1283,1-1288,2"
 ]
 
 VerificationTest[
     Length @ $SupportedMCPClients,
     12,
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-Has12Clients@@Tests/InstallMCPServer.wlt:1262,1-1267,2"
+    TestID   -> "SupportedMCPClients-Has12Clients@@Tests/InstallMCPServer.wlt:1290,1-1295,2"
 ]
 
 VerificationTest[
     Keys @ $SupportedMCPClients,
     { "Antigravity", "ClaudeCode", "ClaudeDesktop", "Cline", "Codex", "CopilotCLI", "Cursor", "GeminiCLI", "OpenCode", "VisualStudioCode", "Windsurf", "Zed" },
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-KeysSorted@@Tests/InstallMCPServer.wlt:1269,1-1274,2"
+    TestID   -> "SupportedMCPClients-KeysSorted@@Tests/InstallMCPServer.wlt:1297,1-1302,2"
 ]
 
 VerificationTest[
@@ -1289,63 +1317,63 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-AllHaveRequiredKeys@@Tests/InstallMCPServer.wlt:1276,1-1293,2"
+    TestID   -> "SupportedMCPClients-AllHaveRequiredKeys@@Tests/InstallMCPServer.wlt:1304,1-1321,2"
 ]
 
 VerificationTest[
     $SupportedMCPClients[ "ClaudeDesktop", "DisplayName" ],
     "Claude Desktop",
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-ClaudeDesktopDisplayName@@Tests/InstallMCPServer.wlt:1295,1-1300,2"
+    TestID   -> "SupportedMCPClients-ClaudeDesktopDisplayName@@Tests/InstallMCPServer.wlt:1323,1-1328,2"
 ]
 
 VerificationTest[
     $SupportedMCPClients[ "ClaudeDesktop", "Aliases" ],
     { "Claude" },
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-ClaudeDesktopAliases@@Tests/InstallMCPServer.wlt:1302,1-1307,2"
+    TestID   -> "SupportedMCPClients-ClaudeDesktopAliases@@Tests/InstallMCPServer.wlt:1330,1-1335,2"
 ]
 
 VerificationTest[
     $SupportedMCPClients[ "Codex", "ConfigFormat" ],
     "TOML",
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-CodexConfigFormat@@Tests/InstallMCPServer.wlt:1309,1-1314,2"
+    TestID   -> "SupportedMCPClients-CodexConfigFormat@@Tests/InstallMCPServer.wlt:1337,1-1342,2"
 ]
 
 VerificationTest[
     $SupportedMCPClients[ "ClaudeCode", "ProjectSupport" ],
     True,
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-ClaudeCodeProjectSupport@@Tests/InstallMCPServer.wlt:1316,1-1321,2"
+    TestID   -> "SupportedMCPClients-ClaudeCodeProjectSupport@@Tests/InstallMCPServer.wlt:1344,1-1349,2"
 ]
 
 VerificationTest[
     $SupportedMCPClients[ "Zed", "ConfigKey" ],
     { "context_servers" },
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-ZedConfigKey@@Tests/InstallMCPServer.wlt:1323,1-1328,2"
+    TestID   -> "SupportedMCPClients-ZedConfigKey@@Tests/InstallMCPServer.wlt:1351,1-1356,2"
 ]
 
 VerificationTest[
     $SupportedMCPClients[ "VisualStudioCode", "ConfigKey" ],
     { "mcp", "servers" },
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-VSCodeConfigKey@@Tests/InstallMCPServer.wlt:1330,1-1335,2"
+    TestID   -> "SupportedMCPClients-VSCodeConfigKey@@Tests/InstallMCPServer.wlt:1358,1-1363,2"
 ]
 
 VerificationTest[
     $SupportedMCPClients[ "OpenCode", "ConfigKey" ],
     { "mcp" },
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-OpenCodeConfigKey@@Tests/InstallMCPServer.wlt:1337,1-1342,2"
+    TestID   -> "SupportedMCPClients-OpenCodeConfigKey@@Tests/InstallMCPServer.wlt:1365,1-1370,2"
 ]
 
 VerificationTest[
     AllTrue[ Values @ $SupportedMCPClients, StringQ[ #[ "URL" ] ] && StringStartsQ[ #[ "URL" ], "https://" ] & ],
     True,
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-AllHaveValidURLs@@Tests/InstallMCPServer.wlt:1344,1-1349,2"
+    TestID   -> "SupportedMCPClients-AllHaveValidURLs@@Tests/InstallMCPServer.wlt:1372,1-1377,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1376,7 +1404,7 @@ VerificationTest[
     ],
     "Zed",
     SameTest -> Equal,
-    TestID   -> "GuessClientNameFromJSON-Zed@@Tests/InstallMCPServer.wlt:1370,1-1380,2"
+    TestID   -> "GuessClientNameFromJSON-Zed@@Tests/InstallMCPServer.wlt:1398,1-1408,2"
 ]
 
 (* VSCode: has "mcp" with nested "servers" *)
@@ -1389,7 +1417,7 @@ VerificationTest[
     ],
     "VisualStudioCode",
     SameTest -> Equal,
-    TestID   -> "GuessClientNameFromJSON-VisualStudioCode@@Tests/InstallMCPServer.wlt:1383,1-1393,2"
+    TestID   -> "GuessClientNameFromJSON-VisualStudioCode@@Tests/InstallMCPServer.wlt:1411,1-1421,2"
 ]
 
 (* OpenCode: has "mcp" with entries that have "type" and List-valued "command" *)
@@ -1402,7 +1430,7 @@ VerificationTest[
     ],
     "OpenCode",
     SameTest -> Equal,
-    TestID   -> "GuessClientNameFromJSON-OpenCode@@Tests/InstallMCPServer.wlt:1396,1-1406,2"
+    TestID   -> "GuessClientNameFromJSON-OpenCode@@Tests/InstallMCPServer.wlt:1424,1-1434,2"
 ]
 
 (* CopilotCLI: has "mcpServers" with entries that have "tools" *)
@@ -1415,7 +1443,7 @@ VerificationTest[
     ],
     "CopilotCLI",
     SameTest -> Equal,
-    TestID   -> "GuessClientNameFromJSON-CopilotCLI@@Tests/InstallMCPServer.wlt:1409,1-1419,2"
+    TestID   -> "GuessClientNameFromJSON-CopilotCLI@@Tests/InstallMCPServer.wlt:1437,1-1447,2"
 ]
 
 (* Cline: has "mcpServers" with entries that have "disabled" and "autoApprove" *)
@@ -1428,7 +1456,7 @@ VerificationTest[
     ],
     "Cline",
     SameTest -> Equal,
-    TestID   -> "GuessClientNameFromJSON-Cline@@Tests/InstallMCPServer.wlt:1422,1-1432,2"
+    TestID   -> "GuessClientNameFromJSON-Cline@@Tests/InstallMCPServer.wlt:1450,1-1460,2"
 ]
 
 (* Ambiguous: standard mcpServers with only command/args/env -> None *)
@@ -1441,7 +1469,7 @@ VerificationTest[
     ],
     None,
     SameTest -> Equal,
-    TestID   -> "GuessClientNameFromJSON-Ambiguous@@Tests/InstallMCPServer.wlt:1435,1-1445,2"
+    TestID   -> "GuessClientNameFromJSON-Ambiguous@@Tests/InstallMCPServer.wlt:1463,1-1473,2"
 ]
 
 (* Empty JSON -> None *)
@@ -1454,7 +1482,7 @@ VerificationTest[
     ],
     None,
     SameTest -> Equal,
-    TestID   -> "GuessClientNameFromJSON-EmptyJSON@@Tests/InstallMCPServer.wlt:1448,1-1458,2"
+    TestID   -> "GuessClientNameFromJSON-EmptyJSON@@Tests/InstallMCPServer.wlt:1476,1-1486,2"
 ]
 
 (* Non-existent file -> None *)
@@ -1463,7 +1491,7 @@ VerificationTest[
         FileNameJoin @ { $TemporaryDirectory, "nonexistent_" <> CreateUUID[] <> ".json" },
     None,
     SameTest -> Equal,
-    TestID   -> "GuessClientNameFromJSON-NonExistentFile@@Tests/InstallMCPServer.wlt:1461,1-1467,2"
+    TestID   -> "GuessClientNameFromJSON-NonExistentFile@@Tests/InstallMCPServer.wlt:1489,1-1495,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1475,7 +1503,7 @@ VerificationTest[
     ],
     { "mcpServers" },
     SameTest -> Equal,
-    TestID   -> "ConfigKeyPath-ClaudeDesktop@@Tests/InstallMCPServer.wlt:1472,1-1479,2"
+    TestID   -> "ConfigKeyPath-ClaudeDesktop@@Tests/InstallMCPServer.wlt:1500,1-1507,2"
 ]
 
 VerificationTest[
@@ -1484,7 +1512,7 @@ VerificationTest[
     ],
     { "mcp", "servers" },
     SameTest -> Equal,
-    TestID   -> "ConfigKeyPath-VSCode@@Tests/InstallMCPServer.wlt:1481,1-1488,2"
+    TestID   -> "ConfigKeyPath-VSCode@@Tests/InstallMCPServer.wlt:1509,1-1516,2"
 ]
 
 VerificationTest[
@@ -1493,7 +1521,7 @@ VerificationTest[
     ],
     { "context_servers" },
     SameTest -> Equal,
-    TestID   -> "ConfigKeyPath-Zed@@Tests/InstallMCPServer.wlt:1490,1-1497,2"
+    TestID   -> "ConfigKeyPath-Zed@@Tests/InstallMCPServer.wlt:1518,1-1525,2"
 ]
 
 VerificationTest[
@@ -1502,14 +1530,14 @@ VerificationTest[
     ],
     { "mcp" },
     SameTest -> Equal,
-    TestID   -> "ConfigKeyPath-OpenCode@@Tests/InstallMCPServer.wlt:1499,1-1506,2"
+    TestID   -> "ConfigKeyPath-OpenCode@@Tests/InstallMCPServer.wlt:1527,1-1534,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`configKeyPath[ "UnknownClient" ],
     { "mcpServers" },
     SameTest -> Equal,
-    TestID   -> "ConfigKeyPath-UnknownFallback@@Tests/InstallMCPServer.wlt:1508,1-1513,2"
+    TestID   -> "ConfigKeyPath-UnknownFallback@@Tests/InstallMCPServer.wlt:1536,1-1541,2"
 ]
 
 VerificationTest[
@@ -1518,7 +1546,7 @@ VerificationTest[
     ],
     { "mcpServers" },
     SameTest -> Equal,
-    TestID   -> "ConfigKeyPath-NoneFallback@@Tests/InstallMCPServer.wlt:1515,1-1522,2"
+    TestID   -> "ConfigKeyPath-NoneFallback@@Tests/InstallMCPServer.wlt:1543,1-1550,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1528,21 +1556,21 @@ VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`emptyConfigForPath @ { "mcpServers" },
     <| "mcpServers" -> <| |> |>,
     SameTest -> Equal,
-    TestID   -> "EmptyConfigForPath-SingleKey@@Tests/InstallMCPServer.wlt:1527,1-1532,2"
+    TestID   -> "EmptyConfigForPath-SingleKey@@Tests/InstallMCPServer.wlt:1555,1-1560,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`emptyConfigForPath @ { "mcp", "servers" },
     <| "mcp" -> <| "servers" -> <| |> |> |>,
     SameTest -> Equal,
-    TestID   -> "EmptyConfigForPath-NestedKeys@@Tests/InstallMCPServer.wlt:1534,1-1539,2"
+    TestID   -> "EmptyConfigForPath-NestedKeys@@Tests/InstallMCPServer.wlt:1562,1-1567,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`emptyConfigForPath @ { },
     <| |>,
     SameTest -> Equal,
-    TestID   -> "EmptyConfigForPath-EmptyPath@@Tests/InstallMCPServer.wlt:1541,1-1546,2"
+    TestID   -> "EmptyConfigForPath-EmptyPath@@Tests/InstallMCPServer.wlt:1569,1-1574,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1552,7 +1580,7 @@ VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`ensureNestedKey[ <| "other" -> 1 |>, { "mcpServers" } ],
     <| "other" -> 1, "mcpServers" -> <| |> |>,
     SameTest -> Equal,
-    TestID   -> "EnsureNestedKey-AddMissing@@Tests/InstallMCPServer.wlt:1551,1-1556,2"
+    TestID   -> "EnsureNestedKey-AddMissing@@Tests/InstallMCPServer.wlt:1579,1-1584,2"
 ]
 
 VerificationTest[
@@ -1562,7 +1590,7 @@ VerificationTest[
     ],
     <| "mcpServers" -> <| "existing" -> "data" |> |>,
     SameTest -> Equal,
-    TestID   -> "EnsureNestedKey-PreserveExisting@@Tests/InstallMCPServer.wlt:1558,1-1566,2"
+    TestID   -> "EnsureNestedKey-PreserveExisting@@Tests/InstallMCPServer.wlt:1586,1-1594,2"
 ]
 
 VerificationTest[
@@ -1572,7 +1600,7 @@ VerificationTest[
     ],
     <| "theme" -> "dark", "mcp" -> <| "servers" -> <| |> |> |>,
     SameTest -> Equal,
-    TestID   -> "EnsureNestedKey-DeepNesting@@Tests/InstallMCPServer.wlt:1568,1-1576,2"
+    TestID   -> "EnsureNestedKey-DeepNesting@@Tests/InstallMCPServer.wlt:1596,1-1604,2"
 ]
 
 VerificationTest[
@@ -1582,14 +1610,14 @@ VerificationTest[
     ],
     <| "mcp" -> <| "existing" -> 1, "servers" -> <| |> |> |>,
     SameTest -> Equal,
-    TestID   -> "EnsureNestedKey-PartiallyExisting@@Tests/InstallMCPServer.wlt:1578,1-1586,2"
+    TestID   -> "EnsureNestedKey-PartiallyExisting@@Tests/InstallMCPServer.wlt:1606,1-1614,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`ensureNestedKey[ "notAssoc", { "mcpServers" } ],
     <| "mcpServers" -> <| |> |>,
     SameTest -> Equal,
-    TestID   -> "EnsureNestedKey-NonAssocInput@@Tests/InstallMCPServer.wlt:1588,1-1593,2"
+    TestID   -> "EnsureNestedKey-NonAssocInput@@Tests/InstallMCPServer.wlt:1616,1-1621,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1599,28 +1627,28 @@ VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`serverConverter[ "OpenCode" ],
     Wolfram`MCPServer`SupportedClients`Private`convertToOpenCodeFormat,
     SameTest -> SameQ,
-    TestID   -> "ServerConverter-OpenCode@@Tests/InstallMCPServer.wlt:1598,1-1603,2"
+    TestID   -> "ServerConverter-OpenCode@@Tests/InstallMCPServer.wlt:1626,1-1631,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`serverConverter[ "CopilotCLI" ],
     Wolfram`MCPServer`SupportedClients`Private`convertToCopilotCLIFormat,
     SameTest -> SameQ,
-    TestID   -> "ServerConverter-CopilotCLI@@Tests/InstallMCPServer.wlt:1605,1-1610,2"
+    TestID   -> "ServerConverter-CopilotCLI@@Tests/InstallMCPServer.wlt:1633,1-1638,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`serverConverter[ "Cline" ],
     Wolfram`MCPServer`SupportedClients`Private`convertToClineFormat,
     SameTest -> SameQ,
-    TestID   -> "ServerConverter-Cline@@Tests/InstallMCPServer.wlt:1612,1-1617,2"
+    TestID   -> "ServerConverter-Cline@@Tests/InstallMCPServer.wlt:1640,1-1645,2"
 ]
 
 VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`serverConverter[ "ClaudeDesktop" ],
     Identity,
     SameTest -> SameQ,
-    TestID   -> "ServerConverter-Default@@Tests/InstallMCPServer.wlt:1619,1-1624,2"
+    TestID   -> "ServerConverter-Default@@Tests/InstallMCPServer.wlt:1647,1-1652,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1632,7 +1660,7 @@ VerificationTest[
     ],
     "Wolfram",
     SameTest -> Equal,
-    TestID   -> "ResolveMCPServerName-BuiltInServer@@Tests/InstallMCPServer.wlt:1629,1-1636,2"
+    TestID   -> "ResolveMCPServerName-BuiltInServer@@Tests/InstallMCPServer.wlt:1657,1-1664,2"
 ]
 
 VerificationTest[
@@ -1641,7 +1669,7 @@ VerificationTest[
     ],
     "CustomKey",
     SameTest -> Equal,
-    TestID   -> "ResolveMCPServerName-OptionOverride@@Tests/InstallMCPServer.wlt:1638,1-1645,2"
+    TestID   -> "ResolveMCPServerName-OptionOverride@@Tests/InstallMCPServer.wlt:1666,1-1673,2"
 ]
 
 VerificationTest[
@@ -1650,7 +1678,7 @@ VerificationTest[
     ],
     "Wolfram",
     SameTest -> Equal,
-    TestID   -> "ResolveMCPServerName-WolframServer@@Tests/InstallMCPServer.wlt:1647,1-1654,2"
+    TestID   -> "ResolveMCPServerName-WolframServer@@Tests/InstallMCPServer.wlt:1675,1-1682,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
@@ -1673,7 +1701,7 @@ VerificationTest[
     $mockPaclet[ "Name" ],
     "MockMCPPacletTest",
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-MockPacletSetup@@Tests/InstallMCPServer.wlt:1670,1-1677,2"
+    TestID   -> "InstallPacletServer-MockPacletSetup@@Tests/InstallMCPServer.wlt:1698,1-1705,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1683,7 +1711,7 @@ VerificationTest[
     MCPServerObject[ "MockMCPPacletTest/TestServer" ][ "MCPServerName" ],
     "TestServer",
     SameTest -> Equal,
-    TestID   -> "MCPServerName-PacletServerProperty@@Tests/InstallMCPServer.wlt:1682,1-1687,2"
+    TestID   -> "MCPServerName-PacletServerProperty@@Tests/InstallMCPServer.wlt:1710,1-1715,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1695,7 +1723,7 @@ VerificationTest[
     ],
     "TestServer",
     SameTest -> Equal,
-    TestID   -> "ResolveMCPServerName-PacletServerShortName@@Tests/InstallMCPServer.wlt:1692,1-1699,2"
+    TestID   -> "ResolveMCPServerName-PacletServerShortName@@Tests/InstallMCPServer.wlt:1720,1-1727,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1705,7 +1733,7 @@ VerificationTest[
     Wolfram`MCPServer`Common`ensurePacletForInstall[ "MockMCPPacletTest/TestServer" ],
     _PacletObject,
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-EnsurePacletAlreadyInstalled@@Tests/InstallMCPServer.wlt:1704,1-1709,2"
+    TestID   -> "InstallPacletServer-EnsurePacletAlreadyInstalled@@Tests/InstallMCPServer.wlt:1732,1-1737,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1717,7 +1745,7 @@ VerificationTest[
     _Failure,
     { MCPServer::PacletNotInstalled },
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-EnsurePacletThreeSegment@@Tests/InstallMCPServer.wlt:1714,1-1721,2"
+    TestID   -> "InstallPacletServer-EnsurePacletThreeSegment@@Tests/InstallMCPServer.wlt:1742,1-1749,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1728,7 +1756,7 @@ VerificationTest[
     $pacletInstallResult = InstallMCPServer[ $pacletConfigFile, "MockMCPPacletTest/TestServer", "VerifyLLMKit" -> False ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-Install@@Tests/InstallMCPServer.wlt:1726,1-1732,2"
+    TestID   -> "InstallPacletServer-Install@@Tests/InstallMCPServer.wlt:1754,1-1760,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1738,7 +1766,7 @@ VerificationTest[
     FileExistsQ @ $pacletConfigFile,
     True,
     SameTest -> Equal,
-    TestID   -> "InstallPacletServer-ConfigFileExists@@Tests/InstallMCPServer.wlt:1737,1-1742,2"
+    TestID   -> "InstallPacletServer-ConfigFileExists@@Tests/InstallMCPServer.wlt:1765,1-1770,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1749,7 +1777,7 @@ VerificationTest[
     KeyExistsQ[ $pacletConfigJSON[ "mcpServers" ], "TestServer" ],
     True,
     SameTest -> Equal,
-    TestID   -> "InstallPacletServer-ConfigHasServerName@@Tests/InstallMCPServer.wlt:1747,1-1753,2"
+    TestID   -> "InstallPacletServer-ConfigHasServerName@@Tests/InstallMCPServer.wlt:1775,1-1781,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1759,7 +1787,7 @@ VerificationTest[
     $pacletConfigJSON[ "mcpServers", "TestServer", "env", "MCP_SERVER_NAME" ],
     "MockMCPPacletTest/TestServer",
     SameTest -> Equal,
-    TestID   -> "InstallPacletServer-ConfigEnvServerName@@Tests/InstallMCPServer.wlt:1758,1-1763,2"
+    TestID   -> "InstallPacletServer-ConfigEnvServerName@@Tests/InstallMCPServer.wlt:1786,1-1791,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1769,7 +1797,7 @@ VerificationTest[
     UninstallMCPServer[ $pacletConfigFile, MCPServerObject[ "MockMCPPacletTest/TestServer" ] ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-Uninstall@@Tests/InstallMCPServer.wlt:1768,1-1773,2"
+    TestID   -> "InstallPacletServer-Uninstall@@Tests/InstallMCPServer.wlt:1796,1-1801,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1780,7 +1808,7 @@ VerificationTest[
     KeyExistsQ[ updatedJSON[ "mcpServers" ], "TestServer" ],
     False,
     SameTest -> Equal,
-    TestID   -> "InstallPacletServer-VerifyUninstall@@Tests/InstallMCPServer.wlt:1778,1-1784,2"
+    TestID   -> "InstallPacletServer-VerifyUninstall@@Tests/InstallMCPServer.wlt:1806,1-1812,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1791,7 +1819,7 @@ VerificationTest[
     $pacletInstallResult2[ "MCPServerObject" ],
     _MCPServerObject? MCPServerObjectQ,
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-ResultHasMCPServerObject@@Tests/InstallMCPServer.wlt:1789,1-1795,2"
+    TestID   -> "InstallPacletServer-ResultHasMCPServerObject@@Tests/InstallMCPServer.wlt:1817,1-1823,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1802,7 +1830,7 @@ VerificationTest[
     Wolfram`MCPServer`InstallMCPServer`Private`validatePacletServerDefinitions @ obj,
     Null,
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-ValidateDefinitionsValid@@Tests/InstallMCPServer.wlt:1800,1-1806,2"
+    TestID   -> "InstallPacletServer-ValidateDefinitionsValid@@Tests/InstallMCPServer.wlt:1828,1-1834,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1818,7 +1846,7 @@ VerificationTest[
     result,
     Null,
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-ValidateDefinitionsNoOp@@Tests/InstallMCPServer.wlt:1811,1-1822,2"
+    TestID   -> "InstallPacletServer-ValidateDefinitionsNoOp@@Tests/InstallMCPServer.wlt:1839,1-1850,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1838,7 +1866,7 @@ VerificationTest[
     _Failure,
     { MCPServer::PacletNotInstalled },
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-ValidateToolError@@Tests/InstallMCPServer.wlt:1827,1-1842,2"
+    TestID   -> "InstallPacletServer-ValidateToolError@@Tests/InstallMCPServer.wlt:1855,1-1870,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1858,7 +1886,7 @@ VerificationTest[
     _Failure,
     { MCPServer::PacletNotInstalled },
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-ValidatePromptError@@Tests/InstallMCPServer.wlt:1847,1-1862,2"
+    TestID   -> "InstallPacletServer-ValidatePromptError@@Tests/InstallMCPServer.wlt:1875,1-1890,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1869,7 +1897,7 @@ VerificationTest[
     Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
     <| |>,
     SameTest -> MatchQ,
-    TestID   -> "InstallPacletServer-Cleanup@@Tests/InstallMCPServer.wlt:1867,1-1873,2"
+    TestID   -> "InstallPacletServer-Cleanup@@Tests/InstallMCPServer.wlt:1895,1-1901,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
@@ -1886,7 +1914,7 @@ VerificationTest[
     InstallMCPServer[ mcpNameConfigFile, "WolframLanguage", "VerifyLLMKit" -> False ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerName-BuiltInUsesWolframKey-Install@@Tests/InstallMCPServer.wlt:1884,1-1890,2"
+    TestID   -> "MCPServerName-BuiltInUsesWolframKey-Install@@Tests/InstallMCPServer.wlt:1912,1-1918,2"
 ]
 
 VerificationTest[
@@ -1895,7 +1923,7 @@ VerificationTest[
     ! KeyExistsQ[ jsonContent[ "mcpServers" ], "WolframLanguage" ],
     True,
     SameTest -> Equal,
-    TestID   -> "MCPServerName-BuiltInUsesWolframKey-Verify@@Tests/InstallMCPServer.wlt:1892,1-1899,2"
+    TestID   -> "MCPServerName-BuiltInUsesWolframKey-Verify@@Tests/InstallMCPServer.wlt:1920,1-1927,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1905,7 +1933,7 @@ VerificationTest[
     InstallMCPServer[ mcpNameConfigFile, "WolframAlpha", "VerifyLLMKit" -> False ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerName-SecondBuiltInOverwrites-Install@@Tests/InstallMCPServer.wlt:1904,1-1909,2"
+    TestID   -> "MCPServerName-SecondBuiltInOverwrites-Install@@Tests/InstallMCPServer.wlt:1932,1-1937,2"
 ]
 
 VerificationTest[
@@ -1914,7 +1942,7 @@ VerificationTest[
     KeyExistsQ[ jsonContent[ "mcpServers" ], "Wolfram" ],
     True,
     SameTest -> Equal,
-    TestID   -> "MCPServerName-SecondBuiltInOverwrites-Verify@@Tests/InstallMCPServer.wlt:1911,1-1918,2"
+    TestID   -> "MCPServerName-SecondBuiltInOverwrites-Verify@@Tests/InstallMCPServer.wlt:1939,1-1946,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1924,7 +1952,7 @@ VerificationTest[
     UninstallMCPServer[ mcpNameConfigFile, "WolframAlpha" ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerName-UninstallBuiltIn@@Tests/InstallMCPServer.wlt:1923,1-1928,2"
+    TestID   -> "MCPServerName-UninstallBuiltIn@@Tests/InstallMCPServer.wlt:1951,1-1956,2"
 ]
 
 VerificationTest[
@@ -1932,7 +1960,7 @@ VerificationTest[
     ! KeyExistsQ[ jsonContent[ "mcpServers" ], "Wolfram" ],
     True,
     SameTest -> Equal,
-    TestID   -> "MCPServerName-UninstallBuiltIn-Verify@@Tests/InstallMCPServer.wlt:1930,1-1936,2"
+    TestID   -> "MCPServerName-UninstallBuiltIn-Verify@@Tests/InstallMCPServer.wlt:1958,1-1964,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1947,7 +1975,7 @@ VerificationTest[
     InstallMCPServer[ mcpNameConfigFile, mcpNameCustomServer, "VerifyLLMKit" -> False ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerName-CustomServerUsesName-Install@@Tests/InstallMCPServer.wlt:1941,1-1951,2"
+    TestID   -> "MCPServerName-CustomServerUsesName-Install@@Tests/InstallMCPServer.wlt:1969,1-1979,2"
 ]
 
 VerificationTest[
@@ -1955,7 +1983,7 @@ VerificationTest[
     KeyExistsQ[ jsonContent[ "mcpServers" ], mcpNameCustomName ],
     True,
     SameTest -> Equal,
-    TestID   -> "MCPServerName-CustomServerUsesName-Verify@@Tests/InstallMCPServer.wlt:1953,1-1959,2"
+    TestID   -> "MCPServerName-CustomServerUsesName-Verify@@Tests/InstallMCPServer.wlt:1981,1-1987,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1965,7 +1993,7 @@ VerificationTest[
     InstallMCPServer[ mcpNameConfigFile, "WolframLanguage", "MCPServerName" -> "WolframDev", "VerifyLLMKit" -> False ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerName-OptionOverride-Install@@Tests/InstallMCPServer.wlt:1964,1-1969,2"
+    TestID   -> "MCPServerName-OptionOverride-Install@@Tests/InstallMCPServer.wlt:1992,1-1997,2"
 ]
 
 VerificationTest[
@@ -1973,7 +2001,7 @@ VerificationTest[
     KeyExistsQ[ jsonContent[ "mcpServers" ], "WolframDev" ],
     True,
     SameTest -> Equal,
-    TestID   -> "MCPServerName-OptionOverride-Verify@@Tests/InstallMCPServer.wlt:1971,1-1977,2"
+    TestID   -> "MCPServerName-OptionOverride-Verify@@Tests/InstallMCPServer.wlt:1999,1-2005,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1985,7 +2013,7 @@ VerificationTest[
     InstallMCPServer[ mcpNameConfigFile2, "WolframLanguage", "MCPServerName" -> "WolframDev2", "VerifyLLMKit" -> False ],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "MCPServerName-TwoBuiltInWithOverrides-Install@@Tests/InstallMCPServer.wlt:1982,1-1989,2"
+    TestID   -> "MCPServerName-TwoBuiltInWithOverrides-Install@@Tests/InstallMCPServer.wlt:2010,1-2017,2"
 ]
 
 VerificationTest[
@@ -1994,7 +2022,7 @@ VerificationTest[
     KeyExistsQ[ jsonContent[ "mcpServers" ], "WolframDev2" ],
     True,
     SameTest -> Equal,
-    TestID   -> "MCPServerName-TwoBuiltInWithOverrides-Verify@@Tests/InstallMCPServer.wlt:1991,1-1998,2"
+    TestID   -> "MCPServerName-TwoBuiltInWithOverrides-Verify@@Tests/InstallMCPServer.wlt:2019,1-2026,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -2007,7 +2035,7 @@ VerificationTest[
     MemberQ[ wolframInstalls, KeyValuePattern[ "ConfigurationFile" -> mcpNameConfigFile3 ] ],
     True,
     SameTest -> Equal,
-    TestID   -> "MCPServerName-StaleRecordClearing-Setup@@Tests/InstallMCPServer.wlt:2003,1-2011,2"
+    TestID   -> "MCPServerName-StaleRecordClearing-Setup@@Tests/InstallMCPServer.wlt:2031,1-2039,2"
 ]
 
 VerificationTest[
@@ -2019,7 +2047,7 @@ VerificationTest[
     MemberQ[ wlInstalls, KeyValuePattern[ "ConfigurationFile" -> mcpNameConfigFile3 ] ],
     True,
     SameTest -> Equal,
-    TestID   -> "MCPServerName-StaleRecordClearing-Verify@@Tests/InstallMCPServer.wlt:2013,1-2023,2"
+    TestID   -> "MCPServerName-StaleRecordClearing-Verify@@Tests/InstallMCPServer.wlt:2041,1-2051,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -2033,5 +2061,5 @@ VerificationTest[
     cleanupTestFiles[ { mcpNameConfigFile, mcpNameConfigFile2, mcpNameConfigFile3 } ],
     { Null.. },
     SameTest -> MatchQ,
-    TestID   -> "MCPServerName-Cleanup@@Tests/InstallMCPServer.wlt:2028,1-2037,2"
+    TestID   -> "MCPServerName-Cleanup@@Tests/InstallMCPServer.wlt:2056,1-2065,2"
 ]
