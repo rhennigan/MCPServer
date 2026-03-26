@@ -69,7 +69,7 @@ A comma-separated list of inspection tags to exclude from the results. Tags iden
 
 ##### severityExclusions
 
-A comma-separated list of severity levels to exclude. The default excludes formatting issues, remarks, and scoping warnings to focus on more significant problems.
+A comma-separated list of severity levels to exclude. The default excludes formatting and scoping issues to focus on more significant problems.
 
 **Available severities:**
 - `"Fatal"` - Critical errors that prevent code from running
