@@ -150,7 +150,7 @@ VerificationTest[
 VerificationTest[
     Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`parsePacletQualifiedName[ "NoSlashHere" ],
     _Failure,
-    { MCPServer::Internal },
+    { General::MCPServerInternal },
     SameTest -> MatchQ,
     TestID   -> "parsePacletQualifiedName-NoSlash@@Tests/PacletExtension.wlt:150,1-156,2"
 ]
@@ -158,7 +158,7 @@ VerificationTest[
 VerificationTest[
     Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Common`parsePacletQualifiedName[ "A/B/C/D" ],
     _Failure,
-    { MCPServer::Internal },
+    { General::MCPServerInternal },
     SameTest -> MatchQ,
     TestID   -> "parsePacletQualifiedName-TooManySegments@@Tests/PacletExtension.wlt:158,1-164,2"
 ]
