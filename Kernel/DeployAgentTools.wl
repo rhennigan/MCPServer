@@ -139,7 +139,8 @@ getDeploymentProperty // endDefinition;
 (*getDeploymentScope*)
 getDeploymentScope // beginDefinition;
 getDeploymentScope[ target_String ] := "Global";
-getDeploymentScope[ { _, dir_ } ] := File @ ExpandFileName @ dir;
+getDeploymentScope[ { _, dir_File? fileQ } ] := dir;
+getDeploymentScope[ { _, dir_String } ] := File @ ExpandFileName @ dir;
 getDeploymentScope[ _File? fileQ ] := Missing[ "Unknown" ];
 getDeploymentScope // endDefinition;
 
@@ -352,7 +353,7 @@ resolveDeployTarget[ { name0_String, dir_ }, _ ] :=
     Module[ { name, configFile },
         name = toInstallName @ name0;
         configFile = projectInstallLocation[ name, dir ];
-        { name, configFile, { name, dir } }
+        { name, configFile, { name, File @ ExpandFileName @ dir } }
     ];
 
 resolveDeployTarget[ file_File? fileQ, Automatic ] :=
