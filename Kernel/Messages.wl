@@ -70,6 +70,7 @@ MCPServer::CodeInspectorInvalidConfidence  = "Confidence level must be between 0
 MCPServer::DeploymentExists                = "A deployment already exists for target `1`. Use OverwriteTarget -> True to replace it.";
 MCPServer::DeploymentNotFound              = "No deployment found with UUID \"`1`\".";
 MCPServer::InvalidDeploymentData           = "Invalid deployment data: `1`.";
+MCPServer::InvalidDeployTarget             = "Invalid deployment target: `1`. Expected a client name string, {name, directory}, or File[\[Ellipsis]].";
 
 (* Paclet extension messages *)
 MCPServer::PacletNotInstalled               = "The paclet \"`1`\" is not installed. Evaluate `2` to install it.";

@@ -363,12 +363,16 @@ resolveDeployTarget[ file_File? fileQ, Automatic ] :=
         { Replace[ clientName, None -> "Unknown" ], configFile, file }
     ];
 
-resolveDeployTarget[ file_File? fileQ, appName_String ] :=
+resolveDeployTarget[ file_File? fileQ, appName_ ] :=
     Module[ { configFile, clientName },
+        If[ ! StringQ @ appName, throwFailure[ "InvalidApplicationName", appName ] ];
         configFile = ensureFilePath @ file;
         clientName = toInstallName @ appName;
         { clientName, configFile, file }
     ];
+
+resolveDeployTarget[ target_, _ ] :=
+    throwFailure[ "InvalidDeployTarget", target ];
 
 resolveDeployTarget // endDefinition;
 
