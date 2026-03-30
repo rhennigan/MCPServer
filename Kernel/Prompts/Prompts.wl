@@ -33,7 +33,7 @@ $subcontexts = {
 
 Scan[ Needs[ # -> None ] &, $subcontexts ];
 
-$MCPServerContexts = Union[ $MCPServerContexts, $subcontexts ];
+$AgentToolsContexts = Union[ $AgentToolsContexts, $subcontexts ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

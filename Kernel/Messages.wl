@@ -1,6 +1,6 @@
 BeginPackage[ "Wolfram`AgentTools`" ];
 
-AgentTools::usage                         = "MCPServer is a symbol for miscellaneous messages.";
+AgentTools::usage                         = "AgentTools is a symbol for miscellaneous messages.";
 AgentTools::DeleteBuiltInMCPServer        = "The MCP server named \"`1`\" is built-in and cannot be deleted.";
 AgentTools::DeletedMCPServerObject        = "The MCP server \"`1`\" no longer exists.";
 AgentTools::DevelopmentModeUnavailable    = "Development mode is not available from `1`. This option requires an unbuilt paclet with a Scripts directory.";

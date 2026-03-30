@@ -8,13 +8,13 @@
 #   docker run -i --rm \
 #     -e WOLFRAMSCRIPT_ENTITLEMENTID=your-entitlement-id \
 #     -e MCP_SERVER_NAME=Wolfram \
-#     ghcr.io/rhennigan/mcpserver:latest
+#     ghcr.io/rhennigan/agenttools:latest
 #
 # For node-locked licensing (free but requires persistent storage):
 #   docker run -i --rm \
 #     -v ./Licensing:/root/.WolframEngine/Licensing \
 #     -e MCP_SERVER_NAME=Wolfram \
-#     ghcr.io/rhennigan/mcpserver:latest
+#     ghcr.io/rhennigan/agenttools:latest
 
 FROM wolframresearch/wolframengine:14.3
 

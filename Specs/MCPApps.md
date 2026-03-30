@@ -351,7 +351,7 @@ LLM calls WolframAlpha tool with { "query": "current distance to Mars" }
        2. Extracts images from the text string for the LLM (unchanged pipeline)
        3. Formats pods via FormatWolframAlphaPods (with FoldPods = True)
        4. Creates a Notebook with input cell (query) and output cell (formatted pods)
-       5. CloudDeploys to MCPServer/Notebooks/WolframAlpha/<encoded-query>.nb
+       5. CloudDeploys to AgentTools/Notebooks/WolframAlpha/<encoded-query>.nb
           with Permissions -> {"All" -> {"Read", "Interact"}}, AutoRemove -> True
        6. Returns content items:
           - JSON metadata item: {"notebookUrl": "https://www.wolframcloud.com/obj/..."}
@@ -469,7 +469,7 @@ When the client supports UI, the WolframAlpha tool runs an enhanced pipeline tha
 2. Extract images from the text string for the LLM (unchanged from current behavior).
 3. Format the pods data into notebook cells using `FormatWolframAlphaPods` with `FoldPods = True`.
 4. Wrap in a `Notebook` with a `"WolframAlphaLong"` input cell and an `"Output"` cell.
-5. CloudDeploy the notebook to `MCPServer/Notebooks/WolframAlpha/<encoded-query>.nb` with `Permissions -> {"All" -> {"Read", "Interact"}}`, `AutoRemove -> True`, and `IconRules -> {}`.
+5. CloudDeploy the notebook to `AgentTools/Notebooks/WolframAlpha/<encoded-query>.nb` with `Permissions -> {"All" -> {"Read", "Interact"}}`, `AutoRemove -> True`, and `IconRules -> {}`.
 6. Return content items: a JSON metadata item (`{"notebookUrl": "<url>"}`) followed by the standard text + image items.
 
 **Key design decisions:**

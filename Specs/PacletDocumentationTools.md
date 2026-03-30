@@ -560,7 +560,7 @@ TemplateObject[
 |-----------|------|-------------|
 | `"SymbolName"` | String | The symbol being documented |
 | `"PacletBase"` | String | Full paclet identifier (e.g., `"Wolfram/AgentTools"` or `"MyPaclet"`) |
-| `"Context"` | String | Full context string (e.g., `"Wolfram\`MCPServer\`"`) |
+| `"Context"` | String | Full context string (e.g., `"Wolfram\`AgentTools\`"`) |
 | `"UsageCells"` | List | Pre-generated usage cell content (TextData) |
 | `"NotesCells"` | List | List of notes cells (or empty list) |
 | `"SeeAlsoCells"` | List | Pre-generated see also content (or placeholder) |

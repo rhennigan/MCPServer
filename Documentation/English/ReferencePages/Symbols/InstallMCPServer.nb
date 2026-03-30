@@ -9712,7 +9712,7 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`AgentTools`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "InstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"My MCP Server", "Claude Desktop"},
@@ -10632,7 +10632,7 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`AgentTools`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "InstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"WolframLanguage", "OpenCode"},
@@ -11497,7 +11497,7 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`AgentTools`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "UninstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"WolframLanguage", "OpenCode"},
@@ -12404,7 +12404,7 @@ Notebook[
                <|
                 "MessageTemplate" :>
                  MessageName[
-                  Wolfram`AgentTools`MCPServer,
+                  Wolfram`AgentTools`AgentTools,
                   "InstallMCPServerNamed"
                  ],
                 "MessageParameters" -> {"WolframLanguage", "Cursor"},
@@ -13356,7 +13356,7 @@ Notebook[
                <|
                 "MessageTemplate" :>
                  MessageName[
-                  Wolfram`AgentTools`MCPServer,
+                  Wolfram`AgentTools`AgentTools,
                   "UninstallMCPServerNamed"
                  ],
                 "MessageParameters" -> {"WolframLanguage", "Cursor"},
@@ -14291,7 +14291,7 @@ Notebook[
                <|
                 "MessageTemplate" :>
                  MessageName[
-                  Wolfram`AgentTools`MCPServer,
+                  Wolfram`AgentTools`AgentTools,
                   "InstallMCPServer"
                  ],
                 "MessageParameters" -> {"WolframLanguage"},
@@ -15242,7 +15242,7 @@ Notebook[
                <|
                 "MessageTemplate" :>
                  MessageName[
-                  Wolfram`AgentTools`MCPServer,
+                  Wolfram`AgentTools`AgentTools,
                   "UninstallMCPServerNamed"
                  ],
                 "MessageParameters" -> {"WolframLanguage", "Cursor"},
@@ -16202,7 +16202,7 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`AgentTools`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "InstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"Wolfram", "OpenCode"},
@@ -17129,7 +17129,7 @@ Notebook[
                      <|
                       "MessageTemplate" :>
                        MessageName[
-                        Wolfram`AgentTools`MCPServer,
+                        Wolfram`AgentTools`AgentTools,
                         "InstallMCPServerNamed"
                        ],
                       "MessageParameters" -> {"Wolfram", "Codex CLI"},
@@ -18095,7 +18095,7 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`AgentTools`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "InstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"Wolfram", "Claude Desktop"},
@@ -19100,7 +19100,7 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`AgentTools`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "InstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"Wolfram", "Claude Desktop"},
@@ -20091,7 +20091,7 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`AgentTools`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "UninstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"Wolfram", "Claude Desktop"},
@@ -21053,7 +21053,7 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`AgentTools`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "InstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"Wolfram", "Claude Desktop"},

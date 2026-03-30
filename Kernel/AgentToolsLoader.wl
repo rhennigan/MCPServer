@@ -3,18 +3,18 @@ PreemptProtect[ BeginPackage[ "Wolfram`AgentTools`" ]; EndPackage[ ] ];
 Wolfram`AgentToolsLoader`$MXFile = FileNameJoin @ {
     DirectoryName @ $InputFileName,
     ToString @ $SystemWordLength <> "Bit",
-    "MCPServer.mx"
+    "AgentTools.mx"
 };
 
 If[ MemberQ[ $Packages, "Wolfram`AgentTools`" ]
     ,
     Wolfram`AgentToolsLoader`$protectedNames = Replace[
-        Wolfram`AgentTools`$MCPServerProtectedNames,
+        Wolfram`AgentTools`$AgentToolsProtectedNames,
         Except[ _List ] :> Names[ "Wolfram`AgentTools`*" ]
     ];
 
     Wolfram`AgentToolsLoader`$allNames = Replace[
-        Wolfram`AgentTools`$MCPServerSymbolNames,
+        Wolfram`AgentTools`$AgentToolsSymbolNames,
         Except[ _List ] :> Union[ Wolfram`AgentToolsLoader`$protectedNames, Names[ "Wolfram`AgentTools`*`*" ] ]
     ];
 
@@ -27,10 +27,10 @@ Quiet[
         ,
         Get @ Wolfram`AgentToolsLoader`$MXFile;
         (* Ensure all subcontexts are in $Packages to avoid reloading subcontexts out of order: *)
-        If[ MatchQ[ Wolfram`AgentTools`$MCPServerContexts, { __String } ],
+        If[ MatchQ[ Wolfram`AgentTools`$AgentToolsContexts, { __String } ],
             WithCleanup[
                 Unprotect @ $Packages,
-                $Packages = DeleteDuplicates @ Join[ $Packages, Wolfram`AgentTools`$MCPServerContexts ],
+                $Packages = DeleteDuplicates @ Join[ $Packages, Wolfram`AgentTools`$AgentToolsContexts ],
                 Protect @ $Packages
             ]
         ]

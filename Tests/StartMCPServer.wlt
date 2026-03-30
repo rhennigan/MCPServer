@@ -2,7 +2,7 @@
 (* ::Section::Closed:: *)
 (*Initialization*)
 VerificationTest[
-    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
+    Needs[ "Wolfram`AgentToolsTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "GetDefinitions@@Tests/StartMCPServer.wlt:4,1-9,2"
@@ -18,7 +18,7 @@ VerificationTest[
 VerificationTest[
     Get[ FileNameJoin @ { DirectoryName @ $TestFileName, "MCPServerTestUtilities.wl" } ];
     (* Set the source directory so the test utilities can find Scripts/StartMCPServer.wls *)
-    Wolfram`MCPServerTests`MCPServerTestUtilities`$MCPTestSourceDirectory = DirectoryName[ $TestFileName, 2 ],
+    Wolfram`AgentToolsTests`MCPServerTestUtilities`$MCPTestSourceDirectory = DirectoryName[ $TestFileName, 2 ],
     _String? DirectoryQ,
     SameTest -> MatchQ,
     TestID   -> "LoadTestUtilities@@Tests/StartMCPServer.wlt:18,1-25,2"

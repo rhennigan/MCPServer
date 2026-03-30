@@ -1,6 +1,6 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServerTests`MCPServerTestUtilities`" ];
+BeginPackage[ "Wolfram`AgentToolsTests`MCPServerTestUtilities`" ];
 
 `$MCPTestProcess;
 `$MCPRequestID;

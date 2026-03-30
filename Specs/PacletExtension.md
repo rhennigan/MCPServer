@@ -2,7 +2,7 @@
 
 ## Overview
 
-External Wolfram paclets can contribute MCP servers, tools, and prompts by declaring a custom `"AgentTools"` extension in their `PacletInfo.wl`. MCPServer discovers these extensions via the PacletManager and exposes them through the existing APIs (`MCPServerObject`, `InstallMCPServer`, `CreateMCPServer`, etc.). This leverages the Wolfram Paclet Repository as a distribution mechanism for AgentTools extensions.
+External Wolfram paclets can contribute MCP servers, tools, and prompts by declaring a custom `"AgentTools"` extension in their `PacletInfo.wl`. AgentTools discovers these extensions via the PacletManager and exposes them through the existing APIs (`MCPServerObject`, `InstallMCPServer`, `CreateMCPServer`, etc.). This leverages the Wolfram Paclet Repository as a distribution mechanism for AgentTools extensions.
 
 ---
 
@@ -371,7 +371,7 @@ Common patterns:
 
 The existing `convertStringTools0` in `Kernel/MCPServerObject.wl` currently checks:
 
-1. `$DefaultMCPTools[name]` — built-in MCPServer tools
+1. `$DefaultMCPTools[name]` — built-in AgentTools tools
 2. ``cb`$AvailableTools[name]`` — Chatbook tools (where ``cb`` is a context alias for ``Wolfram`Chatbook` ``)
 3. `LLMResourceTool[name]` — Wolfram resource tools
 
@@ -410,7 +410,7 @@ When loading a paclet's server definition file, tool and prompt names within `"L
 
 ### Installed = Trusted
 
-When a user writes `MCPServerObject["Wolfram/JIRALink/ProjectManagement"]`, they are explicitly referencing a paclet-qualified name. If the paclet is locally installed, MCPServer loads its definition files. This is analogous to how ``Needs["Wolfram`JIRALink`"]`` trusts installed paclets.
+When a user writes `MCPServerObject["Wolfram/JIRALink/ProjectManagement"]`, they are explicitly referencing a paclet-qualified name. If the paclet is locally installed, AgentTools loads its definition files. This is analogous to how ``Needs["Wolfram`JIRALink`"]`` trusts installed paclets.
 
 ### Paclet Installation Policy
 

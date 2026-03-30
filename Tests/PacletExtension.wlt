@@ -2,7 +2,7 @@
 (* ::Section::Closed:: *)
 (*Initialization*)
 VerificationTest[
-    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
+    Needs[ "Wolfram`AgentToolsTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "GetDefinitions@@Tests/PacletExtension.wlt:4,1-9,2"
@@ -150,7 +150,7 @@ VerificationTest[
 VerificationTest[
     Wolfram`AgentTools`Common`catchTop @ Wolfram`AgentTools`Common`parsePacletQualifiedName[ "NoSlashHere" ],
     _Failure,
-    { General::MCPServerInternal },
+    { General::AgentToolsInternal },
     SameTest -> MatchQ,
     TestID   -> "parsePacletQualifiedName-NoSlash@@Tests/PacletExtension.wlt:150,1-156,2"
 ]
@@ -158,7 +158,7 @@ VerificationTest[
 VerificationTest[
     Wolfram`AgentTools`Common`catchTop @ Wolfram`AgentTools`Common`parsePacletQualifiedName[ "A/B/C/D" ],
     _Failure,
-    { General::MCPServerInternal },
+    { General::AgentToolsInternal },
     SameTest -> MatchQ,
     TestID   -> "parsePacletQualifiedName-TooManySegments@@Tests/PacletExtension.wlt:158,1-164,2"
 ]

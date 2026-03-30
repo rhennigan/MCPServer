@@ -37,7 +37,7 @@ Out[8]= <|"timeConstraint" -> <|"Interpreter" -> "Integer", "Help" -> "An option
 There is no need to parse script argument strings, since the tool does it automatically:
 
 ```wl
-In[9]:= tool[<|"paths" -> "MCPServer/Tests/Files.wlt", "timeConstraint" -> "10", "newKernel" -> "true"|>]
+In[9]:= tool[<|"paths" -> "AgentTools/Tests/Files.wlt", "timeConstraint" -> "10", "newKernel" -> "true"|>]
 
 Out[9]=
 "# Test Results Summary

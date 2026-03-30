@@ -466,7 +466,7 @@ cicd`ScriptConfirmBy[ PacletDirectoryLoad @ $pacletDir, MemberQ @ $pacletDir ];
 cicd`ScriptConfirmAssert[
     StringStartsQ[ FindFile[ "Wolfram`AgentTools`" ], $pacletDir ],
     TemplateApply[
-        "MCPServer context points to \"`1`\" which is not contained in the expected paclet directory \"`2`\".",
+        "AgentTools context points to \"`1`\" which is not contained in the expected paclet directory \"`2`\".",
         { FindFile[ "Wolfram`AgentTools`" ], $pacletDir }
     ]
 ];

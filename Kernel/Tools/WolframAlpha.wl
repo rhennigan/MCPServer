@@ -15,7 +15,7 @@ Needs[ "Wolfram`Chatbook`" -> "cb`" ];
 (*Config*)
 
 (* Cloud path root for deployed WA notebooks *)
-$deployedNotebookRoot = "MCPServer/Notebooks";
+$deployedNotebookRoot = "AgentTools/Notebooks";
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

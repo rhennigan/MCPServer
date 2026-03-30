@@ -5,7 +5,7 @@
 (* ::Section::Closed:: *)
 (*Initialization*)
 VerificationTest[
-    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
+    Needs[ "Wolfram`AgentToolsTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "GetDefinitions@@Tests/NotebookViewer.wlt:7,1-12,2"

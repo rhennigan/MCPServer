@@ -2,7 +2,7 @@
 (* ::Section::Closed:: *)
 (*Initialization*)
 VerificationTest[
-    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
+    Needs[ "Wolfram`AgentToolsTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "GetDefinitions@@Tests/Tools.wlt:4,1-9,2"
@@ -124,7 +124,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    $tempNotebookFile = FileNameJoin[ { $TemporaryDirectory, "MCPServerTest_" <> CreateUUID[ ] <> ".nb" } ],
+    $tempNotebookFile = FileNameJoin[ { $TemporaryDirectory, "AgentToolsTest_" <> CreateUUID[ ] <> ".nb" } ],
     _String? StringQ,
     SameTest -> MatchQ,
     TestID   -> "WriteNotebook-CreateTempPath@@Tests/Tools.wlt:126,1-131,2"

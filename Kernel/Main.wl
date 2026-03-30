@@ -56,7 +56,7 @@ GeneralUtilities`SetUsage[ MCPServer, "MCPServer is a symbol for miscellaneous m
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Load Files*)
-$MCPServerContexts = {
+$AgentToolsContexts = {
     "Wolfram`AgentTools`",
     "Wolfram`AgentTools`Common`",
     "Wolfram`AgentTools`CreateMCPServer`",
@@ -78,12 +78,12 @@ $MCPServerContexts = {
     "Wolfram`AgentTools`ValidateAgentToolsPacletExtension`"
 };
 
-Scan[ Needs[ # -> None ] &, $MCPServerContexts ];
+Scan[ Needs[ # -> None ] &, $AgentToolsContexts ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Names*)
-$MCPServerSymbolNames = $MCPServerSymbolNames =
+$AgentToolsSymbolNames = $AgentToolsSymbolNames =
     Block[ { $Context, $ContextPath },
         Union[ Names[ "Wolfram`AgentTools`*" ], Names[ "Wolfram`AgentTools`*`*" ] ]
     ];
@@ -91,7 +91,7 @@ $MCPServerSymbolNames = $MCPServerSymbolNames =
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Protected Symbols*)
-$MCPServerProtectedNames = "Wolfram`AgentTools`" <> # & /@ {
+$AgentToolsProtectedNames = "Wolfram`AgentTools`" <> # & /@ {
     "$DefaultMCPPrompts",
     "$DefaultMCPServers",
     "$DefaultMCPToolOptions",
@@ -112,7 +112,7 @@ $MCPServerProtectedNames = "Wolfram`AgentTools`" <> # & /@ {
     "ValidateAgentToolsPacletExtension"
 };
 
-Scan[ Protect, $MCPServerProtectedNames ];
+Scan[ Protect, $AgentToolsProtectedNames ];
 
 SetAttributes[
     { AgentToolsDeployment, DeployedAgentTools, DeployAgentTools },
@@ -123,8 +123,8 @@ SetAttributes[
 (* ::Section::Closed:: *)
 (*Package Footer*)
 addToMXInitialization[
-    $MCPServerContexts;
-    $MCPServerSymbolNames;
+    $AgentToolsContexts;
+    $AgentToolsSymbolNames;
     SetAttributes[ Evaluate @ Names[ "Wolfram`AgentTools`*" ], ReadProtected ];
 ];
 

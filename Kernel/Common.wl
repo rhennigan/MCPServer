@@ -23,7 +23,7 @@ Needs[ "Wolfram`AgentTools`" ];
 (* ::Section::Closed:: *)
 (*Config*)
 $cloudNotebooks         := TrueQ @ CloudSystem`$CloudNotebooks;
-$mxFlag                 := Wolfram`MCPServerInternal`$BuildingMX;
+$mxFlag                 := Wolfram`AgentToolsInternal`$BuildingMX;
 $resourceFunctionContext = "Wolfram`AgentTools`ResourceFunctions`";
 
 $internalFailureLogDirectory := FileNameJoin @ { $UserBaseDirectory, "Logs", "AgentTools", "InternalFailures" };
@@ -44,7 +44,7 @@ $debug           = True;
 $failed          = False;
 $inDef           = False;
 $internalFailure = None;
-$messageSymbol   = MCPServer;
+$messageSymbol   = AgentTools;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -363,12 +363,12 @@ catchTopAs // endDefinition;
 catchTop // beginDefinition;
 catchTop // Attributes = { HoldFirst };
 
-catchTop[ eval_ ] := catchTop[ eval, MCPServer ];
+catchTop[ eval_ ] := catchTop[ eval, AgentTools ];
 
 catchTop[ eval_, sym_Symbol ] :=
     Block[
         {
-            $messageSymbol          = Replace[ $messageSymbol, MCPServer -> sym ],
+            $messageSymbol          = Replace[ $messageSymbol, AgentTools -> sym ],
             $catching               = True,
             $failed                 = False,
             catchTop                = # &,
@@ -385,7 +385,7 @@ catchTop // endDefinition;
 (*catchAlways*)
 catchAlways // beginDefinition;
 catchAlways // Attributes = { HoldFirst };
-catchAlways[ eval_ ] := catchAlways[ eval, MCPServer ];
+catchAlways[ eval_ ] := catchAlways[ eval, AgentTools ];
 catchAlways[ eval_, sym_Symbol ] := Catch[ catchTop[ eval, sym ], $catchTopTag ];
 catchAlways // endDefinition;
 
@@ -427,16 +427,16 @@ throwFailure // endDefinition;
 messageFailure // Attributes = { HoldFirst };
 
 messageFailure[ "Internal"|AgentTools::Internal, args___ ] := (
-    General::MCPServerInternal = AgentTools::Internal;
-    messageFailure[ General::MCPServerInternal, args ]
+    General::AgentToolsInternal = AgentTools::Internal;
+    messageFailure[ General::AgentToolsInternal, args ]
 );
 
 messageFailure[ t_String, args___ ] :=
     With[ { s = $messageSymbol },
         If[ StringQ @ MessageName[ s, t ],
             messageFailure[ MessageName[ s, t ], args ],
-            If[ StringQ @ MessageName[ MCPServer, t ],
-                blockProtected[ { s }, MessageName[ s, t ] = MessageName[ MCPServer, t ] ];
+            If[ StringQ @ MessageName[ AgentTools, t ],
+                blockProtected[ { s }, MessageName[ s, t ] = MessageName[ AgentTools, t ] ];
                 messageFailure[ MessageName[ s, t ], args ],
                 throwInternalFailure @ messageFailure[ t, args ]
             ]
@@ -486,7 +486,7 @@ convertCloudFailure // endDefinition;
 (*promoteSourceInfo*)
 promoteSourceInfo // beginDefinition;
 
-promoteSourceInfo[ Failure[ "General::MCPServerInternal", as_ ] ] :=
+promoteSourceInfo[ Failure[ "General::AgentToolsInternal", as_ ] ] :=
     promoteSourceInfo @ Failure[ "AgentTools::Internal", as ];
 
 promoteSourceInfo[ Failure[
@@ -671,12 +671,12 @@ bugReportBody[ as_Association? AssociationQ ] :=
         cleanupOldFailureLogs[ ];
 
         WithCleanup[
-            Unprotect[ $LastMCPServerFailure, $LastMCPServerFailureText ]
+            Unprotect[ $LastAgentToolsFailure, $LastAgentToolsFailureText ]
             ,
-            $LastMCPServerFailure     = file;
-            $LastMCPServerFailureText = bugReportText;
+            $LastAgentToolsFailure     = file;
+            $LastAgentToolsFailureText = bugReportText;
             ,
-            Protect[ $LastMCPServerFailure, $LastMCPServerFailureText ]
+            Protect[ $LastAgentToolsFailure, $LastAgentToolsFailureText ]
         ];
 
         bugReportText
@@ -706,7 +706,7 @@ sourceLink[ ___ ] := "";
 (*extractFailureTag*)
 extractFailureTag // beginDefinition;
 
-(* Handle MCPServer internal failures *)
+(* Handle AgentTools internal failures *)
 extractFailureTag[ Failure[ "AgentTools::Internal", as_Association ] ] :=
     extractFailureTag0[ "AgentTools", as ];
 

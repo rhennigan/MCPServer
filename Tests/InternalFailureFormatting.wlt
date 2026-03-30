@@ -5,7 +5,7 @@
 (* ::Section::Closed:: *)
 (*Initialization*)
 VerificationTest[
-    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
+    Needs[ "Wolfram`AgentToolsTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "GetDefinitions@@Tests/InternalFailureFormatting.wlt:7,1-12,2"
@@ -24,7 +24,7 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*MCPServer Internal Failures*)
+(*AgentTools Internal Failures*)
 VerificationTest[
     Wolfram`AgentTools`Common`extractFailureTag[
         Failure[ "AgentTools::Internal", <| |> ]

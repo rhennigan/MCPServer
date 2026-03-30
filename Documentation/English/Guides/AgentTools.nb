@@ -11,7 +11,7 @@ Notebook[
   Cell[
    CellGroupData[
     {
-     Cell["MCP Server", "GuideTitle", CellID -> 66967217],
+     Cell["Agent Tools", "GuideTitle", CellID -> 66967217],
      Cell[
       CellGroupData[
        {
@@ -205,12 +205,12 @@ Notebook[
                ],
                DynamicModuleBox[
                 {
-                 nbobj$$ =
+                 nbobj$$ = 
                   NotebookObject[
                    "f0b4e3b1-e321-8241-a72e-2cb8f2790686",
                    "a1f9c05a-c020-014f-af47-d3ec2a916899"
                   ],
-                 cellobj$$ =
+                 cellobj$$ = 
                   CellObject[
                    "70a20691-70a6-df40-917e-3c462adb60e1",
                    "d5f9ad04-7a97-0346-8976-ef160fe1b064"

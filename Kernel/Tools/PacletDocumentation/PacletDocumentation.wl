@@ -54,7 +54,7 @@ $defaultMCPTools[ "CreateSymbolDoc" ] := LLMTool @ <|
         |>,
         "pacletName" -> <|
             "Interpreter" -> "String",
-            "Help"        -> "Name of the paclet (e.g., \"MCPServer\" or \"Wolfram/AgentTools\").",
+            "Help"        -> "Name of the paclet (e.g., \"AgentTools\" or \"Wolfram/AgentTools\").",
             "Required"    -> True
         |>,
         "publisherID" -> <|

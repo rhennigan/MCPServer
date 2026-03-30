@@ -5,7 +5,7 @@
 (* Initialization *)
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
+    Needs[ "Wolfram`AgentToolsTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "GetDefinitions@@Tests/Prompts.wlt:7,1-12,2"
@@ -746,7 +746,7 @@ VerificationTest[
 
 VerificationTest[
     Wolfram`AgentTools`StartMCPServer`Private`catchPromptFunction[
-        Function[ args, Wolfram`AgentTools`Common`throwFailure[ "InvalidArguments", MCPServer, "test" ] ],
+        Function[ args, Wolfram`AgentTools`Common`throwFailure[ "InvalidArguments", AgentTools, "test" ] ],
         <| "query" -> "test" |>
     ],
     _String,
@@ -800,7 +800,7 @@ VerificationTest[
 
 VerificationTest[
     StringQ @ Wolfram`AgentTools`StartMCPServer`Private`makePromptContent[
-        <| "Type" -> "Function", "Content" -> Function[ args, Wolfram`AgentTools`Common`throwFailure[ "InvalidArguments", MCPServer, "test" ] ] |>,
+        <| "Type" -> "Function", "Content" -> Function[ args, Wolfram`AgentTools`Common`throwFailure[ "InvalidArguments", AgentTools, "test" ] ] |>,
         <| "query" -> "test" |>
     ][ "text" ],
     True,

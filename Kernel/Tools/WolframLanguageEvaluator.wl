@@ -16,11 +16,11 @@ System`HoldCompleteForm;
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Config*)
-$cloudImagePath        := CloudObject[ "MCPServer/Images", Permissions -> $cloudImagePermissions ];
+$cloudImagePath        := CloudObject[ "AgentTools/Images", Permissions -> $cloudImagePermissions ];
 $cloudImagePermissions := If[ $imageExportMethod === "CloudPublic", "Public", "Private" ];
 $line                   = 1;
 
-$deployedNotebookRoot = "MCPServer/Notebooks";
+$deployedNotebookRoot = "AgentTools/Notebooks";
 $outputSizeLimit      = 100000;
 
 (* ::**************************************************************************************************************:: *)

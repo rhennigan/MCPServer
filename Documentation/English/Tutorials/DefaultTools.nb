@@ -161,7 +161,7 @@ Notebook[
                        |>,
                        "pacletName" -> <|
                         "Interpreter" -> "String",
-                        "Help" -> "Name of the paclet (e.g., \"MCPServer\" or \"Wolfram/AgentTools\").",
+                        "Help" -> "Name of the paclet (e.g., \"AgentTools\" or \"Wolfram/AgentTools\").",
                         "Required" -> True
                        |>,
                        "publisherID" -> <|
@@ -3344,7 +3344,7 @@ Notebook[
                                     ],
                                     ButtonFunction :> {
                                      CopyToClipboard[
-                                      "{\n\t\"mcpServers\":{\n\t\t\"WolframNotebooks\":{\n\t\t\t\"type\":\"stdio\",\n\t\t\t\"command\":\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\15.0\\\\wolfram.exe\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/MCPServer\\\",\\\"Wolfram`AgentTools`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframNotebooks\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\",\n\t\t\t\t\"WOLFRAM_LOCALBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\Objects\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                      "{\n\t\"mcpServers\":{\n\t\t\"WolframNotebooks\":{\n\t\t\t\"type\":\"stdio\",\n\t\t\t\"command\":\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\15.0\\\\wolfram.exe\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/AgentTools\\\",\\\"Wolfram`AgentTools`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframNotebooks\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\",\n\t\t\t\t\"WOLFRAM_LOCALBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\Objects\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                      ],
                                      NotebookDelete[cellObj],
                                      FrontEndExecute[
@@ -3446,7 +3446,7 @@ Notebook[
                                  "[",
                                  TemplateBox[
                                   {
-                                   "\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\ApplicationData\\\\Wolfram\\\\MCPServer\\\\Servers\\\\WolframNotebooks\""
+                                   "\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\ApplicationData\\\\Wolfram\\\\AgentTools\\\\Servers\\\\WolframNotebooks\""
                                   },
                                   "FileArgument"
                                  ],
@@ -3498,7 +3498,7 @@ Notebook[
                 "Transport" -> "StandardInputOutput",
                 "Location" ->
                  File[
-                  "C:\\Users\\rhennigan\\AppData\\Roaming\\Wolfram\\ApplicationData\\Wolfram\\MCPServer\\Servers\\WolframNotebooks"
+                  "C:\\Users\\rhennigan\\AppData\\Roaming\\Wolfram\\ApplicationData\\Wolfram\\AgentTools\\Servers\\WolframNotebooks"
                  ]
                |>
               ],
@@ -4923,7 +4923,7 @@ Notebook[
                                                       ],
                                                       ButtonFunction :> {
                                                        CopyToClipboard[
-                                                        "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"type\":\"stdio\",\n\t\t\t\"command\":\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\15.0\\\\wolfram.exe\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/MCPServer\\\",\\\"Wolfram`AgentTools`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\",\n\t\t\t\t\"WOLFRAM_LOCALBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\Objects\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                        "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"type\":\"stdio\",\n\t\t\t\"command\":\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\15.0\\\\wolfram.exe\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/AgentTools\\\",\\\"Wolfram`AgentTools`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\",\n\t\t\t\t\"WOLFRAM_LOCALBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\Objects\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                        ],
                                                        NotebookDelete[cellObj],
                                                        FrontEndExecute[

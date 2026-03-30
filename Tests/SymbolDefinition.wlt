@@ -5,7 +5,7 @@
 (* ::Section::Closed:: *)
 (*Initialization*)
 VerificationTest[
-    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
+    Needs[ "Wolfram`AgentToolsTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "GetDefinitions@@Tests/SymbolDefinition.wlt:7,1-12,2"
@@ -637,9 +637,9 @@ VerificationTest[
 VerificationTest[
     Module[ { counter },
         counter = 0;
-        Wolfram`MCPServerTests`$evalLeakTestSymbol1 := (counter++; "result");
+        Wolfram`AgentToolsTests`$evalLeakTestSymbol1 := (counter++; "result");
         Wolfram`AgentTools`Tools`SymbolDefinition`Private`extractDefinition[
-            "Wolfram`MCPServerTests`$evalLeakTestSymbol1"
+            "Wolfram`AgentToolsTests`$evalLeakTestSymbol1"
         ];
         (* counter should still be 0 if no evaluation leak occurred *)
         counter
@@ -653,8 +653,8 @@ VerificationTest[
 VerificationTest[
     Module[ { counter },
         counter = 0;
-        Wolfram`MCPServerTests`$evalLeakTestSymbol2 := (counter++; "result");
-        Quiet @ $symbolDefinitionTool[ <| "symbols" -> "Wolfram`MCPServerTests`$evalLeakTestSymbol2" |> ];
+        Wolfram`AgentToolsTests`$evalLeakTestSymbol2 := (counter++; "result");
+        Quiet @ $symbolDefinitionTool[ <| "symbols" -> "Wolfram`AgentToolsTests`$evalLeakTestSymbol2" |> ];
         (* counter should still be 0 if no evaluation leak occurred *)
         counter
     ],
@@ -666,8 +666,8 @@ VerificationTest[
 (* Test that definitions with side effects are captured correctly without executing them *)
 VerificationTest[
     Module[ { result },
-        Wolfram`MCPServerTests`$evalLeakTestSymbol3 := Echo["This should NOT print!"];
-        result = Quiet @ $symbolDefinitionTool[ <| "symbols" -> "Wolfram`MCPServerTests`$evalLeakTestSymbol3" |> ];
+        Wolfram`AgentToolsTests`$evalLeakTestSymbol3 := Echo["This should NOT print!"];
+        result = Quiet @ $symbolDefinitionTool[ <| "symbols" -> "Wolfram`AgentToolsTests`$evalLeakTestSymbol3" |> ];
         StringContainsQ[ result, "Echo" ]
     ],
     True,

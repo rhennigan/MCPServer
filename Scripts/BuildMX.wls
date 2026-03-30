@@ -11,7 +11,7 @@ Needs[ "GeneralUtilities`"   -> "gu`"   ];
 Needs[ "PacletTools`"        -> "pt`"   ];
 Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
 
-Wolfram`MCPServerInternal`$BuildingMX = True;
+Wolfram`AgentToolsInternal`$BuildingMX = True;
 $assertions = getBooleanArgument[ { "a", "assertions" }, True ];
 
 (* ::**************************************************************************************************************:: *)
@@ -21,7 +21,7 @@ $mxFile = cStr @ FileNameJoin @ {
     $pacletDir,
     "Kernel",
     ToString @ $SystemWordLength <> "Bit",
-    "MCPServer.mx"
+    "AgentTools.mx"
 };
 
 (* ::**************************************************************************************************************:: *)
