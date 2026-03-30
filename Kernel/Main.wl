@@ -16,8 +16,8 @@ System`DeployAgentTools;
 `$DefaultMCPServers;
 `$DefaultMCPToolOptions;
 `$DefaultMCPTools;
-`$LastMCPServerFailure;
-`$LastMCPServerFailureText;
+`$LastAgentToolsFailure;
+`$LastAgentToolsFailureText;
 `$SupportedMCPClients;
 `CodeInspectorToolFunction;
 `CreateMCPServer;
@@ -96,13 +96,13 @@ $AgentToolsProtectedNames = "Wolfram`AgentTools`" <> # & /@ {
     "$DefaultMCPServers",
     "$DefaultMCPToolOptions",
     "$DefaultMCPTools",
-    "$LastMCPServerFailure",
-    "$LastMCPServerFailureText",
+    "$LastAgentToolsFailure",
+    "$LastAgentToolsFailureText",
     "$SupportedMCPClients",
+    "AgentTools",
     "CodeInspectorToolFunction",
     "CreateMCPServer",
     "InstallMCPServer",
-    "AgentTools",
     "MCPServerObject",
     "MCPServerObjectQ",
     "MCPServerObjects",

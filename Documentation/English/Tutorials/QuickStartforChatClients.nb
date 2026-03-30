@@ -857,7 +857,7 @@ Notebook[
                      <|
                       "MessageTemplate" :>
                        MessageName[
-                        Wolfram`AgentTools`MCPServer,
+                        Wolfram`AgentTools`AgentTools,
                         "InstallMCPServerNamed"
                        ],
                       "MessageParameters" -> {"Wolfram", "Claude Desktop"},

@@ -1781,7 +1781,7 @@ Notebook[
             <|
              "MessageTemplate" :>
               MessageName[
-               Wolfram`AgentTools`MCPServer,
+               Wolfram`AgentTools`AgentTools,
                "InstallMCPServerNamed"
               ],
              "MessageParameters" -> {"Wolfram", "Claude Desktop"},
@@ -2737,7 +2737,7 @@ Notebook[
               <|
                "MessageTemplate" :>
                 MessageName[
-                 Wolfram`AgentTools`MCPServer,
+                 Wolfram`AgentTools`AgentTools,
                  "UninstallMCPServerNamed"
                 ],
                "MessageParameters" -> {"Wolfram", "Claude Desktop"},
@@ -3711,7 +3711,7 @@ Notebook[
                    <|
                     "MessageTemplate" :>
                      MessageName[
-                      Wolfram`AgentTools`MCPServer,
+                      Wolfram`AgentTools`AgentTools,
                       "UninstallMCPServer"
                      ],
                     "MessageParameters" -> {"Wolfram"},
@@ -4625,7 +4625,7 @@ Notebook[
                    <|
                     "MessageTemplate" :>
                      MessageName[
-                      Wolfram`AgentTools`MCPServer,
+                      Wolfram`AgentTools`AgentTools,
                       "UninstallMCPServer"
                      ],
                     "MessageParameters" -> {"Wolfram"},
@@ -5736,7 +5736,7 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`AgentTools`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "InstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"Wolfram", "OpenCode"},
@@ -6648,7 +6648,7 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`AgentTools`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "UninstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"Wolfram", "OpenCode"},
