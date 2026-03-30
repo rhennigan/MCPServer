@@ -17,7 +17,7 @@
         "lmverbose",
         "LOCALBASE",
         "MCPB",
-        "agenttools",
+        "mcpserver",
         "modelcontextprotocol",
         "Multicolumn",
         "newclient",

@@ -9,7 +9,7 @@ Pull and run the image:
 ```bash
 docker run -i --rm \
   -e WOLFRAMSCRIPT_ENTITLEMENTID=your-entitlement-id \
-  ghcr.io/rhennigan/agenttools:latest
+  ghcr.io/rhennigan/mcpserver:latest
 ```
 
 ## Prerequisites
@@ -39,7 +39,7 @@ Use a free [Wolfram Engine Developer License](https://www.wolfram.com/developer-
    ```bash
    docker run -it \
      -v ./Licensing:/root/.WolframEngine/Licensing \
-     ghcr.io/rhennigan/agenttools:latest \
+     ghcr.io/rhennigan/mcpserver:latest \
      wolframscript
    ```
 3. Enter your Wolfram ID credentials when prompted
@@ -47,7 +47,7 @@ Use a free [Wolfram Engine Developer License](https://www.wolfram.com/developer-
    ```bash
    docker run -i --rm \
      -v ./Licensing:/root/.WolframEngine/Licensing \
-     ghcr.io/rhennigan/agenttools:latest
+     ghcr.io/rhennigan/mcpserver:latest
    ```
 
 **Note:** The license expires periodically and will auto-renew automatically when the Wolfram kernel starts and the container has internet connectivity. Ensure that the `./Licensing` directory is kept persistent and mounted on every run so that the renewed license is preserved across container restarts.
@@ -68,7 +68,7 @@ Example:
 docker run -i --rm \
   -e WOLFRAMSCRIPT_ENTITLEMENTID=your-id \
   -e MCP_SERVER_NAME=WolframLanguage \
-  ghcr.io/rhennigan/agenttools:latest
+  ghcr.io/rhennigan/mcpserver:latest
 ```
 
 ## Mounting a Workspace Directory
@@ -79,7 +79,7 @@ The container starts in an empty `/workspace` directory. You can mount a host di
 docker run -i --rm \
   -v /path/to/your/project:/workspace \
   -e WOLFRAMSCRIPT_ENTITLEMENTID=your-id \
-  ghcr.io/rhennigan/agenttools:latest
+  ghcr.io/rhennigan/mcpserver:latest
 ```
 
 This allows the server to read and write files in your project directory. For example, mounting your current directory:
@@ -88,7 +88,7 @@ This allows the server to read and write files in your project directory. For ex
 docker run -i --rm \
   -v $(pwd):/workspace \
   -e WOLFRAMSCRIPT_ENTITLEMENTID=your-id \
-  ghcr.io/rhennigan/agenttools:latest
+  ghcr.io/rhennigan/mcpserver:latest
 ```
 
 On Windows (PowerShell):
@@ -96,7 +96,7 @@ On Windows (PowerShell):
 docker run -i --rm `
   -v ${PWD}:/workspace `
   -e WOLFRAMSCRIPT_ENTITLEMENTID=your-id `
-  ghcr.io/rhennigan/agenttools:latest
+  ghcr.io/rhennigan/mcpserver:latest
 ```
 
 **Security Note:** The container will have full read/write access to the mounted directory. Only mount directories you trust the MCP server to access.
@@ -116,7 +116,7 @@ Add to `~/.config/claude/claude_desktop_config.json` (Linux) or `~/Library/Appli
         "run", "-i", "--rm",
         "-e", "WOLFRAMSCRIPT_ENTITLEMENTID=your-entitlement-id",
         "-e", "MCP_SERVER_NAME=Wolfram",
-        "ghcr.io/rhennigan/agenttools:latest"
+        "ghcr.io/rhennigan/mcpserver:latest"
       ]
     }
   }
@@ -136,7 +136,7 @@ Add to your project's `.mcp.json` or global `~/.claude.json`:
         "run", "-i", "--rm",
         "-e", "WOLFRAMSCRIPT_ENTITLEMENTID=your-entitlement-id",
         "-e", "MCP_SERVER_NAME=WolframLanguage",
-        "ghcr.io/rhennigan/agenttools:latest"
+        "ghcr.io/rhennigan/mcpserver:latest"
       ]
     }
   }
@@ -157,7 +157,7 @@ To give the MCP server access to your project files, mount a directory to `/work
         "-v", "/path/to/your/project:/workspace",
         "-e", "WOLFRAMSCRIPT_ENTITLEMENTID=your-entitlement-id",
         "-e", "MCP_SERVER_NAME=Wolfram",
-        "ghcr.io/rhennigan/agenttools:latest"
+        "ghcr.io/rhennigan/mcpserver:latest"
       ]
     }
   }
@@ -177,7 +177,7 @@ For clients using node-locked licensing, include the licensing volume mount:
         "run", "-i", "--rm",
         "-v", "/path/to/Licensing:/root/.WolframEngine/Licensing",
         "-e", "MCP_SERVER_NAME=Wolfram",
-        "ghcr.io/rhennigan/agenttools:latest"
+        "ghcr.io/rhennigan/mcpserver:latest"
       ]
     }
   }
@@ -196,7 +196,7 @@ You can combine multiple volume mounts (licensing + workspace):
         "-v", "/path/to/Licensing:/root/.WolframEngine/Licensing",
         "-v", "/path/to/your/project:/workspace",
         "-e", "MCP_SERVER_NAME=Wolfram",
-        "ghcr.io/rhennigan/agenttools:latest"
+        "ghcr.io/rhennigan/mcpserver:latest"
       ]
     }
   }
@@ -217,7 +217,7 @@ export WOLFRAMSCRIPT_ENTITLEMENTID=O-XXXX-XXXXXXXXXXXXX
 # Build with BuildKit secret
 docker build \
   --secret id=WOLFRAMSCRIPT_ENTITLEMENTID,env=WOLFRAMSCRIPT_ENTITLEMENTID \
-  -t agenttools:local .
+  -t mcpserver:local .
 ```
 
 **Note:** BuildKit is required (Docker 18.09+). If you encounter issues, ensure BuildKit is enabled:
@@ -238,7 +238,7 @@ For development, mount the local source directory:
 docker run -i --rm \
   -v $(pwd):/opt/AgentTools \
   -e WOLFRAMSCRIPT_ENTITLEMENTID=your-id \
-  ghcr.io/rhennigan/agenttools:latest
+  ghcr.io/rhennigan/mcpserver:latest
 ```
 
 This allows you to test changes without rebuilding the image.
@@ -265,7 +265,7 @@ The server logs to stderr:
 ```bash
 docker run -i --rm \
   -e WOLFRAMSCRIPT_ENTITLEMENTID=your-id \
-  ghcr.io/rhennigan/agenttools:latest 2>server.log
+  ghcr.io/rhennigan/mcpserver:latest 2>server.log
 ```
 
 ## Image Tags
