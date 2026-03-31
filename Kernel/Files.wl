@@ -9,11 +9,29 @@ Needs[ "Wolfram`AgentTools`Common`" ];
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Configuration*)
-$rootPath           := FileNameJoin @ { $UserBaseDirectory, "ApplicationData", "Wolfram", "AgentTools" };
+$rootPath           := migrateRoot @ FileNameJoin @ { $UserBaseDirectory, "ApplicationData", "Wolfram", "AgentTools" };
 $storagePath        := FileNameJoin @ { $rootPath, "Servers" };
 $deploymentsPath    := FileNameJoin @ { $rootPath, "Deployments" };
 $imagePath          := FileNameJoin @ { $rootPath, "Images"  };
 $outputLogDirectory := FileNameJoin @ { $UserBaseDirectory, "Logs", "AgentTools", "Output" };
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Legacy File Migration*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*migrateRoot*)
+migrateRoot // beginDefinition;
+
+migrateRoot[ newRoot_ ] := migrateRoot[ newRoot ] =
+    Module[ { oldRoot },
+        oldRoot = FileNameJoin @ { $UserBaseDirectory, "ApplicationData", "Wolfram", "MCPServer" };
+        If[ ! DirectoryQ @ newRoot && DirectoryQ @ oldRoot, CopyDirectory[ oldRoot, newRoot ] ];
+        newRoot
+    ];
+
+migrateRoot // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
