@@ -1,7 +1,7 @@
 # [Wolfram/MCPServer](https://paclets.com/Wolfram/MCPServer)
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Wolfram Version](https://img.shields.io/badge/Wolfram-14.2%2B-red.svg)](https://www.wolfram.com/language/)
+[![Wolfram Version](https://img.shields.io/badge/Wolfram-14.3%2B-red.svg)](https://www.wolfram.com/language/)
 
 Implements a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server using Wolfram Language, enabling LLMs to access Wolfram Language computation capabilities.
 
@@ -33,7 +33,7 @@ Implements a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) ser
 
 ## Requirements
 
-- Wolfram Language 14.2 or higher
+- Wolfram Language 14.3 or higher
 - An MCP-compatible client application (see [Supported Clients](#supported-clients))
 - Optional: [LLMKit subscription](https://www.wolfram.com/notebook-assistant-llm-kit) for enhanced semantic search capabilities
 
