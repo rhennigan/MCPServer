@@ -216,8 +216,8 @@ args = <argument-parsing-logic>;
 (* If `--usage` argument is present: issue usage message and `Exit[0]` *)
 (* If arguments invalid: issue usage message and `Exit[1]` *)
 
-PacletInstall["Wolfram/MCPServer"];
-Get["Wolfram`MCPServer`"];
+PacletInstall["Wolfram/AgentTools"];
+Get["Wolfram`AgentTools`"];
 
 tool = $DefaultMCPTools["<ToolName>"];
 
@@ -235,7 +235,7 @@ This is just a basic outline. The actual script should have more robust error ha
 
 **Key details:**
 
-- The script loads the MCPServer paclet and delegates to the existing tool function.
+- The script loads the AgentTools paclet and delegates to the existing tool function.
 - Argument parsing converts positional args and `--flag value` pairs into an `Association`.
 - Output is written to stdout as markdown text (matching MCP tool output format).
 - For tools that also return image content, we should replace the images with a simple text placeholder.
@@ -275,7 +275,7 @@ See [generating-scripts-from-tools](../Notes/generating-scripts-from-tools.md) f
 
 ### Process
 
-1. **Load paclet** — `PacletDirectoryLoad` + ``Get["Wolfram`MCPServer`"]``.
+1. **Load paclet** — `PacletDirectoryLoad` + ``Get["Wolfram`AgentTools`"]``.
 2. **Read manifest** — Parse `Manifest.wl` into an Association.
 3. **Generate scripts** — For each tool name referenced across all skills:
    - Look up the tool in `$DefaultMCPTools`.
@@ -437,5 +437,5 @@ Script correctness (valid output, error handling, `--usage` flag) is covered by 
 - **Marketplace submission** — Submit the wolfram plugin to the official Claude Code marketplace once skills are stable.
 - **Additional distribution channels** — Since skills follow the open standard, they can also be distributed as standalone skill directories for agents that don't use Claude Code plugins (e.g., Cursor, Gemini CLI, VS Code).
 - **Versioning** — Plugin version should track `$pacletVersion` for consistency with the MCP server. The `metadata.version` field in each SKILL.md frontmatter should also track this.
-- **Standalone mode** — Scripts currently require the MCPServer paclet to be loadable. A future enhancement could generate fully self-contained scripts that embed the tool logic directly, removing the paclet dependency.
+- **Standalone mode** — Scripts currently require the AgentTools paclet to be loadable. A future enhancement could generate fully self-contained scripts that embed the tool logic directly, removing the paclet dependency.
 - **Validation** — Use the [skills-ref](https://github.com/agentskills/agentskills/tree/main/skills-ref) reference library to validate skill directories (`skills-ref validate ./my-skill`).

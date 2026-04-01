@@ -109,7 +109,7 @@ extensions:
   Wolfram:
     name: Wolfram
     cmd: /path/to/wolfram
-    args: [-run, 'PacletSymbol["Wolfram/MCPServer","StartMCPServer"][]', -noinit, -noprompt]
+    args: [-run, 'PacletSymbol["Wolfram/AgentTools","StartMCPServer"][]', -noinit, -noprompt]
     enabled: true
     envs:
       "MCP_SERVER_NAME": "WolframLanguage"

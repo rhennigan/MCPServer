@@ -23,7 +23,7 @@ Notebook[
             ButtonBox[
              "InstallMCPServer",
              BaseStyle -> "Link",
-             ButtonData -> "paclet:Wolfram/MCPServer/ref/InstallMCPServer"
+             ButtonData -> "paclet:Wolfram/AgentTools/ref/InstallMCPServer"
             ],
             "[",
             "\"\!\(\*StyleBox[\"application\", \"TI\"]\)\"",
@@ -42,7 +42,7 @@ Notebook[
             ButtonBox[
              "InstallMCPServer",
              BaseStyle -> "Link",
-             ButtonData -> "paclet:Wolfram/MCPServer/ref/InstallMCPServer"
+             ButtonData -> "paclet:Wolfram/AgentTools/ref/InstallMCPServer"
             ],
             "[",
             RowBox[
@@ -64,7 +64,7 @@ Notebook[
           ButtonBox[
            "MCPServerObject",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObject"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/MCPServerObject"
           ]
          ],
          "InlineFormula"
@@ -80,7 +80,7 @@ Notebook[
             ButtonBox[
              "InstallMCPServer",
              BaseStyle -> "Link",
-             ButtonData -> "paclet:Wolfram/MCPServer/ref/InstallMCPServer"
+             ButtonData -> "paclet:Wolfram/AgentTools/ref/InstallMCPServer"
             ],
             "[",
             RowBox[
@@ -112,7 +112,7 @@ Notebook[
             ButtonBox[
              "InstallMCPServer",
              BaseStyle -> "Link",
-             ButtonData -> "paclet:Wolfram/MCPServer/ref/InstallMCPServer"
+             ButtonData -> "paclet:Wolfram/AgentTools/ref/InstallMCPServer"
             ],
             "[",
             RowBox[
@@ -175,7 +175,7 @@ Notebook[
                ButtonBox[
                 "MCPServerObject",
                 BaseStyle -> "Link",
-                ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObject"
+                ButtonData -> "paclet:Wolfram/AgentTools/ref/MCPServerObject"
                ]
               ],
               "InlineFormula"
@@ -231,7 +231,7 @@ Notebook[
             ButtonBox[
              "MCPServerObject",
              BaseStyle -> "Link",
-             ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObject"
+             ButtonData -> "paclet:Wolfram/AgentTools/ref/MCPServerObject"
             ],
             "[",
             StyleBox["\[Ellipsis]", "TR"],
@@ -247,7 +247,7 @@ Notebook[
                ButtonBox[
                 "MCPServerObject",
                 BaseStyle -> "Link",
-                ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObject"
+                ButtonData -> "paclet:Wolfram/AgentTools/ref/MCPServerObject"
                ]
               ],
               "InlineFormula"
@@ -311,7 +311,7 @@ Notebook[
           ButtonBox[
            "CreateMCPServer",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/CreateMCPServer"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/CreateMCPServer"
           ]
          ],
          "InlineFormula"
@@ -482,7 +482,7 @@ Notebook[
             ButtonBox[
              "InstallMCPServer",
              BaseStyle -> "Link",
-             ButtonData -> "paclet:Wolfram/MCPServer/ref/InstallMCPServer"
+             ButtonData -> "paclet:Wolfram/AgentTools/ref/InstallMCPServer"
             ],
             "[",
             RowBox[
@@ -528,7 +528,7 @@ Notebook[
           ButtonBox[
            "InstallMCPServer",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/InstallMCPServer"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/InstallMCPServer"
           ]
          ],
          "InlineFormula"
@@ -602,7 +602,7 @@ Notebook[
           ButtonBox[
            "$DefaultMCPToolOptions",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/$DefaultMCPToolOptions"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/$DefaultMCPToolOptions"
           ]
          ],
          "InlineFormula"
@@ -659,7 +659,7 @@ Notebook[
           ButtonBox[
            "CreateMCPServer",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/CreateMCPServer"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/CreateMCPServer"
           ]
          ],
          "InlineSeeAlsoFunction",
@@ -671,7 +671,7 @@ Notebook[
           ButtonBox[
            "UninstallMCPServer",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/UninstallMCPServer"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/UninstallMCPServer"
           ]
          ],
          "InlineSeeAlsoFunction",
@@ -683,7 +683,7 @@ Notebook[
           ButtonBox[
            "MCPServerObject",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObject"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/MCPServerObject"
           ]
          ],
          "InlineSeeAlsoFunction",
@@ -883,7 +883,7 @@ Notebook[
      ],
      Cell[
       BoxData[
-       RowBox[{"Needs", "[", "\"Wolfram`MCPServer`\"", "]"}]
+       RowBox[{"Needs", "[", "\"Wolfram`AgentTools`\"", "]"}]
       ],
       "ExampleInitialization",
       CellID -> 212002675
@@ -1530,7 +1530,7 @@ Notebook[
                                                    ],
                                                    ButtonFunction :> {
                                                     CopyToClipboard[
-                                                     "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                     "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                     ],
                                                     NotebookDelete[cellObj],
                                                     FrontEndExecute[
@@ -1668,7 +1668,7 @@ Notebook[
                                "]"
                               }
                              ],
-                             Wolfram`MCPServer`MCPServerObject[
+                             Wolfram`AgentTools`MCPServerObject[
                               <|
                                "Name" -> "Wolfram",
                                "Location" -> "BuiltIn",
@@ -1688,7 +1688,7 @@ Notebook[
                                      "Required" -> True
                                     |>
                                    },
-                                   "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedWolframContext,
+                                   "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedWolframContext,
                                    "Options" -> { },
                                    "LLMPacletVersion" -> "1.6.10"
                                   |>
@@ -1709,7 +1709,7 @@ Notebook[
                                      "Required" -> False
                                     |>
                                    },
-                                   "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                                   "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                                    "Options" -> { },
                                    "LLMPacletVersion" -> "1.6.10"
                                   |>
@@ -1796,7 +1796,7 @@ Notebook[
             <|
              "MessageTemplate" :>
               MessageName[
-               Wolfram`MCPServer`MCPServer,
+               Wolfram`AgentTools`AgentTools,
                "InstallMCPServerNamed"
               ],
              "MessageParameters" -> {"Wolfram", "Claude Desktop"},
@@ -1805,7 +1805,7 @@ Notebook[
                "C:/Users/rhennigan/AppData/Roaming/Claude/claude_desktop_config.json"
               ],
              "MCPServerObject" ->
-              Wolfram`MCPServer`MCPServerObject[
+              Wolfram`AgentTools`MCPServerObject[
                <|
                 "Name" -> "Wolfram",
                 "Location" -> "BuiltIn",
@@ -1825,7 +1825,7 @@ Notebook[
                       "Required" -> True
                      |>
                     },
-                    "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedWolframContext,
+                    "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedWolframContext,
                     "Options" -> { },
                     "LLMPacletVersion" -> "1.6.10"
                    |>
@@ -1846,7 +1846,7 @@ Notebook[
                       "Required" -> False
                      |>
                     },
-                    "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                    "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                     "Options" -> { },
                     "LLMPacletVersion" -> "1.6.10"
                    |>
@@ -2486,7 +2486,7 @@ Notebook[
                                                      ],
                                                      ButtonFunction :> {
                                                       CopyToClipboard[
-                                                       "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                       "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                       ],
                                                       NotebookDelete[cellObj],
                                                       FrontEndExecute[
@@ -2624,7 +2624,7 @@ Notebook[
                                  "]"
                                 }
                                ],
-                               Wolfram`MCPServer`MCPServerObject[
+                               Wolfram`AgentTools`MCPServerObject[
                                 <|
                                  "Name" -> "Wolfram",
                                  "Location" -> "BuiltIn",
@@ -2644,7 +2644,7 @@ Notebook[
                                        "Required" -> True
                                       |>
                                      },
-                                     "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedWolframContext,
+                                     "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedWolframContext,
                                      "Options" -> { },
                                      "LLMPacletVersion" -> "1.6.10"
                                     |>
@@ -2665,7 +2665,7 @@ Notebook[
                                        "Required" -> False
                                       |>
                                      },
-                                     "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                                     "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                                      "Options" -> { },
                                      "LLMPacletVersion" -> "1.6.10"
                                     |>
@@ -2752,7 +2752,7 @@ Notebook[
               <|
                "MessageTemplate" :>
                 MessageName[
-                 Wolfram`MCPServer`MCPServer,
+                 Wolfram`AgentTools`AgentTools,
                  "UninstallMCPServerNamed"
                 ],
                "MessageParameters" -> {"Wolfram", "Claude Desktop"},
@@ -2761,7 +2761,7 @@ Notebook[
                  "C:/Users/rhennigan/AppData/Roaming/Claude/claude_desktop_config.json"
                 ],
                "MCPServerObject" ->
-                Wolfram`MCPServer`MCPServerObject[
+                Wolfram`AgentTools`MCPServerObject[
                  <|
                   "Name" -> "Wolfram",
                   "Location" -> "BuiltIn",
@@ -2781,7 +2781,7 @@ Notebook[
                         "Required" -> True
                        |>
                       },
-                      "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedWolframContext,
+                      "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedWolframContext,
                       "Options" -> { },
                       "LLMPacletVersion" -> "1.6.10"
                      |>
@@ -2802,7 +2802,7 @@ Notebook[
                         "Required" -> False
                        |>
                       },
-                      "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                      "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                       "Options" -> { },
                       "LLMPacletVersion" -> "1.6.10"
                      |>
@@ -3503,7 +3503,7 @@ Notebook[
                                                       ],
                                                       ButtonFunction :> {
                                                        CopyToClipboard[
-                                                        "{\n\t\"mcpServers\":{\n\t\t\"WolframAlpha\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframAlpha\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                        "{\n\t\"mcpServers\":{\n\t\t\"WolframAlpha\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframAlpha\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                        ],
                                                        NotebookDelete[cellObj],
                                                        FrontEndExecute[
@@ -3635,7 +3635,7 @@ Notebook[
                                   "]"
                                  }
                                 ],
-                                Wolfram`MCPServer`MCPServerObject[
+                                Wolfram`AgentTools`MCPServerObject[
                                  <|
                                   "Name" -> "WolframAlpha",
                                   "Location" -> "BuiltIn",
@@ -3655,7 +3655,7 @@ Notebook[
                                         "Required" -> True
                                        |>
                                       },
-                                      "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedWolframAlphaResults,
+                                      "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedWolframAlphaResults,
                                       "Options" -> { },
                                       "LLMPacletVersion" -> "1.6.10"
                                      |>
@@ -3742,7 +3742,7 @@ Notebook[
                <|
                 "MessageTemplate" :>
                  MessageName[
-                  Wolfram`MCPServer`MCPServer,
+                  Wolfram`AgentTools`AgentTools,
                   "InstallMCPServerNamed"
                  ],
                 "MessageParameters" -> {"WolframAlpha", "Claude Desktop"},
@@ -3751,7 +3751,7 @@ Notebook[
                   "C:/Users/rhennigan/AppData/Roaming/Claude/claude_desktop_config.json"
                  ],
                 "MCPServerObject" ->
-                 Wolfram`MCPServer`MCPServerObject[
+                 Wolfram`AgentTools`MCPServerObject[
                   <|
                    "Name" -> "WolframAlpha",
                    "Location" -> "BuiltIn",
@@ -3771,7 +3771,7 @@ Notebook[
                          "Required" -> True
                         |>
                        },
-                       "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedWolframAlphaResults,
+                       "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedWolframAlphaResults,
                        "Options" -> { },
                        "LLMPacletVersion" -> "1.6.10"
                       |>
@@ -4413,7 +4413,7 @@ Notebook[
                                                       ],
                                                       ButtonFunction :> {
                                                        CopyToClipboard[
-                                                        "{\n\t\"mcpServers\":{\n\t\t\"WolframAlpha\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframAlpha\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                        "{\n\t\"mcpServers\":{\n\t\t\"WolframAlpha\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframAlpha\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                        ],
                                                        NotebookDelete[cellObj],
                                                        FrontEndExecute[
@@ -4545,7 +4545,7 @@ Notebook[
                                   "]"
                                  }
                                 ],
-                                Wolfram`MCPServer`MCPServerObject[
+                                Wolfram`AgentTools`MCPServerObject[
                                  <|
                                   "Name" -> "WolframAlpha",
                                   "Location" -> "BuiltIn",
@@ -4565,7 +4565,7 @@ Notebook[
                                         "Required" -> True
                                        |>
                                       },
-                                      "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedWolframAlphaResults,
+                                      "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedWolframAlphaResults,
                                       "Options" -> { },
                                       "LLMPacletVersion" -> "1.6.10"
                                      |>
@@ -4652,7 +4652,7 @@ Notebook[
                <|
                 "MessageTemplate" :>
                  MessageName[
-                  Wolfram`MCPServer`MCPServer,
+                  Wolfram`AgentTools`AgentTools,
                   "UninstallMCPServerNamed"
                  ],
                 "MessageParameters" -> {"WolframAlpha", "Claude Desktop"},
@@ -4661,7 +4661,7 @@ Notebook[
                   "C:/Users/rhennigan/AppData/Roaming/Claude/claude_desktop_config.json"
                  ],
                 "MCPServerObject" ->
-                 Wolfram`MCPServer`MCPServerObject[
+                 Wolfram`AgentTools`MCPServerObject[
                   <|
                    "Name" -> "WolframAlpha",
                    "Location" -> "BuiltIn",
@@ -4681,7 +4681,7 @@ Notebook[
                          "Required" -> True
                         |>
                        },
-                       "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedWolframAlphaResults,
+                       "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedWolframAlphaResults,
                        "Options" -> { },
                        "LLMPacletVersion" -> "1.6.10"
                       |>
@@ -5348,7 +5348,7 @@ Notebook[
                                                          ],
                                                          ButtonFunction :> {
                                                           CopyToClipboard[
-                                                           "{\n\t\"mcpServers\":{\n\t\t\"WolframLanguage\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                           "{\n\t\"mcpServers\":{\n\t\t\"WolframLanguage\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                           ],
                                                           NotebookDelete[cellObj],
                                                           FrontEndExecute[
@@ -5486,7 +5486,7 @@ Notebook[
                                      "]"
                                     }
                                    ],
-                                   Wolfram`MCPServer`MCPServerObject[
+                                   Wolfram`AgentTools`MCPServerObject[
                                     <|
                                      "Name" -> "WolframLanguage",
                                      "Location" -> "BuiltIn",
@@ -5506,7 +5506,7 @@ Notebook[
                                            "Required" -> True
                                           |>
                                          },
-                                         "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedDocumentation,
+                                         "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedDocumentation,
                                          "Options" -> { },
                                          "LLMPacletVersion" -> "1.6.10"
                                         |>
@@ -5527,7 +5527,7 @@ Notebook[
                                            "Required" -> False
                                           |>
                                          },
-                                         "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                                         "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                                          "Options" -> { },
                                          "LLMPacletVersion" -> "1.6.10"
                                         |>
@@ -5593,13 +5593,13 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`MCPServer`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "InstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"WolframLanguage", "Cursor"},
                    "Location" -> File["C:/Users/rhennigan/.cursor/mcp.json"],
                    "MCPServerObject" ->
-                    Wolfram`MCPServer`MCPServerObject[
+                    Wolfram`AgentTools`MCPServerObject[
                      <|
                       "Name" -> "WolframLanguage",
                       "Location" -> "BuiltIn",
@@ -5619,7 +5619,7 @@ Notebook[
                             "Required" -> True
                            |>
                           },
-                          "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedDocumentation,
+                          "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedDocumentation,
                           "Options" -> { },
                           "LLMPacletVersion" -> "1.6.10"
                          |>
@@ -5640,7 +5640,7 @@ Notebook[
                             "Required" -> False
                            |>
                           },
-                          "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                          "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                           "Options" -> { },
                           "LLMPacletVersion" -> "1.6.10"
                          |>
@@ -6033,7 +6033,7 @@ Notebook[
                                        ],
                                        ButtonFunction :> {
                                         CopyToClipboard[
-                                         "{\n\t\"mcpServers\":{\n\t\t\"WolframLanguage\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                         "{\n\t\"mcpServers\":{\n\t\t\"WolframLanguage\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                         ],
                                         NotebookDelete[cellObj],
                                         FrontEndExecute[
@@ -6171,7 +6171,7 @@ Notebook[
                    "]"
                   }
                  ],
-                 Wolfram`MCPServer`MCPServerObject[
+                 Wolfram`AgentTools`MCPServerObject[
                   <|
                    "Name" -> "WolframLanguage",
                    "Location" -> "BuiltIn",
@@ -6191,7 +6191,7 @@ Notebook[
                          "Required" -> True
                         |>
                        },
-                       "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedDocumentation,
+                       "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedDocumentation,
                        "Options" -> { },
                        "LLMPacletVersion" -> "1.6.10"
                       |>
@@ -6212,7 +6212,7 @@ Notebook[
                          "Required" -> False
                         |>
                        },
-                       "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                       "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                        "Options" -> { },
                        "LLMPacletVersion" -> "1.6.10"
                       |>
@@ -6397,7 +6397,7 @@ Notebook[
                                      TagBox["\"Function: \"", "SummaryItemAnnotation"],
                                      "\[InvisibleSpace]",
                                      TagBox[
-                                      "Wolfram`MCPServer`DefaultServers`Private`relatedDocumentation",
+                                      "Wolfram`AgentTools`DefaultServers`Private`relatedDocumentation",
                                       "SummaryItem"
                                      ]
                                     }
@@ -6499,7 +6499,7 @@ Notebook[
                          "Required" -> True
                         |>
                        },
-                       "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedDocumentation,
+                       "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedDocumentation,
                        "Options" -> { },
                        "LLMPacletVersion" -> "1.6.10"
                       |>
@@ -6651,7 +6651,7 @@ Notebook[
                                      TagBox["\"Function: \"", "SummaryItemAnnotation"],
                                      "\[InvisibleSpace]",
                                      TagBox[
-                                      "Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage",
+                                      "Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage",
                                       "SummaryItem"
                                      ]
                                     }
@@ -6789,7 +6789,7 @@ Notebook[
                          "Required" -> False
                         |>
                        },
-                       "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                       "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                        "Options" -> { },
                        "LLMPacletVersion" -> "1.6.10"
                       |>
@@ -7405,7 +7405,7 @@ Notebook[
                                                          ],
                                                          ButtonFunction :> {
                                                           CopyToClipboard[
-                                                           "{\n\t\"mcpServers\":{\n\t\t\"WolframLanguage\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                           "{\n\t\"mcpServers\":{\n\t\t\"WolframLanguage\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                           ],
                                                           NotebookDelete[cellObj],
                                                           FrontEndExecute[
@@ -7543,7 +7543,7 @@ Notebook[
                                      "]"
                                     }
                                    ],
-                                   Wolfram`MCPServer`MCPServerObject[
+                                   Wolfram`AgentTools`MCPServerObject[
                                     <|
                                      "Name" -> "WolframLanguage",
                                      "Location" -> "BuiltIn",
@@ -7563,7 +7563,7 @@ Notebook[
                                            "Required" -> True
                                           |>
                                          },
-                                         "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedDocumentation,
+                                         "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedDocumentation,
                                          "Options" -> { },
                                          "LLMPacletVersion" -> "1.6.10"
                                         |>
@@ -7584,7 +7584,7 @@ Notebook[
                                            "Required" -> False
                                           |>
                                          },
-                                         "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                                         "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                                          "Options" -> { },
                                          "LLMPacletVersion" -> "1.6.10"
                                         |>
@@ -7650,13 +7650,13 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`MCPServer`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "UninstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"WolframLanguage", "Cursor"},
                    "Location" -> File["C:/Users/rhennigan/.cursor/mcp.json"],
                    "MCPServerObject" ->
-                    Wolfram`MCPServer`MCPServerObject[
+                    Wolfram`AgentTools`MCPServerObject[
                      <|
                       "Name" -> "WolframLanguage",
                       "Location" -> "BuiltIn",
@@ -7676,7 +7676,7 @@ Notebook[
                             "Required" -> True
                            |>
                           },
-                          "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedDocumentation,
+                          "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedDocumentation,
                           "Options" -> { },
                           "LLMPacletVersion" -> "1.6.10"
                          |>
@@ -7697,7 +7697,7 @@ Notebook[
                             "Required" -> False
                            |>
                           },
-                          "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                          "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                           "Options" -> { },
                           "LLMPacletVersion" -> "1.6.10"
                          |>
@@ -8674,7 +8674,7 @@ Notebook[
                                        ],
                                        ButtonFunction :> {
                                         CopyToClipboard[
-                                         "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                         "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                         ],
                                         NotebookDelete[cellObj],
                                         FrontEndExecute[
@@ -8819,7 +8819,7 @@ Notebook[
                    "]"
                   }
                  ],
-                 Wolfram`MCPServer`MCPServerObject[
+                 Wolfram`AgentTools`MCPServerObject[
                   <|
                    "Name" -> "My MCP Server",
                    "LLMEvaluator" -> <|
@@ -9469,7 +9469,7 @@ Notebook[
                                                          ],
                                                          ButtonFunction :> {
                                                           CopyToClipboard[
-                                                           "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                           "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                           ],
                                                           NotebookDelete[cellObj],
                                                           FrontEndExecute[
@@ -9614,7 +9614,7 @@ Notebook[
                                      "]"
                                     }
                                    ],
-                                   Wolfram`MCPServer`MCPServerObject[
+                                   Wolfram`AgentTools`MCPServerObject[
                                     <|
                                      "Name" -> "My MCP Server",
                                      "LLMEvaluator" -> <|
@@ -9712,7 +9712,7 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`MCPServer`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "InstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"My MCP Server", "Claude Desktop"},
@@ -9721,7 +9721,7 @@ Notebook[
                      "C:/Users/rhennigan/AppData/Roaming/Claude/claude_desktop_config.json"
                     ],
                    "MCPServerObject" ->
-                    Wolfram`MCPServer`MCPServerObject[
+                    Wolfram`AgentTools`MCPServerObject[
                      <|
                       "Name" -> "My MCP Server",
                       "LLMEvaluator" -> <|
@@ -10420,7 +10420,7 @@ Notebook[
                                                          ],
                                                          ButtonFunction :> {
                                                           CopyToClipboard[
-                                                           "{\n\t\"mcpServers\":{\n\t\t\"WolframLanguage\":{\n\t\t\t\"type\":\"stdio\",\n\t\t\t\"command\":\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\14.3\\\\wolfram.exe\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/MCPServer\\\",\\\"Wolfram`MCPServer`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                           "{\n\t\"mcpServers\":{\n\t\t\"WolframLanguage\":{\n\t\t\t\"type\":\"stdio\",\n\t\t\t\"command\":\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\14.3\\\\wolfram.exe\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/MCPServer\\\",\\\"Wolfram`AgentTools`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                           ],
                                                           NotebookDelete[cellObj],
                                                           FrontEndExecute[
@@ -10558,7 +10558,7 @@ Notebook[
                                      "]"
                                     }
                                    ],
-                                   Wolfram`MCPServer`MCPServerObject[
+                                   Wolfram`AgentTools`MCPServerObject[
                                     <|
                                      "LLMEvaluator" -> <|
                                       "Tools" -> {
@@ -10632,13 +10632,13 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`MCPServer`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "InstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"WolframLanguage", "OpenCode"},
                    "Location" -> File["MCPServer/opencode.json"],
                    "MCPServerObject" ->
-                    Wolfram`MCPServer`MCPServerObject[
+                    Wolfram`AgentTools`MCPServerObject[
                      <|
                       "LLMEvaluator" -> <|
                        "Tools" -> {
@@ -11285,7 +11285,7 @@ Notebook[
                                                          ],
                                                          ButtonFunction :> {
                                                           CopyToClipboard[
-                                                           "{\n\t\"mcpServers\":{\n\t\t\"WolframLanguage\":{\n\t\t\t\"type\":\"stdio\",\n\t\t\t\"command\":\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\14.3\\\\wolfram.exe\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/MCPServer\\\",\\\"Wolfram`MCPServer`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                           "{\n\t\"mcpServers\":{\n\t\t\"WolframLanguage\":{\n\t\t\t\"type\":\"stdio\",\n\t\t\t\"command\":\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\14.3\\\\wolfram.exe\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/MCPServer\\\",\\\"Wolfram`AgentTools`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                           ],
                                                           NotebookDelete[cellObj],
                                                           FrontEndExecute[
@@ -11423,7 +11423,7 @@ Notebook[
                                      "]"
                                     }
                                    ],
-                                   Wolfram`MCPServer`MCPServerObject[
+                                   Wolfram`AgentTools`MCPServerObject[
                                     <|
                                      "LLMEvaluator" -> <|
                                       "Tools" -> {
@@ -11497,13 +11497,13 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`MCPServer`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "UninstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"WolframLanguage", "OpenCode"},
                    "Location" -> File["MCPServer/opencode.json"],
                    "MCPServerObject" ->
-                    Wolfram`MCPServer`MCPServerObject[
+                    Wolfram`AgentTools`MCPServerObject[
                      <|
                       "LLMEvaluator" -> <|
                        "Tools" -> {
@@ -12159,7 +12159,7 @@ Notebook[
                                                       ],
                                                       ButtonFunction :> {
                                                        CopyToClipboard[
-                                                        "{\n\t\"mcpServers\":{\n\t\t\"WolframLanguage\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                        "{\n\t\"mcpServers\":{\n\t\t\"WolframLanguage\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                        ],
                                                        NotebookDelete[cellObj],
                                                        FrontEndExecute[
@@ -12297,7 +12297,7 @@ Notebook[
                                   "]"
                                  }
                                 ],
-                                Wolfram`MCPServer`MCPServerObject[
+                                Wolfram`AgentTools`MCPServerObject[
                                  <|
                                   "Name" -> "WolframLanguage",
                                   "Location" -> "BuiltIn",
@@ -12317,7 +12317,7 @@ Notebook[
                                         "Required" -> True
                                        |>
                                       },
-                                      "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedDocumentation,
+                                      "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedDocumentation,
                                       "Options" -> { },
                                       "LLMPacletVersion" -> "1.6.10"
                                      |>
@@ -12338,7 +12338,7 @@ Notebook[
                                         "Required" -> False
                                        |>
                                       },
-                                      "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                                      "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                                       "Options" -> { },
                                       "LLMPacletVersion" -> "1.6.10"
                                      |>
@@ -12404,13 +12404,13 @@ Notebook[
                <|
                 "MessageTemplate" :>
                  MessageName[
-                  Wolfram`MCPServer`MCPServer,
+                  Wolfram`AgentTools`AgentTools,
                   "InstallMCPServerNamed"
                  ],
                 "MessageParameters" -> {"WolframLanguage", "Cursor"},
                 "Location" -> File["C:/Users/rhennigan/.cursor/mcp.json"],
                 "MCPServerObject" ->
-                 Wolfram`MCPServer`MCPServerObject[
+                 Wolfram`AgentTools`MCPServerObject[
                   <|
                    "Name" -> "WolframLanguage",
                    "Location" -> "BuiltIn",
@@ -12430,7 +12430,7 @@ Notebook[
                          "Required" -> True
                         |>
                        },
-                       "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedDocumentation,
+                       "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedDocumentation,
                        "Options" -> { },
                        "LLMPacletVersion" -> "1.6.10"
                       |>
@@ -12451,7 +12451,7 @@ Notebook[
                          "Required" -> False
                         |>
                        },
-                       "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                       "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                        "Options" -> { },
                        "LLMPacletVersion" -> "1.6.10"
                       |>
@@ -13111,7 +13111,7 @@ Notebook[
                                                       ],
                                                       ButtonFunction :> {
                                                        CopyToClipboard[
-                                                        "{\n\t\"mcpServers\":{\n\t\t\"WolframLanguage\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                        "{\n\t\"mcpServers\":{\n\t\t\"WolframLanguage\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                        ],
                                                        NotebookDelete[cellObj],
                                                        FrontEndExecute[
@@ -13249,7 +13249,7 @@ Notebook[
                                   "]"
                                  }
                                 ],
-                                Wolfram`MCPServer`MCPServerObject[
+                                Wolfram`AgentTools`MCPServerObject[
                                  <|
                                   "Name" -> "WolframLanguage",
                                   "Location" -> "BuiltIn",
@@ -13269,7 +13269,7 @@ Notebook[
                                         "Required" -> True
                                        |>
                                       },
-                                      "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedDocumentation,
+                                      "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedDocumentation,
                                       "Options" -> { },
                                       "LLMPacletVersion" -> "1.6.10"
                                      |>
@@ -13290,7 +13290,7 @@ Notebook[
                                         "Required" -> False
                                        |>
                                       },
-                                      "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                                      "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                                       "Options" -> { },
                                       "LLMPacletVersion" -> "1.6.10"
                                      |>
@@ -13356,13 +13356,13 @@ Notebook[
                <|
                 "MessageTemplate" :>
                  MessageName[
-                  Wolfram`MCPServer`MCPServer,
+                  Wolfram`AgentTools`AgentTools,
                   "UninstallMCPServerNamed"
                  ],
                 "MessageParameters" -> {"WolframLanguage", "Cursor"},
                 "Location" -> File["C:/Users/rhennigan/.cursor/mcp.json"],
                 "MCPServerObject" ->
-                 Wolfram`MCPServer`MCPServerObject[
+                 Wolfram`AgentTools`MCPServerObject[
                   <|
                    "Name" -> "WolframLanguage",
                    "Location" -> "BuiltIn",
@@ -13382,7 +13382,7 @@ Notebook[
                          "Required" -> True
                         |>
                        },
-                       "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedDocumentation,
+                       "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedDocumentation,
                        "Options" -> { },
                        "LLMPacletVersion" -> "1.6.10"
                       |>
@@ -13403,7 +13403,7 @@ Notebook[
                          "Required" -> False
                         |>
                        },
-                       "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                       "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                        "Options" -> { },
                        "LLMPacletVersion" -> "1.6.10"
                       |>
@@ -13438,7 +13438,7 @@ Notebook[
                ButtonBox[
                 "InstallMCPServer",
                 BaseStyle -> "Link",
-                ButtonData -> "paclet:Wolfram/MCPServer/ref/InstallMCPServer"
+                ButtonData -> "paclet:Wolfram/AgentTools/ref/InstallMCPServer"
                ],
                "[",
                RowBox[{"\"Cursor\"", ",", " ", "\"WolframLanguage\""}],
@@ -14046,7 +14046,7 @@ Notebook[
                                                       ],
                                                       ButtonFunction :> {
                                                        CopyToClipboard[
-                                                        "{\n\t\"mcpServers\":{\n\t\t\"WolframLanguage\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                        "{\n\t\"mcpServers\":{\n\t\t\"WolframLanguage\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                        ],
                                                        NotebookDelete[cellObj],
                                                        FrontEndExecute[
@@ -14184,7 +14184,7 @@ Notebook[
                                   "]"
                                  }
                                 ],
-                                Wolfram`MCPServer`MCPServerObject[
+                                Wolfram`AgentTools`MCPServerObject[
                                  <|
                                   "Name" -> "WolframLanguage",
                                   "Location" -> "BuiltIn",
@@ -14204,7 +14204,7 @@ Notebook[
                                         "Required" -> True
                                        |>
                                       },
-                                      "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedDocumentation,
+                                      "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedDocumentation,
                                       "Options" -> { },
                                       "LLMPacletVersion" -> "1.6.10"
                                      |>
@@ -14225,7 +14225,7 @@ Notebook[
                                         "Required" -> False
                                        |>
                                       },
-                                      "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                                      "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                                       "Options" -> { },
                                       "LLMPacletVersion" -> "1.6.10"
                                      |>
@@ -14291,13 +14291,13 @@ Notebook[
                <|
                 "MessageTemplate" :>
                  MessageName[
-                  Wolfram`MCPServer`MCPServer,
+                  Wolfram`AgentTools`AgentTools,
                   "InstallMCPServer"
                  ],
                 "MessageParameters" -> {"WolframLanguage"},
                 "Location" -> File["C:/Users/rhennigan/.cursor/mcp.json"],
                 "MCPServerObject" ->
-                 Wolfram`MCPServer`MCPServerObject[
+                 Wolfram`AgentTools`MCPServerObject[
                   <|
                    "Name" -> "WolframLanguage",
                    "Location" -> "BuiltIn",
@@ -14317,7 +14317,7 @@ Notebook[
                          "Required" -> True
                         |>
                        },
-                       "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedDocumentation,
+                       "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedDocumentation,
                        "Options" -> { },
                        "LLMPacletVersion" -> "1.6.10"
                       |>
@@ -14338,7 +14338,7 @@ Notebook[
                          "Required" -> False
                         |>
                        },
-                       "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                       "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                        "Options" -> { },
                        "LLMPacletVersion" -> "1.6.10"
                       |>
@@ -14377,7 +14377,7 @@ Notebook[
             CellID -> 335506767
            ],
            Cell[
-            "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\"\n\t\t\t}\n\t\t},\n\t\t\"WolframLanguage\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\"\n\t\t\t}\n\t\t}\n\t}\n}",
+            "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\"\n\t\t\t}\n\t\t},\n\t\t\"WolframLanguage\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\"\n\t\t\t}\n\t\t}\n\t}\n}",
             "Print",
             CellLabel -> "During evaluation of In[5]:=",
             CellID -> 282062260
@@ -14394,7 +14394,7 @@ Notebook[
              ButtonBox[
               "UninstallMCPServer",
               BaseStyle -> "Link",
-              ButtonData -> "paclet:Wolfram/MCPServer/ref/UninstallMCPServer"
+              ButtonData -> "paclet:Wolfram/AgentTools/ref/UninstallMCPServer"
              ]
             ],
             "InlineFormula"
@@ -14997,7 +14997,7 @@ Notebook[
                                                       ],
                                                       ButtonFunction :> {
                                                        CopyToClipboard[
-                                                        "{\n\t\"mcpServers\":{\n\t\t\"WolframLanguage\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                        "{\n\t\"mcpServers\":{\n\t\t\"WolframLanguage\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                        ],
                                                        NotebookDelete[cellObj],
                                                        FrontEndExecute[
@@ -15135,7 +15135,7 @@ Notebook[
                                   "]"
                                  }
                                 ],
-                                Wolfram`MCPServer`MCPServerObject[
+                                Wolfram`AgentTools`MCPServerObject[
                                  <|
                                   "Name" -> "WolframLanguage",
                                   "Location" -> "BuiltIn",
@@ -15155,7 +15155,7 @@ Notebook[
                                         "Required" -> True
                                        |>
                                       },
-                                      "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedDocumentation,
+                                      "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedDocumentation,
                                       "Options" -> { },
                                       "LLMPacletVersion" -> "1.6.10"
                                      |>
@@ -15176,7 +15176,7 @@ Notebook[
                                         "Required" -> False
                                        |>
                                       },
-                                      "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                                      "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                                       "Options" -> { },
                                       "LLMPacletVersion" -> "1.6.10"
                                      |>
@@ -15242,13 +15242,13 @@ Notebook[
                <|
                 "MessageTemplate" :>
                  MessageName[
-                  Wolfram`MCPServer`MCPServer,
+                  Wolfram`AgentTools`AgentTools,
                   "UninstallMCPServerNamed"
                  ],
                 "MessageParameters" -> {"WolframLanguage", "Cursor"},
                 "Location" -> File["C:/Users/rhennigan/.cursor/mcp.json"],
                 "MCPServerObject" ->
-                 Wolfram`MCPServer`MCPServerObject[
+                 Wolfram`AgentTools`MCPServerObject[
                   <|
                    "Name" -> "WolframLanguage",
                    "Location" -> "BuiltIn",
@@ -15268,7 +15268,7 @@ Notebook[
                          "Required" -> True
                         |>
                        },
-                       "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedDocumentation,
+                       "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedDocumentation,
                        "Options" -> { },
                        "LLMPacletVersion" -> "1.6.10"
                       |>
@@ -15289,7 +15289,7 @@ Notebook[
                          "Required" -> False
                         |>
                        },
-                       "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                       "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                        "Options" -> { },
                        "LLMPacletVersion" -> "1.6.10"
                       |>
@@ -15323,7 +15323,7 @@ Notebook[
             CellID -> 64199273
            ],
            Cell[
-            "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\"\n\t\t\t}\n\t\t}\n\t}\n}",
+            "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\"\n\t\t\t}\n\t\t}\n\t}\n}",
             "Print",
             CellLabel -> "During evaluation of In[7]:=",
             CellID -> 791713903
@@ -15990,7 +15990,7 @@ Notebook[
                                                          ],
                                                          ButtonFunction :> {
                                                           CopyToClipboard[
-                                                           "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"type\":\"stdio\",\n\t\t\t\"command\":\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\15.0\\\\wolfram.exe\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/MCPServer\\\",\\\"Wolfram`MCPServer`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\",\n\t\t\t\t\"WOLFRAM_LOCALBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\Objects\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                           "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"type\":\"stdio\",\n\t\t\t\"command\":\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\15.0\\\\wolfram.exe\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/MCPServer\\\",\\\"Wolfram`AgentTools`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\",\n\t\t\t\t\"WOLFRAM_LOCALBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\Objects\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                           ],
                                                           NotebookDelete[cellObj],
                                                           FrontEndExecute[
@@ -16128,7 +16128,7 @@ Notebook[
                                      "]"
                                     }
                                    ],
-                                   Wolfram`MCPServer`MCPServerObject[
+                                   Wolfram`AgentTools`MCPServerObject[
                                     <|
                                      "LLMEvaluator" -> <|
                                       "Tools" -> {
@@ -16202,7 +16202,7 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`MCPServer`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "InstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"Wolfram", "OpenCode"},
@@ -16211,7 +16211,7 @@ Notebook[
                      "C:\\Users\\rhennigan\\AppData\\Local\\Temp\\b841db14-612f-4518-9f63-3259fd57c876"
                     ],
                    "MCPServerObject" ->
-                    Wolfram`MCPServer`MCPServerObject[
+                    Wolfram`AgentTools`MCPServerObject[
                      <|
                       "LLMEvaluator" -> <|
                        "Tools" -> {
@@ -16262,7 +16262,7 @@ Notebook[
                CellID -> 43562374
               ],
               Cell[
-               "{\n\t\"mcp\":{\n\t\t\"Wolfram\":{\n\t\t\t\"type\":\"local\",\n\t\t\t\"command\":[\n\t\t\t\t\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\15.0\\\\wolfram.exe\",\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/MCPServer\\\",\\\"Wolfram`MCPServer`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"enabled\":true,\n\t\t\t\"environment\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\",\n\t\t\t\t\"WOLFRAM_LOCALBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\Objects\"\n\t\t\t}\n\t\t}\n\t}\n}",
+               "{\n\t\"mcp\":{\n\t\t\"Wolfram\":{\n\t\t\t\"type\":\"local\",\n\t\t\t\"command\":[\n\t\t\t\t\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\15.0\\\\wolfram.exe\",\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/MCPServer\\\",\\\"Wolfram`AgentTools`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"enabled\":true,\n\t\t\t\"environment\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\",\n\t\t\t\t\"WOLFRAM_LOCALBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\Objects\"\n\t\t\t}\n\t\t}\n\t}\n}",
                "Print",
                CellLabel -> "During evaluation of In[2]:=",
                CellID -> 479423654
@@ -16917,7 +16917,7 @@ Notebook[
                                                             ],
                                                             ButtonFunction :> {
                                                              CopyToClipboard[
-                                                              "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"type\":\"stdio\",\n\t\t\t\"command\":\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\15.0\\\\wolfram.exe\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/MCPServer\\\",\\\"Wolfram`MCPServer`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\",\n\t\t\t\t\"WOLFRAM_LOCALBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\Objects\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                              "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"type\":\"stdio\",\n\t\t\t\"command\":\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\15.0\\\\wolfram.exe\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/MCPServer\\\",\\\"Wolfram`AgentTools`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\",\n\t\t\t\t\"WOLFRAM_LOCALBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\Objects\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                              ],
                                                              NotebookDelete[cellObj],
                                                              FrontEndExecute[
@@ -17055,7 +17055,7 @@ Notebook[
                                         "]"
                                        }
                                       ],
-                                      Wolfram`MCPServer`MCPServerObject[
+                                      Wolfram`AgentTools`MCPServerObject[
                                        <|
                                         "LLMEvaluator" -> <|
                                          "Tools" -> {
@@ -17129,7 +17129,7 @@ Notebook[
                      <|
                       "MessageTemplate" :>
                        MessageName[
-                        Wolfram`MCPServer`MCPServer,
+                        Wolfram`AgentTools`AgentTools,
                         "InstallMCPServerNamed"
                        ],
                       "MessageParameters" -> {"Wolfram", "Codex CLI"},
@@ -17138,7 +17138,7 @@ Notebook[
                         "C:\\Users\\rhennigan\\AppData\\Local\\Temp\\ae4de281-7dc1-40c4-9358-3199055d26ed"
                        ],
                       "MCPServerObject" ->
-                       Wolfram`MCPServer`MCPServerObject[
+                       Wolfram`AgentTools`MCPServerObject[
                         <|
                          "LLMEvaluator" -> <|
                           "Tools" -> {
@@ -17189,7 +17189,7 @@ Notebook[
                   CellID -> 225304008
                  ],
                  Cell[
-                  "[mcp_servers.Wolfram]\ncommand = \"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\15.0\\\\wolfram.exe\"\nargs = [\"-run\", \"PacletSymbol[\\\"Wolfram/MCPServer\\\",\\\"Wolfram`MCPServer`StartMCPServer\\\"][]\", \"-noinit\", \"-noprompt\"]\nenv = { MCP_SERVER_NAME = \"Wolfram\", WOLFRAM_BASE = \"C:\\\\ProgramData\\\\Wolfram\", WOLFRAM_USERBASE = \"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\", APPDATA = \"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\", WOLFRAM_LOCALBASE = \"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\Objects\" }\nenabled = true",
+                  "[mcp_servers.Wolfram]\ncommand = \"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\15.0\\\\wolfram.exe\"\nargs = [\"-run\", \"PacletSymbol[\\\"Wolfram/AgentTools\\\",\\\"Wolfram`AgentTools`StartMCPServer\\\"][]\", \"-noinit\", \"-noprompt\"]\nenv = { MCP_SERVER_NAME = \"Wolfram\", WOLFRAM_BASE = \"C:\\\\ProgramData\\\\Wolfram\", WOLFRAM_USERBASE = \"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\", APPDATA = \"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\", WOLFRAM_LOCALBASE = \"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\Objects\" }\nenabled = true",
                   "Print",
                   CellLabel -> "During evaluation of In[2]:=",
                   CellID -> 448791615
@@ -17883,7 +17883,7 @@ Notebook[
                                                          ],
                                                          ButtonFunction :> {
                                                           CopyToClipboard[
-                                                           "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"type\":\"stdio\",\n\t\t\t\"command\":\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\15.0\\\\wolfram.exe\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/MCPServer\\\",\\\"Wolfram`MCPServer`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\",\n\t\t\t\t\"WOLFRAM_LOCALBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\Objects\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                           "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"type\":\"stdio\",\n\t\t\t\"command\":\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\15.0\\\\wolfram.exe\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/MCPServer\\\",\\\"Wolfram`AgentTools`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\",\n\t\t\t\t\"WOLFRAM_LOCALBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\Objects\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                           ],
                                                           NotebookDelete[cellObj],
                                                           FrontEndExecute[
@@ -18021,7 +18021,7 @@ Notebook[
                                      "]"
                                     }
                                    ],
-                                   Wolfram`MCPServer`MCPServerObject[
+                                   Wolfram`AgentTools`MCPServerObject[
                                     <|
                                      "LLMEvaluator" -> <|
                                       "Tools" -> {
@@ -18095,7 +18095,7 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`MCPServer`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "InstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"Wolfram", "Claude Desktop"},
@@ -18104,7 +18104,7 @@ Notebook[
                      "C:\\Users\\rhennigan\\AppData\\Roaming\\Claude\\claude_desktop_config.json"
                     ],
                    "MCPServerObject" ->
-                    Wolfram`MCPServer`MCPServerObject[
+                    Wolfram`AgentTools`MCPServerObject[
                      <|
                       "LLMEvaluator" -> <|
                        "Tools" -> {
@@ -18834,7 +18834,7 @@ Notebook[
                                                          ],
                                                          ButtonFunction :> {
                                                           CopyToClipboard[
-                                                           "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                           "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                           ],
                                                           NotebookDelete[cellObj],
                                                           FrontEndExecute[
@@ -18972,7 +18972,7 @@ Notebook[
                                      "]"
                                     }
                                    ],
-                                   Wolfram`MCPServer`MCPServerObject[
+                                   Wolfram`AgentTools`MCPServerObject[
                                     <|
                                      "Name" -> "Wolfram",
                                      "Location" -> "BuiltIn",
@@ -18992,7 +18992,7 @@ Notebook[
                                            "Required" -> True
                                           |>
                                          },
-                                         "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedWolframContext,
+                                         "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedWolframContext,
                                          "Options" -> { },
                                          "LLMPacletVersion" -> "1.6.10"
                                         |>
@@ -19013,7 +19013,7 @@ Notebook[
                                            "Required" -> False
                                           |>
                                          },
-                                         "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                                         "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                                          "Options" -> { },
                                          "LLMPacletVersion" -> "1.6.10"
                                         |>
@@ -19100,7 +19100,7 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`MCPServer`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "InstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"Wolfram", "Claude Desktop"},
@@ -19109,7 +19109,7 @@ Notebook[
                      "C:/Users/rhennigan/AppData/Roaming/Claude/claude_desktop_config.json"
                     ],
                    "MCPServerObject" ->
-                    Wolfram`MCPServer`MCPServerObject[
+                    Wolfram`AgentTools`MCPServerObject[
                      <|
                       "Name" -> "Wolfram",
                       "Location" -> "BuiltIn",
@@ -19129,7 +19129,7 @@ Notebook[
                             "Required" -> True
                            |>
                           },
-                          "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedWolframContext,
+                          "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedWolframContext,
                           "Options" -> { },
                           "LLMPacletVersion" -> "1.6.10"
                          |>
@@ -19150,7 +19150,7 @@ Notebook[
                             "Required" -> False
                            |>
                           },
-                          "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                          "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                           "Options" -> { },
                           "LLMPacletVersion" -> "1.6.10"
                          |>
@@ -19219,7 +19219,7 @@ Notebook[
                CellID -> 40891800
               ],
               Cell[
-               "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"MY_VARIABLE\":1337\n\t\t\t}\n\t\t}\n\t}\n}",
+               "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"MY_VARIABLE\":1337\n\t\t\t}\n\t\t}\n\t}\n}",
                "Print",
                CellLabel -> "During evaluation of In[3]:=",
                CellID -> 3825267
@@ -19825,7 +19825,7 @@ Notebook[
                                                          ],
                                                          ButtonFunction :> {
                                                           CopyToClipboard[
-                                                           "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                           "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                           ],
                                                           NotebookDelete[cellObj],
                                                           FrontEndExecute[
@@ -19963,7 +19963,7 @@ Notebook[
                                      "]"
                                     }
                                    ],
-                                   Wolfram`MCPServer`MCPServerObject[
+                                   Wolfram`AgentTools`MCPServerObject[
                                     <|
                                      "Name" -> "Wolfram",
                                      "Location" -> "BuiltIn",
@@ -19983,7 +19983,7 @@ Notebook[
                                            "Required" -> True
                                           |>
                                          },
-                                         "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedWolframContext,
+                                         "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedWolframContext,
                                          "Options" -> { },
                                          "LLMPacletVersion" -> "1.6.10"
                                         |>
@@ -20004,7 +20004,7 @@ Notebook[
                                            "Required" -> False
                                           |>
                                          },
-                                         "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                                         "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                                          "Options" -> { },
                                          "LLMPacletVersion" -> "1.6.10"
                                         |>
@@ -20091,7 +20091,7 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`MCPServer`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "UninstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"Wolfram", "Claude Desktop"},
@@ -20100,7 +20100,7 @@ Notebook[
                      "C:/Users/rhennigan/AppData/Roaming/Claude/claude_desktop_config.json"
                     ],
                    "MCPServerObject" ->
-                    Wolfram`MCPServer`MCPServerObject[
+                    Wolfram`AgentTools`MCPServerObject[
                      <|
                       "Name" -> "Wolfram",
                       "Location" -> "BuiltIn",
@@ -20120,7 +20120,7 @@ Notebook[
                             "Required" -> True
                            |>
                           },
-                          "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedWolframContext,
+                          "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedWolframContext,
                           "Options" -> { },
                           "LLMPacletVersion" -> "1.6.10"
                          |>
@@ -20141,7 +20141,7 @@ Notebook[
                             "Required" -> False
                            |>
                           },
-                          "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                          "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                           "Options" -> { },
                           "LLMPacletVersion" -> "1.6.10"
                          |>
@@ -20841,7 +20841,7 @@ Notebook[
                                                          ],
                                                          ButtonFunction :> {
                                                           CopyToClipboard[
-                                                           "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"type\":\"stdio\",\n\t\t\t\"command\":\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\15.0\\\\wolfram.exe\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/MCPServer\\\",\\\"Wolfram`MCPServer`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\",\n\t\t\t\t\"WOLFRAM_LOCALBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\Objects\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                                           "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"type\":\"stdio\",\n\t\t\t\"command\":\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\15.0\\\\wolfram.exe\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/MCPServer\\\",\\\"Wolfram`AgentTools`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\",\n\t\t\t\t\"WOLFRAM_LOCALBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\Objects\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                                           ],
                                                           NotebookDelete[cellObj],
                                                           FrontEndExecute[
@@ -20979,7 +20979,7 @@ Notebook[
                                      "]"
                                     }
                                    ],
-                                   Wolfram`MCPServer`MCPServerObject[
+                                   Wolfram`AgentTools`MCPServerObject[
                                     <|
                                      "LLMEvaluator" -> <|
                                       "Tools" -> {
@@ -21053,7 +21053,7 @@ Notebook[
                   <|
                    "MessageTemplate" :>
                     MessageName[
-                     Wolfram`MCPServer`MCPServer,
+                     Wolfram`AgentTools`AgentTools,
                      "InstallMCPServerNamed"
                     ],
                    "MessageParameters" -> {"Wolfram", "Claude Desktop"},
@@ -21062,7 +21062,7 @@ Notebook[
                      "C:\\Users\\rhennigan\\AppData\\Roaming\\Claude\\claude_desktop_config.json"
                     ],
                    "MCPServerObject" ->
-                    Wolfram`MCPServer`MCPServerObject[
+                    Wolfram`AgentTools`MCPServerObject[
                      <|
                       "LLMEvaluator" -> <|
                        "Tools" -> {
@@ -21116,7 +21116,7 @@ Notebook[
                    ButtonBox[
                     "$DefaultMCPToolOptions",
                     BaseStyle -> "Link",
-                    ButtonData -> "paclet:Wolfram/MCPServer/ref/$DefaultMCPToolOptions"
+                    ButtonData -> "paclet:Wolfram/AgentTools/ref/$DefaultMCPToolOptions"
                    ]
                   ],
                   "InlineFormula"
@@ -21364,7 +21364,7 @@ Notebook[
                46,
                20184187186632264838,
                "Local",
-               "Wolfram`MCPServer`InstallMCPServer"
+               "Wolfram`AgentTools`InstallMCPServer"
               },
               "MessageTemplate2",
               BaseStyle -> "MSG"
@@ -21559,7 +21559,7 @@ Notebook[
                 "MessageParameters" :> {File["C:/Users/rhennigan/.cursor/mcp.json"]},
                 "MessageTemplate" :>
                  MessageName[
-                  Wolfram`MCPServer`InstallMCPServer,
+                  Wolfram`AgentTools`InstallMCPServer,
                   "InvalidMCPConfiguration"
                  ]
                |>
@@ -21606,7 +21606,7 @@ Notebook[
             CellID -> 822920787
            ],
            Cell[
-            "{\n\t\"mcpServers\":{\n\t\t// This is the Wolfram MCP server\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\"\n\t\t\t}\n\t\t}\n\t}\n}",
+            "{\n\t\"mcpServers\":{\n\t\t// This is the Wolfram MCP server\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\"\n\t\t\t}\n\t\t}\n\t}\n}",
             "Print",
             CellLabel -> "During evaluation of In[2]:=",
             CellID -> 682185659
@@ -21642,7 +21642,7 @@ Notebook[
            ],
            Cell[
             BoxData[
-             "\"{\\n\\t\\\"mcpServers\\\":{\\n\\t\\t\\\"WolframLanguage\\\":{\\n\\t\\t\\t\\\"command\\\":\\\"wolfram\\\",\\n\\t\\t\\t\\\"args\\\":[\\n\\t\\t\\t\\t\\\"-run\\\",\\n\\t\\t\\t\\t\\\"Wolfram`MCPServer`StartMCPServer[]\\\",\\n\\t\\t\\t\\t\\\"-noinit\\\",\\n\\t\\t\\t\\t\\\"-noprompt\\\"\\n\\t\\t\\t],\\n\\t\\t\\t\\\"env\\\":{\\n\\t\\t\\t\\t\\\"MCP_SERVER_NAME\\\":\\\"WolframLanguage\\\"\\n\\t\\t\\t}\\n\\t\\t}\\n\\t}\\n}\""
+             "\"{\\n\\t\\\"mcpServers\\\":{\\n\\t\\t\\\"WolframLanguage\\\":{\\n\\t\\t\\t\\\"command\\\":\\\"wolfram\\\",\\n\\t\\t\\t\\\"args\\\":[\\n\\t\\t\\t\\t\\\"-run\\\",\\n\\t\\t\\t\\t\\\"Wolfram`AgentTools`StartMCPServer[]\\\",\\n\\t\\t\\t\\t\\\"-noinit\\\",\\n\\t\\t\\t\\t\\\"-noprompt\\\"\\n\\t\\t\\t],\\n\\t\\t\\t\\\"env\\\":{\\n\\t\\t\\t\\t\\\"MCP_SERVER_NAME\\\":\\\"WolframLanguage\\\"\\n\\t\\t\\t}\\n\\t\\t}\\n\\t}\\n}\""
             ],
             "Output",
             CellLabel -> "Out[3]=",
@@ -21681,7 +21681,7 @@ Notebook[
             CellID -> 149630094
            ],
            Cell[
-            "{\n\t\"mcpServers\":{\n\t\t// This is the Wolfram MCP server\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\"\n\t\t\t}\n\t\t},\n\t\t// This part was pasted in manually\n\t\t\"WolframLanguage\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}",
+            "{\n\t\"mcpServers\":{\n\t\t// This is the Wolfram MCP server\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\",\n\t\t\t\t\"WOLFRAM_BASE\":\"C:\\\\ProgramData\\\\Wolfram\",\n\t\t\t\t\"WOLFRAM_USERBASE\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\",\n\t\t\t\t\"APPDATA\":\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\"\n\t\t\t}\n\t\t},\n\t\t// This part was pasted in manually\n\t\t\"WolframLanguage\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframLanguage\"\n\t\t\t}\n\t\t}\n\t}\n}",
             "Print",
             CellLabel -> "During evaluation of In[4]:=",
             CellID -> 122707127
@@ -21777,19 +21777,19 @@ Notebook[
          CellID -> 389040509
         ],
         Cell[
-         "Wolfram/MCPServer",
+         "Wolfram/AgentTools",
          "Categorization",
          CellLabel -> "Paclet Name",
          CellID -> 413321334
         ],
         Cell[
-         "Wolfram`MCPServer`",
+         "Wolfram`AgentTools`",
          "Categorization",
          CellLabel -> "Context",
          CellID -> 436677547
         ],
         Cell[
-         "Wolfram/MCPServer/ref/InstallMCPServer",
+         "Wolfram/AgentTools/ref/InstallMCPServer",
          "Categorization",
          CellLabel -> "URI",
          CellID -> 694244737
@@ -21848,7 +21848,7 @@ Notebook[
    ]
   ]
  },
- TaggingRules -> <|"Paclet" -> "Wolfram/MCPServer"|>,
+ TaggingRules -> <|"Paclet" -> "Wolfram/AgentTools"|>,
  StyleDefinitions ->
   FrontEnd`FileName[
    {"Wolfram"},

@@ -1,19 +1,37 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Files`" ];
+BeginPackage[ "Wolfram`AgentTools`Files`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
+Needs[ "Wolfram`AgentTools`"        ];
+Needs[ "Wolfram`AgentTools`Common`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Configuration*)
-$rootPath           := FileNameJoin @ { $UserBaseDirectory, "ApplicationData", "Wolfram", "MCPServer" };
+$rootPath           := migrateRoot @ FileNameJoin @ { $UserBaseDirectory, "ApplicationData", "Wolfram", "AgentTools" };
 $storagePath        := FileNameJoin @ { $rootPath, "Servers" };
 $deploymentsPath    := FileNameJoin @ { $rootPath, "Deployments" };
 $imagePath          := FileNameJoin @ { $rootPath, "Images"  };
-$outputLogDirectory := FileNameJoin @ { $UserBaseDirectory, "Logs", "MCPServer", "Output" };
+$outputLogDirectory := FileNameJoin @ { $UserBaseDirectory, "Logs", "AgentTools", "Output" };
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Legacy File Migration*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*migrateRoot*)
+migrateRoot // beginDefinition;
+
+migrateRoot[ newRoot_ ] := migrateRoot[ newRoot ] =
+    Module[ { oldRoot },
+        oldRoot = FileNameJoin @ { $UserBaseDirectory, "ApplicationData", "Wolfram", "MCPServer" };
+        If[ ! DirectoryQ @ newRoot && DirectoryQ @ oldRoot, CopyDirectory[ oldRoot, newRoot ] ];
+        newRoot
+    ];
+
+migrateRoot // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

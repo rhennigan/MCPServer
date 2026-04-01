@@ -1,12 +1,12 @@
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Tools`SymbolDefinition`" ];
+BeginPackage[ "Wolfram`AgentTools`Tools`SymbolDefinition`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
-Needs[ "Wolfram`MCPServer`Tools`"  ];
+Needs[ "Wolfram`AgentTools`"        ];
+Needs[ "Wolfram`AgentTools`Common`" ];
+Needs[ "Wolfram`AgentTools`Tools`"  ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -28,7 +28,7 @@ Retrieves the definitions of one or more Wolfram Language symbols and returns th
 The tool generates clean, formatted definition strings by intelligently managing the context path to minimize \
 fully qualified symbol names.
 
-Use fully qualified symbol names (e.g., System`Plus, Wolfram`MCPServer`CreateMCPServer) if the context is known.
+Use fully qualified symbol names (e.g., System`Plus, Wolfram`AgentTools`CreateMCPServer) if the context is known.
 Multiple symbols can be requested by separating them with commas.";
 
 (* ::**************************************************************************************************************:: *)

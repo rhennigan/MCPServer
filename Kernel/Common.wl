@@ -1,32 +1,32 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Common`" ];
+BeginPackage[ "Wolfram`AgentTools`Common`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Symbols defined elsewhere in the paclet*)
-Get[ "Wolfram`MCPServer`CommonSymbols`" ];
+Get[ "Wolfram`AgentTools`CommonSymbols`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Messages*)
-Get[ "Wolfram`MCPServer`Messages`" ];
+Get[ "Wolfram`AgentTools`Messages`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Begin Private Context*)
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`" ];
+Needs[ "Wolfram`AgentTools`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Config*)
 $cloudNotebooks         := TrueQ @ CloudSystem`$CloudNotebooks;
-$mxFlag                 := Wolfram`MCPServerInternal`$BuildingMX;
-$resourceFunctionContext = "Wolfram`MCPServer`ResourceFunctions`";
+$mxFlag                 := Wolfram`AgentToolsInternal`$BuildingMX;
+$resourceFunctionContext = "Wolfram`AgentTools`ResourceFunctions`";
 
-$internalFailureLogDirectory := FileNameJoin @ { $UserBaseDirectory, "Logs", "MCPServer", "InternalFailures" };
+$internalFailureLogDirectory := FileNameJoin @ { $UserBaseDirectory, "Logs", "AgentTools", "InternalFailures" };
 
 $resourceVersions = <|
     "ASTPattern"           -> "1.0.0",
@@ -44,7 +44,7 @@ $debug           = True;
 $failed          = False;
 $inDef           = False;
 $internalFailure = None;
-$messageSymbol   = MCPServer;
+$messageSymbol   = AgentTools;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -363,12 +363,12 @@ catchTopAs // endDefinition;
 catchTop // beginDefinition;
 catchTop // Attributes = { HoldFirst };
 
-catchTop[ eval_ ] := catchTop[ eval, MCPServer ];
+catchTop[ eval_ ] := catchTop[ eval, AgentTools ];
 
 catchTop[ eval_, sym_Symbol ] :=
     Block[
         {
-            $messageSymbol          = Replace[ $messageSymbol, MCPServer -> sym ],
+            $messageSymbol          = Replace[ $messageSymbol, AgentTools -> sym ],
             $catching               = True,
             $failed                 = False,
             catchTop                = # &,
@@ -385,7 +385,7 @@ catchTop // endDefinition;
 (*catchAlways*)
 catchAlways // beginDefinition;
 catchAlways // Attributes = { HoldFirst };
-catchAlways[ eval_ ] := catchAlways[ eval, MCPServer ];
+catchAlways[ eval_ ] := catchAlways[ eval, AgentTools ];
 catchAlways[ eval_, sym_Symbol ] := Catch[ catchTop[ eval, sym ], $catchTopTag ];
 catchAlways // endDefinition;
 
@@ -426,17 +426,17 @@ throwFailure // endDefinition;
 (*messageFailure*)
 messageFailure // Attributes = { HoldFirst };
 
-messageFailure[ "Internal"|MCPServer::Internal, args___ ] := (
-    General::MCPServerInternal = MCPServer::Internal;
-    messageFailure[ General::MCPServerInternal, args ]
+messageFailure[ "Internal"|AgentTools::Internal, args___ ] := (
+    General::AgentToolsInternal = AgentTools::Internal;
+    messageFailure[ General::AgentToolsInternal, args ]
 );
 
 messageFailure[ t_String, args___ ] :=
     With[ { s = $messageSymbol },
         If[ StringQ @ MessageName[ s, t ],
             messageFailure[ MessageName[ s, t ], args ],
-            If[ StringQ @ MessageName[ MCPServer, t ],
-                blockProtected[ { s }, MessageName[ s, t ] = MessageName[ MCPServer, t ] ];
+            If[ StringQ @ MessageName[ AgentTools, t ],
+                blockProtected[ { s }, MessageName[ s, t ] = MessageName[ AgentTools, t ] ];
                 messageFailure[ MessageName[ s, t ], args ],
                 throwInternalFailure @ messageFailure[ t, args ]
             ]
@@ -464,11 +464,11 @@ importResourceFunction[ messageFailure0, "MessageFailure" ];
 convertCloudFailure // beginDefinition;
 
 convertCloudFailure[ Failure[
-    "MCPServer::Internal",
+    "AgentTools::Internal",
     as: KeyValuePattern @ { "MessageParameters" :> { Hyperlink[ _, url_ ], params___ } }
 ] ] /; $CloudEvaluation :=
     Failure[
-        "MCPServer::Internal",
+        "AgentTools::Internal",
         Association[
             as,
             "MessageParameters" -> { "", params },
@@ -486,13 +486,13 @@ convertCloudFailure // endDefinition;
 (*promoteSourceInfo*)
 promoteSourceInfo // beginDefinition;
 
-promoteSourceInfo[ Failure[ "General::MCPServerInternal", as_ ] ] :=
-    promoteSourceInfo @ Failure[ "MCPServer::Internal", as ];
+promoteSourceInfo[ Failure[ "General::AgentToolsInternal", as_ ] ] :=
+    promoteSourceInfo @ Failure[ "AgentTools::Internal", as ];
 
 promoteSourceInfo[ Failure[
-    "MCPServer::Internal",
+    "AgentTools::Internal",
     as: KeyValuePattern[ "MessageParameters" :> { _, KeyValuePattern[ "Information" -> info_String ] } ]
-] ] := Failure[ "MCPServer::Internal", <| as, "Source" -> info |> ];
+] ] := Failure[ "AgentTools::Internal", <| as, "Source" -> info |> ];
 
 promoteSourceInfo[ failure_ ] := failure;
 
@@ -523,7 +523,7 @@ throwInternalFailure[ HoldForm[ eval_ ], a___ ] := throwInternalFailure[ eval, a
 
 throwInternalFailure[ eval_, a___ ] :=
     Block[ { $internalFailure = $lastInternalFailure = makeInternalFailureData[ eval, a ] },
-        throwFailure[ MCPServer::Internal, $bugReportLink, $internalFailure ]
+        throwFailure[ AgentTools::Internal, $bugReportLink, $internalFailure ]
     ];
 
 throwInternalFailure // endDefinition;
@@ -559,7 +559,7 @@ $priorityFailureKeys = { "Information", "ConfirmationType", "Expression", "Funct
 (* ::Section::Closed:: *)
 (*Bug Report Link Generation*)
 
-$issuesURL = "https://github.com/rhennigan/MCPServer/issues/new";
+$issuesURL = "https://github.com/rhennigan/AgentTools/issues/new";
 
 $maxBugReportURLSize = 7000;
 (*
@@ -570,7 +570,7 @@ $maxBugReportURLSize = 7000;
 
 $maxPartLength = 500;
 
-$thisPaclet    := PacletObject[ "Wolfram/MCPServer" ];
+$thisPaclet    := PacletObject[ "Wolfram/AgentTools" ];
 $pacletVersion := $thisPaclet[ "Version" ];
 $debugData     := debugData @ $thisPaclet[ "PacletInfo" ];
 $releaseID     := $releaseID = getReleaseID @ $thisPaclet;
@@ -671,12 +671,12 @@ bugReportBody[ as_Association? AssociationQ ] :=
         cleanupOldFailureLogs[ ];
 
         WithCleanup[
-            Unprotect[ $LastMCPServerFailure, $LastMCPServerFailureText ]
+            Unprotect[ $LastAgentToolsFailure, $LastAgentToolsFailureText ]
             ,
-            $LastMCPServerFailure     = file;
-            $LastMCPServerFailureText = bugReportText;
+            $LastAgentToolsFailure     = file;
+            $LastAgentToolsFailureText = bugReportText;
             ,
-            Protect[ $LastMCPServerFailure, $LastMCPServerFailureText ]
+            Protect[ $LastAgentToolsFailure, $LastAgentToolsFailureText ]
         ];
 
         bugReportText
@@ -696,7 +696,7 @@ sourceLink[ { tag_String, file_String, { lc1_String, lc2_String } } ] :=
 sourceLink[ { tag_String, file_String, { l1_String, c1_String }, { l2_String, c2_String } } ] :=
     Module[ { id },
         id = Replace[ $releaseID, { "$RELEASE_ID$" | "None" | Except[ _String ] -> "main" } ];
-        "\n\nhttps://github.com/rhennigan/MCPServer/blob/"<>id<>"/"<>file<>"#L"<>l1<>"-L"<>l2
+        "\n\nhttps://github.com/rhennigan/AgentTools/blob/"<>id<>"/"<>file<>"#L"<>l1<>"-L"<>l2
     ];
 
 sourceLink[ ___ ] := "";
@@ -706,9 +706,9 @@ sourceLink[ ___ ] := "";
 (*extractFailureTag*)
 extractFailureTag // beginDefinition;
 
-(* Handle MCPServer internal failures *)
-extractFailureTag[ Failure[ "MCPServer::Internal", as_Association ] ] :=
-    extractFailureTag0[ "MCPServer", as ];
+(* Handle AgentTools internal failures *)
+extractFailureTag[ Failure[ "AgentTools::Internal", as_Association ] ] :=
+    extractFailureTag0[ "AgentTools", as ];
 
 (* Handle Chatbook internal failures *)
 extractFailureTag[ Failure[ "General::ChatbookInternal", as_Association ] ] :=
@@ -877,7 +877,7 @@ cleanupOldOutputLogs // endDefinition;
 (*formatInternalFailureForMCP*)
 formatInternalFailureForMCP // beginDefinition;
 
-formatInternalFailureForMCP[ failure: Failure[ "MCPServer::Internal" | "General::ChatbookInternal", _ ] ] :=
+formatInternalFailureForMCP[ failure: Failure[ "AgentTools::Internal" | "General::ChatbookInternal", _ ] ] :=
     Module[ { tag, logPath },
         tag = extractFailureTag @ failure;
         logPath = $internalFailureLogPath;
@@ -940,7 +940,7 @@ $bugReportStack := StringRiffle[
         DeleteAdjacentDuplicates @ Cases[
             Stack[ _ ],
             HoldForm[ (s_Symbol) | (s_Symbol)[ ___ ] | (s_Symbol)[ ___ ][ ___ ] ] /;
-                AtomQ @ Unevaluated @ s && StringStartsQ[ Context @ s, "Wolfram`MCPServer`" ] :>
+                AtomQ @ Unevaluated @ s && StringStartsQ[ Context @ s, "Wolfram`AgentTools`" ] :>
                     SymbolName @ Unevaluated @ s
         ],
         { a___, "throwInternalFailure", ___ } :> { a, "throwInternalFailure" }

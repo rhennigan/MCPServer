@@ -66,10 +66,10 @@ Module[ { rawArgs, positional, flags, i, key, value },
 (*Tool Invocation*)
 
 Quiet[
-    PacletInstall[ "Wolfram/MCPServer" ],
+    PacletInstall[ "Wolfram/AgentTools" ],
     PacletInstall::samevers
 ];
-Get[ "Wolfram`MCPServer`" ];
+Get[ "Wolfram`AgentTools`" ];
 
 tool = $DefaultMCPTools[ "CodeInspector" ];
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This specification defines the design for integrating [MCP Apps](https://modelcontextprotocol.io/docs/extensions/apps) into the MCPServer paclet. MCP Apps is the first official MCP extension (`io.modelcontextprotocol/ui`), enabling servers to deliver interactive HTML user interfaces that render inside MCP hosts (Claude Desktop, VS Code, etc.) in sandboxed iframes.
+This specification defines the design for integrating [MCP Apps](https://modelcontextprotocol.io/docs/extensions/apps) into the AgentTools paclet. MCP Apps is the first official MCP extension (`io.modelcontextprotocol/ui`), enabling servers to deliver interactive HTML user interfaces that render inside MCP hosts (Claude Desktop, VS Code, etc.) in sandboxed iframes.
 
 This enables three key use cases for the Wolfram MCP server:
 
@@ -319,7 +319,7 @@ New error message tags:
 
 #### 1.9 PacletInfo.wl Changes
 
-Register the `Apps` asset location so it can be resolved via `PacletObject["Wolfram/MCPServer"]["AssetLocation", "Apps"]`.
+Register the `Apps` asset location so it can be resolved via `PacletObject["Wolfram/AgentTools"]["AssetLocation", "Apps"]`.
 
 ---
 
@@ -351,7 +351,7 @@ LLM calls WolframAlpha tool with { "query": "current distance to Mars" }
        2. Extracts images from the text string for the LLM (unchanged pipeline)
        3. Formats pods via FormatWolframAlphaPods (with FoldPods = True)
        4. Creates a Notebook with input cell (query) and output cell (formatted pods)
-       5. CloudDeploys to MCPServer/Notebooks/WolframAlpha/<encoded-query>.nb
+       5. CloudDeploys to AgentTools/Notebooks/WolframAlpha/<encoded-query>.nb
           with Permissions -> {"All" -> {"Read", "Interact"}}, AutoRemove -> True
        6. Returns content items:
           - JSON metadata item: {"notebookUrl": "https://www.wolframcloud.com/obj/..."}
@@ -469,7 +469,7 @@ When the client supports UI, the WolframAlpha tool runs an enhanced pipeline tha
 2. Extract images from the text string for the LLM (unchanged from current behavior).
 3. Format the pods data into notebook cells using `FormatWolframAlphaPods` with `FoldPods = True`.
 4. Wrap in a `Notebook` with a `"WolframAlphaLong"` input cell and an `"Output"` cell.
-5. CloudDeploy the notebook to `MCPServer/Notebooks/WolframAlpha/<encoded-query>.nb` with `Permissions -> {"All" -> {"Read", "Interact"}}`, `AutoRemove -> True`, and `IconRules -> {}`.
+5. CloudDeploy the notebook to `AgentTools/Notebooks/WolframAlpha/<encoded-query>.nb` with `Permissions -> {"All" -> {"Read", "Interact"}}`, `AutoRemove -> True`, and `IconRules -> {}`.
 6. Return content items: a JSON metadata item (`{"notebookUrl": "<url>"}`) followed by the standard text + image items.
 
 **Key design decisions:**
@@ -804,7 +804,7 @@ When the client supports UI, the WolframAlpha tool prepends a JSON metadata cont
         "content": [
             {
                 "type": "text",
-                "text": "{\"notebookUrl\":\"https://www.wolframcloud.com/obj/user/MCPServer/Notebooks/WolframAlpha/current+distance+to+Mars.nb\"}"
+                "text": "{\"notebookUrl\":\"https://www.wolframcloud.com/obj/user/AgentTools/Notebooks/WolframAlpha/current+distance+to+Mars.nb\"}"
             },
             {
                 "type": "text",

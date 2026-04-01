@@ -2,14 +2,14 @@
 (* ::Section::Closed:: *)
 (*Initialization*)
 VerificationTest[
-    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
+    Needs[ "Wolfram`AgentToolsTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "GetDefinitions@@Tests/DeployAgentTools.wlt:4,1-9,2"
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/DeployAgentTools.wlt:11,1-16,2"
@@ -40,9 +40,9 @@ $testDeploymentData := <|
     "Meta"          -> <||>
 |>;
 
-agentToolsDeploymentQ = Wolfram`MCPServer`DeployAgentTools`Private`agentToolsDeploymentQ;
-configFilesEqual = Wolfram`MCPServer`DeployAgentTools`Private`configFilesEqual;
-$deploymentsPath = Wolfram`MCPServer`Common`$deploymentsPath;
+agentToolsDeploymentQ = Wolfram`AgentTools`DeployAgentTools`Private`agentToolsDeploymentQ;
+configFilesEqual = Wolfram`AgentTools`DeployAgentTools`Private`configFilesEqual;
+$deploymentsPath = Wolfram`AgentTools`Common`$deploymentsPath;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -805,7 +805,7 @@ VerificationTest[
 (*Empty Deployments Path*)
 VerificationTest[
     (* With no deployments directory at all, should return empty list *)
-    Block[ { Wolfram`MCPServer`Common`$deploymentsPath = FileNameJoin @ { $TemporaryDirectory, "nonexistent_deployments_" <> CreateUUID[ ] } },
+    Block[ { Wolfram`AgentTools`Common`$deploymentsPath = FileNameJoin @ { $TemporaryDirectory, "nonexistent_deployments_" <> CreateUUID[ ] } },
         DeployedAgentTools[ ]
     ],
     { },

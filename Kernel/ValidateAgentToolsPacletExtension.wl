@@ -1,10 +1,10 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`ValidateAgentToolsPacletExtension`" ];
+BeginPackage[ "Wolfram`AgentTools`ValidateAgentToolsPacletExtension`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
+Needs[ "Wolfram`AgentTools`"        ];
+Needs[ "Wolfram`AgentTools`Common`" ];
 
 Needs[ "PacletTools`" -> "pt`" ];
 

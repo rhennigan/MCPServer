@@ -5,14 +5,14 @@
 (* ::Section::Closed:: *)
 (*Initialization*)
 VerificationTest[
-    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
+    Needs[ "Wolfram`AgentToolsTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "GetDefinitions@@Tests/MCPAppsTest.wlt:7,1-12,2"
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/MCPAppsTest.wlt:14,1-19,2"
@@ -47,7 +47,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Returns Correct Structure*)
 VerificationTest[
-    result = Wolfram`MCPServer`Tools`MCPAppsTest`Private`mcpAppsTestEvaluate[
+    result = Wolfram`AgentTools`Tools`MCPAppsTest`Private`mcpAppsTestEvaluate[
         <| "message" -> "hello world" |>
     ];
     MatchQ[ result, <| "Content" -> { _Association } |> ],
@@ -57,7 +57,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    result = Wolfram`MCPServer`Tools`MCPAppsTest`Private`mcpAppsTestEvaluate[
+    result = Wolfram`AgentTools`Tools`MCPAppsTest`Private`mcpAppsTestEvaluate[
         <| "message" -> "hello world" |>
     ];
     result[[ "Content", 1, "type" ]],
@@ -70,7 +70,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Echoes Message*)
 VerificationTest[
-    result = Wolfram`MCPServer`Tools`MCPAppsTest`Private`mcpAppsTestEvaluate[
+    result = Wolfram`AgentTools`Tools`MCPAppsTest`Private`mcpAppsTestEvaluate[
         <| "message" -> "test echo" |>
     ];
     json = Developer`ReadRawJSONString @ result[[ "Content", 1, "text" ]];
@@ -84,7 +84,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Contains Timestamp*)
 VerificationTest[
-    result = Wolfram`MCPServer`Tools`MCPAppsTest`Private`mcpAppsTestEvaluate[
+    result = Wolfram`AgentTools`Tools`MCPAppsTest`Private`mcpAppsTestEvaluate[
         <| "message" -> "ts test" |>
     ];
     json = Developer`ReadRawJSONString @ result[[ "Content", 1, "text" ]];
@@ -98,7 +98,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Contains Server Info*)
 VerificationTest[
-    result = Wolfram`MCPServer`Tools`MCPAppsTest`Private`mcpAppsTestEvaluate[
+    result = Wolfram`AgentTools`Tools`MCPAppsTest`Private`mcpAppsTestEvaluate[
         <| "message" -> "server info test" |>
     ];
     json = Developer`ReadRawJSONString @ result[[ "Content", 1, "text" ]];
@@ -109,7 +109,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    result = Wolfram`MCPServer`Tools`MCPAppsTest`Private`mcpAppsTestEvaluate[
+    result = Wolfram`AgentTools`Tools`MCPAppsTest`Private`mcpAppsTestEvaluate[
         <| "message" -> "version test" |>
     ];
     json = Developer`ReadRawJSONString @ result[[ "Content", 1, "text" ]];
@@ -127,14 +127,14 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Tool UI Associations*)
 VerificationTest[
-    KeyExistsQ[ Wolfram`MCPServer`Common`$toolUIAssociations, "MCPAppsTest" ],
+    KeyExistsQ[ Wolfram`AgentTools`Common`$toolUIAssociations, "MCPAppsTest" ],
     True,
     SameTest -> Equal,
     TestID   -> "MCPAppsTest-InToolUIAssociations@@Tests/MCPAppsTest.wlt:129,1-134,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`$toolUIAssociations[ "MCPAppsTest" ],
+    Wolfram`AgentTools`Common`$toolUIAssociations[ "MCPAppsTest" ],
     "ui://wolfram/mcp-apps-test",
     SameTest -> Equal,
     TestID   -> "MCPAppsTest-CorrectResourceURI@@Tests/MCPAppsTest.wlt:136,1-141,2"
@@ -144,8 +144,8 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*toolUIMetadata*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
-        meta = Wolfram`MCPServer`Common`toolUIMetadata[ "MCPAppsTest" ];
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
+        meta = Wolfram`AgentTools`Common`toolUIMetadata[ "MCPAppsTest" ];
         ("_meta" /. meta)[ "ui", "resourceUri" ]
     ],
     "ui://wolfram/mcp-apps-test",
@@ -154,8 +154,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$clientSupportsUI = True },
-        meta = Wolfram`MCPServer`Common`toolUIMetadata[ "MCPAppsTest" ];
+    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
+        meta = Wolfram`AgentTools`Common`toolUIMetadata[ "MCPAppsTest" ];
         ("_meta" /. meta)[ "ui", "visibility" ]
     ],
     { "model", "app" },
@@ -167,9 +167,9 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Resource Registry*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        KeyExistsQ[ Wolfram`MCPServer`Common`$uiResourceRegistry, "ui://wolfram/mcp-apps-test" ]
+    Block[ { Wolfram`AgentTools`Common`$uiResourceRegistry },
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        KeyExistsQ[ Wolfram`AgentTools`Common`$uiResourceRegistry, "ui://wolfram/mcp-apps-test" ]
     ],
     True,
     SameTest -> Equal,
@@ -177,9 +177,9 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`Common`$uiResourceRegistry[ "ui://wolfram/mcp-apps-test", "mimeType" ]
+    Block[ { Wolfram`AgentTools`Common`$uiResourceRegistry },
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`Common`$uiResourceRegistry[ "ui://wolfram/mcp-apps-test", "mimeType" ]
     ],
     "text/html;profile=mcp-app",
     SameTest -> Equal,
@@ -191,11 +191,11 @@ VerificationTest[
 (*readUIResource*)
 VerificationTest[
     Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        result = Wolfram`MCPServer`Common`readUIResource[
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        result = Wolfram`AgentTools`Common`readUIResource[
             <| "params" -> <| "uri" -> "ui://wolfram/mcp-apps-test" |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 1 |>
         ];
@@ -208,11 +208,11 @@ VerificationTest[
 
 VerificationTest[
     Block[ {
-        Wolfram`MCPServer`Common`$clientSupportsUI = True,
-        Wolfram`MCPServer`Common`$uiResourceRegistry
+        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$uiResourceRegistry
     },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        result = Wolfram`MCPServer`Common`readUIResource[
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        result = Wolfram`AgentTools`Common`readUIResource[
             <| "params" -> <| "uri" -> "ui://wolfram/mcp-apps-test" |> |>,
             <| "jsonrpc" -> "2.0", "id" -> 1 |>
         ];
@@ -227,9 +227,9 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*JSON Metadata*)
 VerificationTest[
-    Block[ { Wolfram`MCPServer`Common`$uiResourceRegistry },
-        Wolfram`MCPServer`Common`initializeUIResources[ ];
-        Wolfram`MCPServer`Common`$uiResourceRegistry[ "ui://wolfram/mcp-apps-test", "meta" ]
+    Block[ { Wolfram`AgentTools`Common`$uiResourceRegistry },
+        Wolfram`AgentTools`Common`initializeUIResources[ ];
+        Wolfram`AgentTools`Common`$uiResourceRegistry[ "ui://wolfram/mcp-apps-test", "meta" ]
     ],
     KeyValuePattern[ "ui" -> KeyValuePattern[ "prefersBorder" -> True ] ],
     SameTest -> MatchQ,

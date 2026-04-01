@@ -1,12 +1,12 @@
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Tools`WolframAlpha`" ];
+BeginPackage[ "Wolfram`AgentTools`Tools`WolframAlpha`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
-Needs[ "Wolfram`MCPServer`Tools`"  ];
+Needs[ "Wolfram`AgentTools`"        ];
+Needs[ "Wolfram`AgentTools`Common`" ];
+Needs[ "Wolfram`AgentTools`Tools`"  ];
 
 Needs[ "Wolfram`Chatbook`" -> "cb`" ];
 
@@ -15,7 +15,7 @@ Needs[ "Wolfram`Chatbook`" -> "cb`" ];
 (*Config*)
 
 (* Cloud path root for deployed WA notebooks *)
-$deployedNotebookRoot = "MCPServer/Notebooks";
+$deployedNotebookRoot = "AgentTools/Notebooks";
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

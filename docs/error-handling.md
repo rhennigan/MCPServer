@@ -1,6 +1,6 @@
-# Error Handling in MCPServer
+# Error Handling in AgentTools
 
-This document explains the error handling architecture used throughout the MCPServer paclet.
+This document explains the error handling architecture used throughout the AgentTools paclet.
 
 ## Overview
 
@@ -23,7 +23,7 @@ The fundamental error catcher. Wraps an evaluation and catches any thrown failur
 
 ```wl
 catchTop @ riskyOperation[ ]
-catchTop[ riskyOperation[ ], MCPServer ]
+catchTop[ riskyOperation[ ], AgentTools ]
 ```
 
 You should usually use the one-argument form, unless you need to specify a different message symbol.
@@ -67,8 +67,8 @@ throwFailure[ "InvalidArguments", f, HoldForm @ f @ badArg ]
 ```
 
 Behavior:
-- Looks up the message template from `$messageSymbol` (e.g., `MCPServer::InvalidArguments`)
-- Falls back to `MCPServer::tag` if not found on the current symbol
+- Looks up the message template from `$messageSymbol` (e.g., `AgentTools::InvalidArguments`)
+- Falls back to `AgentTools::tag` if not found on the current symbol
 - Creates a `Failure` object via `messageFailure`
 - Throws to the nearest `catchTop` if `$catching` is true
 - Returns the failure directly if not inside a `catchTop`
@@ -76,7 +76,7 @@ Behavior:
 **Important:** The message tag must be defined in `Kernel/Messages.wl`:
 
 ```wl
-MCPServer::InvalidArguments = "Invalid arguments: `1`";
+AgentTools::InvalidArguments = "Invalid arguments: `1`";
 ```
 
 #### `throwInternalFailure[expr, args___]`
@@ -91,7 +91,7 @@ This:
 - Captures the evaluation that failed
 - Records the stack trace
 - Generates a bug report link
-- Issues `MCPServer::Internal` message
+- Issues `AgentTools::Internal` message
 
 ### The Enclose/Confirm Pattern
 
@@ -314,8 +314,8 @@ When `throwInternalFailure` is called, the system automatically:
 1. Captures debug data (paclet version, system info, etc.)
 2. Records the evaluation stack
 3. Generates a GitHub issue URL with pre-filled information
-4. Saves failure data to `$UserBaseDirectory/Logs/MCPServer/LastInternalFailureData.mx`
-5. Sets `$LastMCPServerFailure` for programmatic access
+4. Saves failure data to `$UserBaseDirectory/Logs/AgentTools/LastInternalFailureData.mx`
+5. Sets `$LastAgentToolsFailure` for programmatic access
 
 ## Best Practices
 
@@ -330,7 +330,7 @@ When `throwInternalFailure` is called, the system automatically:
 
 ```wl
 (* In Messages.wl *)
-MCPServer::InvalidInput = "Expected a positive integer, got `1`.";
+AgentTools::InvalidInput = "Expected a positive integer, got `1`.";
 
 (* Exported function definition in your implementation file *)
 ProcessNumber // beginDefinition;

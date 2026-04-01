@@ -2,13 +2,13 @@
 
 ## Overview
 
-External Wolfram paclets can contribute MCP servers, tools, and prompts by declaring a custom `"AgentTools"` extension in their `PacletInfo.wl`. MCPServer discovers these extensions via the PacletManager and exposes them through the existing APIs (`MCPServerObject`, `InstallMCPServer`, `CreateMCPServer`, etc.). This leverages the Wolfram Paclet Repository as a distribution mechanism for AgentTools extensions.
+External Wolfram paclets can contribute MCP servers, tools, and prompts by declaring a custom `"AgentTools"` extension in their `PacletInfo.wl`. AgentTools discovers these extensions via the PacletManager and exposes them through the existing APIs (`MCPServerObject`, `InstallMCPServer`, `CreateMCPServer`, etc.). This leverages the Wolfram Paclet Repository as a distribution mechanism for AgentTools extensions.
 
 ---
 
 ## Goals
 
-- Allow third-party paclets to contribute MCP servers, tools, and prompts without modifying the MCPServer paclet.
+- Allow third-party paclets to contribute MCP servers, tools, and prompts without modifying the AgentTools paclet.
 - Leverage the Wolfram Paclet Repository for distribution and version management.
 - Maintain security by never auto-installing paclets and clearly separating discovery from code execution.
 - Seamlessly integrate with existing APIs.
@@ -371,7 +371,7 @@ Common patterns:
 
 The existing `convertStringTools0` in `Kernel/MCPServerObject.wl` currently checks:
 
-1. `$DefaultMCPTools[name]` — built-in MCPServer tools
+1. `$DefaultMCPTools[name]` — built-in AgentTools tools
 2. ``cb`$AvailableTools[name]`` — Chatbook tools (where ``cb`` is a context alias for ``Wolfram`Chatbook` ``)
 3. `LLMResourceTool[name]` — Wolfram resource tools
 
@@ -410,7 +410,7 @@ When loading a paclet's server definition file, tool and prompt names within `"L
 
 ### Installed = Trusted
 
-When a user writes `MCPServerObject["Wolfram/JIRALink/ProjectManagement"]`, they are explicitly referencing a paclet-qualified name. If the paclet is locally installed, MCPServer loads its definition files. This is analogous to how ``Needs["Wolfram`JIRALink`"]`` trusts installed paclets.
+When a user writes `MCPServerObject["Wolfram/JIRALink/ProjectManagement"]`, they are explicitly referencing a paclet-qualified name. If the paclet is locally installed, AgentTools loads its definition files. This is analogous to how ``Needs["Wolfram`JIRALink`"]`` trusts installed paclets.
 
 ### Paclet Installation Policy
 
@@ -601,7 +601,7 @@ Example error scenarios:
 ```wl
 (* Cross-paclet dependency that fails to install *)
 StartMCPServer @ MCPServerObject["MyServer"]
-(* MCPServer::PacletDependencyMissing: Server "MyServer" references tool
+(* AgentTools::PacletDependencyMissing: Server "MyServer" references tool
    "Wolfram/SlackLink/PostMessage" from paclet "Wolfram/SlackLink",
    which could not be installed. *)
 ```
@@ -657,7 +657,7 @@ Failed validation:
 
 ```wl
 ValidateAgentToolsPacletExtension[ PacletObject["Wolfram/BrokenPaclet"] ]
-(* MCPServer::InvalidAgentToolsPacletExtension: The AgentTools extension in paclet
+(* AgentTools::InvalidAgentToolsPacletExtension: The AgentTools extension in paclet
    "Wolfram/BrokenPaclet" is invalid: Missing definition file for tool "MyTool". *)
 (* Failure["InvalidAgentToolsPacletExtension", <|
        "Errors" -> {
@@ -679,7 +679,7 @@ Existing files:
 - `Kernel/InstallMCPServer.wl` — support paclet-qualified server names
 - `Kernel/StartMCPServer.wl` — resolve all paclet references at start time, run `"Initialization"` code for all tools at startup (new — currently only done at install time), disambiguate MCP name collisions
 - `Kernel/CommonSymbols.wl` — declare new shared symbols (`resolvePacletTool`, `resolvePacletServer`, `resolvePacletPrompt`, `pacletQualifiedNameQ`, `parsePacletQualifiedName`, `findAgentToolsPaclets`, `loadPacletDefinitionFile`)
-- `Kernel/Main.wl` — add `ValidateAgentToolsPacletExtension` to exports, add new subcontexts ``Wolfram`MCPServer`PacletExtension` `` and ``Wolfram`MCPServer`ValidateAgentToolsPacletExtension` ``
+- `Kernel/Main.wl` — add `ValidateAgentToolsPacletExtension` to exports, add new subcontexts ``Wolfram`AgentTools`PacletExtension` `` and ``Wolfram`AgentTools`ValidateAgentToolsPacletExtension` ``
 - `Kernel/Messages.wl` — add new error messages
 - `PacletInfo.wl` — add `ValidateAgentToolsPacletExtension` to Symbols list
 

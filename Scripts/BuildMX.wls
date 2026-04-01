@@ -11,7 +11,7 @@ Needs[ "GeneralUtilities`"   -> "gu`"   ];
 Needs[ "PacletTools`"        -> "pt`"   ];
 Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
 
-Wolfram`MCPServerInternal`$BuildingMX = True;
+Wolfram`AgentToolsInternal`$BuildingMX = True;
 $assertions = getBooleanArgument[ { "a", "assertions" }, True ];
 
 (* ::**************************************************************************************************************:: *)
@@ -21,7 +21,7 @@ $mxFile = cStr @ FileNameJoin @ {
     $pacletDir,
     "Kernel",
     ToString @ $SystemWordLength <> "Bit",
-    "MCPServer.mx"
+    "AgentTools.mx"
 };
 
 (* ::**************************************************************************************************************:: *)
@@ -166,18 +166,18 @@ $systemSymbols = {
 };
 
 Quiet[
-    Unprotect[ "Wolfram`MCPServer`*" ];
-    Remove[ "Wolfram`MCPServer`*" ];
-    Remove[ "Wolfram`MCPServer`*`*" ];
+    Unprotect[ "Wolfram`AgentTools`*" ];
+    Remove[ "Wolfram`AgentTools`*" ];
+    Remove[ "Wolfram`AgentTools`*`*" ];
     Unprotect @@ $systemSymbols;
     Remove @@ $systemSymbols;
 ];
 
-cicd`ScriptConfirmAssert[ Names[ "Wolfram`MCPServer`*" ] === Names[ "Wolfram`MCPServer`*`*" ] === { }, "Names" ];
+cicd`ScriptConfirmAssert[ Names[ "Wolfram`AgentTools`*" ] === Names[ "Wolfram`AgentTools`*`*" ] === { }, "Names" ];
 cicd`ScriptConfirmAssert[ ! AnyTrue[ $systemSymbols, NameQ ], "SystemSymbols" ];
 
 Quiet[
-    cicd`ScriptConfirm @ CheckAbort[ Get[ "Wolfram`MCPServer`" ], $Failed ],
+    cicd`ScriptConfirm @ CheckAbort[ Get[ "Wolfram`AgentTools`" ], $Failed ],
     {
         (* :!CodeAnalysis::BeginBlock:: *)
         (* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
@@ -192,7 +192,7 @@ $mxDir = cDir @ gu`EnsureDirectory @ DirectoryName @ $mxFile;
 cicd`ConsoleLog @ SequenceForm[ "MX target directory: ", $mxDir  ];
 cicd`ConsoleLog @ SequenceForm[ "Building MX file: "   , $mxFile ];
 
-DumpSave[ $mxFile, Evaluate @ Flatten @ { "Wolfram`MCPServer`", $systemSymbols }, "SymbolAttributes" -> False ];
+DumpSave[ $mxFile, Evaluate @ Flatten @ { "Wolfram`AgentTools`", $systemSymbols }, "SymbolAttributes" -> False ];
 
 PacletDirectoryUnload @ tmp;
 PacletDirectoryLoad @ $pacletDir;

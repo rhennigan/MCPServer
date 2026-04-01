@@ -1,10 +1,10 @@
 # Paclet Extensions
 
-This document describes how third-party Wolfram Language paclets can extend MCPServer with additional MCP tools, prompts, and servers using the `"AgentTools"` paclet extension.
+This document describes how third-party Wolfram Language paclets can extend AgentTools with additional MCP tools, prompts, and servers using the `"AgentTools"` paclet extension.
 
 ## Overview
 
-The paclet extension system allows any Wolfram Language paclet to contribute MCP tools, prompts, and servers to the MCPServer ecosystem. Paclets declare their contributions in `PacletInfo.wl` using an `"AgentTools"` extension, and MCPServer discovers and integrates them automatically.
+The paclet extension system allows any Wolfram Language paclet to contribute MCP tools, prompts, and servers to the AgentTools ecosystem. Paclets declare their contributions in `PacletInfo.wl` using an `"AgentTools"` extension, and AgentTools discovers and integrates them automatically.
 
 This enables:
 - **Third-party tool distribution** via the [Wolfram Paclet Repository](https://resources.wolframcloud.com/PacletRepository)

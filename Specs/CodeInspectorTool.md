@@ -288,7 +288,7 @@ Kernel/Tools/CodeInspector/
 Main entry point and tool registration.
 
 **Contents:**
-- Package header with context ``Wolfram`MCPServer`Tools`CodeInspector` ``
+- Package header with context ``Wolfram`AgentTools`Tools`CodeInspector` ``
 - Tool description string
 - Tool definition in `$defaultMCPTools["CodeInspector"]`
 - Main entry function `codeInspectorTool`
@@ -400,7 +400,7 @@ Add the new subcontext to `$subcontexts` in `Kernel/Tools/Tools.wl`:
 $subcontexts = {
     ...
     (* Tools: CodeInspector *)
-    "Wolfram`MCPServer`Tools`CodeInspector`"
+    "Wolfram`AgentTools`Tools`CodeInspector`"
 };
 ```
 
@@ -411,11 +411,11 @@ Also remove the CodeInspector item from the TODO comment at the top of the file.
 Add error messages to `Kernel/Messages.wl`:
 
 ```wl
-MCPServer::CodeInspectorNoInput        = "Either 'code' or 'file' parameter must be provided.";
-MCPServer::CodeInspectorAmbiguousInput = "Provide either 'code' or 'file', not both.";
-MCPServer::CodeInspectorFileNotFound   = "File or directory not found: `1`.";
-MCPServer::CodeInspectorNoFilesFound   = "No .wl, .m, or .wls files found in directory: `1`.";
-MCPServer::CodeInspectorFailed         = "CodeInspector failed: `1`.";
+AgentTools::CodeInspectorNoInput        = "Either 'code' or 'file' parameter must be provided.";
+AgentTools::CodeInspectorAmbiguousInput = "Provide either 'code' or 'file', not both.";
+AgentTools::CodeInspectorFileNotFound   = "File or directory not found: `1`.";
+AgentTools::CodeInspectorNoFilesFound   = "No .wl, .m, or .wls files found in directory: `1`.";
+AgentTools::CodeInspectorFailed         = "CodeInspector failed: `1`.";
 ```
 
 ---

@@ -2,14 +2,14 @@
 (* ::Section::Closed:: *)
 (*Initialization*)
 VerificationTest[
-    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
+    Needs[ "Wolfram`AgentToolsTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "GetDefinitions@@Tests/StartMCPServer.wlt:4,1-9,2"
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/StartMCPServer.wlt:11,1-16,2"
@@ -18,7 +18,7 @@ VerificationTest[
 VerificationTest[
     Get[ FileNameJoin @ { DirectoryName @ $TestFileName, "MCPServerTestUtilities.wl" } ];
     (* Set the source directory so the test utilities can find Scripts/StartMCPServer.wls *)
-    Wolfram`MCPServerTests`MCPServerTestUtilities`$MCPTestSourceDirectory = DirectoryName[ $TestFileName, 2 ],
+    Wolfram`AgentToolsTests`MCPServerTestUtilities`$MCPTestSourceDirectory = DirectoryName[ $TestFileName, 2 ],
     _String? DirectoryQ,
     SameTest -> MatchQ,
     TestID   -> "LoadTestUtilities@@Tests/StartMCPServer.wlt:18,1-25,2"
@@ -317,7 +317,7 @@ VerificationTest[
         "Parameters" -> { },
         "Initialization" :> ($initTestValue += 10)
     |> ];
-    Wolfram`MCPServer`StartMCPServer`Private`runToolInitialization[ { tool1, tool2 } ];
+    Wolfram`AgentTools`StartMCPServer`Private`runToolInitialization[ { tool1, tool2 } ];
     $initTestValue,
     11,
     SameTest -> MatchQ,
@@ -332,7 +332,7 @@ VerificationTest[
         "Function" -> Identity,
         "Parameters" -> { }
     |> ];
-    Wolfram`MCPServer`StartMCPServer`Private`runToolInitialization[ { toolNoInit } ];
+    Wolfram`AgentTools`StartMCPServer`Private`runToolInitialization[ { toolNoInit } ];
     $initTestValue2,
     0,
     SameTest -> MatchQ,
@@ -340,7 +340,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`runToolInitialization[ { } ],
+    Wolfram`AgentTools`StartMCPServer`Private`runToolInitialization[ { } ],
     { },
     SameTest -> MatchQ,
     TestID   -> "RunToolInitialization-EmptyListIsNoOp@@Tests/StartMCPServer.wlt:342,1-347,2"
@@ -361,7 +361,7 @@ VerificationTest[
         "Function" -> Identity,
         "Parameters" -> { }
     |> ];
-    Wolfram`MCPServer`StartMCPServer`Private`runToolInitialization[ { mixedTool1, mixedTool2 } ];
+    Wolfram`AgentTools`StartMCPServer`Private`runToolInitialization[ { mixedTool1, mixedTool2 } ];
     $initTestValue3,
     42,
     SameTest -> MatchQ,
@@ -372,7 +372,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*ensurePacletsForStart*)
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`ensurePacletsForStart[
+    Wolfram`AgentTools`StartMCPServer`Private`ensurePacletsForStart[
         MCPServerObject[ "MockMCPPacletTest/TestServer" ]
     ],
     _MCPServerObject? MCPServerObjectQ,
@@ -381,7 +381,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`ensurePacletsForStart[
+    Wolfram`AgentTools`StartMCPServer`Private`ensurePacletsForStart[
         MCPServerObject[ "WolframLanguage" ]
     ],
     _MCPServerObject? MCPServerObjectQ,
@@ -393,7 +393,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*ensureDependenciesForStart*)
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`ensureDependenciesForStart[
+    Wolfram`AgentTools`StartMCPServer`Private`ensureDependenciesForStart[
         MCPServerObject[ "MockMCPPacletTest/TestServer" ]
     ],
     _MCPServerObject? MCPServerObjectQ,
@@ -402,7 +402,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`ensureDependenciesForStart[
+    Wolfram`AgentTools`StartMCPServer`Private`ensureDependenciesForStart[
         MCPServerObject[ "WolframLanguage" ]
     ],
     _MCPServerObject? MCPServerObjectQ,
@@ -419,7 +419,7 @@ VerificationTest[
         "Location" -> "BuiltIn",
         "LLMEvaluator" -> <| "Tools" -> { "WolframLanguageEvaluator" } |>
     |>;
-    Wolfram`MCPServer`StartMCPServer`Private`runServerInitialization[ builtInServerData ],
+    Wolfram`AgentTools`StartMCPServer`Private`runServerInitialization[ builtInServerData ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "RunServerInitialization-BuiltInIsNoOp@@Tests/StartMCPServer.wlt:416,1-426,2"
@@ -431,7 +431,7 @@ VerificationTest[
         "Location" -> File[ "some/path" ],
         "LLMEvaluator" -> <| "Tools" -> { } |>
     |>;
-    Wolfram`MCPServer`StartMCPServer`Private`runServerInitialization[ fileServerData ],
+    Wolfram`AgentTools`StartMCPServer`Private`runServerInitialization[ fileServerData ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "RunServerInitialization-FileBasedIsNoOp@@Tests/StartMCPServer.wlt:428,1-438,2"
@@ -447,7 +447,7 @@ VerificationTest[
         |>
     |>;
     (* TestServer definition has no Initialization key, so this should return Null *)
-    Wolfram`MCPServer`StartMCPServer`Private`runServerInitialization[ pacletServerData ],
+    Wolfram`AgentTools`StartMCPServer`Private`runServerInitialization[ pacletServerData ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "RunServerInitialization-PacletServerNoInit@@Tests/StartMCPServer.wlt:440,1-454,2"
@@ -457,7 +457,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*disambiguateToolNames*)
 VerificationTest[
-    Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { } ],
+    Wolfram`AgentTools`StartMCPServer`Private`disambiguateToolNames[ { } ],
     <| |>,
     SameTest -> MatchQ,
     TestID   -> "DisambiguateToolNames-EmptyList@@Tests/StartMCPServer.wlt:459,1-464,2"
@@ -466,7 +466,7 @@ VerificationTest[
 VerificationTest[
     toolA = LLMTool[ <| "Name" -> "Alpha", "Description" -> "Tool A", "Function" -> Identity, "Parameters" -> { } |> ];
     toolB = LLMTool[ <| "Name" -> "Beta", "Description" -> "Tool B", "Function" -> Identity, "Parameters" -> { } |> ];
-    result = Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { toolA, toolB } ];
+    result = Wolfram`AgentTools`StartMCPServer`Private`disambiguateToolNames[ { toolA, toolB } ];
     Keys @ result,
     { "Alpha", "Beta" },
     SameTest -> MatchQ,
@@ -476,7 +476,7 @@ VerificationTest[
 VerificationTest[
     toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search JIRA", "Function" -> Identity, "Parameters" -> { } |> ];
     toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search Slack", "Function" -> Identity, "Parameters" -> { } |> ];
-    result = Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { toolS1, toolS2 } ];
+    result = Wolfram`AgentTools`StartMCPServer`Private`disambiguateToolNames[ { toolS1, toolS2 } ];
     Keys @ result,
     { "Search1", "Search2" },
     SameTest -> MatchQ,
@@ -487,7 +487,7 @@ VerificationTest[
     toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search A", "Function" -> Identity, "Parameters" -> { } |> ];
     toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search B", "Function" -> Identity, "Parameters" -> { } |> ];
     toolS3 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search C", "Function" -> Identity, "Parameters" -> { } |> ];
-    result = Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { toolS1, toolS2, toolS3 } ];
+    result = Wolfram`AgentTools`StartMCPServer`Private`disambiguateToolNames[ { toolS1, toolS2, toolS3 } ];
     Keys @ result,
     { "Search1", "Search2", "Search3" },
     SameTest -> MatchQ,
@@ -499,7 +499,7 @@ VerificationTest[
     toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search A", "Function" -> Identity, "Parameters" -> { } |> ];
     toolB = LLMTool[ <| "Name" -> "Beta", "Description" -> "Unique", "Function" -> Identity, "Parameters" -> { } |> ];
     toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search B", "Function" -> Identity, "Parameters" -> { } |> ];
-    result = Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { toolA, toolS1, toolB, toolS2 } ];
+    result = Wolfram`AgentTools`StartMCPServer`Private`disambiguateToolNames[ { toolA, toolS1, toolB, toolS2 } ];
     Keys @ result,
     { "Alpha", "Search1", "Beta", "Search2" },
     SameTest -> MatchQ,
@@ -509,7 +509,7 @@ VerificationTest[
 VerificationTest[
     toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search JIRA", "Function" -> Identity, "Parameters" -> { } |> ];
     toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search Slack", "Function" -> Identity, "Parameters" -> { } |> ];
-    result = Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { toolS1, toolS2 } ];
+    result = Wolfram`AgentTools`StartMCPServer`Private`disambiguateToolNames[ { toolS1, toolS2 } ];
     (* The values are the original LLMTool objects *)
     { result["Search1"]["Description"], result["Search2"]["Description"] },
     { "Search JIRA", "Search Slack" },
@@ -519,7 +519,7 @@ VerificationTest[
 
 VerificationTest[
     toolA = LLMTool[ <| "Name" -> "Alpha", "Description" -> "Only tool", "Function" -> Identity, "Parameters" -> { } |> ];
-    result = Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { toolA } ];
+    result = Wolfram`AgentTools`StartMCPServer`Private`disambiguateToolNames[ { toolA } ];
     Keys @ result,
     { "Alpha" },
     SameTest -> MatchQ,
@@ -531,7 +531,7 @@ VerificationTest[
 (*createMCPToolData with name override*)
 VerificationTest[
     tool = LLMTool[ <| "Name" -> "Search", "Description" -> "Search things", "Function" -> Identity, "Parameters" -> { } |> ];
-    data = Wolfram`MCPServer`StartMCPServer`Private`createMCPToolData[ "Search1", tool ];
+    data = Wolfram`AgentTools`StartMCPServer`Private`createMCPToolData[ "Search1", tool ];
     data[ "name" ],
     "Search1",
     SameTest -> MatchQ,
@@ -540,7 +540,7 @@ VerificationTest[
 
 VerificationTest[
     tool = LLMTool[ <| "Name" -> "Search", "Description" -> "Search things", "Function" -> Identity, "Parameters" -> { } |> ];
-    data = Wolfram`MCPServer`StartMCPServer`Private`createMCPToolData[ "Search1", tool ];
+    data = Wolfram`AgentTools`StartMCPServer`Private`createMCPToolData[ "Search1", tool ];
     data[ "description" ],
     "Search things",
     SameTest -> MatchQ,
@@ -549,7 +549,7 @@ VerificationTest[
 
 VerificationTest[
     tool = LLMTool[ <| "Name" -> "MyTool", "Description" -> "A tool", "Function" -> Identity, "Parameters" -> { } |> ];
-    dataOriginal = Wolfram`MCPServer`StartMCPServer`Private`createMCPToolData[ tool ];
+    dataOriginal = Wolfram`AgentTools`StartMCPServer`Private`createMCPToolData[ tool ];
     dataOriginal[ "name" ],
     "MyTool",
     SameTest -> MatchQ,
@@ -563,7 +563,7 @@ VerificationTest[
     (* Build a disambiguated llmTools association and verify lookup works *)
     toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search JIRA", "Function" -> Identity, "Parameters" -> { } |> ];
     toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search Slack", "Function" -> Identity, "Parameters" -> { } |> ];
-    disambiguated = Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { toolS1, toolS2 } ];
+    disambiguated = Wolfram`AgentTools`StartMCPServer`Private`disambiguateToolNames[ { toolS1, toolS2 } ];
     (* evaluateTool looks up tools in $llmTools by the name the client sends *)
     (* Verify the disambiguated keys correctly map to different tools *)
     { disambiguated["Search1"]["Description"], disambiguated["Search2"]["Description"] },
@@ -576,8 +576,8 @@ VerificationTest[
     (* Verify the tool data sent over MCP wire uses disambiguated names *)
     toolS1 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search JIRA", "Function" -> Identity, "Parameters" -> { } |> ];
     toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "Search Slack", "Function" -> Identity, "Parameters" -> { } |> ];
-    disambiguated = Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { toolS1, toolS2 } ];
-    toolDataList = KeyValueMap[ Wolfram`MCPServer`StartMCPServer`Private`createMCPToolData, disambiguated ];
+    disambiguated = Wolfram`AgentTools`StartMCPServer`Private`disambiguateToolNames[ { toolS1, toolS2 } ];
+    toolDataList = KeyValueMap[ Wolfram`AgentTools`StartMCPServer`Private`createMCPToolData, disambiguated ];
     toolDataList[[ All, "name" ]],
     { "Search1", "Search2" },
     SameTest -> MatchQ,
@@ -591,7 +591,7 @@ VerificationTest[
     toolS2 = LLMTool[ <| "Name" -> "Search", "Description" -> "S2", "Function" -> Identity, "Parameters" -> { } |> ];
     toolE2 = LLMTool[ <| "Name" -> "Evaluate", "Description" -> "E2", "Function" -> Identity, "Parameters" -> { } |> ];
     toolU = LLMTool[ <| "Name" -> "Unique", "Description" -> "U", "Function" -> Identity, "Parameters" -> { } |> ];
-    result = Wolfram`MCPServer`StartMCPServer`Private`disambiguateToolNames[ { toolS1, toolE1, toolS2, toolE2, toolU } ];
+    result = Wolfram`AgentTools`StartMCPServer`Private`disambiguateToolNames[ { toolS1, toolE1, toolS2, toolE2, toolU } ];
     Keys @ result,
     { "Search1", "Evaluate1", "Search2", "Evaluate2", "Unique" },
     SameTest -> MatchQ,
@@ -603,7 +603,7 @@ VerificationTest[
 (*Cleanup Mock Paclet*)
 VerificationTest[
     PacletDirectoryUnload @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletTest" };
-    Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ];
+    Wolfram`AgentTools`Common`clearPacletDefinitionCache[ ];
     True,
     True,
     SameTest -> MatchQ,

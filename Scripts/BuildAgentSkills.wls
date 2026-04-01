@@ -27,7 +27,7 @@ tempBuildDir  = CreateDirectory[ ];
 (* ::Subsection::Closed:: *)
 (*Load Paclet*)
 cicd`ScriptConfirmBy[ PacletDirectoryLoad @ pacletDir, MemberQ @ pacletDir ];
-cicd`ScriptConfirmMatch[ Get[ "Wolfram`MCPServer`" ], Null ];
+cicd`ScriptConfirmMatch[ Get[ "Wolfram`AgentTools`" ], Null ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

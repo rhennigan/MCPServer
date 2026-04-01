@@ -13,7 +13,7 @@ $usage = "wolframscript -f SymbolDefinition.wls <symbols> [--includeContextDetai
 
 $helpText = StringJoin[
     "Usage: ", $usage, "\n\n",
-    "Retrieves the definitions of one or more Wolfram Language symbols and returns them in a readable markdown format.\nThe tool generates clean, formatted definition strings by intelligently managing the context path to minimize fully qualified symbol names.\n\nUse fully qualified symbol names (e.g., System`Plus, Wolfram`MCPServer`CreateMCPServer) if the context is known.\nMultiple symbols can be requested by separating them with commas.\n\n",
+    "Retrieves the definitions of one or more Wolfram Language symbols and returns them in a readable markdown format.\nThe tool generates clean, formatted definition strings by intelligently managing the context path to minimize fully qualified symbol names.\n\nUse fully qualified symbol names (e.g., System`Plus, Wolfram`AgentTools`CreateMCPServer) if the context is known.\nMultiple symbols can be requested by separating them with commas.\n\n",
     "Arguments:\n",
     "  symbols (required): The symbol name (or multiple names, comma separated).\n",
     "  --includeContextDetails: Whether to include a JSON map showing which symbols belong to which contexts (default: false).\n",
@@ -66,10 +66,10 @@ Module[ { rawArgs, positional, flags, i, key, value },
 (*Tool Invocation*)
 
 Quiet[
-    PacletInstall[ "Wolfram/MCPServer" ],
+    PacletInstall[ "Wolfram/AgentTools" ],
     PacletInstall::samevers
 ];
-Get[ "Wolfram`MCPServer`" ];
+Get[ "Wolfram`AgentTools`" ];
 
 tool = $DefaultMCPTools[ "SymbolDefinition" ];
 

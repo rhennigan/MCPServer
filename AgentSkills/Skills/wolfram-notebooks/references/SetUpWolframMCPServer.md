@@ -13,19 +13,19 @@ There are two options:
 
 If `wolframscript` is available on your system, you can install and configure the Wolfram MCP server locally.
 
-### Step 1: Install the MCPServer paclet
+### Step 1: Install the AgentTools paclet
 
 Run the following in a Wolfram Language session (e.g. via `wolframscript`):
 
 ```wl
-PacletInstall["Wolfram/MCPServer"]
+PacletInstall["Wolfram/AgentTools"]
 ```
 
 ### Step 2: Install the server for your client
 
 ```wl
-Needs["Wolfram`MCPServer`"]
-Wolfram`MCPServer`InstallMCPServer["<ClientName>", "<ServerName>"]
+Needs["Wolfram`AgentTools`"]
+Wolfram`AgentTools`InstallMCPServer["<ClientName>", "<ServerName>"]
 ```
 
 Replace `<ClientName>` with one of the supported clients:
@@ -162,5 +162,5 @@ Ask the user to restart or reload the MCP client to connect to the remote server
 ## More Information
 
 - Wolfram MCP Service: <https://www.wolfram.com/artificial-intelligence/mcp-service>
-- MCPServer paclet: <https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/MCPServer/>
+- AgentTools paclet: <https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/AgentTools/>
 - Setup support article: <https://support.wolfram.com/73463>

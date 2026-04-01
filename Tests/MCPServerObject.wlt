@@ -2,14 +2,14 @@
 (* ::Section::Closed:: *)
 (*Initialization*)
 VerificationTest[
-    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
+    Needs[ "Wolfram`AgentToolsTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "GetDefinitions@@Tests/MCPServerObject.wlt:4,1-9,2"
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/MCPServerObject.wlt:11,1-16,2"
@@ -411,14 +411,14 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Paclet Tool String Resolution via convertStringTools0*)
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`convertStringTools0[ "MockMCPPacletTest/TestTool" ],
+    Wolfram`AgentTools`MCPServerObject`Private`convertStringTools0[ "MockMCPPacletTest/TestTool" ],
     _LLMTool,
     SameTest -> MatchQ,
     TestID   -> "ConvertStringTools0-PacletTool@@Tests/MCPServerObject.wlt:413,1-418,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`convertStringTools0[ "MockMCPPacletTest/DescribedTool" ],
+    Wolfram`AgentTools`MCPServerObject`Private`convertStringTools0[ "MockMCPPacletTest/DescribedTool" ],
     _LLMTool,
     SameTest -> MatchQ,
     TestID   -> "ConvertStringTools0-PacletDescribedTool@@Tests/MCPServerObject.wlt:420,1-425,2"
@@ -427,7 +427,7 @@ VerificationTest[
 (* Built-in tools still take precedence over paclet resolution *)
 VerificationTest[
     MatchQ[
-        Wolfram`MCPServer`MCPServerObject`Private`convertStringTools0[ "WolframAlpha" ],
+        Wolfram`AgentTools`MCPServerObject`Private`convertStringTools0[ "WolframAlpha" ],
         _LLMTool
     ],
     True,
@@ -439,7 +439,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Paclet Prompt String Resolution via normalizePromptData*)
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`normalizePromptData[ "MockMCPPacletTest/TestPrompt" ],
+    Wolfram`AgentTools`MCPServerObject`Private`normalizePromptData[ "MockMCPPacletTest/TestPrompt" ],
     KeyValuePattern[ { "Name" -> "TestPrompt", "Type" -> "Text" } ],
     SameTest -> MatchQ,
     TestID   -> "NormalizePromptData-PacletPrompt@@Tests/MCPServerObject.wlt:441,1-446,2"
@@ -480,37 +480,37 @@ VerificationTest[
 (*Error Cases for Paclet Tool/Prompt Resolution*)
 (* Note: these internal functions are designed to run inside catchAlways/catchMine *)
 VerificationTest[
-    Wolfram`MCPServer`Common`catchAlways @
-        Wolfram`MCPServer`MCPServerObject`Private`convertStringTools0[ "MockMCPPacletTest/NonExistentTool" ],
+    Wolfram`AgentTools`Common`catchAlways @
+        Wolfram`AgentTools`MCPServerObject`Private`convertStringTools0[ "MockMCPPacletTest/NonExistentTool" ],
     _Failure,
-    { MCPServer::PacletToolNotFound },
+    { AgentTools::PacletToolNotFound },
     SameTest -> MatchQ,
     TestID   -> "ConvertStringTools0-PacletToolNotFound@@Tests/MCPServerObject.wlt:482,1-489,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`catchAlways @
-        Wolfram`MCPServer`MCPServerObject`Private`normalizePromptData[ "MockMCPPacletTest/NonExistentPrompt" ],
+    Wolfram`AgentTools`Common`catchAlways @
+        Wolfram`AgentTools`MCPServerObject`Private`normalizePromptData[ "MockMCPPacletTest/NonExistentPrompt" ],
     _Failure,
-    { MCPServer::PacletPromptNotFound },
+    { AgentTools::PacletPromptNotFound },
     SameTest -> MatchQ,
     TestID   -> "NormalizePromptData-PacletPromptNotFound@@Tests/MCPServerObject.wlt:491,1-498,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`catchAlways @
-        Wolfram`MCPServer`MCPServerObject`Private`convertStringTools0[ "NonExistentPaclet12345/SomeTool" ],
+    Wolfram`AgentTools`Common`catchAlways @
+        Wolfram`AgentTools`MCPServerObject`Private`convertStringTools0[ "NonExistentPaclet12345/SomeTool" ],
     _Failure,
-    { MCPServer::PacletNotInstalled },
+    { AgentTools::PacletNotInstalled },
     SameTest -> MatchQ,
     TestID   -> "ConvertStringTools0-PacletNotInstalled@@Tests/MCPServerObject.wlt:500,1-507,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`catchAlways @
-        Wolfram`MCPServer`MCPServerObject`Private`normalizePromptData[ "NonExistentPaclet12345/SomePrompt" ],
+    Wolfram`AgentTools`Common`catchAlways @
+        Wolfram`AgentTools`MCPServerObject`Private`normalizePromptData[ "NonExistentPaclet12345/SomePrompt" ],
     _Failure,
-    { MCPServer::PacletNotInstalled },
+    { AgentTools::PacletNotInstalled },
     SameTest -> MatchQ,
     TestID   -> "NormalizePromptData-PacletNotInstalled@@Tests/MCPServerObject.wlt:509,1-516,2"
 ]
@@ -520,8 +520,8 @@ VerificationTest[
 (*getToolList - PacletNotInstalled for Missing Location*)
 VerificationTest[
     Block[ { PacletObject }, (* Block to prevent it from evaluating to a Failure[...] *)
-        Wolfram`MCPServer`Common`catchAlways @
-            Wolfram`MCPServer`MCPServerObject`Private`getToolList[
+        Wolfram`AgentTools`Common`catchAlways @
+            Wolfram`AgentTools`MCPServerObject`Private`getToolList[
                 <|
                     "Location" -> PacletObject[ "NonExistentPaclet12345" ],
                     "LLMEvaluator" -> <| "Tools" -> { "tool1" } |>
@@ -529,7 +529,7 @@ VerificationTest[
             ]
     ],
     _Failure,
-    { MCPServer::PacletNotInstalled },
+    { AgentTools::PacletNotInstalled },
     SameTest -> MatchQ,
     TestID   -> "getToolList-PacletNotInstalled@@Tests/MCPServerObject.wlt:521,1-535,2"
 ]
@@ -538,7 +538,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*validateTool Passes Through Paclet-Qualified Names*)
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`validateTool[ "MockMCPPacletTest/TestTool" ],
+    Wolfram`AgentTools`MCPServerObject`Private`validateTool[ "MockMCPPacletTest/TestTool" ],
     "MockMCPPacletTest/TestTool",
     SameTest -> Equal,
     TestID   -> "ValidateTool-PacletPassthrough@@Tests/MCPServerObject.wlt:540,1-545,2"
@@ -548,7 +548,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*validateMCPPrompt Passes Through Paclet-Qualified Names*)
 VerificationTest[
-    Wolfram`MCPServer`MCPServerObject`Private`validateMCPPrompt[ "MockMCPPacletTest/TestPrompt" ],
+    Wolfram`AgentTools`MCPServerObject`Private`validateMCPPrompt[ "MockMCPPacletTest/TestPrompt" ],
     "MockMCPPacletTest/TestPrompt",
     SameTest -> Equal,
     TestID   -> "ValidateMCPPrompt-PacletPassthrough@@Tests/MCPServerObject.wlt:550,1-555,2"
@@ -685,7 +685,7 @@ VerificationTest[
 (*Mock Paclet Cleanup*)
 VerificationTest[
     PacletDirectoryUnload @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletTest" };
-    Wolfram`MCPServer`Common`clearPacletDefinitionCache[ ],
+    Wolfram`AgentTools`Common`clearPacletDefinitionCache[ ],
     <| |>,
     SameTest -> MatchQ,
     TestID   -> "PacletServer-MockCleanup@@Tests/MCPServerObject.wlt:686,1-692,2"

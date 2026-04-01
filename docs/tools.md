@@ -1,6 +1,6 @@
-# MCP Tools in MCPServer
+# MCP Tools in AgentTools
 
-This document explains how MCP tools work in MCPServer and how to add new tools.
+This document explains how MCP tools work in AgentTools and how to add new tools.
 
 ## Overview
 
@@ -156,12 +156,12 @@ Create a new file in `Kernel/Tools/` following this pattern:
 ```wl
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Tools`YourTool`" ];
+BeginPackage[ "Wolfram`AgentTools`Tools`YourTool`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
-Needs[ "Wolfram`MCPServer`Tools`"  ];
+Needs[ "Wolfram`AgentTools`"        ];
+Needs[ "Wolfram`AgentTools`Common`" ];
+Needs[ "Wolfram`AgentTools`Tools`"  ];
 
 (* ::Section::Closed:: *)
 (*Prompts*)
@@ -216,10 +216,10 @@ Add your new subcontext to `Kernel/Tools/Tools.wl`:
 
 ```wl
 $subcontexts = {
-    "Wolfram`MCPServer`Tools`Context`",
-    "Wolfram`MCPServer`Tools`Notebooks`",
+    "Wolfram`AgentTools`Tools`Context`",
+    "Wolfram`AgentTools`Tools`Notebooks`",
     (* ... existing subcontexts ... *)
-    "Wolfram`MCPServer`Tools`YourTool`"  (* Add your new subcontext *)
+    "Wolfram`AgentTools`Tools`YourTool`"  (* Add your new subcontext *)
 };
 ```
 

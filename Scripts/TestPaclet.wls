@@ -4,7 +4,7 @@ BeginPackage[ "Wolfram`MCPServerScripts`" ];
 
 If[ ! TrueQ @ $loadedDefinitions, Get @ FileNameJoin @ { DirectoryName @ $InputFileName, "Common.wl" } ];
 
-Needs[ "Wolfram`MCPServer`"  -> "mcp`"  ];
+Needs[ "Wolfram`AgentTools`"  -> "mcp`"  ];
 Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
 
 (* ::**************************************************************************************************************:: *)

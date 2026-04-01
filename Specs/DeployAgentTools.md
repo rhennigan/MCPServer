@@ -323,7 +323,7 @@ DeployedAgentTools["Claude"]  (* same as "ClaudeDesktop" *)
 Deployment records are stored under:
 
 ```
-$UserBaseDirectory/ApplicationData/Wolfram/MCPServer/Deployments/<ClientName>/<uuid>/Deployment.wxf
+$UserBaseDirectory/ApplicationData/Wolfram/AgentTools/Deployments/<ClientName>/<uuid>/Deployment.wxf
 ```
 
 The `<ClientName>` directory groups deployments by canonical client name (e.g. `"ClaudeCode"`, `"ClaudeDesktop"`, `"Cursor"`). For `{name, dir}` project-level targets, `<ClientName>` is the resolved canonical client name (e.g. `"ClaudeCode"`). Multiple project-level deployments for the same client (different directories) coexist under the same `<ClientName>` subdirectory. This makes `DeployedAgentTools["ClientName"]` efficient — it only needs to scan a single subdirectory rather than all deployments.
@@ -349,9 +349,9 @@ The `"Version"` field in each deployment record enables future schema migration.
 The following messages should be added to `Kernel/Messages.wl`:
 
 ```wl
-MCPServer::DeploymentExists      = "A deployment already exists for target `1`. Use OverwriteTarget -> True to replace it.";
-MCPServer::DeploymentNotFound    = "No deployment found with UUID \"`1`\".";
-MCPServer::InvalidDeploymentData = "Invalid deployment data: `1`.";
+AgentTools::DeploymentExists      = "A deployment already exists for target `1`. Use OverwriteTarget -> True to replace it.";
+AgentTools::DeploymentNotFound    = "No deployment found with UUID \"`1`\".";
+AgentTools::InvalidDeploymentData = "Invalid deployment data: `1`.";
 ```
 
 ---
@@ -362,8 +362,8 @@ MCPServer::InvalidDeploymentData = "Invalid deployment data: `1`.";
 |---|---|
 | `Kernel/DefaultServers.wl` | Add `"MCPServerName" -> "Wolfram"` to all four built-in server definitions. |
 | `Kernel/InstallMCPServer.wl` | Add `"MCPServerName" -> Automatic` option to both `InstallMCPServer` and `UninstallMCPServer`. Use the resolved MCPServerName as the config file key in `installMCPServer` and `uninstallMCPServer` (but not for JSON extraction from `data["mcpServers", name]`, which must still use `obj["Name"]`). Also clear stale built-in installation records when one built-in Wolfram variant overwrites another under the shared default `"Wolfram"` key. |
-| `Kernel/DeployAgentTools.wl` | **New file.** All definitions for `DeployAgentTools`, `AgentToolsDeployment`, `DeployedAgentTools`, and internal helpers. Context: ``Wolfram`MCPServer`DeployAgentTools` ``. |
-| `Kernel/Main.wl` | Add ``"Wolfram`MCPServer`DeployAgentTools`"`` to `$MCPServerContexts`. |
+| `Kernel/DeployAgentTools.wl` | **New file.** All definitions for `DeployAgentTools`, `AgentToolsDeployment`, `DeployedAgentTools`, and internal helpers. Context: ``Wolfram`AgentTools`DeployAgentTools` ``. |
+| `Kernel/Main.wl` | Add ``"Wolfram`AgentTools`DeployAgentTools`"`` to `$AgentToolsContexts`. |
 | `Kernel/Files.wl` | Add `$deploymentsPath` definition (following the pattern of `$storagePath`, `$rootPath`, `$imagePath`). |
 | `Kernel/CommonSymbols.wl` | Declare `$deploymentsPath` (following the pattern of other shared path variables). Also declare `toInstallName`, `installLocation`, `projectInstallLocation`, and `guessClientName` — these are currently private to `InstallMCPServer.wl` but `DeployAgentTools.wl` needs them to resolve targets to concrete config file paths before calling `InstallMCPServer` (for duplicate-checking in step 2). Internal helpers (`deleteDeployment`, `ensureDeploymentExists`, `agentToolsDeploymentQ`, `deploymentDirectory`) should remain private to the `DeployAgentTools` context. |
 | `Kernel/Messages.wl` | Add new message definitions. |

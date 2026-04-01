@@ -25,7 +25,9 @@ DefinitionNotebookClient`$DisabledHints = <| "MessageTag" -> #, "Level" -> All, 
     "CodeInspectionFileIssue/TopLevel",
     "HeroImageSquashed",
     "HugeRaster",
-    "InternalContextWarning"
+    "InternalContextWarning",
+    "InvalidFirstVersion",
+    "NoGithubRepoFound"
 };
 
 $messageHistoryLength = 10;
@@ -321,7 +323,7 @@ updateReleaseInfoCell[ dir_, url_, cmt_, run_ ] /;
     ];
 (* :!CodeAnalysis::EndBlock:: *)
 
-commitURL[ sha_String ] := URLBuild @ { "https://github.com/rhennigan/MCPServer/commit", sha };
+commitURL[ sha_String ] := URLBuild @ { "https://github.com/rhennigan/AgentTools/commit", sha };
 
 
 releaseInfoCell[ release_, commit_, run_ ] := Enclose[
@@ -464,10 +466,10 @@ Print[ "Definition Notebook: ", $defNB ];
 
 cicd`ScriptConfirmBy[ PacletDirectoryLoad @ $pacletDir, MemberQ @ $pacletDir ];
 cicd`ScriptConfirmAssert[
-    StringStartsQ[ FindFile[ "Wolfram`MCPServer`" ], $pacletDir ],
+    StringStartsQ[ FindFile[ "Wolfram`AgentTools`" ], $pacletDir ],
     TemplateApply[
-        "MCPServer context points to \"`1`\" which is not contained in the expected paclet directory \"`2`\".",
-        { FindFile[ "Wolfram`MCPServer`" ], $pacletDir }
+        "AgentTools context points to \"`1`\" which is not contained in the expected paclet directory \"`2`\".",
+        { FindFile[ "Wolfram`AgentTools`" ], $pacletDir }
     ]
 ];
 

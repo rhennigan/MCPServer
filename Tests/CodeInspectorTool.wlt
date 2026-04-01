@@ -5,21 +5,21 @@
 (* ::Section::Closed:: *)
 (*Initialization*)
 VerificationTest[
-    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
+    Needs[ "Wolfram`AgentToolsTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "GetDefinitions@@Tests/CodeInspectorTool.wlt:7,1-12,2"
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/CodeInspectorTool.wlt:14,1-19,2"
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`Tools`CodeInspector`" ],
+    Needs[ "Wolfram`AgentTools`Tools`CodeInspector`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadCodeInspectorContext@@Tests/CodeInspectorTool.wlt:21,1-26,2"
@@ -78,49 +78,49 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*parseExclusions*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseExclusions[ Missing[ "KeyAbsent" ] ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseExclusions[ Missing[ "KeyAbsent" ] ],
     { },
     SameTest -> MatchQ,
     TestID   -> "ParseExclusions-Missing@@Tests/CodeInspectorTool.wlt:80,1-85,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseExclusions[ "" ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseExclusions[ "" ],
     { },
     SameTest -> MatchQ,
     TestID   -> "ParseExclusions-Empty@@Tests/CodeInspectorTool.wlt:87,1-92,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseExclusions[ "Warning" ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseExclusions[ "Warning" ],
     { "Warning" },
     SameTest -> MatchQ,
     TestID   -> "ParseExclusions-Single@@Tests/CodeInspectorTool.wlt:94,1-99,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseExclusions[ "Warning,Error,Remark" ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseExclusions[ "Warning,Error,Remark" ],
     { "Warning", "Error", "Remark" },
     SameTest -> MatchQ,
     TestID   -> "ParseExclusions-Multiple@@Tests/CodeInspectorTool.wlt:101,1-106,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseExclusions[ "  Warning  ,  Error  " ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseExclusions[ "  Warning  ,  Error  " ],
     { "Warning", "Error" },
     SameTest -> MatchQ,
     TestID   -> "ParseExclusions-Whitespace@@Tests/CodeInspectorTool.wlt:108,1-113,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseExclusions[ Missing[ "KeyAbsent" ], { "Default1", "Default2" } ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseExclusions[ Missing[ "KeyAbsent" ], { "Default1", "Default2" } ],
     { "Default1", "Default2" },
     SameTest -> MatchQ,
     TestID   -> "ParseExclusions-MissingWithDefault@@Tests/CodeInspectorTool.wlt:115,1-120,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseExclusions[ "", { "A", "B" } ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseExclusions[ "", { "A", "B" } ],
     { },
     SameTest -> MatchQ,
     TestID   -> "ParseExclusions-EmptyWithDefault@@Tests/CodeInspectorTool.wlt:122,1-127,2"
@@ -129,30 +129,30 @@ VerificationTest[
 (* ::**************************************************************************************************************:: *)
 (*parseConfidenceLevel*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseConfidenceLevel[ Missing[ "KeyAbsent" ] ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseConfidenceLevel[ Missing[ "KeyAbsent" ] ],
     0.75,
     SameTest -> SameQ,
     TestID   -> "ParseConfidenceLevel-Missing@@Tests/CodeInspectorTool.wlt:131,1-136,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseConfidenceLevel[ 0.5 ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseConfidenceLevel[ 0.5 ],
     0.5,
     SameTest -> SameQ,
     TestID   -> "ParseConfidenceLevel-Valid@@Tests/CodeInspectorTool.wlt:138,1-143,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseConfidenceLevel[ 0 ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseConfidenceLevel[ 0 ],
     0.0,
     SameTest -> SameQ,
     TestID   -> "ParseConfidenceLevel-IntegerValue@@Tests/CodeInspectorTool.wlt:145,1-150,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`parseConfidenceLevel[ 1.5 ],
+    Wolfram`AgentTools`Common`catchTop @ Wolfram`AgentTools`Tools`CodeInspector`Private`parseConfidenceLevel[ 1.5 ],
     _Failure,
-    { MCPServer::CodeInspectorInvalidConfidence },
+    { AgentTools::CodeInspectorInvalidConfidence },
     SameTest -> MatchQ,
     TestID   -> "ParseConfidenceLevel-OutOfRange@@Tests/CodeInspectorTool.wlt:152,1-158,2"
 ]
@@ -161,21 +161,21 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*parseLimit*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseLimit[ Missing[ "KeyAbsent" ] ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseLimit[ Missing[ "KeyAbsent" ] ],
     100,
     SameTest -> SameQ,
     TestID   -> "ParseLimit-Missing@@Tests/CodeInspectorTool.wlt:163,1-168,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseLimit[ 50 ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseLimit[ 50 ],
     50,
     SameTest -> SameQ,
     TestID   -> "ParseLimit-Valid@@Tests/CodeInspectorTool.wlt:170,1-175,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseLimit[ -5 ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseLimit[ -5 ],
     100,
     SameTest -> SameQ,
     TestID   -> "ParseLimit-Negative@@Tests/CodeInspectorTool.wlt:177,1-182,2"
@@ -189,48 +189,48 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*validateAndNormalizeInput*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`validateAndNormalizeInput[ "If[a,b,c]", Missing[ "KeyAbsent" ] ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`validateAndNormalizeInput[ "If[a,b,c]", Missing[ "KeyAbsent" ] ],
     "If[a,b,c]",
     SameTest -> SameQ,
     TestID   -> "ValidateInput-CodeString@@Tests/CodeInspectorTool.wlt:191,1-196,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`validateAndNormalizeInput[ Missing[ "KeyAbsent" ], $InstallationDirectory ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`validateAndNormalizeInput[ Missing[ "KeyAbsent" ], $InstallationDirectory ],
     $InstallationDirectory,
     SameTest -> SameQ,
     TestID   -> "ValidateInput-Directory@@Tests/CodeInspectorTool.wlt:198,1-203,2"
 ]
 
 VerificationTest[
-    (* Use a file from the MCPServer paclet that's guaranteed to exist *)
+    (* Use a file from the AgentTools paclet that's guaranteed to exist *)
     $testFile = FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" };
-    Wolfram`MCPServer`Tools`CodeInspector`Private`validateAndNormalizeInput[ Missing[ "KeyAbsent" ], $testFile ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`validateAndNormalizeInput[ Missing[ "KeyAbsent" ], $testFile ],
     File[ $testFile ],
     SameTest -> MatchQ,
     TestID   -> "ValidateInput-File@@Tests/CodeInspectorTool.wlt:205,1-212,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`validateAndNormalizeInput[ Missing[ "KeyAbsent" ], Missing[ "KeyAbsent" ] ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`validateAndNormalizeInput[ Missing[ "KeyAbsent" ], Missing[ "KeyAbsent" ] ],
     _Failure,
-    { MCPServer::CodeInspectorNoInput },
+    { AgentTools::CodeInspectorNoInput },
     SameTest -> MatchQ,
     TestID   -> "ValidateInput-NoInput@@Tests/CodeInspectorTool.wlt:214,1-220,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`validateAndNormalizeInput[ "code", "file" ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`validateAndNormalizeInput[ "code", "file" ],
     _Failure,
-    { MCPServer::CodeInspectorAmbiguousInput },
+    { AgentTools::CodeInspectorAmbiguousInput },
     SameTest -> MatchQ,
     TestID   -> "ValidateInput-BothInputs@@Tests/CodeInspectorTool.wlt:222,1-228,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`validateAndNormalizeInput[ Missing[ "KeyAbsent" ], "/nonexistent/path/file.wl" ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`validateAndNormalizeInput[ Missing[ "KeyAbsent" ], "/nonexistent/path/file.wl" ],
     _Failure,
-    { MCPServer::CodeInspectorFileNotFound },
+    { AgentTools::CodeInspectorFileNotFound },
     SameTest -> MatchQ,
     TestID   -> "ValidateInput-FileNotFound@@Tests/CodeInspectorTool.wlt:230,1-236,2"
 ]
@@ -243,7 +243,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*runInspection - Code String*)
 VerificationTest[
-    $codeResult = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $codeResult = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         "If[a, b, b]",
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.5 |>
     ],
@@ -262,7 +262,7 @@ VerificationTest[
 
 VerificationTest[
     (* Clean code should return empty list *)
-    Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         "f[x_] := x + 1",
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.5 |>
     ],
@@ -273,7 +273,7 @@ VerificationTest[
 
 VerificationTest[
     (* Test with severity exclusions *)
-    $filteredResult = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $filteredResult = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         "If[a, b, b]",
         <| "tagExclusions" -> { }, "severityExclusions" -> { "Warning", "Error" }, "confidenceLevel" -> 0.5 |>
     ],
@@ -284,7 +284,7 @@ VerificationTest[
 
 VerificationTest[
     (* Test with tag exclusions *)
-    $tagFilteredResult = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $tagFilteredResult = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         "If[a, b, b]",
         <| "tagExclusions" -> { "DuplicateClauses::If" }, "severityExclusions" -> { }, "confidenceLevel" -> 0.5 |>
     ],
@@ -308,7 +308,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    $fileResult = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $fileResult = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         File[ $testWLFile ],
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.5 |>
     ],
@@ -338,7 +338,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    $dirResult = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $dirResult = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         $tempDir,
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.5 |>
     ],
@@ -380,7 +380,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*summaryTable*)
 VerificationTest[
-    $summaryTableResult = Wolfram`MCPServer`Tools`CodeInspector`Private`summaryTable @ {
+    $summaryTableResult = Wolfram`AgentTools`Tools`CodeInspector`Private`summaryTable @ {
         InspectionObject[ "Tag1", "Desc1", "Error", <| ConfidenceLevel -> 0.9 |> ],
         InspectionObject[ "Tag2", "Desc2", "Warning", <| ConfidenceLevel -> 0.8 |> ],
         InspectionObject[ "Tag3", "Desc3", "Error", <| ConfidenceLevel -> 0.7 |> ]
@@ -422,7 +422,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*formatLocation*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`formatLocation[
+    Wolfram`AgentTools`Tools`CodeInspector`Private`formatLocation[
         "If[a, b, b]",
         { { 1, 7 }, { 1, 8 } }
     ],
@@ -432,7 +432,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`formatLocation[
+    Wolfram`AgentTools`Tools`CodeInspector`Private`formatLocation[
         "x",
         { { 1, 1 }, { 1, 1 } }
     ],
@@ -442,7 +442,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`formatLocation[
+    Wolfram`AgentTools`Tools`CodeInspector`Private`formatLocation[
         File[ "/path/to/file.wl" ],
         { { 42, 7 }, { 42, 15 } }
     ],
@@ -452,7 +452,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`formatLocation[
+    Wolfram`AgentTools`Tools`CodeInspector`Private`formatLocation[
         "code",
         Missing[ "NotAvailable" ]
     ],
@@ -465,7 +465,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*extractCodeSnippet*)
 VerificationTest[
-    $snippetResult = Wolfram`MCPServer`Tools`CodeInspector`Private`extractCodeSnippet[
+    $snippetResult = Wolfram`AgentTools`Tools`CodeInspector`Private`extractCodeSnippet[
         "If[a, b, b]",
         { { 1, 7 }, { 1, 8 } },
         1
@@ -491,7 +491,7 @@ VerificationTest[
 
 VerificationTest[
     (* Multi-line code with context *)
-    $multiLineSnippet = Wolfram`MCPServer`Tools`CodeInspector`Private`extractCodeSnippet[
+    $multiLineSnippet = Wolfram`AgentTools`Tools`CodeInspector`Private`extractCodeSnippet[
         "line1\nline2\nIf[a, b, b]\nline4\nline5",
         { { 3, 7 }, { 3, 8 } },
         1
@@ -510,7 +510,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`extractCodeSnippet[
+    Wolfram`AgentTools`Tools`CodeInspector`Private`extractCodeSnippet[
         "code",
         Missing[ "NotAvailable" ],
         1
@@ -524,7 +524,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*formatInspection*)
 VerificationTest[
-    $formattedInspection = Wolfram`MCPServer`Tools`CodeInspector`Private`formatInspection[
+    $formattedInspection = Wolfram`AgentTools`Tools`CodeInspector`Private`formatInspection[
         InspectionObject[
             "DuplicateClauses",
             "Both branches of ``If`` are the same.",
@@ -571,7 +571,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*inspectionsToMarkdown - No Issues*)
 VerificationTest[
-    $noIssuesResult = Wolfram`MCPServer`Tools`CodeInspector`Private`inspectionsToMarkdown[
+    $noIssuesResult = Wolfram`AgentTools`Tools`CodeInspector`Private`inspectionsToMarkdown[
         { },
         "f[x_] := x + 1",
         <| "confidenceLevel" -> 0.75, "severityExclusions" -> { "Formatting" }, "tagExclusions" -> { }, "limit" -> 100 |>
@@ -606,7 +606,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*inspectionsToMarkdown - With Issues*)
 VerificationTest[
-    $withIssuesResult = Wolfram`MCPServer`Tools`CodeInspector`Private`inspectionsToMarkdown[
+    $withIssuesResult = Wolfram`AgentTools`Tools`CodeInspector`Private`inspectionsToMarkdown[
         {
             InspectionObject[
                 "DuplicateClauses",
@@ -648,7 +648,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*inspectionsToMarkdown - Truncation*)
 VerificationTest[
-    $truncatedResult = Wolfram`MCPServer`Tools`CodeInspector`Private`inspectionsToMarkdown[
+    $truncatedResult = Wolfram`AgentTools`Tools`CodeInspector`Private`inspectionsToMarkdown[
         Table[
             InspectionObject[ "Tag" <> ToString @ i, "Desc", "Warning", <| ConfidenceLevel -> 0.9 |> ],
             { i, 10 }
@@ -672,7 +672,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*inspectionsToMarkdown - File Source*)
 VerificationTest[
-    $fileSourceResult = Wolfram`MCPServer`Tools`CodeInspector`Private`inspectionsToMarkdown[
+    $fileSourceResult = Wolfram`AgentTools`Tools`CodeInspector`Private`inspectionsToMarkdown[
         {
             InspectionObject[
                 "TestIssue",
@@ -704,7 +704,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*formatCodeActions - Empty List*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`formatCodeActions[ { } ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`formatCodeActions[ { } ],
     "",
     SameTest -> SameQ,
     TestID   -> "FormatCodeActions-EmptyList@@Tests/CodeInspectorTool.wlt:706,1-711,2"
@@ -714,7 +714,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*formatCodeActions - Single Action*)
 VerificationTest[
-    $singleActionResult = Wolfram`MCPServer`Tools`CodeInspector`Private`formatCodeActions @ {
+    $singleActionResult = Wolfram`AgentTools`Tools`CodeInspector`Private`formatCodeActions @ {
         CodeParser`CodeAction[ "Delete ``,``", CodeParser`DeleteText, <| CodeParser`Source -> { { 1, 5 }, { 1, 6 } } |> ]
     },
     _String,
@@ -740,7 +740,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*formatCodeActions - Multiple Actions*)
 VerificationTest[
-    $multiActionResult = Wolfram`MCPServer`Tools`CodeInspector`Private`formatCodeActions @ {
+    $multiActionResult = Wolfram`AgentTools`Tools`CodeInspector`Private`formatCodeActions @ {
         CodeParser`CodeAction[ "Insert ``*``", CodeParser`InsertNode, <| CodeParser`Source -> { { 1, 5 }, { 1, 5 } } |> ],
         CodeParser`CodeAction[ "Insert ``,``", CodeParser`InsertNode, <| CodeParser`Source -> { { 1, 5 }, { 1, 5 } } |> ]
     },
@@ -767,7 +767,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*formatSingleCodeAction*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`formatSingleCodeAction[
+    Wolfram`AgentTools`Tools`CodeInspector`Private`formatSingleCodeAction[
         CodeParser`CodeAction[ "Replace with ``StringQ``", CodeParser`ReplaceNode, <| "ReplacementNode" -> CodeParser`LeafNode[ Symbol, "StringQ", <| |> ] |> ]
     ],
     _String ? (StringContainsQ[ #, "Replace with `StringQ`" ] &),
@@ -776,7 +776,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`formatSingleCodeAction[
+    Wolfram`AgentTools`Tools`CodeInspector`Private`formatSingleCodeAction[
         CodeParser`CodeAction[ "Delete key 1", CodeParser`DeleteNode, <| CodeParser`Source -> { { 1, 1 }, { 1, 5 } } |> ]
     ],
     _String ? (StringContainsQ[ #, "Delete key 1" ] &),
@@ -785,7 +785,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`formatSingleCodeAction[ "invalid" ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`formatSingleCodeAction[ "invalid" ],
     "",
     SameTest -> SameQ,
     TestID   -> "FormatSingleCodeAction-Invalid@@Tests/CodeInspectorTool.wlt:787,1-792,2"
@@ -795,56 +795,56 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*codeActionCommandToString*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`ReplaceText ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`ReplaceText ],
     "Replace with",
     SameTest -> SameQ,
     TestID   -> "CodeActionCommandToString-ReplaceText@@Tests/CodeInspectorTool.wlt:797,1-802,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`DeleteText ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`DeleteText ],
     "Delete",
     SameTest -> SameQ,
     TestID   -> "CodeActionCommandToString-DeleteText@@Tests/CodeInspectorTool.wlt:804,1-809,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`InsertText ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`InsertText ],
     "Insert",
     SameTest -> SameQ,
     TestID   -> "CodeActionCommandToString-InsertText@@Tests/CodeInspectorTool.wlt:811,1-816,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`ReplaceNode ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`ReplaceNode ],
     "Replace with",
     SameTest -> SameQ,
     TestID   -> "CodeActionCommandToString-ReplaceNode@@Tests/CodeInspectorTool.wlt:818,1-823,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`DeleteNode ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`DeleteNode ],
     "Delete",
     SameTest -> SameQ,
     TestID   -> "CodeActionCommandToString-DeleteNode@@Tests/CodeInspectorTool.wlt:825,1-830,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`InsertNode ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`InsertNode ],
     "Insert",
     SameTest -> SameQ,
     TestID   -> "CodeActionCommandToString-InsertNode@@Tests/CodeInspectorTool.wlt:832,1-837,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`InsertNodeAfter ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`InsertNodeAfter ],
     "Insert after",
     SameTest -> SameQ,
     TestID   -> "CodeActionCommandToString-InsertNodeAfter@@Tests/CodeInspectorTool.wlt:839,1-844,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ UnknownCommand ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`codeActionCommandToString[ UnknownCommand ],
     "UnknownCommand",
     SameTest -> SameQ,
     TestID   -> "CodeActionCommandToString-Unknown@@Tests/CodeInspectorTool.wlt:846,1-851,2"
@@ -854,21 +854,21 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*cleanLabel*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`cleanLabel[ "Replace with ``StringQ``" ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`cleanLabel[ "Replace with ``StringQ``" ],
     "Replace with `StringQ`",
     SameTest -> SameQ,
     TestID   -> "CleanLabel-SingleBackticks@@Tests/CodeInspectorTool.wlt:856,1-861,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`cleanLabel[ "Insert ``*`` and ``+``" ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`cleanLabel[ "Insert ``*`` and ``+``" ],
     "Insert `*` and `+`",
     SameTest -> SameQ,
     TestID   -> "CleanLabel-MultipleBackticks@@Tests/CodeInspectorTool.wlt:863,1-868,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`cleanLabel[ "No backticks here" ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`cleanLabel[ "No backticks here" ],
     "No backticks here",
     SameTest -> SameQ,
     TestID   -> "CleanLabel-NoBackticks@@Tests/CodeInspectorTool.wlt:870,1-875,2"
@@ -879,7 +879,7 @@ VerificationTest[
 (*formatCodeActions Integration with formatInspection*)
 VerificationTest[
     (* Test that formatInspection includes CodeActions *)
-    $inspectionWithActions = Wolfram`MCPServer`Tools`CodeInspector`Private`formatInspection[
+    $inspectionWithActions = Wolfram`AgentTools`Tools`CodeInspector`Private`formatInspection[
         InspectionObject[
             "Comma",
             "Extra comma.",
@@ -930,12 +930,12 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         $emptyDir,
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.5 |>
     ],
     _Failure,
-    { MCPServer::CodeInspectorNoFilesFound },
+    { AgentTools::CodeInspectorNoFilesFound },
     SameTest -> MatchQ,
     TestID   -> "ErrorCase-EmptyDirectory@@Tests/CodeInspectorTool.wlt:932,1-941,2"
 ]
@@ -1657,7 +1657,7 @@ VerificationTest[
 (*Line Exceeding Maximum Length*)
 VerificationTest[
     $longLineCode = "x = " <> StringJoin @ Table[ "a", 200 ];
-    $longLineInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $longLineInspections = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         $longLineCode,
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.0 |>
     ],
@@ -1684,7 +1684,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Line Exactly at Maximum Length*)
 VerificationTest[
-    $exactLineInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $exactLineInspections = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         StringJoin @ Table[ "a", 200 ],
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.0 |>
     ],
@@ -1704,7 +1704,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Short Lines Only*)
 VerificationTest[
-    $shortLineInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $shortLineInspections = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         "f[x_] := x + 1\ng[y_] := y * 2",
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.0 |>
     ],
@@ -1729,7 +1729,7 @@ VerificationTest[
 (*File Exceeding Maximum Lines*)
 VerificationTest[
     $longFileCode = StringJoin @ Table[ "x = 1\n", 10001 ];
-    $longFileInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $longFileInspections = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         $longFileCode,
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.0 |>
     ],
@@ -1756,7 +1756,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*File Within Maximum Lines*)
 VerificationTest[
-    $shortFileInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $shortFileInspections = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         StringJoin @ Table[ "x = 1\n", 100 ],
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.0 |>
     ],
@@ -1776,7 +1776,7 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*Custom Rules - Formatting Severity Exclusion*)
 VerificationTest[
-    $formattingExcludedInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $formattingExcludedInspections = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         "x = " <> StringJoin @ Table[ "a", 200 ],
         <| "tagExclusions" -> { }, "severityExclusions" -> { "Formatting" }, "confidenceLevel" -> 0.0 |>
     ],

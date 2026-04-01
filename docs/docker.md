@@ -1,4 +1,4 @@
-# Running MCPServer with Docker
+# Running AgentTools with Docker
 
 This guide explains how to run the Wolfram MCP Server using Docker containers.
 
@@ -208,8 +208,8 @@ You can combine multiple volume mounts (licensing + workspace):
 Building the Docker image requires a Wolfram Engine entitlement ID to pre-install dependencies during the build. The entitlement ID is passed securely via BuildKit secrets and is **not** stored in the final image.
 
 ```bash
-git clone https://github.com/rhennigan/MCPServer.git
-cd MCPServer
+git clone https://github.com/rhennigan/AgentTools.git
+cd AgentTools
 
 # Set your entitlement ID
 export WOLFRAMSCRIPT_ENTITLEMENTID=O-XXXX-XXXXXXXXXXXXX
@@ -236,7 +236,7 @@ For development, mount the local source directory:
 
 ```bash
 docker run -i --rm \
-  -v $(pwd):/opt/MCPServer \
+  -v $(pwd):/opt/AgentTools \
   -e WOLFRAMSCRIPT_ENTITLEMENTID=your-id \
   ghcr.io/rhennigan/mcpserver:latest
 ```
@@ -281,7 +281,7 @@ docker run -i --rm \
 The Docker image is built on `wolframresearch/wolframengine:14.3` and includes:
 
 - Wolfram Engine 14.3
-- MCPServer paclet (Kernel/, Scripts/)
+- AgentTools paclet (Kernel/, Scripts/)
 - Pre-built MX files for faster startup
 - Pre-installed dependencies (Chatbook, LLMFunctions, SemanticSearch paclets)
 - Pre-installed vector databases for documentation search

@@ -1,5 +1,5 @@
 ```wl
-In[1]:= PacletDirectoryLoad["MCPServer"]; Get["Wolfram`MCPServer`"];
+In[1]:= PacletDirectoryLoad["AgentTools"]; Get["Wolfram`AgentTools`"];
 
 In[2]:= toolName = "TestReport";
 
@@ -9,7 +9,7 @@ Out[3]= LLMTool[...]
 
 In[4]:= data = tool["Data"]
 
-Out[4]= <|"Name" -> "TestReport", "DisplayName" -> "Test Report", "Description" -> "Runs Wolfram Language test files (.wlt) and returns a report of the results", "Function" -> Wolfram`MCPServer`Tools`TestReport`Private`testReport, "Options" -> {}, "Paramet ...  constraint (in bytes) for each test file", "Required" -> False|>, "newKernel" -> <|"Interpreter" -> "Boolean", "Help" -> "Whether to use a fresh kernel for running tests (default is true)", "Required" -> False|>}, "LLMPacletVersion" -> "2.2.10"|>
+Out[4]= <|"Name" -> "TestReport", "DisplayName" -> "Test Report", "Description" -> "Runs Wolfram Language test files (.wlt) and returns a report of the results", "Function" -> Wolfram`AgentTools`Tools`TestReport`Private`testReport, "Options" -> {}, "Paramet ...  constraint (in bytes) for each test file", "Required" -> False|>, "newKernel" -> <|"Interpreter" -> "Boolean", "Help" -> "Whether to use a fresh kernel for running tests (default is true)", "Required" -> False|>}, "LLMPacletVersion" -> "2.2.10"|>
 ```
 
 Script name:
@@ -37,7 +37,7 @@ Out[8]= <|"timeConstraint" -> <|"Interpreter" -> "Integer", "Help" -> "An option
 There is no need to parse script argument strings, since the tool does it automatically:
 
 ```wl
-In[9]:= tool[<|"paths" -> "MCPServer/Tests/Files.wlt", "timeConstraint" -> "10", "newKernel" -> "true"|>]
+In[9]:= tool[<|"paths" -> "AgentTools/Tests/Files.wlt", "timeConstraint" -> "10", "newKernel" -> "true"|>]
 
 Out[9]=
 "# Test Results Summary
