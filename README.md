@@ -126,12 +126,6 @@ Clients with project support can have servers installed for specific projects:
 InstallMCPServer[{"ClaudeCode", "/path/to/project"}, "WolframLanguage"]
 ```
 
-For Codex, project-level installation writes `.codex/config.toml` in the project root:
-
-```wl
-InstallMCPServer[{"Codex", "/path/to/project"}, "WolframLanguage"]
-```
-
 ### Claude Desktop
 
 Claude Desktop offers an excellent integration experience with AgentTools, providing seamless access to Wolfram Language's computational capabilities.
