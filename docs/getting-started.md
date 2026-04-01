@@ -10,7 +10,7 @@ This guide helps you set up your development environment and understand the work
 
 ## Project Overview
 
-AgentTools is a Wolfram Language package that implements a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server. This enables Wolfram Language to function as a backend for large language models (LLMs) by providing a standardized interface for models to access Wolfram Language computation capabilities.
+AgentTools is a Wolfram Language toolkit for integrating with AI agents and LLMs — providing [MCP](https://modelcontextprotocol.io) servers, agent skills, and other standard interfaces that give AI systems access to Wolfram's computational capabilities.
 
 For user documentation, see the [AgentTools paclet documentation](https://paclets.com/Wolfram/AgentTools).
 
