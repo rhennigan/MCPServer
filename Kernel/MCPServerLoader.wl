@@ -45,3 +45,12 @@ Quiet[
 
 (* Set the paclet object for this paclet, ensuring that it corresponds to the one that's actually loaded: *)
 Wolfram`MCPServer`Common`$thisPaclet = PacletObject @ File @ DirectoryName[ $InputFileName, 2 ];
+
+(* Issue a deprecation warning if the paclet is not being used to start an MCP server: *)
+If[ ! AnyTrue[ $CommandLine, StringContainsQ[ "StartMCPServer" ] ],
+    Message[
+        Wolfram`MCPServer`MCPServer::ObsoletePaclet,
+        Hyperlink[ "Wolfram/AgentTools", "https://paclets.com/Wolfram/AgentTools" ],
+        HoldForm @ Style[ PacletInstall[ "Wolfram/AgentTools" ], ShowStringCharacters -> True ]
+    ]
+];

@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 30
 
     container:
-      image: wolframresearch/wolframengine:14.2
+      image: wolframresearch/wolframengine:14.3
       options: --user root
 
     env:
@@ -38,7 +38,7 @@ jobs:
         apt-get update && apt-get install software-properties-common -y
         add-apt-repository ppa:git-core/ppa -y
         apt-get update && apt-get install git -y
-        wget ${{ env.GH_INSTALL_URL }} -O gh.deb
+        curl -fsSL ${{ env.GH_INSTALL_URL }} -o gh.deb
         echo "${{ env.GH_INSTALL_SHA256 }}  gh.deb" | sha256sum --check
         dpkg -i gh.deb
 

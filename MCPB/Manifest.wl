@@ -60,7 +60,7 @@
         "wolfram_executable" -> <|
             "type"        -> "file",
             "title"       -> "Path to Wolfram Kernel executable",
-            "description" -> "Path to the wolfram binary executable (e.g. `C:\\Program Files\\Wolfram Research\\Wolfram\\14.2\\wolfram.exe`)",
+            "description" -> "Path to the wolfram binary executable (e.g. `C:\\Program Files\\Wolfram Research\\Wolfram\\14.3\\wolfram.exe`)",
             "required"    -> True
         |>,
         "mcp_server_name" -> <|
