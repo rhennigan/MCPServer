@@ -3,7 +3,7 @@
     "name"             -> "wolfram-engine",
     "display_name"     -> "Wolfram Engine",
     "version"          -> TemplateSlot[ "PacletVersion" ],
-    "description"      -> "Implements a model context protocol server using Wolfram Language",
+    "description"      -> "Provides tools and integrations for connecting Wolfram Language to AI agents and LLMs",
     "long_description" -> TemplateSlot[ "LongDescription" ],
     "author"           -> <| "name" -> "Richard Hennigan (Wolfram Research)", "email" -> "richardh@wolfram.com" |>,
     "repository"       -> <| "type" -> "git", "url" -> "https://github.com/WolframResearch/AgentTools" |>,
