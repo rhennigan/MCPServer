@@ -4,7 +4,7 @@ This guide helps you set up your development environment and understand the work
 
 ## Prerequisites
 
-- **Wolfram Language** (Mathematica 14.2+ or Wolfram Engine)
+- **Wolfram Language** (Mathematica 14.3+ or Wolfram Engine)
 - **wolframscript** (for running build scripts)
 - **Git**
 
