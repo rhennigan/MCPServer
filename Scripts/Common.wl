@@ -25,7 +25,9 @@ DefinitionNotebookClient`$DisabledHints = <| "MessageTag" -> #, "Level" -> All, 
     "CodeInspectionFileIssue/TopLevel",
     "HeroImageSquashed",
     "HugeRaster",
-    "InternalContextWarning"
+    "InternalContextWarning",
+    "InvalidFirstVersion",
+    "NoGithubRepoFound"
 };
 
 $messageHistoryLength = 10;
