@@ -4,7 +4,7 @@ description: Reads and writes Wolfram notebook (.nb) files. Use this skill when 
 compatibility: Requires the Wolfram MCP server or wolframscript on PATH
 metadata:
   author: Wolfram Research
-  version: 1.8.5
+  version: 2.0.0
 ---
 
 # Wolfram Notebooks
