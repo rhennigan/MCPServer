@@ -19,10 +19,10 @@ System`DeployAgentTools;
 `$LastAgentToolsFailure;
 `$LastAgentToolsFailureText;
 `$SupportedMCPClients;
+`AgentTools;
 `CodeInspectorToolFunction;
 `CreateMCPServer;
 `InstallMCPServer;
-`MCPServer;
 `MCPServerObject;
 `MCPServerObjectQ;
 `MCPServerObjects;
@@ -51,7 +51,7 @@ WithCleanup[
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Usage Messages*)
-GeneralUtilities`SetUsage[ MCPServer, "MCPServer is a symbol for miscellaneous messages." ];
+GeneralUtilities`SetUsage[ AgentTools, "AgentTools is a symbol for miscellaneous messages." ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
