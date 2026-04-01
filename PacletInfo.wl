@@ -2,7 +2,7 @@ PacletObject[ <|
     "Name"             -> "Wolfram/AgentTools",
     "Description"      -> "Implements a model context protocol server using Wolfram Language",
     "Creator"          -> "Richard Hennigan (Wolfram Research)",
-    "Version"          -> "1.8.7",
+    "Version"          -> "1.8.8",
     "WolframVersion"   -> "14.3+",
     "PublisherID"      -> "Wolfram",
     "License"          -> "MIT",
