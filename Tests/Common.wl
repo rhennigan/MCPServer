@@ -96,7 +96,7 @@ If[ ! DirectoryQ @ $pacletDirectory, abort[ "Paclet directory ", $pacletDirector
 Quiet @ PacletDirectoryUnload @ $sourceDirectory;
 PacletDataRebuild[ ];
 PacletDirectoryLoad @ $pacletDirectory;
-Quiet[ Get[ "Wolfram`MCPServer`" ], ClearAll::clloc ];
+Quiet[ Get[ "Wolfram`MCPServer`" ], { ClearAll::clloc, Wolfram`MCPServer`MCPServer::ObsoletePaclet } ];
 If[ ! MemberQ[ $LoadedFiles, FileNameJoin @ { $pacletDirectory, "Kernel", "64Bit", "MCPServer.mx" } ],
     cicd`ConsoleWarning[ "Paclet MX file was not loaded" ]
 ];
