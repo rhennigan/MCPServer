@@ -71,4 +71,7 @@ MCPServer::UnrecognizedToolOption         = "Warning: Unrecognized tool name in 
 MCPServer::UnrecognizedToolOptionName     = "Warning: Unrecognized option \"`1`\" for tool \"`2`\" in ToolOptions.";
 MCPServer::InvalidToolOptionValue         = "Warning: Invalid value for tool \"`1`\" in ToolOptions: `2`. Expected an Association. This entry will be ignored.";
 
+(* Obsolete paclet message *)
+MCPServer::ObsoletePaclet = "The paclet \"Wolfram/MCPServer\" has been superseded by `1` and will no longer receive updates. Use `2` to install the new paclet.";
+
 EndPackage[ ];

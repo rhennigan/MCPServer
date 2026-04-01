@@ -29,15 +29,58 @@ $logTimeStamp := DateString[
     TimeZone -> 0
 ];
 
+$useAgentTools := $useAgentTools = Quiet @ TrueQ @ And[
+    AnyTrue[ $CommandLine, StringContainsQ[ "StartMCPServer" ] ],
+    PacletObjectQ @ PacletInstall[ "Wolfram/AgentTools" ]
+];
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*StartMCPServer*)
 StartMCPServer // beginDefinition;
+StartMCPServer[ args___ ] /; $useAgentTools := stealthCatchTop @ startAgentToolsMCPServer @ args;
 StartMCPServer[ ] := stealthCatchTop @ StartMCPServer @ Environment[ "MCP_SERVER_NAME" ];
 StartMCPServer[ $Failed ] := stealthCatchTop @ StartMCPServer @ $defaultMCPServer;
 StartMCPServer[ name_String ] := stealthCatchTop @ StartMCPServer @ MCPServerObject @ name;
 StartMCPServer[ obj_MCPServerObject ] := stealthCatchTop @ startMCPServer @ ensureMCPServerExists @ obj;
 StartMCPServer // endExportedDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*startAgentToolsMCPServer*)
+(* The MCPServer paclet has been superseded by the AgentTools paclet.
+   When users are loading this paclet in a normal kernel session, they will get the obsolete warning.
+   However, when it's being loaded to start an MCP server, there is no way to pass any message to the user.
+   In this case, we will attempt to automatically use the new AgentTools paclet to start the MCP server, since they
+   may very well never load the paclet in a kernel session again. This ensures they will get future updates to
+   MCP functionality even though the MCPServer is no longer being updated. *)
+startAgentToolsMCPServer // beginDefinition;
+
+startAgentToolsMCPServer[ args___ ] := Enclose[
+    Quiet[
+        (* Ensure that the AgentTools paclet is installed and loads correctly: *)
+        ConfirmAssert[ PacletObjectQ @ PacletObject[ "Wolfram/AgentTools" ], "PacletCheck" ];
+        ConfirmMatch[ Needs[ "Wolfram`AgentTools`" -> None ], Null, "LoadPaclet" ];
+
+        (* Ensure that the StartMCPServer symbol is defined in the AgentTools paclet: *)
+        ConfirmMatch[
+            ToExpression[ "Wolfram`AgentTools`StartMCPServer", InputForm, DownValues ],
+            { __ },
+            "DefinitionCheck"
+        ];
+
+        (* Call the StartMCPServer symbol with the original arguments.
+           If working properly, it will never return, so this Null check should be unreachable. *)
+        ConfirmMatch[ Symbol[ "Wolfram`AgentTools`StartMCPServer" ][ args ], Null, "StartMCPServer" ]
+    ],
+    (* Fallback in case the AgentTools paclet cannot be installed or loaded: *)
+    Function[
+        $useAgentTools = False;
+        StartMCPServer @ args
+    ]
+];
+
+startAgentToolsMCPServer // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
