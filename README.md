@@ -112,7 +112,7 @@ MCPServer can be installed into the following MCP client applications:
 | [Cursor](https://www.cursor.com) | `"Cursor"` | No |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | `"GeminiCLI"` | No |
 | [Google Antigravity](https://antigravity.google) | `"Antigravity"` | No |
-| [OpenAI Codex](https://openai.com/codex) | `"Codex"` | No |
+| [OpenAI Codex](https://openai.com/codex) | `"Codex"` | Yes |
 | [OpenCode](https://opencode.ai) | `"OpenCode"` | Yes |
 | [Visual Studio Code](https://code.visualstudio.com) | `"VisualStudioCode"` | Yes |
 | [Windsurf](https://codeium.com/windsurf) | `"Windsurf"` | No |
@@ -124,6 +124,12 @@ Clients with project support can have servers installed for specific projects:
 
 ```wl
 InstallMCPServer[{"ClaudeCode", "/path/to/project"}, "WolframLanguage"]
+```
+
+For Codex, project-level installation writes `.codex/config.toml` in the project root:
+
+```wl
+InstallMCPServer[{"Codex", "/path/to/project"}, "WolframLanguage"]
 ```
 
 ### Claude Desktop
