@@ -1,6 +1,13 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`" ];
+BeginPackage[ "Wolfram`AgentTools`" ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*System Symbols*)
+System`AgentToolsDeployment;
+System`DeployedAgentTools;
+System`DeployAgentTools;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -9,26 +16,27 @@ BeginPackage[ "Wolfram`MCPServer`" ];
 `$DefaultMCPServers;
 `$DefaultMCPToolOptions;
 `$DefaultMCPTools;
-`$LastMCPServerFailure;
-`$LastMCPServerFailureText;
+`$LastAgentToolsFailure;
+`$LastAgentToolsFailureText;
 `$SupportedMCPClients;
+`AgentTools;
 `CodeInspectorToolFunction;
 `CreateMCPServer;
 `InstallMCPServer;
-`MCPServer;
 `MCPServerObject;
 `MCPServerObjectQ;
 `MCPServerObjects;
 `StartMCPServer;
 `TestReportToolFunction;
 `UninstallMCPServer;
+`ValidateAgentToolsPacletExtension;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Begin Private Context*)
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`Common`" ];
+Needs[ "Wolfram`AgentTools`Common`" ];
 
 (* Avoiding context aliasing due to bug 434990: *)
 Needs[ "GeneralUtilities`" -> None ];
@@ -36,79 +44,88 @@ Needs[ "GeneralUtilities`" -> None ];
 (* Clear subcontexts from `$Packages` to force `Needs` to run again: *)
 WithCleanup[
     Unprotect @ $Packages,
-    $Packages = Select[ $Packages, Not @* StringStartsQ[ "Wolfram`MCPServer`"~~__~~"`" ] ],
+    $Packages = Select[ $Packages, Not @* StringStartsQ[ "Wolfram`AgentTools`"~~__~~"`" ] ],
     Protect @ $Packages
 ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Usage Messages*)
-GeneralUtilities`SetUsage[ MCPServer, "MCPServer is a symbol for miscellaneous messages." ];
+GeneralUtilities`SetUsage[ AgentTools, "AgentTools is a symbol for miscellaneous messages." ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Load Files*)
-$MCPServerContexts = {
-    "Wolfram`MCPServer`",
-    "Wolfram`MCPServer`Common`",
-    "Wolfram`MCPServer`CreateMCPServer`",
-    "Wolfram`MCPServer`DefaultServers`",
-    "Wolfram`MCPServer`Files`",
-    "Wolfram`MCPServer`Formatting`",
-    "Wolfram`MCPServer`Graphics`",
-    "Wolfram`MCPServer`InstallMCPServer`",
-    "Wolfram`MCPServer`MCPServerObject`",
-    "Wolfram`MCPServer`Prompts`",
-    "Wolfram`MCPServer`StartMCPServer`",
-    "Wolfram`MCPServer`SupportedClients`",
-    "Wolfram`MCPServer`TOML`",
-    "Wolfram`MCPServer`Tools`",
-    "Wolfram`MCPServer`UIResources`",
-    "Wolfram`MCPServer`Utilities`"
+$AgentToolsContexts = {
+    "Wolfram`AgentTools`",
+    "Wolfram`AgentTools`Common`",
+    "Wolfram`AgentTools`CreateMCPServer`",
+    "Wolfram`AgentTools`DefaultServers`",
+    "Wolfram`AgentTools`DeployAgentTools`",
+    "Wolfram`AgentTools`Files`",
+    "Wolfram`AgentTools`Formatting`",
+    "Wolfram`AgentTools`Graphics`",
+    "Wolfram`AgentTools`InstallMCPServer`",
+    "Wolfram`AgentTools`MCPServerObject`",
+    "Wolfram`AgentTools`PacletExtension`",
+    "Wolfram`AgentTools`Prompts`",
+    "Wolfram`AgentTools`StartMCPServer`",
+    "Wolfram`AgentTools`SupportedClients`",
+    "Wolfram`AgentTools`TOML`",
+    "Wolfram`AgentTools`Tools`",
+    "Wolfram`AgentTools`UIResources`",
+    "Wolfram`AgentTools`Utilities`",
+    "Wolfram`AgentTools`ValidateAgentToolsPacletExtension`"
 };
 
-Scan[ Needs[ # -> None ] &, $MCPServerContexts ];
+Scan[ Needs[ # -> None ] &, $AgentToolsContexts ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Names*)
-$MCPServerSymbolNames = $MCPServerSymbolNames =
+$AgentToolsSymbolNames = $AgentToolsSymbolNames =
     Block[ { $Context, $ContextPath },
-        Union[ Names[ "Wolfram`MCPServer`*" ], Names[ "Wolfram`MCPServer`*`*" ] ]
+        Union[ Names[ "Wolfram`AgentTools`*" ], Names[ "Wolfram`AgentTools`*`*" ] ]
     ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Protected Symbols*)
-$MCPServerProtectedNames = "Wolfram`MCPServer`" <> # & /@ {
+$AgentToolsProtectedNames = "Wolfram`AgentTools`" <> # & /@ {
     "$DefaultMCPPrompts",
     "$DefaultMCPServers",
     "$DefaultMCPToolOptions",
     "$DefaultMCPTools",
-    "$LastMCPServerFailure",
-    "$LastMCPServerFailureText",
+    "$LastAgentToolsFailure",
+    "$LastAgentToolsFailureText",
     "$SupportedMCPClients",
+    "AgentTools",
     "CodeInspectorToolFunction",
     "CreateMCPServer",
     "InstallMCPServer",
-    "MCPServer",
     "MCPServerObject",
     "MCPServerObjectQ",
     "MCPServerObjects",
     "StartMCPServer",
     "TestReportToolFunction",
-    "UninstallMCPServer"
+    "UninstallMCPServer",
+    "ValidateAgentToolsPacletExtension"
 };
 
-Scan[ Protect, $MCPServerProtectedNames ];
+Scan[ Protect, $AgentToolsProtectedNames ];
+
+SetAttributes[
+    { AgentToolsDeployment, DeployedAgentTools, DeployAgentTools },
+    { Protected, ReadProtected }
+];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Package Footer*)
 addToMXInitialization[
-    $MCPServerContexts;
-    $MCPServerSymbolNames;
-    SetAttributes[ Evaluate @ Names[ "Wolfram`MCPServer`*" ], ReadProtected ];
+    $AgentToolsContexts;
+    $AgentToolsSymbolNames;
+    SetAttributes[ Evaluate @ Names[ "Wolfram`AgentTools`*" ], ReadProtected ];
 ];
 
 mxInitialize[ ];

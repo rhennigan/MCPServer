@@ -22,7 +22,7 @@ debugEcho[ expr_ ] := (WriteLine[ "stderr", ToString[ expr, InputForm ] ]; expr)
 initialize // ClearAll;
 
 initialize[ name_ ] :=
-    If[ StringQ @ name, initialize[ name, PersistentSymbol[ "Wolfram/MCPServer/Initialization/"<>name ] ] ];
+    If[ StringQ @ name, initialize[ name, PersistentSymbol[ "Wolfram/AgentTools/Initialization/"<>name ] ] ];
 
 initialize[ name_String, _Missing ] :=
     Null;
@@ -51,9 +51,9 @@ initialize[ Environment[ "MCP_SERVER_NAME" ] ];
 (* ::Subsection::Closed:: *)
 (*Load Current Paclet*)
 PacletDirectoryLoad @ DirectoryName[ $InputFileName, 2 ];
-Get[ "Wolfram`MCPServer`" ];
+Get[ "Wolfram`AgentTools`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Start MCP Server*)
-Wolfram`MCPServer`StartMCPServer[ ]
+Wolfram`AgentTools`StartMCPServer[ ]

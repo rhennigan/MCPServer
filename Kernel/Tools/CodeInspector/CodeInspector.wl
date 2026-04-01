@@ -1,18 +1,18 @@
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Tools`CodeInspector`" ];
+BeginPackage[ "Wolfram`AgentTools`Tools`CodeInspector`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
-Needs[ "Wolfram`MCPServer`Tools`"  ];
+Needs[ "Wolfram`AgentTools`"        ];
+Needs[ "Wolfram`AgentTools`Common`" ];
+Needs[ "Wolfram`AgentTools`Tools`"  ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Config*)
 $defaultConfidenceLevel    = 0.75;
-$defaultSeverityExclusions = { "Formatting", "Remark", "Scoping" };
+$defaultSeverityExclusions = { "Formatting", "Scoping" };
 $defaultTagExclusions      = { };
 $defaultLimit              = 100;
 
@@ -64,7 +64,7 @@ $defaultMCPTools[ "CodeInspector" ] := LLMTool @ <|
         |>,
         "severityExclusions" -> <|
             "Interpreter" -> "String",
-            "Help"        -> "Comma-separated list of severities to exclude. Default: \"Formatting,Remark,Scoping\". Available: Fatal, Error, Warning, Scoping, Remark, Formatting.",
+            "Help"        -> "Comma-separated list of severities to exclude. Default: \"Formatting,Scoping\". Available: Fatal, Error, Warning, Scoping, Remark, Formatting.",
             "Required"    -> False
         |>,
         "confidenceLevel" -> <|
@@ -207,16 +207,16 @@ parseLimit // endDefinition;
 (*Load Submodules*)
 
 (* Inspection logic *)
-<< Wolfram`MCPServer`Tools`CodeInspector`Inspection`;
+<< Wolfram`AgentTools`Tools`CodeInspector`Inspection`;
 
 (* Markdown formatting *)
-<< Wolfram`MCPServer`Tools`CodeInspector`Formatting`;
+<< Wolfram`AgentTools`Tools`CodeInspector`Formatting`;
 
 (* CodeAction handling *)
-<< Wolfram`MCPServer`Tools`CodeInspector`CodeActions`;
+<< Wolfram`AgentTools`Tools`CodeInspector`CodeActions`;
 
 (* Extra inspection rules *)
-<< Wolfram`MCPServer`Tools`CodeInspector`Rules`;
+<< Wolfram`AgentTools`Tools`CodeInspector`Rules`;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

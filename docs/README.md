@@ -1,6 +1,6 @@
-# MCPServer Developer Documentation
+# AgentTools Developer Documentation
 
-This is the developer documentation for contributing to MCPServer. For user documentation, see the [MCPServer paclet documentation](https://paclets.com/Wolfram/MCPServer).
+This is the developer documentation for contributing to AgentTools. For user documentation, see the [AgentTools paclet documentation](https://paclets.com/Wolfram/AgentTools).
 
 ## User Guides
 
@@ -21,6 +21,8 @@ This is the developer documentation for contributing to MCPServer. For user docu
 - **[MCP Clients](mcp-clients.md)** - Supported client applications and configuration
 - **[CodeInspector Rules](code-inspector-rules.md)** - Adding custom CodeInspector rules and current rule catalog
 - **[Agent Skills](agent-skills.md)** - Distributable agent skills, dual-mode architecture, and how to add new skills
+- **[Deploy Agent Tools](deploy-agent-tools.md)** - Managed deployment of Wolfram tools to AI agent clients
+- **[Paclet Extensions](paclet-extensions.md)** - Third-party paclet extension system for contributing tools, prompts, and servers
 
 ## Development Workflow
 

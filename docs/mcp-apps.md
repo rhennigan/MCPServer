@@ -1,12 +1,12 @@
-# MCP Apps in MCPServer
+# MCP Apps in AgentTools
 
-This document explains how MCP Apps work in MCPServer and how to extend them.
+This document explains how MCP Apps work in AgentTools and how to extend them.
 
 ## Overview
 
 [MCP Apps](https://modelcontextprotocol.io/docs/extensions/apps) is the first official MCP extension (`io.modelcontextprotocol/ui`), enabling servers to deliver interactive HTML user interfaces that render inside MCP hosts (Claude Desktop, VS Code, etc.) in sandboxed iframes.
 
-MCPServer uses MCP Apps to provide:
+AgentTools uses MCP Apps to provide:
 
 - **Interactive Wolfram|Alpha results** displayed in an embedded notebook viewer
 - **Rich evaluation output** from `WolframLanguageEvaluator` with interactive cloud notebooks

@@ -1,6 +1,6 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServerTests`" ];
+BeginPackage[ "Wolfram`AgentToolsTests`" ];
 
 (* :!CodeAnalysis::BeginBlock:: *)
 `$BuiltPaclet;
@@ -35,8 +35,10 @@ Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
 (*conditionalTest*)
 conditionalTest // Attributes = { HoldAllComplete };
 
-conditionalTest[ condition_ ] :=
-    Function[ test, conditionalTest[ condition, test ], HoldAllComplete ];
+conditionalTest[ condition0_ ] :=
+    With[ { condition = condition0 }, (* Insert the evaluated condition so we don't repeat it every time *)
+        Function[ test, conditionalTest[ condition, test ], HoldAllComplete ]
+    ];
 
 conditionalTest[ condition_, test: VerificationTest[ ___, TestID -> id_String, ___ ] ] :=
     If[ condition,
@@ -59,8 +61,8 @@ skipIfScript = conditionalTest @ Not @ MatchQ[ $ScriptCommandLine, { __String } 
 (* ::Subsubsection::Closed:: *)
 (*abort*)
 abort[ ] := (
-    If[ $Context === "Wolfram`MCPServerTests`Private`", End[ ] ];
-    If[ $Context === "Wolfram`MCPServerTests`", EndPackage[ ] ];
+    If[ $Context === "Wolfram`AgentToolsTests`Private`", End[ ] ];
+    If[ $Context === "Wolfram`AgentToolsTests`", EndPackage[ ] ];
     cicd`ScriptConfirm[ $Failed ]
 );
 
@@ -78,7 +80,7 @@ endDefinition[ sym_Symbol ] := sym[ args___ ] := abort[ "Invalid arguments in ",
 (* ::Section::Closed:: *)
 (*Configuration*)
 $sourceDirectory = DirectoryName[ $InputFileName, 2 ];
-$buildDirectory  = FileNameJoin @ { $sourceDirectory, "build", "Wolfram__MCPServer" };
+$buildDirectory  = FileNameJoin @ { $sourceDirectory, "build", "Wolfram__AgentTools" };
 $pacletDirectory = Quiet @ SelectFirst[ { $buildDirectory, $sourceDirectory }, PacletObjectQ @* PacletObject @* File ];
 
 $BuiltPaclet = $pacletDirectory === $buildDirectory;
@@ -96,8 +98,8 @@ If[ ! DirectoryQ @ $pacletDirectory, abort[ "Paclet directory ", $pacletDirector
 Quiet @ PacletDirectoryUnload @ $sourceDirectory;
 PacletDataRebuild[ ];
 PacletDirectoryLoad @ $pacletDirectory;
-Quiet[ Get[ "Wolfram`MCPServer`" ], ClearAll::clloc ];
-If[ ! MemberQ[ $LoadedFiles, FileNameJoin @ { $pacletDirectory, "Kernel", "64Bit", "MCPServer.mx" } ],
+Quiet[ Get[ "Wolfram`AgentTools`" ], ClearAll::clloc ];
+If[ ! MemberQ[ $LoadedFiles, FileNameJoin @ { $pacletDirectory, "Kernel", "64Bit", "AgentTools.mx" } ],
     cicd`ConsoleWarning[ "Paclet MX file was not loaded" ]
 ];
 

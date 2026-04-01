@@ -1,14 +1,14 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Prompts`" ];
+BeginPackage[ "Wolfram`AgentTools`Prompts`" ];
 
 (* Symbols shared in Prompts subcontexts: *)
 `$defaultMCPPrompts;
 
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
+Needs[ "Wolfram`AgentTools`"        ];
+Needs[ "Wolfram`AgentTools`Common`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -27,13 +27,13 @@ $defaultMCPPrompts = <| |>;
 (* ::Section::Closed:: *)
 (*Load Subcontexts*)
 $subcontexts = {
-    "Wolfram`MCPServer`Prompts`Search`",
-    "Wolfram`MCPServer`Prompts`Notebook`"
+    "Wolfram`AgentTools`Prompts`Search`",
+    "Wolfram`AgentTools`Prompts`Notebook`"
 };
 
 Scan[ Needs[ # -> None ] &, $subcontexts ];
 
-$MCPServerContexts = Union[ $MCPServerContexts, $subcontexts ];
+$AgentToolsContexts = Union[ $AgentToolsContexts, $subcontexts ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

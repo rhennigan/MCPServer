@@ -1,6 +1,6 @@
-# MCP Prompts in MCPServer
+# MCP Prompts in AgentTools
 
-This document explains how MCP prompts work in MCPServer and how to add new prompts.
+This document explains how MCP prompts work in AgentTools and how to add new prompts.
 
 ## Overview
 
@@ -104,12 +104,12 @@ Create a new file in `Kernel/Prompts/` following the pattern of `Search.wl`:
 ```wl
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Prompts`YourPrompt`" ];
+BeginPackage[ "Wolfram`AgentTools`Prompts`YourPrompt`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"         ];
-Needs[ "Wolfram`MCPServer`Common`"  ];
-Needs[ "Wolfram`MCPServer`Prompts`" ];
+Needs[ "Wolfram`AgentTools`"         ];
+Needs[ "Wolfram`AgentTools`Common`"  ];
+Needs[ "Wolfram`AgentTools`Prompts`" ];
 
 (* ::Section::Closed:: *)
 (*Prompt Definition*)
@@ -157,8 +157,8 @@ Add your new subcontext to `Kernel/Prompts/Prompts.wl`:
 
 ```wl
 $subcontexts = {
-    "Wolfram`MCPServer`Prompts`Search`",
-    "Wolfram`MCPServer`Prompts`YourPrompt`"  (* Add your new subcontext *)
+    "Wolfram`AgentTools`Prompts`Search`",
+    "Wolfram`AgentTools`Prompts`YourPrompt`"  (* Add your new subcontext *)
 };
 ```
 
@@ -196,6 +196,21 @@ CreateMCPServer[ "MyServer", <|
     "MCPPrompts" -> { "WolframLanguageSearch" }
 |> ]
 ```
+
+### Reference Paclet Prompts
+
+Prompts contributed by third-party paclets can be referenced using paclet-qualified names:
+
+```wl
+CreateMCPServer[ "MyServer", <|
+    "MCPPrompts" -> {
+        "WolframLanguageSearch",
+        "PublisherID/MyPaclet/CustomPrompt"
+    }
+|> ]
+```
+
+See [paclet-extensions.md](paclet-extensions.md) for details on how paclets declare prompts.
 
 ### Inline Definition
 
@@ -271,6 +286,7 @@ yourFunction[ args_ ] := Enclose[
 - `Kernel/Prompts/Prompts.wl` - Main prompts module, defines `$DefaultMCPPrompts`
 - `Kernel/Prompts/Search.wl` - Search prompt implementations
 - `Kernel/Prompts/Notebook.wl` - Notebook prompt implementation
+- `Kernel/PacletExtension.wl` - Paclet-qualified prompt resolution (see [paclet-extensions.md](paclet-extensions.md))
 - `Kernel/MCPServerObject.wl` - Prompt validation and normalization
 - `Kernel/StartMCPServer.wl` - Protocol handling for `prompts/list` and `prompts/get`
 - `Kernel/DefaultServers.wl` - Server configurations with `"MCPPrompts"` settings

@@ -2,14 +2,14 @@
 (* ::Section::Closed:: *)
 (*Initialization*)
 VerificationTest[
-    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
+    Needs[ "Wolfram`AgentToolsTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "GetDefinitions@@Tests/PacletDocumentationTools.wlt:4,1-9,2"
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/PacletDocumentationTools.wlt:11,1-16,2"
@@ -295,7 +295,7 @@ VerificationTest[
         True
     ],
     True,
-    { MCPServer::NotebookFileExists },
+    { AgentTools::NotebookFileExists },
     SameTest -> MatchQ,
     TestID -> "CreateSymbolPacletDocumentation-ErrorFileExists@@Tests/PacletDocumentationTools.wlt:270,1-301,2"
 ]

@@ -1,12 +1,12 @@
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Prompts`Notebook`" ];
+BeginPackage[ "Wolfram`AgentTools`Prompts`Notebook`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"         ];
-Needs[ "Wolfram`MCPServer`Common`"  ];
-Needs[ "Wolfram`MCPServer`Prompts`" ];
+Needs[ "Wolfram`AgentTools`"         ];
+Needs[ "Wolfram`AgentTools`Common`"  ];
+Needs[ "Wolfram`AgentTools`Prompts`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

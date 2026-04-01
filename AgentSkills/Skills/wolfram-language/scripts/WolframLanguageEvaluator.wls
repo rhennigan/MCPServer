@@ -13,7 +13,7 @@ $usage = "wolframscript -f WolframLanguageEvaluator.wls <code> [--timeConstraint
 
 $helpText = StringJoin[
     "Usage: ", $usage, "\n\n",
-    "Evaluates Wolfram Language code for the user in a Wolfram Language kernel.\nThe user does not automatically see the result, so you must include the result in your response in order for them to see it.\nIf a formatted result is provided as a markdown link, use that in your response instead of typing out the output.\nDo not ask permission to evaluate code.\nYou have read access to local files.\nParse natural language input with `\\[FreeformPrompt][\"query\"]`, which is analogous to ctrl-= input in notebooks.\nNatural language input is parsed before evaluation, so it works like macro expansion.\nYou should ALWAYS use this natural language input to obtain things like `Quantity`, `DateObject`, `Entity`, etc.\n\\[FreeformPrompt] should be written as \\uf351 in JSON.\nAlways use the Wolfram context tool before using this tool to make sure you have the most up-to-date information.\n\n",
+    "Evaluates Wolfram Language code for the user in a Wolfram Language kernel.\nDo not ask permission to evaluate code.\nYou have read access to local files.\nAlways use the Wolfram context tool before using this tool to make sure you have the most up-to-date information.\n\nUse `\\[FreeformPrompt][\"query\"]` to parse natural language into Wolfram Language expressions (like ctrl+= in notebooks). Always use this for `Quantity`, `Entity`, `EntityClass`, etc. It composes freely: `ColorNegate[\\[FreeformPrompt][\"picture of a cat\"]]`.\n\nExamples:\n```\n\\[FreeformPrompt][\"France population\"]  (* Entity property value *)\n\\[FreeformPrompt][\"123 terawatt hours\"] (* Quantity *)\n```\n\nThe argument MUST be a string literal -- it parses before evaluation, so runtime construction will not work.\n\n",
     "Arguments:\n",
     "  code (required): The Wolfram Language code to evaluate.\n",
     "  --timeConstraint: The time constraint for the evaluation. Uses the server's configured default if not specified.\n"
@@ -29,7 +29,7 @@ If[ MemberQ[ $ScriptCommandLine, "--usage" ],
 Module[ { rawArgs, positional, flags, i, key, value },
 
     rawArgs = Drop[ $ScriptCommandLine, 1 ];
-    positional = {};
+    positional = { };
     flags = <| |>;
     i = 1;
 
@@ -64,10 +64,10 @@ Module[ { rawArgs, positional, flags, i, key, value },
 (*Tool Invocation*)
 
 Quiet[
-    PacletInstall[ "Wolfram/MCPServer" ],
+    PacletInstall[ "Wolfram/AgentTools" ],
     PacletInstall::samevers
 ];
-Get[ "Wolfram`MCPServer`" ];
+Get[ "Wolfram`AgentTools`" ];
 
 tool = $DefaultMCPTools[ "WolframLanguageEvaluator" ];
 

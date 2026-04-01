@@ -28,7 +28,7 @@ Inspects Wolfram Language code using the CodeInspector package and returns a for
 | `code` | String | No* | - | Wolfram Language code string to inspect |
 | `file` | String | No* | - | File or directory path to inspect |
 | `tagExclusions` | String | No | `""` | Comma-separated list of tags to exclude |
-| `severityExclusions` | String | No | `"Formatting,Remark,Scoping"` | Comma-separated list of severities to exclude |
+| `severityExclusions` | String | No | `"Formatting,Scoping"` | Comma-separated list of severities to exclude |
 | `confidenceLevel` | Number | No | `0.75` | Minimum confidence level (0.0 to 1.0) |
 | `limit` | Integer | No | `100` | Maximum number of issues to display |
 
@@ -69,7 +69,7 @@ A comma-separated list of inspection tags to exclude from the results. Tags iden
 
 ##### severityExclusions
 
-A comma-separated list of severity levels to exclude. The default excludes formatting issues, remarks, and scoping warnings to focus on more significant problems.
+A comma-separated list of severity levels to exclude. The default excludes formatting and scoping issues to focus on more significant problems.
 
 **Available severities:**
 - `"Fatal"` - Critical errors that prevent code from running
@@ -216,7 +216,7 @@ No issues found matching the specified criteria.
 
 **Settings:**
 - Confidence Level: 0.75
-- Severity Exclusions: Formatting, Remark, Scoping
+- Severity Exclusions: Formatting, Scoping
 - Tag Exclusions: (none)
 ```
 
@@ -288,7 +288,7 @@ Kernel/Tools/CodeInspector/
 Main entry point and tool registration.
 
 **Contents:**
-- Package header with context ``Wolfram`MCPServer`Tools`CodeInspector` ``
+- Package header with context ``Wolfram`AgentTools`Tools`CodeInspector` ``
 - Tool description string
 - Tool definition in `$defaultMCPTools["CodeInspector"]`
 - Main entry function `codeInspectorTool`
@@ -400,7 +400,7 @@ Add the new subcontext to `$subcontexts` in `Kernel/Tools/Tools.wl`:
 $subcontexts = {
     ...
     (* Tools: CodeInspector *)
-    "Wolfram`MCPServer`Tools`CodeInspector`"
+    "Wolfram`AgentTools`Tools`CodeInspector`"
 };
 ```
 
@@ -411,11 +411,11 @@ Also remove the CodeInspector item from the TODO comment at the top of the file.
 Add error messages to `Kernel/Messages.wl`:
 
 ```wl
-MCPServer::CodeInspectorNoInput        = "Either 'code' or 'file' parameter must be provided.";
-MCPServer::CodeInspectorAmbiguousInput = "Provide either 'code' or 'file', not both.";
-MCPServer::CodeInspectorFileNotFound   = "File or directory not found: `1`.";
-MCPServer::CodeInspectorNoFilesFound   = "No .wl, .m, or .wls files found in directory: `1`.";
-MCPServer::CodeInspectorFailed         = "CodeInspector failed: `1`.";
+AgentTools::CodeInspectorNoInput        = "Either 'code' or 'file' parameter must be provided.";
+AgentTools::CodeInspectorAmbiguousInput = "Provide either 'code' or 'file', not both.";
+AgentTools::CodeInspectorFileNotFound   = "File or directory not found: `1`.";
+AgentTools::CodeInspectorNoFilesFound   = "No .wl, .m, or .wls files found in directory: `1`.";
+AgentTools::CodeInspectorFailed         = "CodeInspector failed: `1`.";
 ```
 
 ---
@@ -619,7 +619,7 @@ No issues found matching the specified criteria.
 
 **Settings:**
 - Confidence Level: 0.75
-- Severity Exclusions: Formatting, Remark, Scoping
+- Severity Exclusions: Formatting, Scoping
 - Tag Exclusions: (none)
 ````
 

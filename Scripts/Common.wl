@@ -12,6 +12,8 @@ If[ ! PacletObjectQ @ PacletObject[ "Wolfram/PacletCICD" ],
     PacletInstall[ "https://github.com/WolframResearch/PacletCICD/releases/download/v0.36.2/Wolfram__PacletCICD-0.36.2.paclet" ]
 ];
 
+PacletInstall[ "Wolfram/LLMFunctions" -> "2.2.6" ];
+
 Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
 
 cFile = cicd`ScriptConfirmBy[ #, FileExistsQ ] &;
@@ -23,7 +25,9 @@ DefinitionNotebookClient`$DisabledHints = <| "MessageTag" -> #, "Level" -> All, 
     "CodeInspectionFileIssue/TopLevel",
     "HeroImageSquashed",
     "HugeRaster",
-    "InternalContextWarning"
+    "InternalContextWarning",
+    "InvalidFirstVersion",
+    "NoGithubRepoFound"
 };
 
 $messageHistoryLength = 10;
@@ -319,7 +323,7 @@ updateReleaseInfoCell[ dir_, url_, cmt_, run_ ] /;
     ];
 (* :!CodeAnalysis::EndBlock:: *)
 
-commitURL[ sha_String ] := URLBuild @ { "https://github.com/rhennigan/MCPServer/commit", sha };
+commitURL[ sha_String ] := URLBuild @ { "https://github.com/WolframResearch/AgentTools/commit", sha };
 
 
 releaseInfoCell[ release_, commit_, run_ ] := Enclose[
@@ -462,10 +466,10 @@ Print[ "Definition Notebook: ", $defNB ];
 
 cicd`ScriptConfirmBy[ PacletDirectoryLoad @ $pacletDir, MemberQ @ $pacletDir ];
 cicd`ScriptConfirmAssert[
-    StringStartsQ[ FindFile[ "Wolfram`MCPServer`" ], $pacletDir ],
+    StringStartsQ[ FindFile[ "Wolfram`AgentTools`" ], $pacletDir ],
     TemplateApply[
-        "MCPServer context points to \"`1`\" which is not contained in the expected paclet directory \"`2`\".",
-        { FindFile[ "Wolfram`MCPServer`" ], $pacletDir }
+        "AgentTools context points to \"`1`\" which is not contained in the expected paclet directory \"`2`\".",
+        { FindFile[ "Wolfram`AgentTools`" ], $pacletDir }
     ]
 ];
 

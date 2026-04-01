@@ -1,6 +1,6 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Tools`" ];
+BeginPackage[ "Wolfram`AgentTools`Tools`" ];
 
 (* Symbols shared in Tools subcontexts: *)
 `$defaultMCPTools;
@@ -9,8 +9,8 @@ BeginPackage[ "Wolfram`MCPServer`Tools`" ];
 
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
+Needs[ "Wolfram`AgentTools`"        ];
+Needs[ "Wolfram`AgentTools`Common`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -98,39 +98,39 @@ importResourceFunction[ importMarkdownString, "ImportMarkdownString" ];
 (*Load Subcontexts*)
 $subcontexts = {
     (* Tools: CodeInspector *)
-    "Wolfram`MCPServer`Tools`CodeInspector`",
+    "Wolfram`AgentTools`Tools`CodeInspector`",
 
     (* Tools: WolframContext, WolframAlphaContext, WolframLanguageContext *)
-    "Wolfram`MCPServer`Tools`Context`",
+    "Wolfram`AgentTools`Tools`Context`",
 
     (* Tools: NotebookViewer *)
-    "Wolfram`MCPServer`Tools`NotebookViewer`",
+    "Wolfram`AgentTools`Tools`NotebookViewer`",
 
     (* Tools: MCPAppsTest *)
-    "Wolfram`MCPServer`Tools`MCPAppsTest`",
+    "Wolfram`AgentTools`Tools`MCPAppsTest`",
 
     (* Tools: ReadNotebook, WriteNotebook *)
-    "Wolfram`MCPServer`Tools`Notebooks`",
+    "Wolfram`AgentTools`Tools`Notebooks`",
 
     (* Tools: CreateSymbolPacletDocumentation, EditSymbolPacletDocumentation *)
-    "Wolfram`MCPServer`Tools`PacletDocumentation`",
+    "Wolfram`AgentTools`Tools`PacletDocumentation`",
 
     (* Tools: SymbolDefinition *)
-    "Wolfram`MCPServer`Tools`SymbolDefinition`",
+    "Wolfram`AgentTools`Tools`SymbolDefinition`",
 
     (* Tools: TestReport *)
-    "Wolfram`MCPServer`Tools`TestReport`",
+    "Wolfram`AgentTools`Tools`TestReport`",
 
     (* Tools: WolframAlpha *)
-    "Wolfram`MCPServer`Tools`WolframAlpha`",
+    "Wolfram`AgentTools`Tools`WolframAlpha`",
 
     (* Tools: WolframLanguageEvaluator *)
-    "Wolfram`MCPServer`Tools`WolframLanguageEvaluator`"
+    "Wolfram`AgentTools`Tools`WolframLanguageEvaluator`"
 };
 
 Scan[ Needs[ # -> None ] &, $subcontexts ];
 
-$MCPServerContexts = Union[ $MCPServerContexts, $subcontexts ];
+$AgentToolsContexts = Union[ $AgentToolsContexts, $subcontexts ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

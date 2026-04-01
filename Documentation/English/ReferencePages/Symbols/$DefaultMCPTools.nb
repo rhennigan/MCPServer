@@ -21,7 +21,7 @@ Notebook[
           ButtonBox[
            "$DefaultMCPTools",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/$DefaultMCPTools"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/$DefaultMCPTools"
           ]
          ],
          "InlineFormula"
@@ -37,7 +37,7 @@ Notebook[
           ButtonBox[
            "$DefaultMCPServers",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/$DefaultMCPServers"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/$DefaultMCPServers"
           ]
          ],
          "InlineFormula"
@@ -94,7 +94,7 @@ Notebook[
           ButtonBox[
            "CreateMCPServer",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/CreateMCPServer"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/CreateMCPServer"
           ]
          ],
          "InlineSeeAlsoFunction",
@@ -106,7 +106,7 @@ Notebook[
           ButtonBox[
            "$DefaultMCPToolOptions",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/$DefaultMCPToolOptions"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/$DefaultMCPToolOptions"
           ]
          ],
          "InlineSeeAlsoFunction",
@@ -118,7 +118,7 @@ Notebook[
           ButtonBox[
            "$DefaultMCPServers",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/$DefaultMCPServers"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/$DefaultMCPServers"
           ]
          ],
          "InlineSeeAlsoFunction",
@@ -230,7 +230,7 @@ Notebook[
        ButtonBox[
         "Default Tools",
         BaseStyle -> "Link",
-        ButtonData -> "paclet:Wolfram/MCPServer/tutorial/DefaultTools"
+        ButtonData -> "paclet:Wolfram/AgentTools/tutorial/DefaultTools"
        ]
       ],
       "Tutorials",
@@ -328,7 +328,7 @@ Notebook[
      ],
      Cell[
       BoxData[
-       RowBox[{"Needs", "[", "\"Wolfram`MCPServer`\"", "]"}]
+       RowBox[{"Needs", "[", "\"Wolfram`AgentTools`\"", "]"}]
       ],
       "ExampleInitialization",
       CellID -> 349236721
@@ -398,7 +398,7 @@ Notebook[
                    "Name" -> "CodeInspector",
                    "DisplayName" -> "Code Inspector",
                    "Description" -> "Inspects Wolfram Language code using the CodeInspector package and returns a formatted report of issues found. The tool supports inspecting code strings, individual files, or entire directories of Wolfram Language source files.",
-                   "Function" -> Wolfram`MCPServer`CodeInspectorToolFunction,
+                   "Function" -> Wolfram`AgentTools`CodeInspectorToolFunction,
                    "Options" -> { },
                    "Parameters" -> {
                     "code" -> <|
@@ -418,7 +418,7 @@ Notebook[
                     |>,
                     "severityExclusions" -> <|
                      "Interpreter" -> "String",
-                     "Help" -> "Comma-separated list of severities to exclude. Default: \"Formatting,Remark,Scoping\". Available: Fatal, Error, Warning, Scoping, Remark, Formatting.",
+                     "Help" -> "Comma-separated list of severities to exclude. Default: \"Formatting,Scoping\". Available: Fatal, Error, Warning, Scoping, Remark, Formatting.",
                      "Required" -> False
                     |>,
                     "confidenceLevel" -> <|
@@ -441,7 +441,7 @@ Notebook[
                    "Name" -> "CreateSymbolDoc",
                    "DisplayName" -> "Create Symbol Documentation",
                    "Description" -> "Creates a new symbol documentation page for a Wolfram Language paclet. The tool generates a properly structured .nb file in the correct location within the paclet's documentation directory.",
-                   "Function" -> Wolfram`MCPServer`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation,
+                   "Function" -> Wolfram`AgentTools`Tools`PacletDocumentation`Private`createSymbolPacletDocumentation,
                    "Options" -> { },
                    "Parameters" -> {
                     "pacletDirectory" -> <|
@@ -456,7 +456,7 @@ Notebook[
                     |>,
                     "pacletName" -> <|
                      "Interpreter" -> "String",
-                     "Help" -> "Name of the paclet (e.g., \"MCPServer\" or \"Wolfram/MCPServer\").",
+                     "Help" -> "Name of the paclet (e.g., \"AgentTools\" or \"Wolfram/AgentTools\").",
                      "Required" -> True
                     |>,
                     "publisherID" -> <|
@@ -524,7 +524,7 @@ Notebook[
                    "Name" -> "EditSymbolDoc",
                    "DisplayName" -> "Edit Symbol Documentation",
                    "Description" -> "Edits an existing symbol documentation page. Supports operations like setting usage, notes, see also, and adding/modifying examples. Example inputs are automatically evaluated and outputs are generated.",
-                   "Function" -> Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation,
+                   "Function" -> Wolfram`AgentTools`Tools`PacletDocumentation`Private`editSymbolPacletDocumentation,
                    "Options" -> { },
                    "Parameters" -> {
                     "notebook" -> <|
@@ -557,7 +557,7 @@ Notebook[
                    "Name" -> "EditSymbolDocExamples",
                    "DisplayName" -> "Edit Symbol Documentation Examples",
                    "Description" -> "Edits example sections of an existing symbol documentation page. Supports operations for appending, prepending, inserting, replacing, removing, clearing, and setting examples. Example code is automatically evaluated and output cells are generated. Returns the generated content as markdown for verification.",
-                   "Function" -> Wolfram`MCPServer`Tools`PacletDocumentation`Private`editSymbolPacletDocumentationExamples,
+                   "Function" -> Wolfram`AgentTools`Tools`PacletDocumentation`Private`editSymbolPacletDocumentationExamples,
                    "Options" -> { },
                    "Parameters" -> {
                     "notebook" -> <|
@@ -600,7 +600,7 @@ Notebook[
                    "Name" -> "ReadNotebook",
                    "DisplayName" -> "Read Notebook",
                    "Description" -> "Reads the contents of a Wolfram notebook (.nb) as markdown text.",
-                   "Function" -> Wolfram`MCPServer`Tools`Notebooks`Private`readNotebook,
+                   "Function" -> Wolfram`AgentTools`Tools`Notebooks`Private`readNotebook,
                    "Options" -> { },
                    "Parameters" -> {
                     "notebook" -> <|
@@ -617,8 +617,8 @@ Notebook[
                   <|
                    "Name" -> "SymbolDefinition",
                    "DisplayName" -> "Symbol Definition",
-                   "Description" -> "Retrieves the definitions of one or more Wolfram Language symbols and returns them in a readable markdown format.\nThe tool generates clean, formatted definition strings by intelligently managing the context path to minimize fully qualified symbol names.\n\nUse fully qualified symbol names (e.g., System`Plus, Wolfram`MCPServer`CreateMCPServer).\nMultiple symbols can be requested by separating them with commas.",
-                   "Function" -> Wolfram`MCPServer`Tools`SymbolDefinition`Private`getSymbolDefinition,
+                   "Description" -> "Retrieves the definitions of one or more Wolfram Language symbols and returns them in a readable markdown format.\nThe tool generates clean, formatted definition strings by intelligently managing the context path to minimize fully qualified symbol names.\n\nUse fully qualified symbol names (e.g., System`Plus, Wolfram`AgentTools`CreateMCPServer).\nMultiple symbols can be requested by separating them with commas.",
+                   "Function" -> Wolfram`AgentTools`Tools`SymbolDefinition`Private`getSymbolDefinition,
                    "Options" -> { },
                    "Parameters" -> {
                     "symbols" -> <|
@@ -646,7 +646,7 @@ Notebook[
                    "Name" -> "TestReport",
                    "DisplayName" -> "Test Report",
                    "Description" -> "Runs Wolfram Language test files (.wlt) and returns a report of the results",
-                   "Function" -> Wolfram`MCPServer`Tools`TestReport`Private`testReport,
+                   "Function" -> Wolfram`AgentTools`Tools`TestReport`Private`testReport,
                    "Options" -> { },
                    "Parameters" -> {
                     "paths" -> <|
@@ -679,7 +679,7 @@ Notebook[
                    "Name" -> "WolframAlpha",
                    "DisplayName" -> "Wolfram|Alpha",
                    "Description" -> "Use natural language queries with Wolfram|Alpha to get up-to-date computational results about entities in chemistry, physics, geography, history, art, astronomy, and more.\nAlways use the Wolfram context tool before using this tool to make sure you have the most up-to-date information.",
-                   "Function" -> Wolfram`MCPServer`Tools`WolframAlpha`Private`wolframAlphaToolEvaluate,
+                   "Function" -> Wolfram`AgentTools`Tools`WolframAlpha`Private`wolframAlphaToolEvaluate,
                    "Options" -> { },
                    "Parameters" -> {
                     "query" -> <|
@@ -697,10 +697,10 @@ Notebook[
                    "Name" -> "WolframAlphaContext",
                    "DisplayName" -> "Wolfram|Alpha Context",
                    "Description" -> "Uses semantic search to retrieve any relevant information from Wolfram Alpha. Always use this tool at the start of new conversations or if the topic changes to ensure you have up-to-date relevant information. This uses semantic search, so the context argument should be written in natural language (not a search query) and contain as much detail as possible (up to 250 words).",
-                   "Function" -> Wolfram`MCPServer`Tools`Context`Private`relatedWolframAlphaPrompt,
+                   "Function" -> Wolfram`AgentTools`Tools`Context`Private`relatedWolframAlphaPrompt,
                    "LLMKit" -> "Required",
                    "Initialization" :>
-                    Wolfram`MCPServer`Common`initializeVectorDatabases[],
+                    Wolfram`AgentTools`Common`initializeVectorDatabases[],
                    "Options" -> { },
                    "Parameters" -> {
                     "context" -> <|
@@ -718,10 +718,10 @@ Notebook[
                    "Name" -> "WolframContext",
                    "DisplayName" -> "Wolfram Context",
                    "Description" -> "Uses semantic search to retrieve any relevant information from Wolfram. Always use this tool at the start of new conversations or if the topic changes to ensure you have up-to-date relevant information. This uses semantic search, so the context argument should be written in natural language (not a search query) and contain as much detail as possible (up to 250 words).",
-                   "Function" -> Wolfram`MCPServer`Common`relatedWolframContext,
+                   "Function" -> Wolfram`AgentTools`Common`relatedWolframContext,
                    "LLMKit" -> "Suggested",
                    "Initialization" :>
-                    Wolfram`MCPServer`Common`initializeVectorDatabases[],
+                    Wolfram`AgentTools`Common`initializeVectorDatabases[],
                    "Options" -> { },
                    "Parameters" -> {
                     "context" -> <|
@@ -739,10 +739,10 @@ Notebook[
                    "Name" -> "WolframLanguageContext",
                    "DisplayName" -> "Wolfram Language Context",
                    "Description" -> "Uses semantic search to retrieve information from various sources that can be used to help write Wolfram Language code. Always use this tool at the start of new conversations or if the topic changes to ensure you have up-to-date relevant information. This uses semantic search, so the context argument should be written in natural language (not a search query) and contain as much detail as possible.",
-                   "Function" -> Wolfram`MCPServer`Common`relatedDocumentation,
+                   "Function" -> Wolfram`AgentTools`Common`relatedDocumentation,
                    "LLMKit" -> "Suggested",
                    "Initialization" :>
-                    Wolfram`MCPServer`Common`initializeVectorDatabases[],
+                    Wolfram`AgentTools`Common`initializeVectorDatabases[],
                    "Options" -> { },
                    "Parameters" -> {
                     "context" -> <|
@@ -760,7 +760,7 @@ Notebook[
                    "Name" -> "WolframLanguageEvaluator",
                    "DisplayName" -> "Wolfram Language Evaluator",
                    "Description" -> "Evaluates Wolfram Language code for the user in a Wolfram Language kernel.\nThe user does not automatically see the result, so you must include the result in your response in order for them to see it.\nIf a formatted result is provided as a markdown link, use that in your response instead of typing out the output.\nDo not ask permission to evaluate code.\nYou have read access to local files.\nParse natural language input with `\[FreeformPrompt][\"query\"]`, which is analogous to ctrl-= input in notebooks.\nNatural language input is parsed before evaluation, so it works like macro expansion.\nYou should ALWAYS use this natural language input to obtain things like `Quantity`, `DateObject`, `Entity`, etc.\n\[FreeformPrompt] should be written as \\uf351 in JSON.\nAlways use the Wolfram context tool before using this tool to make sure you have the most up-to-date information.",
-                   "Function" -> Wolfram`MCPServer`Tools`WolframLanguageEvaluator`Private`evaluateWolframLanguage,
+                   "Function" -> Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`evaluateWolframLanguage,
                    "Options" -> { },
                    "Parameters" -> {
                     "code" -> <|
@@ -783,7 +783,7 @@ Notebook[
                    "Name" -> "WriteNotebook",
                    "DisplayName" -> "Write Notebook",
                    "Description" -> "Converts markdown text to a Wolfram notebook and saves it to a file.",
-                   "Function" -> Wolfram`MCPServer`Tools`Notebooks`Private`writeNotebook,
+                   "Function" -> Wolfram`AgentTools`Tools`Notebooks`Private`writeNotebook,
                    "Options" -> { },
                    "Parameters" -> {
                     "file" -> <|
@@ -3359,7 +3359,7 @@ Notebook[
                                     ],
                                     ButtonFunction :> {
                                      CopyToClipboard[
-                                      "{\n\t\"mcpServers\":{\n\t\t\"WolframNotebooks\":{\n\t\t\t\"type\":\"stdio\",\n\t\t\t\"command\":\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\14.3\\\\wolfram.exe\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/MCPServer\\\",\\\"Wolfram`MCPServer`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframNotebooks\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                      "{\n\t\"mcpServers\":{\n\t\t\"WolframNotebooks\":{\n\t\t\t\"type\":\"stdio\",\n\t\t\t\"command\":\"C:\\\\Program Files\\\\Wolfram Research\\\\Wolfram\\\\14.3\\\\wolfram.exe\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"PacletSymbol[\\\"Wolfram\\/AgentTools\\\",\\\"Wolfram`AgentTools`StartMCPServer\\\"][]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"WolframNotebooks\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                      ],
                                      NotebookDelete[cellObj],
                                      FrontEndExecute[
@@ -3461,7 +3461,7 @@ Notebook[
                                  "[",
                                  TemplateBox[
                                   {
-                                   "\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\ApplicationData\\\\Wolfram\\\\MCPServer\\\\Servers\\\\WolframNotebooks\""
+                                   "\"C:\\\\Users\\\\rhennigan\\\\AppData\\\\Roaming\\\\Wolfram\\\\ApplicationData\\\\Wolfram\\\\AgentTools\\\\Servers\\\\WolframNotebooks\""
                                   },
                                   "FileArgument"
                                  ],
@@ -3504,7 +3504,7 @@ Notebook[
                 "]"
                }
               ],
-              Wolfram`MCPServer`MCPServerObject[
+              Wolfram`AgentTools`MCPServerObject[
                <|
                 "LLMEvaluator" -> Association["Tools" -> {"ReadNotebook", "WriteNotebook"}],
                 "Name" -> "WolframNotebooks",
@@ -3513,7 +3513,7 @@ Notebook[
                 "Transport" -> "StandardInputOutput",
                 "Location" ->
                  File[
-                  "C:\\Users\\rhennigan\\AppData\\Roaming\\Wolfram\\ApplicationData\\Wolfram\\MCPServer\\Servers\\WolframNotebooks"
+                  "C:\\Users\\rhennigan\\AppData\\Roaming\\Wolfram\\ApplicationData\\Wolfram\\AgentTools\\Servers\\WolframNotebooks"
                  ]
                |>
               ],
@@ -3688,7 +3688,7 @@ Notebook[
                                   TagBox["\"Function: \"", "SummaryItemAnnotation"],
                                   "\[InvisibleSpace]",
                                   TagBox[
-                                   "Wolfram`MCPServer`Tools`Notebooks`Private`readNotebook",
+                                   "Wolfram`AgentTools`Tools`Notebooks`Private`readNotebook",
                                    "SummaryItem"
                                   ]
                                  }
@@ -3784,7 +3784,7 @@ Notebook[
                     "Name" -> "ReadNotebook",
                     "DisplayName" -> "Read Notebook",
                     "Description" -> "Reads the contents of a Wolfram notebook (.nb) as markdown text.",
-                    "Function" -> Wolfram`MCPServer`Tools`Notebooks`Private`readNotebook,
+                    "Function" -> Wolfram`AgentTools`Tools`Notebooks`Private`readNotebook,
                     "Options" -> { },
                     "Parameters" -> {
                      "notebook" -> <|
@@ -3943,7 +3943,7 @@ Notebook[
                                   TagBox["\"Function: \"", "SummaryItemAnnotation"],
                                   "\[InvisibleSpace]",
                                   TagBox[
-                                   "Wolfram`MCPServer`Tools`Notebooks`Private`writeNotebook",
+                                   "Wolfram`AgentTools`Tools`Notebooks`Private`writeNotebook",
                                    "SummaryItem"
                                   ]
                                  }
@@ -4101,7 +4101,7 @@ Notebook[
                     "Name" -> "WriteNotebook",
                     "DisplayName" -> "Write Notebook",
                     "Description" -> "Converts markdown text to a Wolfram notebook and saves it to a file.",
-                    "Function" -> Wolfram`MCPServer`Tools`Notebooks`Private`writeNotebook,
+                    "Function" -> Wolfram`AgentTools`Tools`Notebooks`Private`writeNotebook,
                     "Options" -> { },
                     "Parameters" -> {
                      "file" -> <|
@@ -4360,19 +4360,19 @@ Notebook[
          CellID -> 196388113
         ],
         Cell[
-         "Wolfram/MCPServer",
+         "Wolfram/AgentTools",
          "Categorization",
          CellLabel -> "Paclet Name",
          CellID -> 243996339
         ],
         Cell[
-         "Wolfram`MCPServer`",
+         "Wolfram`AgentTools`",
          "Categorization",
          CellLabel -> "Context",
          CellID -> 441177150
         ],
         Cell[
-         "Wolfram/MCPServer/ref/$DefaultMCPTools",
+         "Wolfram/AgentTools/ref/$DefaultMCPTools",
          "Categorization",
          CellLabel -> "URI",
          CellID -> 671302494
@@ -4431,7 +4431,7 @@ Notebook[
    ]
   ]
  },
- TaggingRules -> <|"Paclet" -> "Wolfram/MCPServer"|>,
+ TaggingRules -> <|"Paclet" -> "Wolfram/AgentTools"|>,
  StyleDefinitions ->
   FrontEnd`FileName[
    {"Wolfram"},

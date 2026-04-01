@@ -18,7 +18,7 @@ $helpText = StringJoin[
     "  --code: Wolfram Language code string to inspect.\n",
     "  --file: File or directory path to inspect. For directories, recursively inspects all .wl, .m, and .wls files.\n",
     "  --tagExclusions: Comma-separated list of tags to exclude (e.g., \"UnusedVariable,SuspiciousSessionSymbol\").\n",
-    "  --severityExclusions: Comma-separated list of severities to exclude. Default: \"Formatting,Remark,Scoping\". Available: Fatal, Error, Warning, Scoping, Remark, Formatting.\n",
+    "  --severityExclusions: Comma-separated list of severities to exclude. Default: \"Formatting,Scoping\". Available: Fatal, Error, Warning, Scoping, Remark, Formatting.\n",
     "  --confidenceLevel: Minimum confidence level (0.0 to 1.0). Default: 0.75. Issues below this confidence are excluded.\n",
     "  --limit: Maximum number of issues to display. Default: 100.\n"
 ];
@@ -33,7 +33,7 @@ If[ MemberQ[ $ScriptCommandLine, "--usage" ],
 Module[ { rawArgs, positional, flags, i, key, value },
 
     rawArgs = Drop[ $ScriptCommandLine, 1 ];
-    positional = {};
+    positional = { };
     flags = <| |>;
     i = 1;
 
@@ -66,10 +66,10 @@ Module[ { rawArgs, positional, flags, i, key, value },
 (*Tool Invocation*)
 
 Quiet[
-    PacletInstall[ "Wolfram/MCPServer" ],
+    PacletInstall[ "Wolfram/AgentTools" ],
     PacletInstall::samevers
 ];
-Get[ "Wolfram`MCPServer`" ];
+Get[ "Wolfram`AgentTools`" ];
 
 tool = $DefaultMCPTools[ "CodeInspector" ];
 

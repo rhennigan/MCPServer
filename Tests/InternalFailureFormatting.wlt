@@ -5,14 +5,14 @@
 (* ::Section::Closed:: *)
 (*Initialization*)
 VerificationTest[
-    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
+    Needs[ "Wolfram`AgentToolsTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "GetDefinitions@@Tests/InternalFailureFormatting.wlt:7,1-12,2"
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/InternalFailureFormatting.wlt:14,1-19,2"
@@ -24,72 +24,72 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*MCPServer Internal Failures*)
+(*AgentTools Internal Failures*)
 VerificationTest[
-    Wolfram`MCPServer`Common`extractFailureTag[
-        Failure[ "MCPServer::Internal", <| |> ]
+    Wolfram`AgentTools`Common`extractFailureTag[
+        Failure[ "AgentTools::Internal", <| |> ]
     ],
-    "MCPServer::Internal",
+    "AgentTools::Internal",
     SameTest -> Equal,
     TestID   -> "ExtractFailureTag-MCPServerBasic@@Tests/InternalFailureFormatting.wlt:28,1-35,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`extractFailureTag[
-        Failure[ "MCPServer::Internal", <|
+    Wolfram`AgentTools`Common`extractFailureTag[
+        Failure[ "AgentTools::Internal", <|
             "Information" -> "TestTag@@Kernel/Common.wl:123,1-456,2"
         |> ]
     ],
-    "MCPServer::Internal::Path@@Kernel/Common.wl:123,1-456,2",
+    "AgentTools::Internal::Path@@Kernel/Common.wl:123,1-456,2",
     SameTest -> Equal,
     TestID   -> "ExtractFailureTag-MCPServerWithSource@@Tests/InternalFailureFormatting.wlt:37,1-46,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`extractFailureTag[
-        Failure[ "MCPServer::Internal", <|
+    Wolfram`AgentTools`Common`extractFailureTag[
+        Failure[ "AgentTools::Internal", <|
             "MessageParameters" -> {
                 "link",
                 <| "Arguments" -> { "UnhandledDownValues", HoldForm[ testSymbol ] } |>
             }
         |> ]
     ],
-    "MCPServer::Internal::UnhandledDownValues::testSymbol",
+    "AgentTools::Internal::UnhandledDownValues::testSymbol",
     SameTest -> Equal,
     TestID   -> "ExtractFailureTag-MCPServerUnhandledDownValues@@Tests/InternalFailureFormatting.wlt:48,1-60,2"
 ]
 
 VerificationTest[
     (* Test MX-style failure with Source at top level *)
-    Wolfram`MCPServer`Common`extractFailureTag[
-        Failure[ "MCPServer::Internal", <|
+    Wolfram`AgentTools`Common`extractFailureTag[
+        Failure[ "AgentTools::Internal", <|
             "Source" -> "Path@@Kernel/Test.wl:10,1-20,2"
         |> ]
     ],
-    "MCPServer::Internal::Path@@Kernel/Test.wl:10,1-20,2",
+    "AgentTools::Internal::Path@@Kernel/Test.wl:10,1-20,2",
     SameTest -> Equal,
     TestID   -> "ExtractFailureTag-MCPServerMXSource@@Tests/InternalFailureFormatting.wlt:62,1-72,2"
 ]
 
 VerificationTest[
     (* Test ConfirmBy failure with function name (no short source) *)
-    Wolfram`MCPServer`Common`extractFailureTag[
-        Failure[ "MCPServer::Internal", <|
+    Wolfram`AgentTools`Common`extractFailureTag[
+        Failure[ "AgentTools::Internal", <|
             "MessageParameters" -> {
                 "link",
                 <| "ConfirmationType" -> "ConfirmBy", "Function" -> testFunction |>
             }
         |> ]
     ],
-    "MCPServer::Internal::ConfirmBy::testFunction",
+    "AgentTools::Internal::ConfirmBy::testFunction",
     SameTest -> Equal,
     TestID   -> "ExtractFailureTag-MCPServerConfirmBy@@Tests/InternalFailureFormatting.wlt:74,1-87,2"
 ]
 
 VerificationTest[
     (* Test ConfirmBy failure with function name and short source *)
-    Wolfram`MCPServer`Common`extractFailureTag[
-        Failure[ "MCPServer::Internal", <|
+    Wolfram`AgentTools`Common`extractFailureTag[
+        Failure[ "AgentTools::Internal", <|
             "Source" -> "Path",
             "MessageParameters" -> {
                 "link",
@@ -97,30 +97,30 @@ VerificationTest[
             }
         |> ]
     ],
-    "MCPServer::Internal::ConfirmBy::testFunction::Path",
+    "AgentTools::Internal::ConfirmBy::testFunction::Path",
     SameTest -> Equal,
     TestID   -> "ExtractFailureTag-MCPServerConfirmByWithSource@@Tests/InternalFailureFormatting.wlt:89,1-103,2"
 ]
 
 VerificationTest[
     (* Test failure with just function name *)
-    Wolfram`MCPServer`Common`extractFailureTag[
-        Failure[ "MCPServer::Internal", <|
+    Wolfram`AgentTools`Common`extractFailureTag[
+        Failure[ "AgentTools::Internal", <|
             "MessageParameters" -> {
                 "link",
                 <| "Function" -> someFunction |>
             }
         |> ]
     ],
-    "MCPServer::Internal::Function::someFunction",
+    "AgentTools::Internal::Function::someFunction",
     SameTest -> Equal,
     TestID   -> "ExtractFailureTag-MCPServerFunctionOnly@@Tests/InternalFailureFormatting.wlt:105,1-118,2"
 ]
 
 VerificationTest[
     (* Test failure with function name and short source *)
-    Wolfram`MCPServer`Common`extractFailureTag[
-        Failure[ "MCPServer::Internal", <|
+    Wolfram`AgentTools`Common`extractFailureTag[
+        Failure[ "AgentTools::Internal", <|
             "Source" -> "Tag",
             "MessageParameters" -> {
                 "link",
@@ -128,7 +128,7 @@ VerificationTest[
             }
         |> ]
     ],
-    "MCPServer::Internal::Function::someFunction::Tag",
+    "AgentTools::Internal::Function::someFunction::Tag",
     SameTest -> Equal,
     TestID   -> "ExtractFailureTag-MCPServerFunctionWithSource@@Tests/InternalFailureFormatting.wlt:120,1-134,2"
 ]
@@ -137,7 +137,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Chatbook Internal Failures*)
 VerificationTest[
-    Wolfram`MCPServer`Common`extractFailureTag[
+    Wolfram`AgentTools`Common`extractFailureTag[
         Failure[ "General::ChatbookInternal", <| |> ]
     ],
     "Chatbook::Internal",
@@ -146,7 +146,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`extractFailureTag[
+    Wolfram`AgentTools`Common`extractFailureTag[
         Failure[ "General::ChatbookInternal", <|
             "Information" -> "TestTag@@Kernel/Chatbook.wl:100,1-200,2"
         |> ]
@@ -160,7 +160,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*Other Failures*)
 VerificationTest[
-    Wolfram`MCPServer`Common`extractFailureTag[
+    Wolfram`AgentTools`Common`extractFailureTag[
         Failure[ "SomeOther::Tag", <| |> ]
     ],
     "SomeOther::Tag",
@@ -169,7 +169,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`extractFailureTag[ "not a failure" ],
+    Wolfram`AgentTools`Common`extractFailureTag[ "not a failure" ],
     "Unknown",
     SameTest -> Equal,
     TestID   -> "ExtractFailureTag-NotAFailure@@Tests/InternalFailureFormatting.wlt:171,1-176,2"
@@ -180,7 +180,7 @@ VerificationTest[
 (*generateUniqueFailureFileName*)
 
 VerificationTest[
-    fileName = Wolfram`MCPServer`Common`generateUniqueFailureFileName[ ];
+    fileName = Wolfram`AgentTools`Common`generateUniqueFailureFileName[ ];
     StringMatchQ[ fileName, __ ~~ ".mx" ],
     True,
     SameTest -> Equal,
@@ -188,7 +188,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    fileName = Wolfram`MCPServer`Common`generateUniqueFailureFileName[ ];
+    fileName = Wolfram`AgentTools`Common`generateUniqueFailureFileName[ ];
     StringMatchQ[ fileName, RegularExpression[ "\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}_[a-z0-9]{8}\\.mx" ] ],
     True,
     SameTest -> Equal,
@@ -196,7 +196,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    names = Table[ Wolfram`MCPServer`Common`generateUniqueFailureFileName[ ], 10 ];
+    names = Table[ Wolfram`AgentTools`Common`generateUniqueFailureFileName[ ], 10 ];
     Length @ Union @ names,
     10,
     SameTest -> Equal,
@@ -208,8 +208,8 @@ VerificationTest[
 (*formatInternalFailureForMCP*)
 
 VerificationTest[
-    result = Wolfram`MCPServer`Common`formatInternalFailureForMCP[
-        Failure[ "MCPServer::Internal", <| |> ]
+    result = Wolfram`AgentTools`Common`formatInternalFailureForMCP[
+        Failure[ "AgentTools::Internal", <| |> ]
     ];
     StringQ @ result,
     True,
@@ -218,8 +218,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    result = Wolfram`MCPServer`Common`formatInternalFailureForMCP[
-        Failure[ "MCPServer::Internal", <| |> ]
+    result = Wolfram`AgentTools`Common`formatInternalFailureForMCP[
+        Failure[ "AgentTools::Internal", <| |> ]
     ];
     StringContainsQ[ result, "[Error]" ],
     True,
@@ -228,29 +228,29 @@ VerificationTest[
 ]
 
 VerificationTest[
-    result = Wolfram`MCPServer`Common`formatInternalFailureForMCP[
-        Failure[ "MCPServer::Internal", <| |> ]
+    result = Wolfram`AgentTools`Common`formatInternalFailureForMCP[
+        Failure[ "AgentTools::Internal", <| |> ]
     ];
-    StringContainsQ[ result, "https://github.com/rhennigan/MCPServer/issues/new" ],
+    StringContainsQ[ result, "https://github.com/WolframResearch/AgentTools/issues/new" ],
     True,
     SameTest -> Equal,
     TestID   -> "FormatInternalFailureForMCP-ContainsIssueURL@@Tests/InternalFailureFormatting.wlt:230,1-238,2"
 ]
 
 VerificationTest[
-    result = Wolfram`MCPServer`Common`formatInternalFailureForMCP[
-        Failure[ "MCPServer::Internal", <|
+    result = Wolfram`AgentTools`Common`formatInternalFailureForMCP[
+        Failure[ "AgentTools::Internal", <|
             "Information" -> "TestTag@@Kernel/Test.wl:10,1-20,2"
         |> ]
     ];
-    StringContainsQ[ result, "MCPServer::Internal::Path@@Kernel/Test.wl:10,1-20,2" ],
+    StringContainsQ[ result, "AgentTools::Internal::Path@@Kernel/Test.wl:10,1-20,2" ],
     True,
     SameTest -> Equal,
     TestID   -> "FormatInternalFailureForMCP-ContainsExtractedTag@@Tests/InternalFailureFormatting.wlt:240,1-250,2"
 ]
 
 VerificationTest[
-    result = Wolfram`MCPServer`Common`formatInternalFailureForMCP[
+    result = Wolfram`AgentTools`Common`formatInternalFailureForMCP[
         Failure[ "General::ChatbookInternal", <| |> ]
     ];
     StringContainsQ[ result, "Chatbook::Internal" ],
@@ -260,7 +260,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`formatInternalFailureForMCP[
+    Wolfram`AgentTools`Common`formatInternalFailureForMCP[
         Failure[ "SomeOther::Tag", <| |> ]
     ],
     None,
@@ -269,8 +269,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    result = Wolfram`MCPServer`Common`formatInternalFailureForMCP[
-        Failure[ "MCPServer::Internal", <| |> ]
+    result = Wolfram`AgentTools`Common`formatInternalFailureForMCP[
+        Failure[ "AgentTools::Internal", <| |> ]
     ];
     And[
         ! StringContainsQ[ result, "TagBox" ],
@@ -287,8 +287,8 @@ VerificationTest[
 (*safeString Integration*)
 
 VerificationTest[
-    result = Wolfram`MCPServer`StartMCPServer`Private`safeString[
-        Failure[ "MCPServer::Internal", <| |> ]
+    result = Wolfram`AgentTools`StartMCPServer`Private`safeString[
+        Failure[ "AgentTools::Internal", <| |> ]
     ];
     StringQ @ result,
     True,
@@ -297,8 +297,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    result = Wolfram`MCPServer`StartMCPServer`Private`safeString[
-        Failure[ "MCPServer::Internal", <| |> ]
+    result = Wolfram`AgentTools`StartMCPServer`Private`safeString[
+        Failure[ "AgentTools::Internal", <| |> ]
     ];
     StringContainsQ[ result, "[Error]" ],
     True,
@@ -307,8 +307,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-    result = Wolfram`MCPServer`StartMCPServer`Private`safeString[
-        Failure[ "MCPServer::Internal", <| |> ]
+    result = Wolfram`AgentTools`StartMCPServer`Private`safeString[
+        Failure[ "AgentTools::Internal", <| |> ]
     ];
     And[
         ! StringContainsQ[ result, "TagBox" ],
@@ -321,7 +321,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    result = Wolfram`MCPServer`StartMCPServer`Private`safeString[
+    result = Wolfram`AgentTools`StartMCPServer`Private`safeString[
         Failure[ "General::ChatbookInternal", <| |> ]
     ];
     StringContainsQ[ result, "Chatbook::Internal" ],
@@ -333,7 +333,7 @@ VerificationTest[
 VerificationTest[
     (* Regular failures use the Failure's formatted Message property, which returns
        "A failure of type 'tag' occurred." for failures without a MessageTemplate *)
-    result = Wolfram`MCPServer`StartMCPServer`Private`safeString[
+    result = Wolfram`AgentTools`StartMCPServer`Private`safeString[
         Failure[ "SomeRegularError", <| "Message" -> "Something went wrong" |> ]
     ];
     And[
@@ -353,7 +353,7 @@ VerificationTest[
 
 VerificationTest[
     (* Just verify the function runs without error *)
-    Wolfram`MCPServer`Common`cleanupOldFailureLogs[ ];
+    Wolfram`AgentTools`Common`cleanupOldFailureLogs[ ];
     True,
     True,
     SameTest -> Equal,
@@ -364,7 +364,7 @@ VerificationTest[
     (* Verify that log directory never exceeds 50 files *)
     Length @ FileNames[
         "*.mx",
-        FileNameJoin @ { $UserBaseDirectory, "Logs", "MCPServer", "InternalFailures" }
+        FileNameJoin @ { $UserBaseDirectory, "Logs", "AgentTools", "InternalFailures" }
     ] <= 50,
     True,
     SameTest -> Equal,
@@ -384,8 +384,8 @@ VerificationTest[
         Export[ newFile, <| "test" -> 2 |>, "MX" ];
         (* Run cleanup with maxFiles=1 *)
         Block[
-            { Wolfram`MCPServer`Common`Private`$internalFailureLogDirectory = tempDir },
-            Wolfram`MCPServer`Common`cleanupOldFailureLogs[ 1 ]
+            { Wolfram`AgentTools`Common`Private`$internalFailureLogDirectory = tempDir },
+            Wolfram`AgentTools`Common`cleanupOldFailureLogs[ 1 ]
         ];
         files = FileNames[ "*.mx", tempDir ];
         DeleteDirectory[ tempDir, DeleteContents -> True ];
@@ -403,8 +403,8 @@ VerificationTest[
 
 VerificationTest[
     (* Verify bug report body is generated as a string *)
-    bugReportText = Wolfram`MCPServer`Common`Private`bugReportBody[
-        <| "Name" -> "Wolfram/MCPServer", "Version" -> "1.0.0" |>
+    bugReportText = Wolfram`AgentTools`Common`Private`bugReportBody[
+        <| "Name" -> "Wolfram/AgentTools", "Version" -> "1.0.0" |>
     ];
     StringQ @ bugReportText,
     True,
@@ -414,8 +414,8 @@ VerificationTest[
 
 VerificationTest[
     (* Verify bug report does NOT contain Settings section - this paclet has no settings *)
-    bugReportText = Wolfram`MCPServer`Common`Private`bugReportBody[
-        <| "Name" -> "Wolfram/MCPServer", "Version" -> "1.0.0" |>
+    bugReportText = Wolfram`AgentTools`Common`Private`bugReportBody[
+        <| "Name" -> "Wolfram/AgentTools", "Version" -> "1.0.0" |>
     ];
     ! StringContainsQ[ bugReportText, "## Settings" ],
     True,
@@ -425,8 +425,8 @@ VerificationTest[
 
 VerificationTest[
     (* Verify no template placeholders remain in bug report *)
-    bugReportText = Wolfram`MCPServer`Common`Private`bugReportBody[
-        <| "Name" -> "Wolfram/MCPServer", "Version" -> "1.0.0" |>
+    bugReportText = Wolfram`AgentTools`Common`Private`bugReportBody[
+        <| "Name" -> "Wolfram/AgentTools", "Version" -> "1.0.0" |>
     ];
     ! StringContainsQ[ bugReportText, "%%" ],
     True,
@@ -436,8 +436,8 @@ VerificationTest[
 
 VerificationTest[
     (* Verify bug report contains expected sections *)
-    bugReportText = Wolfram`MCPServer`Common`Private`bugReportBody[
-        <| "Name" -> "Wolfram/MCPServer", "Version" -> "1.0.0" |>
+    bugReportText = Wolfram`AgentTools`Common`Private`bugReportBody[
+        <| "Name" -> "Wolfram/AgentTools", "Version" -> "1.0.0" |>
     ];
     And[
         StringContainsQ[ bugReportText, "Debug Data" ],

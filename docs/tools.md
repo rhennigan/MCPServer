@@ -1,6 +1,6 @@
-# MCP Tools in MCPServer
+# MCP Tools in AgentTools
 
-This document explains how MCP tools work in MCPServer and how to add new tools.
+This document explains how MCP tools work in AgentTools and how to add new tools.
 
 ## Overview
 
@@ -156,12 +156,12 @@ Create a new file in `Kernel/Tools/` following this pattern:
 ```wl
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Tools`YourTool`" ];
+BeginPackage[ "Wolfram`AgentTools`Tools`YourTool`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
-Needs[ "Wolfram`MCPServer`Tools`"  ];
+Needs[ "Wolfram`AgentTools`"        ];
+Needs[ "Wolfram`AgentTools`Common`" ];
+Needs[ "Wolfram`AgentTools`Tools`"  ];
 
 (* ::Section::Closed:: *)
 (*Prompts*)
@@ -216,10 +216,10 @@ Add your new subcontext to `Kernel/Tools/Tools.wl`:
 
 ```wl
 $subcontexts = {
-    "Wolfram`MCPServer`Tools`Context`",
-    "Wolfram`MCPServer`Tools`Notebooks`",
+    "Wolfram`AgentTools`Tools`Context`",
+    "Wolfram`AgentTools`Tools`Notebooks`",
     (* ... existing subcontexts ... *)
-    "Wolfram`MCPServer`Tools`YourTool`"  (* Add your new subcontext *)
+    "Wolfram`AgentTools`Tools`YourTool`"  (* Add your new subcontext *)
 };
 ```
 
@@ -271,6 +271,21 @@ CreateMCPServer[ "MyServer", <|
     "Tools" -> { "WolframLanguageEvaluator", "WolframAlpha" }
 |> ]
 ```
+
+### Reference Paclet Tools
+
+Tools contributed by third-party paclets can be referenced using paclet-qualified names:
+
+```wl
+CreateMCPServer[ "MyServer", <|
+    "Tools" -> {
+        "WolframLanguageEvaluator",
+        "PublisherID/MyPaclet/CustomTool"
+    }
+|> ]
+```
+
+See [paclet-extensions.md](paclet-extensions.md) for details on how paclets declare tools.
 
 ### Inline Definition
 
@@ -500,6 +515,7 @@ InstallMCPServer[
 - `Kernel/StartMCPServer.wl` - Protocol handling for `tools/list` and `tools/call`
 - `Kernel/DefaultServers.wl` - Server configurations with `"Tools"` settings
 - `Assets/Apps/` - HTML and JSON files for MCP Apps UI resources
+- `Kernel/PacletExtension.wl` - Paclet-qualified tool resolution (see [paclet-extensions.md](paclet-extensions.md))
 - `Tests/Tools.wlt` - Tests for tool functionality
 - `Tests/ToolOptions.wlt` - Tests for tool options system
 - `Specs/ToolOptions.md` - Design specification for tool options

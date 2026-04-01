@@ -2,14 +2,14 @@
 (* ::Section::Closed:: *)
 (*Initialization*)
 VerificationTest[
-    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
+    Needs[ "Wolfram`AgentToolsTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "GetDefinitions@@Tests/UninstallMCPServer.wlt:4,1-9,2"
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/UninstallMCPServer.wlt:11,1-16,2"
@@ -42,35 +42,77 @@ VerificationTest[
     configFile = testConfigFile[];
     Export[configFile, <| "mcpServers" -> <| |> |>, "RawJSON"];
 
-    (* Install two servers first *)
-    installResult1 = InstallMCPServer[configFile, "WolframLanguage"];
-    installResult2 = InstallMCPServer[configFile, "WolframAlpha"];
+    (* Install a custom server and a built-in server *)
+    uninstallTestName = StringJoin["UninstallSingle_", CreateUUID[]];
+    uninstallTestServer = CreateMCPServer[
+        uninstallTestName,
+        LLMConfiguration @ <| "Tools" -> { LLMTool[ "PrimeFinder", { "n" -> "Integer" }, Prime[ #n ] & ] } |>
+    ];
+    InstallMCPServer[configFile, uninstallTestServer];
+    InstallMCPServer[configFile, "WolframLanguage"];
 
-    (* Verify both servers were installed *)
+    (* Verify both servers were installed (custom name + "Wolfram") *)
     jsonContent = Import[configFile, "RawJSON"];
     startingServerCount = Length[Keys[jsonContent["mcpServers"]]],
 
     2,
     SameTest -> Equal,
-    TestID   -> "UninstallMCPServer-Setup@@Tests/UninstallMCPServer.wlt:41,1-56,2"
+    TestID   -> "UninstallMCPServer-Setup@@Tests/UninstallMCPServer.wlt:41,1-61,2"
 ]
 
 VerificationTest[
-    (* Uninstall only the WolframLanguage server *)
+    (* Uninstall only the built-in server *)
     uninstallResult = UninstallMCPServer[configFile, "WolframLanguage"],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-SingleServer@@Tests/UninstallMCPServer.wlt:58,1-64,2"
+    TestID   -> "UninstallMCPServer-SingleServer@@Tests/UninstallMCPServer.wlt:63,1-69,2"
 ]
 
 VerificationTest[
-    (* Verify that only WolframLanguage was removed *)
+    (* Verify that only the built-in "Wolfram" key was removed, custom server remains *)
     jsonContent = Import[configFile, "RawJSON"];
-    KeyExistsQ[jsonContent["mcpServers"], "WolframAlpha"] &&
-    !KeyExistsQ[jsonContent["mcpServers"], "WolframLanguage"],
+    KeyExistsQ[jsonContent["mcpServers"], uninstallTestName] &&
+    !KeyExistsQ[jsonContent["mcpServers"], "Wolfram"],
     True,
     SameTest -> Equal,
-    TestID   -> "UninstallMCPServer-VerifySingleServerRemoval@@Tests/UninstallMCPServer.wlt:66,1-74,2"
+    TestID   -> "UninstallMCPServer-VerifySingleServerRemoval@@Tests/UninstallMCPServer.wlt:71,1-79,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Uninstall Cross-Variant Built-in Server*)
+VerificationTest[
+    (* Install "WolframLanguage" (config key "Wolfram"), then uninstall using "Wolfram" *)
+    crossVariantConfig = testConfigFile[];
+    Export[crossVariantConfig, <| "mcpServers" -> <| |> |>, "RawJSON"];
+    InstallMCPServer[crossVariantConfig, "WolframLanguage"],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "UninstallMCPServer-CrossVariantSetup@@Tests/UninstallMCPServer.wlt:84,1-92,2"
+]
+
+VerificationTest[
+    (* Uninstall using a different built-in variant name that shares the same config key *)
+    UninstallMCPServer[crossVariantConfig, "Wolfram"],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "UninstallMCPServer-CrossVariant@@Tests/UninstallMCPServer.wlt:94,1-100,2"
+]
+
+VerificationTest[
+    (* Verify the "Wolfram" key was removed *)
+    crossVariantJSON = Import[crossVariantConfig, "RawJSON"];
+    crossVariantJSON["mcpServers"] === <||>,
+    True,
+    SameTest -> Equal,
+    TestID   -> "UninstallMCPServer-VerifyCrossVariantRemoval@@Tests/UninstallMCPServer.wlt:102,1-109,2"
+]
+
+VerificationTest[
+    cleanupTestFiles[crossVariantConfig],
+    {Null},
+    SameTest -> MatchQ,
+    TestID   -> "UninstallMCPServer-CrossVariantCleanup@@Tests/UninstallMCPServer.wlt:111,1-116,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -81,16 +123,16 @@ VerificationTest[
     uninstallAllResult = UninstallMCPServer[configFile],
     { ___Success },
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-AllServers@@Tests/UninstallMCPServer.wlt:79,1-85,2"
+    TestID   -> "UninstallMCPServer-AllServers@@Tests/UninstallMCPServer.wlt:121,1-127,2"
 ]
 
 VerificationTest[
     (* Verify that all servers were removed *)
     jsonContent = Import[configFile, "RawJSON"];
-    jsonContent["mcpServers"] === <||>,
+    jsonContent["mcpServers"] === <| |>,
     True,
     SameTest -> Equal,
-    TestID   -> "UninstallMCPServer-VerifyAllServersRemoval@@Tests/UninstallMCPServer.wlt:87,1-94,2"
+    TestID   -> "UninstallMCPServer-VerifyAllServersRemoval@@Tests/UninstallMCPServer.wlt:129,1-136,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -110,7 +152,7 @@ VerificationTest[
     installResult = InstallMCPServer[configFile, server],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-ServerObjectSetup@@Tests/UninstallMCPServer.wlt:99,1-114,2"
+    TestID   -> "UninstallMCPServer-ServerObjectSetup@@Tests/UninstallMCPServer.wlt:141,1-156,2"
 ]
 
 VerificationTest[
@@ -118,7 +160,7 @@ VerificationTest[
     uninstallObjectResult = UninstallMCPServer[configFile, server],
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-ByObject@@Tests/UninstallMCPServer.wlt:116,1-122,2"
+    TestID   -> "UninstallMCPServer-ByObject@@Tests/UninstallMCPServer.wlt:158,1-164,2"
 ]
 
 VerificationTest[
@@ -127,7 +169,7 @@ VerificationTest[
     !KeyExistsQ[jsonContent["mcpServers"], name],
     True,
     SameTest -> Equal,
-    TestID   -> "UninstallMCPServer-VerifyObjectRemoval@@Tests/UninstallMCPServer.wlt:124,1-131,2"
+    TestID   -> "UninstallMCPServer-VerifyObjectRemoval@@Tests/UninstallMCPServer.wlt:166,1-173,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -152,7 +194,7 @@ VerificationTest[
 
     _Success,
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-MultipleInstallsSetup@@Tests/UninstallMCPServer.wlt:136,1-156,2"
+    TestID   -> "UninstallMCPServer-MultipleInstallsSetup@@Tests/UninstallMCPServer.wlt:178,1-198,2"
 ]
 
 VerificationTest[
@@ -160,7 +202,7 @@ VerificationTest[
     uninstallAllInstancesResult = UninstallMCPServer[All, server],
     { _Success, _Success },
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-AllInstances@@Tests/UninstallMCPServer.wlt:158,1-164,2"
+    TestID   -> "UninstallMCPServer-AllInstances@@Tests/UninstallMCPServer.wlt:200,1-206,2"
 ]
 
 VerificationTest[
@@ -173,7 +215,7 @@ VerificationTest[
 
     True,
     SameTest -> Equal,
-    TestID   -> "UninstallMCPServer-VerifyAllInstancesRemoval@@Tests/UninstallMCPServer.wlt:166,1-177,2"
+    TestID   -> "UninstallMCPServer-VerifyAllInstancesRemoval@@Tests/UninstallMCPServer.wlt:208,1-219,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -181,10 +223,11 @@ VerificationTest[
 (*Cleanup*)
 VerificationTest[
     DeleteObject[server];
+    Quiet @ DeleteObject[uninstallTestServer];
     cleanupTestFiles[{configFile, configFile1, configFile2}],
     {Null..},
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-Cleanup@@Tests/UninstallMCPServer.wlt:182,1-188,2"
+    TestID   -> "UninstallMCPServer-Cleanup@@Tests/UninstallMCPServer.wlt:224,1-231,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -197,7 +240,7 @@ VerificationTest[
     _Failure,
     {UninstallMCPServer::MCPServerNotFound},
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-NonExistentServer@@Tests/UninstallMCPServer.wlt:193,1-201,2"
+    TestID   -> "UninstallMCPServer-NonExistentServer@@Tests/UninstallMCPServer.wlt:236,1-244,2"
 ]
 
 VerificationTest[
@@ -206,12 +249,12 @@ VerificationTest[
     _Missing,
     { },  (* No messages expected since notFoundQ just returns Missing *)
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-NonExistentFile@@Tests/UninstallMCPServer.wlt:203,1-210,2"
+    TestID   -> "UninstallMCPServer-NonExistentFile@@Tests/UninstallMCPServer.wlt:246,1-253,2"
 ]
 
 VerificationTest[
     cleanupTestFiles[configFile],
     {Null},
     SameTest -> MatchQ,
-    TestID   -> "UninstallMCPServer-ErrorCleanup@@Tests/UninstallMCPServer.wlt:212,1-217,2"
+    TestID   -> "UninstallMCPServer-ErrorCleanup@@Tests/UninstallMCPServer.wlt:255,1-260,2"
 ]

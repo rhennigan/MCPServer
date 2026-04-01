@@ -6,9 +6,9 @@ Consolidated list of TODO/FIXME items from the codebase.
 
 - [ ] Support "Remote" type for server deployment (deploy as cloud API)
   - Source: `Kernel/CreateMCPServer.wl`
-- [ ] Add `Initialization` option to `CreateMCPServer`
+- [x] Add `Initialization` option to `CreateMCPServer`
   - Source: `Kernel/CreateMCPServer.wl`
-- [ ] Add `ProcessDirectory` option to `InstallMCPServer` ([See Issue #69](https://github.com/rhennigan/MCPServer/issues/69))
+- [ ] Add `ProcessDirectory` option to `InstallMCPServer` ([See Issue #69](https://github.com/WolframResearch/AgentTools/issues/69))
 - [ ] Add `EnabledTools` and `DisabledTools` options to `InstallMCPServer`
   - Sets environment variables with lists of tool names to include/exclude for easy customization
 - [ ] Add `"DisplayName"` property to MCP servers
@@ -32,10 +32,12 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Should create a new resource function definition notebook
 - [ ] Implement `EditResourceFunction` tool
   - Should edit an existing resource function definition notebook
-- [ ] Implement `CheckPaclet` tool
-- [ ] Implement `BuildPaclet` tool
-- [ ] Implement `PublishPaclet` tool
-- [ ] Implement `ReloadPaclet` tool
+- [ ] Paclet tools:
+  - [ ] `CreatePaclet`
+  - [ ] `CheckPaclet`
+  - [ ] `BuildPaclet`
+  - [ ] `PublishPaclet`
+  - [ ] `ReloadPaclet`
 - [ ] Implement `RestartMCPServer` tool (if possible)
 - [ ] Tool to open notebooks for the user (e.g., `UsingFrontEnd[SystemOpen[notebookPath]]`)
   - Might be redundant, since the same can be trivially done with a Bash tool or even the WL tool itself
@@ -110,7 +112,7 @@ Consolidated list of TODO/FIXME items from the codebase.
 
 ## Logging & Diagnostics
 
-- [x] Create MCP server output log file at `$UserBaseDirectory/Logs/MCPServer/Output/`
+- [x] Create MCP server output log file at `$UserBaseDirectory/Logs/AgentTools/Output/`
   - Source: `Kernel/StartMCPServer.wl`
   - Redirect `$Output` and `$Messages` to the log file
   - Note: Intercepting explicit `Write`/`WriteString`/`BinaryWrite` calls deferred to future work
@@ -124,7 +126,7 @@ This is effectively what the paclet currently does, but we'll run it in reverse.
 - [ ] Support connecting to local MCP servers
 - [ ] Support connecting to remote MCP servers
 
-## Agent Skills
+## Agent Skills and Plugins
 
 Create distributable agent skills that use functionality from this paclet.
 
@@ -133,7 +135,12 @@ Create distributable agent skills that use functionality from this paclet.
 - [x] Plugin marketplace
 - [x] Add new documentation page for adding skills
 - [ ] Create and run agent-level evals
-- [ ] Investigate using hooks instead of instructions to use CodeInspector
+- [ ] Investigate plugin equivalents in agents other than Claude Code
+- [ ] Investigate using hooks instead of instructions to use CodeInspector (or just use LSP server)
+- [ ] Investigate LSP server support
+  - https://code.claude.com/docs/en/plugins-reference#lsp-servers
+  - https://github.com/WolframResearch/LSPServer
+- [ ] New function `InstallAgentTools` that installs the MCP server, agent skills, hooks, etc.
 
 ### More Skill Ideas
 

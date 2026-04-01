@@ -1,10 +1,10 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`UIResources`" ];
+BeginPackage[ "Wolfram`AgentTools`UIResources`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
+Needs[ "Wolfram`AgentTools`"        ];
+Needs[ "Wolfram`AgentTools`Common`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -50,7 +50,7 @@ initializeUIResources // beginDefinition;
 initializeUIResources[ ] := Enclose[
     Module[ { assetsDir, htmlFiles },
         assetsDir = ConfirmBy[
-            PacletObject[ "Wolfram/MCPServer" ][ "AssetLocation", "Apps" ],
+            PacletObject[ "Wolfram/AgentTools" ][ "AssetLocation", "Apps" ],
             DirectoryQ,
             "AssetsDir"
         ];

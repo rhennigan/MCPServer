@@ -23,7 +23,7 @@ If[ MemberQ[ $ScriptCommandLine, "--usage" ],
 Module[ { rawArgs, positional, flags, i, key, value },
 
     rawArgs = Drop[ $ScriptCommandLine, 1 ];
-    positional = {};
+    positional = { };
     flags = <| |>;
     i = 1;
 
@@ -51,10 +51,10 @@ Module[ { rawArgs, positional, flags, i, key, value },
 (*Tool Invocation*)
 
 Quiet[
-    PacletInstall[ "Wolfram/MCPServer" ],
+    PacletInstall[ "Wolfram/AgentTools" ],
     PacletInstall::samevers
 ];
-Get[ "Wolfram`MCPServer`" ];
+Get[ "Wolfram`AgentTools`" ];
 
 tool = $DefaultMCPTools[ "(*<<ToolName>>*)" ];
 

@@ -1,6 +1,6 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServerTests`MCPServerTestUtilities`" ];
+BeginPackage[ "Wolfram`AgentToolsTests`MCPServerTestUtilities`" ];
 
 `$MCPTestProcess;
 `$MCPRequestID;
@@ -38,7 +38,7 @@ GetMCPCommandLine[ os_String ] := Module[ { wolframScriptCmd },
     {
         wolframScriptCmd,
         "-code",
-        "Needs[\"Wolfram`MCPServer`\"]; Wolfram`MCPServer`StartMCPServer[]"
+        "Needs[\"Wolfram`AgentTools`\"]; Wolfram`AgentTools`StartMCPServer[]"
     }
 ];
 

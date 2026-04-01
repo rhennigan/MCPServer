@@ -21,9 +21,9 @@ If[ ! StringMatchQ[ $memoryConstraint, "Infinity"|NumberString ], Exit[ 1 ] ];
 (* :!CodeAnalysis::EndBlock:: *)
 
 PacletDirectoryLoad @ DirectoryName[ $inputFileName, 2 ];
-<< Wolfram`MCPServer`;
+<< Wolfram`AgentTools`;
 
-markdown = Wolfram`MCPServer`TestReportToolFunction[
+markdown = Wolfram`AgentTools`TestReportToolFunction[
     <|
         "paths"            -> $paths,
         "timeConstraint"   -> ToExpression @ $timeConstraint,

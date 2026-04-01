@@ -1,5 +1,5 @@
 # Dockerfile for Wolfram MCP Server
-# https://github.com/rhennigan/MCPServer
+# https://github.com/WolframResearch/AgentTools
 #
 # This image provides a containerized MCP server that enables LLMs to access
 # Wolfram Language computation capabilities via the Model Context Protocol.
@@ -8,23 +8,23 @@
 #   docker run -i --rm \
 #     -e WOLFRAMSCRIPT_ENTITLEMENTID=your-entitlement-id \
 #     -e MCP_SERVER_NAME=Wolfram \
-#     ghcr.io/rhennigan/mcpserver:latest
+#     ghcr.io/wolframresearch/mcpserver:latest
 #
 # For node-locked licensing (free but requires persistent storage):
 #   docker run -i --rm \
 #     -v ./Licensing:/root/.WolframEngine/Licensing \
 #     -e MCP_SERVER_NAME=Wolfram \
-#     ghcr.io/rhennigan/mcpserver:latest
+#     ghcr.io/wolframresearch/mcpserver:latest
 
 FROM wolframresearch/wolframengine:14.3
 
 LABEL org.opencontainers.image.title="Wolfram MCP Server"
 LABEL org.opencontainers.image.description="Model Context Protocol server for Wolfram Language"
-LABEL org.opencontainers.image.source="https://github.com/rhennigan/MCPServer"
+LABEL org.opencontainers.image.source="https://github.com/WolframResearch/AgentTools"
 LABEL org.opencontainers.image.licenses="MIT"
 
 # Set working directory
-WORKDIR /opt/MCPServer
+WORKDIR /opt/AgentTools
 
 # Copy and run prebuild script to install dependencies
 # This must happen before setting -pacletreadonly
@@ -79,4 +79,4 @@ USER wolframengine
 WORKDIR /workspace
 
 # Entry point - MCP servers communicate via stdin/stdout
-CMD ["wolframscript", "-f", "/opt/MCPServer/Scripts/StartMCPServer.wls"]
+CMD ["wolframscript", "-f", "/opt/AgentTools/Scripts/StartMCPServer.wls"]

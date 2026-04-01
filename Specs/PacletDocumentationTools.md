@@ -29,7 +29,7 @@ Creates a new symbol documentation page from scratch, generating a properly stru
 |-----------|------|----------|-------------|
 | `pacletDirectory` | String | Yes | Absolute path to the paclet root directory |
 | `symbolName` | String | Yes | Name of the symbol being documented (e.g., `"MyFunction"`) |
-| `pacletName` | String | Yes | Name of the paclet (e.g., `"MCPServer"` or `"Wolfram/MCPServer"`) |
+| `pacletName` | String | Yes | Name of the paclet (e.g., `"AgentTools"` or `"Wolfram/AgentTools"`) |
 | `publisherID` | String | No | Publisher ID for the paclet (e.g., `"Wolfram"`). Can be omitted for legacy paclets or included in `pacletName` |
 | `context` | String | No | Full context for the symbol. Defaults to ``"{publisherID}`{pacletName}`"`` if publisherID is provided, otherwise ``"{pacletName}`"`` |
 | `usage` | String | Yes | Markdown string containing usage cases (see format below) |
@@ -151,7 +151,7 @@ The tool should create any missing intermediate directories.
 
 6. **Paclet Base Construction**: The paclet base (used in URIs and metadata) should be constructed as:
    - If `publisherID` is provided: `"{publisherID}/{pacletName}"`
-   - If `publisherID` is omitted but `pacletName` contains `/`: use `pacletName` as-is (e.g., `"Wolfram/MCPServer"`)
+   - If `publisherID` is omitted but `pacletName` contains `/`: use `pacletName` as-is (e.g., `"Wolfram/AgentTools"`)
    - If `publisherID` is omitted and `pacletName` has no `/`: use `pacletName` alone (e.g., `"MyPaclet"`)
 
 7. **URI Construction**: The documentation URI should be:
@@ -160,7 +160,7 @@ The tool should create any missing intermediate directories.
    ```
 
    Examples:
-   - With publisher: `Wolfram/MCPServer/ref/CreateMCPServer`
+   - With publisher: `Wolfram/AgentTools/ref/CreateMCPServer`
    - Without publisher: `MyPaclet/ref/MyFunction`
 
 8. **Link Button Data**: Internal links should use:
@@ -559,8 +559,8 @@ TemplateObject[
 | Slot Name | Type | Description |
 |-----------|------|-------------|
 | `"SymbolName"` | String | The symbol being documented |
-| `"PacletBase"` | String | Full paclet identifier (e.g., `"Wolfram/MCPServer"` or `"MyPaclet"`) |
-| `"Context"` | String | Full context string (e.g., `"Wolfram\`MCPServer\`"`) |
+| `"PacletBase"` | String | Full paclet identifier (e.g., `"Wolfram/AgentTools"` or `"MyPaclet"`) |
+| `"Context"` | String | Full context string (e.g., `"Wolfram\`AgentTools\`"`) |
 | `"UsageCells"` | List | Pre-generated usage cell content (TextData) |
 | `"NotesCells"` | List | List of notes cells (or empty list) |
 | `"SeeAlsoCells"` | List | Pre-generated see also content (or placeholder) |

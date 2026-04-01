@@ -17,6 +17,7 @@ env:
   WOLFRAMSCRIPT_ENTITLEMENTID: ${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
   WOLFRAM_SYSTEM_ID: Linux-x86-64
   GH_INSTALL_URL: https://github.com/cli/cli/releases/download/v2.33.0/gh_2.33.0_linux_amd64.deb
+  GH_INSTALL_SHA256: ea18a92a3e0a2a8edbca8d5ef368829ec8ced37571e0eb9d2c074917b0c5faae
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   WOLFRAMINIT: -lmverbose
 
@@ -26,7 +27,7 @@ jobs:
     timeout-minutes: 15
 
     container:
-      image: wolframresearch/wolframengine:14.2
+      image: wolframresearch/wolframengine:14.3
       options: --user root
 
     steps:
@@ -35,7 +36,8 @@ jobs:
         apt-get update && apt-get install software-properties-common -y
         add-apt-repository ppa:git-core/ppa -y
         apt-get update && apt-get install git -y
-        wget ${{ env.GH_INSTALL_URL }} -O gh.deb
+        curl -fsSL ${{ env.GH_INSTALL_URL }} -o gh.deb
+        echo "${{ env.GH_INSTALL_SHA256 }}  gh.deb" | sha256sum --check
         dpkg -i gh.deb
 
     - name: Checkout
@@ -48,7 +50,7 @@ jobs:
       run: wolframscript -f Scripts/BuildMCPB.wls
 
     - name: Rename Paclet File
-      run: mv "${{ env.PACLET_PATH }}" "${{ env.PACLET_BUILD_DIR }}/Wolfram__MCPServer.paclet"
+      run: mv "${{ env.PACLET_PATH }}" "${{ env.PACLET_BUILD_DIR }}/Wolfram__AgentTools.paclet"
 
     - name: Update Release
       run: |
@@ -64,7 +66,7 @@ jobs:
         fi
 
         gh release upload experimental \
-          "${{ env.PACLET_BUILD_DIR }}/Wolfram__MCPServer.paclet" \
+          "${{ env.PACLET_BUILD_DIR }}/Wolfram__AgentTools.paclet" \
           "${{ env.MCPB_PATH }}" \
           --clobber \
           --repo="${{ github.repository }}"

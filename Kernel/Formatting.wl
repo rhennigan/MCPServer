@@ -1,10 +1,10 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Formatting`" ];
+BeginPackage[ "Wolfram`AgentTools`Formatting`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
+Needs[ "Wolfram`AgentTools`"        ];
+Needs[ "Wolfram`AgentTools`Common`" ];
 
 (* TODO: show installations in formatted boxes *)
 
@@ -63,15 +63,19 @@ makeSummaryRows // endDefinition;
 makeHiddenSummaryRows // beginDefinition;
 
 makeHiddenSummaryRows[ obj_ ] :=
-    makeHiddenSummaryRows[ obj[ "Name" ], obj[ "Tools" ], obj[ "Location" ], obj[ "JSONConfiguration" ] ];
+    makeHiddenSummaryRows[ obj[ "Name" ], obj[ "ToolNames" ], obj[ "Location" ], obj[ "JSONConfiguration" ] ];
 
-makeHiddenSummaryRows[ name_String, tools_List, location: _File | "BuiltIn", json_String ] :=
-    Module[ { toolNames, copyJSONButton },
-        toolNames = Select[ Cases[ tools, tool: $$llmTool :> toolName @ tool ], StringQ ];
+makeHiddenSummaryRows[
+    name_String,
+    toolNames: { ___String },
+    location: _File | "BuiltIn" | _PacletObject,
+    json_String
+] :=
+    Module[ { copyJSONButton },
         copyJSONButton = clickToCopy[ "{\[Ellipsis]}", json ];
         Flatten @ {
             summaryItem[ "JSON Configuration", copyJSONButton ],
-            If[ Length @ toolNames > 0, summaryItem[ "Tool Names", Multicolumn[ toolNames, 5 ] ], Nothing ],
+            If[ Length @ toolNames > 0, summaryItem[ "Tools", Multicolumn[ toolNames, 5 ] ], Nothing ],
             summaryItem[ "Location", location ]
         }
     ];
@@ -100,6 +104,58 @@ summaryItem // endDefinition;
 niceLabel // beginDefinition;
 niceLabel[ label_String ] := StringJoin[ label, ": " ];
 niceLabel // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*AgentToolsDeployment*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*makeDeploymentBoxes*)
+makeDeploymentBoxes // beginDefinition;
+
+makeDeploymentBoxes[ dep_AgentToolsDeployment, fmt_ ] :=
+    BoxForm`ArrangeSummaryBox[
+        AgentToolsDeployment,
+        dep,
+        None,
+        makeDeploymentSummaryRows @ dep,
+        makeDeploymentHiddenRows @ dep,
+        fmt
+    ];
+
+makeDeploymentBoxes // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*makeDeploymentSummaryRows*)
+makeDeploymentSummaryRows // beginDefinition;
+
+makeDeploymentSummaryRows[ dep_ ] := Flatten @ {
+    summaryItem[ "ClientName", dep[ "ClientName" ] ],
+    summaryItem[ "Server"    , dep[ "Server"     ] ]
+};
+
+makeDeploymentSummaryRows // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*makeDeploymentHiddenRows*)
+makeDeploymentHiddenRows // beginDefinition;
+
+makeDeploymentHiddenRows[ dep_ ] :=
+    Module[ { tools, toolNames, toolItem },
+        tools = dep[ "Tools" ];
+        toolNames = Select[ Cases[ tools, tool: $$llmTool :> toolName @ tool ], StringQ ];
+        toolItem = If[ Length @ toolNames > 0, summaryItem[ "Tools", Multicolumn[ toolNames, 5 ] ], Nothing ];
+        Flatten @ {
+            summaryItem[ "Scope"     , dep[ "Scope"      ] ],
+            summaryItem[ "ConfigFile", dep[ "ConfigFile" ] ],
+            toolItem
+        }
+    ];
+
+makeDeploymentHiddenRows // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

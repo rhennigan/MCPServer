@@ -1,9 +1,9 @@
-# [Wolfram/MCPServer](https://paclets.com/Wolfram/MCPServer)
+# [Wolfram/AgentTools](https://paclets.com/Wolfram/AgentTools)
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Wolfram Version](https://img.shields.io/badge/Wolfram-14.2%2B-red.svg)](https://www.wolfram.com/language/)
+[![Wolfram Version](https://img.shields.io/badge/Wolfram-14.3%2B-red.svg)](https://www.wolfram.com/language/)
 
-Implements a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server using Wolfram Language, enabling LLMs to access Wolfram Language computation capabilities.
+A Wolfram Language toolkit for integrating with AI agents and LLMs — providing [MCP](https://modelcontextprotocol.io) servers, agent skills, and other standard interfaces that give AI systems access to Wolfram's computational capabilities.
 
 ## Table of Contents
 
@@ -30,10 +30,11 @@ Implements a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) ser
 - **MCP prompts** for enhanced context and workflows
 - **MCP Apps** for interactive UI resources in supported clients (e.g., embedded notebook viewers, Wolfram\|Alpha result displays)
 - **Agent Skills** for distributing Wolfram tools as portable skills to AI coding agents (Claude Code, Cursor, Gemini CLI, VS Code, and [more](https://agentskills.io/))
+- **Paclet extensions** allowing third-party paclets to contribute MCP tools, prompts, and servers via the `"AgentTools"` extension
 
 ## Requirements
 
-- Wolfram Language 14.2 or higher
+- Wolfram Language 14.3 or higher
 - An MCP-compatible client application (see [Supported Clients](#supported-clients))
 - Optional: [LLMKit subscription](https://www.wolfram.com/notebook-assistant-llm-kit) for enhanced semantic search capabilities
 
@@ -42,13 +43,13 @@ Implements a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) ser
 ### Install the Paclet
 
 ```wl
-PacletInstall["Wolfram/MCPServer"]
+PacletInstall["Wolfram/AgentTools"]
 ```
 
 ### Load the Package
 
 ```wl
-Needs["Wolfram`MCPServer`"]
+Needs["Wolfram`AgentTools`"]
 ```
 
 ## Quick Start
@@ -79,7 +80,7 @@ UninstallMCPServer["ClaudeDesktop", "Wolfram"]   (* Remove specific server *)
 
 ## Predefined Servers
 
-MCPServer includes four predefined server configurations, each optimized for different use cases:
+AgentTools includes four predefined server configurations, each optimized for different use cases:
 
 | Server | Best For | Tools |
 |--------|----------|-------|
@@ -100,7 +101,7 @@ See [docs/servers.md](docs/servers.md) for detailed information about each serve
 
 ## Supported Clients
 
-MCPServer can be installed into the following MCP client applications:
+AgentTools can be installed into the following MCP client applications:
 
 | Client | Name | Project Support |
 |--------|------|-----------------|
@@ -111,7 +112,7 @@ MCPServer can be installed into the following MCP client applications:
 | [Cursor](https://www.cursor.com) | `"Cursor"` | No |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | `"GeminiCLI"` | No |
 | [Google Antigravity](https://antigravity.google) | `"Antigravity"` | No |
-| [OpenAI Codex](https://openai.com/codex) | `"Codex"` | No |
+| [OpenAI Codex](https://openai.com/codex) | `"Codex"` | Yes |
 | [OpenCode](https://opencode.ai) | `"OpenCode"` | Yes |
 | [Visual Studio Code](https://code.visualstudio.com) | `"VisualStudioCode"` | Yes |
 | [Windsurf](https://codeium.com/windsurf) | `"Windsurf"` | No |
@@ -127,7 +128,7 @@ InstallMCPServer[{"ClaudeCode", "/path/to/project"}, "WolframLanguage"]
 
 ### Claude Desktop
 
-Claude Desktop offers an excellent integration experience with MCPServer, providing seamless access to Wolfram Language's computational capabilities.
+Claude Desktop offers an excellent integration experience with AgentTools, providing seamless access to Wolfram Language's computational capabilities.
 
 ### Cursor
 
@@ -148,11 +149,11 @@ Your Wolfram tools will now be available in Cursor agent chat:
 
 ### Other Clients
 
-MCPServer works with any stdio-based MCP client. See [docs/mcp-clients.md](docs/mcp-clients.md) for manual configuration instructions.
+AgentTools works with any stdio-based MCP client. See [docs/mcp-clients.md](docs/mcp-clients.md) for manual configuration instructions.
 
 ## Available Tools
 
-MCPServer provides a variety of tools organized by category:
+AgentTools provides a variety of tools organized by category:
 
 ### Context Tools (Semantic Search)
 
@@ -249,6 +250,17 @@ CreateMCPServer["My MCP Server", <|
 | `InstallMCPServer[client, server]` | Install a specific server for a client |
 | `UninstallMCPServer[client]` | Remove all servers from a client |
 | `UninstallMCPServer[client, name]` | Remove a specific server from a client |
+| `DeployAgentTools[target]` | Deploy tools to a client with tracked deployment management |
+| `ValidateAgentToolsPacletExtension[paclet]` | Validate an `"AgentTools"` paclet extension |
+| `DeployedAgentTools[]` | List all tracked deployments |
+
+### Deployment Objects
+
+| Symbol | Description |
+|--------|-------------|
+| `AgentToolsDeployment[...]` | Data structure representing a tracked tool deployment |
+| `DeployedAgentTools[]` | List all deployments |
+| `DeployedAgentTools[client]` | List deployments for a specific client |
 
 ### Server Objects
 
@@ -256,7 +268,7 @@ CreateMCPServer["My MCP Server", <|
 |--------|-------------|
 | `MCPServerObject[...]` | Data structure representing an MCP server |
 | `MCPServerObjectQ[expr]` | Test if an expression is a valid server object |
-| `MCPServerObjects[]` | List all created server objects |
+| `MCPServerObjects[]` | List all created server objects (includes paclet-backed servers) |
 
 ### Predefined Resources
 
@@ -269,12 +281,21 @@ CreateMCPServer["My MCP Server", <|
 
 ### Options
 
+#### `CreateMCPServer`
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `OverwriteTarget` | `False` | Overwrite an existing server with the same name |
+| `IncludeDefinitions` | `True` | Include function definitions in the serialized server |
+| `Initialization` | `None` | Code to evaluate when the server starts |
+
 #### `InstallMCPServer`
 
 | Option | Default | Description |
 |--------|---------|-------------|
 | `"EnableMCPApps"` | `True` | Enable or disable [MCP Apps](docs/mcp-apps.md) UI resources |
 | `"DevelopmentMode"` | `False` | Use local source files instead of installed paclet |
+| `"MCPServerName"` | `Automatic` | Override the config file key for the server entry |
 | `"ToolOptions"` | `<\|\|>` | Customize built-in tool behavior (see [docs/tools.md](docs/tools.md#tool-options)) |
 | `"VerifyLLMKit"` | `True` | Check LLMKit subscription requirements |
 
@@ -287,6 +308,7 @@ See the [developer documentation](docs/README.md) for information on:
 - [Building the paclet](docs/building.md)
 - [Adding new tools](docs/tools.md)
 - [Agent skills](docs/agent-skills.md) for distributing tools to AI coding agents
+- [Paclet extensions](docs/paclet-extensions.md) for third-party tool/prompt/server contributions
 - [Error handling](docs/error-handling.md)
 
 For AI agents working on this codebase, see [AGENTS.md](AGENTS.md).

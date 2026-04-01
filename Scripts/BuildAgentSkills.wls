@@ -27,7 +27,7 @@ tempBuildDir  = CreateDirectory[ ];
 (* ::Subsection::Closed:: *)
 (*Load Paclet*)
 cicd`ScriptConfirmBy[ PacletDirectoryLoad @ pacletDir, MemberQ @ pacletDir ];
-cicd`ScriptConfirmMatch[ Get[ "Wolfram`MCPServer`" ], Null ];
+cicd`ScriptConfirmMatch[ Get[ "Wolfram`AgentTools`" ], Null ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -106,7 +106,7 @@ generateHelpTextCode[ meta_Association, helpLines_List ] := StringJoin[
     "$helpText = StringJoin[\n",
     "    \"Usage: \", $usage, \"\\n\\n\",\n",
     "    \"", StringReplace[ meta[ "Description" ], $escapeRules ], "\\n\\n\",\n",
-    If[ helpLines === {},
+    If[ helpLines === { },
         "    \"No arguments.\\n\"\n",
         "    \"Arguments:\\n\",\n" <>
         StringRiffle[
@@ -126,7 +126,7 @@ generateArgParsingCode[ reqNames_List, optNames_List ] := Module[
     code = "";
 
     (* Validate required positional arguments *)
-    If[ reqNames =!= {},
+    If[ reqNames =!= { },
         code = code <> StringJoin[
             "    (* Validate required arguments *)\n",
             "    If[ Length @ positional < ", ToString @ Length @ reqNames, ",\n",
@@ -217,7 +217,7 @@ scriptArgTable[ meta_Association, reqNames_List, optNames_List ] := Module[ { ro
             optNames
         ]
     ];
-    If[ rows === {},
+    If[ rows === { },
         "This script has no arguments.\n",
         StringJoin[
             "| Argument | Required | Description |\n",
@@ -288,7 +288,7 @@ KeyValueMap[
             refDir    = GeneralUtilities`EnsureDirectory @ { skillDir, "references" };
 
             (* Copy generated scripts *)
-            scriptNames = Lookup[ skillDef, "Scripts", {} ];
+            scriptNames = Lookup[ skillDef, "Scripts", { } ];
             Map[
                 Function[ scriptName,
                     Module[ { src, dst },
@@ -306,7 +306,7 @@ KeyValueMap[
             ];
 
             (* Copy reference files *)
-            refNames = Lookup[ skillDef, "References", {} ];
+            refNames = Lookup[ skillDef, "References", { } ];
             Map[
                 Function[ refName,
                     Module[ { src, dst },

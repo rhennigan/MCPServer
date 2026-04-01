@@ -11,7 +11,7 @@ Notebook[
   Cell[
    CellGroupData[
     {
-     Cell["MCP Server", "GuideTitle", CellID -> 66967217],
+     Cell["Agent Tools", "GuideTitle", CellID -> 66967217],
      Cell[
       CellGroupData[
        {
@@ -28,7 +28,7 @@ Notebook[
              ButtonBox[
               "InstallMCPServer",
               BaseStyle -> "Link",
-              ButtonData -> "paclet:Wolfram/MCPServer/ref/InstallMCPServer"
+              ButtonData -> "paclet:Wolfram/AgentTools/ref/InstallMCPServer"
              ]
             ],
             "InlineGuideFunction",
@@ -50,7 +50,7 @@ Notebook[
              ButtonBox[
               "UninstallMCPServer",
               BaseStyle -> "Link",
-              ButtonData -> "paclet:Wolfram/MCPServer/ref/UninstallMCPServer"
+              ButtonData -> "paclet:Wolfram/AgentTools/ref/UninstallMCPServer"
              ]
             ],
             "InlineGuideFunction",
@@ -72,7 +72,7 @@ Notebook[
              ButtonBox[
               "MCPServerObject",
               BaseStyle -> "Link",
-              ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObject"
+              ButtonData -> "paclet:Wolfram/AgentTools/ref/MCPServerObject"
              ]
             ],
             "InlineGuideFunction",
@@ -106,7 +106,7 @@ Notebook[
              ButtonBox[
               "CreateMCPServer",
               BaseStyle -> "Link",
-              ButtonData -> "paclet:Wolfram/MCPServer/ref/CreateMCPServer"
+              ButtonData -> "paclet:Wolfram/AgentTools/ref/CreateMCPServer"
              ]
             ],
             "InlineGuideFunction",
@@ -132,7 +132,7 @@ Notebook[
              ButtonBox[
               "MCPServerObjects",
               BaseStyle -> "Link",
-              ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObjects"
+              ButtonData -> "paclet:Wolfram/AgentTools/ref/MCPServerObjects"
              ]
             ],
             "InlineGuideFunction",
@@ -146,7 +146,7 @@ Notebook[
              ButtonBox[
               "CreateMCPServer",
               BaseStyle -> "Link",
-              ButtonData -> "paclet:Wolfram/MCPServer/ref/CreateMCPServer"
+              ButtonData -> "paclet:Wolfram/AgentTools/ref/CreateMCPServer"
              ]
             ],
             "InlineFormula"
@@ -164,7 +164,7 @@ Notebook[
              ButtonBox[
               "$DefaultMCPServers",
               BaseStyle -> "Link",
-              ButtonData -> "paclet:Wolfram/MCPServer/ref/$DefaultMCPServers"
+              ButtonData -> "paclet:Wolfram/AgentTools/ref/$DefaultMCPServers"
              ]
             ],
             "InlineGuideFunction"
@@ -175,7 +175,7 @@ Notebook[
              ButtonBox[
               "$DefaultMCPTools",
               BaseStyle -> "Link",
-              ButtonData -> "paclet:Wolfram/MCPServer/ref/$DefaultMCPTools"
+              ButtonData -> "paclet:Wolfram/AgentTools/ref/$DefaultMCPTools"
              ]
             ],
             "InlineGuideFunction",
@@ -187,7 +187,7 @@ Notebook[
              ButtonBox[
               "MCPServerObjectQ",
               BaseStyle -> "Link",
-              ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObjectQ"
+              ButtonData -> "paclet:Wolfram/AgentTools/ref/MCPServerObjectQ"
              ]
             ],
             "InlineGuideFunction",
@@ -281,7 +281,7 @@ Notebook[
        ButtonBox[
         "Quick Start for AI Coding Applications",
         BaseStyle -> "Link",
-        ButtonData -> "paclet:Wolfram/MCPServer/tutorial/QuickStartforAICodingApplications"
+        ButtonData -> "paclet:Wolfram/AgentTools/tutorial/QuickStartforAICodingApplications"
        ]
       ],
       "GuideTutorial",
@@ -292,7 +292,7 @@ Notebook[
        ButtonBox[
         "Quick Start for Chat Clients",
         BaseStyle -> "Link",
-        ButtonData -> "paclet:Wolfram/MCPServer/tutorial/QuickStartforChatClients"
+        ButtonData -> "paclet:Wolfram/AgentTools/tutorial/QuickStartforChatClients"
        ]
       ],
       "GuideTutorial",
@@ -303,7 +303,7 @@ Notebook[
        ButtonBox[
         "Default Tools",
         BaseStyle -> "Link",
-        ButtonData -> "paclet:Wolfram/MCPServer/tutorial/DefaultTools"
+        ButtonData -> "paclet:Wolfram/AgentTools/tutorial/DefaultTools"
        ]
       ],
       "GuideTutorial",
@@ -365,19 +365,19 @@ Notebook[
          CellID -> 131112038
         ],
         Cell[
-         "Wolfram/MCPServer",
+         "Wolfram/AgentTools",
          "Categorization",
          CellLabel -> "Paclet Name",
          CellID -> 372802092
         ],
         Cell[
-         "Wolfram`MCPServer`",
+         "Wolfram`AgentTools`",
          "Categorization",
          CellLabel -> "Context",
          CellID -> 53987209
         ],
         Cell[
-         "Wolfram/MCPServer/guide/MCPServer",
+         "Wolfram/AgentTools/guide/AgentTools",
          "Categorization",
          CellLabel -> "URI",
          CellID -> 180858926
@@ -400,7 +400,7 @@ Notebook[
    ]
   ]
  },
- TaggingRules -> <|"Paclet" -> "Wolfram/MCPServer"|>,
+ TaggingRules -> <|"Paclet" -> "Wolfram/AgentTools"|>,
  StyleDefinitions ->
   FrontEnd`FileName[
    {"Wolfram"},

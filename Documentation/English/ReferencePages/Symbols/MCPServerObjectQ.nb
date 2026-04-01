@@ -23,7 +23,7 @@ Notebook[
             ButtonBox[
              "MCPServerObjectQ",
              BaseStyle -> "Link",
-             ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObjectQ"
+             ButtonData -> "paclet:Wolfram/AgentTools/ref/MCPServerObjectQ"
             ],
             "[",
             StyleBox["server", "TI"],
@@ -46,7 +46,7 @@ Notebook[
           ButtonBox[
            "MCPServerObject",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObject"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/MCPServerObject"
           ]
          ],
          "InlineFormula"
@@ -109,7 +109,7 @@ Notebook[
           ButtonBox[
            "MCPServerObject",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObject"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/MCPServerObject"
           ]
          ],
          "InlineSeeAlsoFunction",
@@ -309,7 +309,7 @@ Notebook[
      ],
      Cell[
       BoxData[
-       RowBox[{"Needs", "[", "\"Wolfram`MCPServer`\"", "]"}]
+       RowBox[{"Needs", "[", "\"Wolfram`AgentTools`\"", "]"}]
       ],
       "ExampleInitialization",
       CellID -> 932189874
@@ -360,7 +360,7 @@ Notebook[
           ButtonBox[
            "MCPServerObject",
            BaseStyle -> "Link",
-           ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObject"
+           ButtonData -> "paclet:Wolfram/AgentTools/ref/MCPServerObject"
           ]
          ],
          "InlineFormula"
@@ -743,7 +743,7 @@ Notebook[
                                  ],
                                  ButtonFunction :> {
                                   CopyToClipboard[
-                                   "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                   "{\n\t\"mcpServers\":{\n\t\t\"Wolfram\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"Wolfram\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                   ],
                                   NotebookDelete[cellObj],
                                   FrontEndExecute[
@@ -881,7 +881,7 @@ Notebook[
              "]"
             }
            ],
-           Wolfram`MCPServer`MCPServerObject[
+           Wolfram`AgentTools`MCPServerObject[
             <|
              "Name" -> "Wolfram",
              "Location" -> "BuiltIn",
@@ -901,7 +901,7 @@ Notebook[
                    "Required" -> True
                   |>
                  },
-                 "Function" -> Wolfram`MCPServer`DefaultServers`Private`relatedWolframContext,
+                 "Function" -> Wolfram`AgentTools`DefaultServers`Private`relatedWolframContext,
                  "Options" -> { },
                  "LLMPacletVersion" -> "1.6.10"
                 |>
@@ -922,7 +922,7 @@ Notebook[
                    "Required" -> False
                   |>
                  },
-                 "Function" -> Wolfram`MCPServer`DefaultServers`Private`evaluateWolframLanguage,
+                 "Function" -> Wolfram`AgentTools`DefaultServers`Private`evaluateWolframLanguage,
                  "Options" -> { },
                  "LLMPacletVersion" -> "1.6.10"
                 |>
@@ -1045,7 +1045,7 @@ Notebook[
              ButtonBox[
               "MCPServerObject",
               BaseStyle -> "Link",
-              ButtonData -> "paclet:Wolfram/MCPServer/ref/MCPServerObject"
+              ButtonData -> "paclet:Wolfram/AgentTools/ref/MCPServerObject"
              ]
             ],
             "InlineFormula"
@@ -1474,7 +1474,7 @@ Notebook[
                                     ],
                                     ButtonFunction :> {
                                      CopyToClipboard[
-                                      "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`MCPServer`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
+                                      "{\n\t\"mcpServers\":{\n\t\t\"My MCP Server\":{\n\t\t\t\"command\":\"wolfram\",\n\t\t\t\"args\":[\n\t\t\t\t\"-run\",\n\t\t\t\t\"Wolfram`AgentTools`StartMCPServer[]\",\n\t\t\t\t\"-noinit\",\n\t\t\t\t\"-noprompt\"\n\t\t\t],\n\t\t\t\"env\":{\n\t\t\t\t\"MCP_SERVER_NAME\":\"My MCP Server\"\n\t\t\t}\n\t\t}\n\t}\n}"
                                      ],
                                      NotebookDelete[cellObj],
                                      FrontEndExecute[
@@ -1619,7 +1619,7 @@ Notebook[
                 "]"
                }
               ],
-              Wolfram`MCPServer`MCPServerObject[
+              Wolfram`AgentTools`MCPServerObject[
                <|
                 "Name" -> "My MCP Server",
                 "LLMEvaluator" -> <|
@@ -1877,19 +1877,19 @@ Notebook[
          CellID -> 405114878
         ],
         Cell[
-         "Wolfram/MCPServer",
+         "Wolfram/AgentTools",
          "Categorization",
          CellLabel -> "Paclet Name",
          CellID -> 2308871
         ],
         Cell[
-         "Wolfram`MCPServer`",
+         "Wolfram`AgentTools`",
          "Categorization",
          CellLabel -> "Context",
          CellID -> 204971323
         ],
         Cell[
-         "Wolfram/MCPServer/ref/MCPServerObjectQ",
+         "Wolfram/AgentTools/ref/MCPServerObjectQ",
          "Categorization",
          CellLabel -> "URI",
          CellID -> 286126405
@@ -1948,7 +1948,7 @@ Notebook[
    ]
   ]
  },
- TaggingRules -> <|"Paclet" -> "Wolfram/MCPServer"|>,
+ TaggingRules -> <|"Paclet" -> "Wolfram/AgentTools"|>,
  StyleDefinitions ->
   FrontEnd`FileName[
    {"Wolfram"},

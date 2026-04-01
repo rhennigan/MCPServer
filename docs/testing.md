@@ -1,6 +1,6 @@
 # Writing and Running Tests
 
-This guide covers how to write and run tests for MCPServer.
+This guide covers how to write and run tests for AgentTools.
 
 ## Test File Format
 
@@ -21,7 +21,7 @@ You can optionally include expected messages (see [Error Handling](error-handlin
 VerificationTest[
     input,
     expected,
-    { MCPServer::Tag, ... },
+    { AgentTools::Tag, ... },
     SameTest -> MatchQ,
     TestID   -> "AnAppropriateTestID"
 ]
@@ -36,14 +36,14 @@ Always start new test files with the following boilerplate:
 (* ::Section::Closed:: *)
 (*Initialization*)
 VerificationTest[
-    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
+    Needs[ "Wolfram`AgentToolsTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "GetDefinitions"
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext"
@@ -95,7 +95,7 @@ Run multiple test files:
 wolframscript -f Scripts/TestPaclet.wls Tests/CreateMCPServer.wlt Tests/StartMCPServer.wlt
 ```
 
-**Path resolution**: The script accepts both absolute paths and paths relative to the paclet root directory. For example, `Tests/Foo.wlt` is equivalent to the full path `H:\Documents\MCPServer\Tests\Foo.wlt`.
+**Path resolution**: The script accepts both absolute paths and paths relative to the paclet root directory. For example, `Tests/Foo.wlt` is equivalent to the full path `H:\Documents\AgentTools\Tests\Foo.wlt`.
 
 ## Unit Tests for Private Symbols
 
@@ -110,12 +110,59 @@ You can write unit tests for private symbols. Suppress linting errors by wrappin
 (* :!CodeAnalysis::EndBlock:: *)
 ```
 
+## Testing Paclet Extensions
+
+The paclet extension system has dedicated test files and mock paclets for testing:
+
+- `Tests/PacletExtension.wlt` - Tests for paclet discovery, name parsing, definition loading, and resolution
+- `Tests/ValidateAgentToolsPacletExtension.wlt` - Tests for extension validation
+
+### Mock Paclets
+
+The `TestResources/` directory contains mock paclets that simulate various extension configurations:
+
+| Mock Paclet | Purpose |
+|-------------|---------|
+| `MockMCPPacletTest` | Valid extension with per-item definition files (tools, servers, prompts) |
+| `MockMCPPacletCombined` | Valid extension using combined definition files (e.g., `Tools.wl`) |
+| `MockMCPPacletBadContents` | Definition files with invalid contents |
+| `MockMCPPacletBadCrossRef` | Server referencing non-existent tools/prompts |
+| `MockMCPPacletBadDecl` | Invalid declaration format in PacletInfo.wl |
+| `MockMCPPacletDupFiles` | Duplicate definition files (`.wl` + `.wxf`) |
+| `MockMCPPacletInvalidKeys` | Invalid keys in the extension block |
+| `MockMCPPacletMissingFiles` | Declared items with no corresponding definition files |
+| `MockMCPPacletNoRoot` | Extension without a root directory |
+
+### Loading Mock Paclets in Tests
+
+Use `PacletDirectoryLoad` to make mock paclets discoverable in tests:
+
+```wl
+$testResourceDirectory = FileNameJoin @ { DirectoryName[ $TestFileName, 2 ], "TestResources" };
+
+PacletDirectoryLoad @ FileNameJoin @ { $testResourceDirectory, "MockMCPPacletTest" };
+$mockPaclet = PacletObject[ "MockMCPPacletTest" ];
+```
+
+For tests that expect failures (e.g., validation errors), wrap the test input with `catchTop` so that `throwFailure` throws properly:
+
+```wl
+VerificationTest[
+    catchTop @ MCPServerObject[ "MockMCPPacletBadDecl/BadServer" ],
+    _Failure,
+    SameTest -> MatchQ,
+    TestID   -> "BadDecl-Fails"
+]
+```
+
+See [paclet-extensions.md](paclet-extensions.md) for details on the extension system.
+
 ## Troubleshooting
 
 If tests fail, consider:
 
-1. **Check for MX file conflicts**: If you've modified source files but an MX file exists, delete `Kernel/64Bit/MCPServer.mx` and reload the paclet
-2. **Reload the paclet**: Changes to source files require reloading with ``PacletDirectoryLoad["path/to/MCPServer"]; Get["Wolfram`MCPServer`"]``
+1. **Check for MX file conflicts**: If you've modified source files but an MX file exists, delete `Kernel/64Bit/AgentTools.mx` and reload the paclet
+2. **Reload the paclet**: Changes to source files require reloading with ``PacletDirectoryLoad["path/to/AgentTools"]; Get["Wolfram`AgentTools`"]``
 3. **Review test output**: The test report will show which tests failed and why
 
 ## See Also
@@ -123,4 +170,5 @@ If tests fail, consider:
 - [Getting Started](getting-started.md) - Development environment setup
 - [Building](building.md) - Building the paclet
 - [Error Handling](error-handling.md) - Error handling architecture and patterns
+- [Paclet Extensions](paclet-extensions.md) - Extension system and validation
 - [AGENTS.md](../AGENTS.md) - Detailed development guidelines

@@ -1,13 +1,13 @@
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Prompts`Search`" ];
+BeginPackage[ "Wolfram`AgentTools`Prompts`Search`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"               ];
-Needs[ "Wolfram`MCPServer`Common`"        ];
-Needs[ "Wolfram`MCPServer`Prompts`"       ];
-Needs[ "Wolfram`MCPServer`Tools`Context`" ];
+Needs[ "Wolfram`AgentTools`"               ];
+Needs[ "Wolfram`AgentTools`Common`"        ];
+Needs[ "Wolfram`AgentTools`Prompts`"       ];
+Needs[ "Wolfram`AgentTools`Tools`Context`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

@@ -5,21 +5,21 @@
 (* ::Section::Closed:: *)
 (*Initialization*)
 VerificationTest[
-    Needs[ "Wolfram`MCPServerTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
+    Needs[ "Wolfram`AgentToolsTests`", FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" } ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "GetDefinitions@@Tests/CodeInspectorTool.wlt:7,1-12,2"
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`" ],
+    Needs[ "Wolfram`AgentTools`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadContext@@Tests/CodeInspectorTool.wlt:14,1-19,2"
 ]
 
 VerificationTest[
-    Needs[ "Wolfram`MCPServer`Tools`CodeInspector`" ],
+    Needs[ "Wolfram`AgentTools`Tools`CodeInspector`" ],
     Null,
     SameTest -> MatchQ,
     TestID   -> "LoadCodeInspectorContext@@Tests/CodeInspectorTool.wlt:21,1-26,2"
@@ -78,49 +78,49 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*parseExclusions*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseExclusions[ Missing[ "KeyAbsent" ] ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseExclusions[ Missing[ "KeyAbsent" ] ],
     { },
     SameTest -> MatchQ,
     TestID   -> "ParseExclusions-Missing@@Tests/CodeInspectorTool.wlt:80,1-85,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseExclusions[ "" ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseExclusions[ "" ],
     { },
     SameTest -> MatchQ,
     TestID   -> "ParseExclusions-Empty@@Tests/CodeInspectorTool.wlt:87,1-92,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseExclusions[ "Warning" ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseExclusions[ "Warning" ],
     { "Warning" },
     SameTest -> MatchQ,
     TestID   -> "ParseExclusions-Single@@Tests/CodeInspectorTool.wlt:94,1-99,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseExclusions[ "Warning,Error,Remark" ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseExclusions[ "Warning,Error,Remark" ],
     { "Warning", "Error", "Remark" },
     SameTest -> MatchQ,
     TestID   -> "ParseExclusions-Multiple@@Tests/CodeInspectorTool.wlt:101,1-106,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseExclusions[ "  Warning  ,  Error  " ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseExclusions[ "  Warning  ,  Error  " ],
     { "Warning", "Error" },
     SameTest -> MatchQ,
     TestID   -> "ParseExclusions-Whitespace@@Tests/CodeInspectorTool.wlt:108,1-113,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseExclusions[ Missing[ "KeyAbsent" ], { "Default1", "Default2" } ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseExclusions[ Missing[ "KeyAbsent" ], { "Default1", "Default2" } ],
     { "Default1", "Default2" },
     SameTest -> MatchQ,
     TestID   -> "ParseExclusions-MissingWithDefault@@Tests/CodeInspectorTool.wlt:115,1-120,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseExclusions[ "", { "A", "B" } ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseExclusions[ "", { "A", "B" } ],
     { },
     SameTest -> MatchQ,
     TestID   -> "ParseExclusions-EmptyWithDefault@@Tests/CodeInspectorTool.wlt:122,1-127,2"
@@ -129,30 +129,30 @@ VerificationTest[
 (* ::**************************************************************************************************************:: *)
 (*parseConfidenceLevel*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseConfidenceLevel[ Missing[ "KeyAbsent" ] ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseConfidenceLevel[ Missing[ "KeyAbsent" ] ],
     0.75,
     SameTest -> SameQ,
     TestID   -> "ParseConfidenceLevel-Missing@@Tests/CodeInspectorTool.wlt:131,1-136,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseConfidenceLevel[ 0.5 ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseConfidenceLevel[ 0.5 ],
     0.5,
     SameTest -> SameQ,
     TestID   -> "ParseConfidenceLevel-Valid@@Tests/CodeInspectorTool.wlt:138,1-143,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseConfidenceLevel[ 0 ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseConfidenceLevel[ 0 ],
     0.0,
     SameTest -> SameQ,
     TestID   -> "ParseConfidenceLevel-IntegerValue@@Tests/CodeInspectorTool.wlt:145,1-150,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Common`catchTop @ Wolfram`MCPServer`Tools`CodeInspector`Private`parseConfidenceLevel[ 1.5 ],
+    Wolfram`AgentTools`Common`catchTop @ Wolfram`AgentTools`Tools`CodeInspector`Private`parseConfidenceLevel[ 1.5 ],
     _Failure,
-    { MCPServer::CodeInspectorInvalidConfidence },
+    { AgentTools::CodeInspectorInvalidConfidence },
     SameTest -> MatchQ,
     TestID   -> "ParseConfidenceLevel-OutOfRange@@Tests/CodeInspectorTool.wlt:152,1-158,2"
 ]
@@ -161,21 +161,21 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*parseLimit*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseLimit[ Missing[ "KeyAbsent" ] ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseLimit[ Missing[ "KeyAbsent" ] ],
     100,
     SameTest -> SameQ,
     TestID   -> "ParseLimit-Missing@@Tests/CodeInspectorTool.wlt:163,1-168,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseLimit[ 50 ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseLimit[ 50 ],
     50,
     SameTest -> SameQ,
     TestID   -> "ParseLimit-Valid@@Tests/CodeInspectorTool.wlt:170,1-175,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`parseLimit[ -5 ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`parseLimit[ -5 ],
     100,
     SameTest -> SameQ,
     TestID   -> "ParseLimit-Negative@@Tests/CodeInspectorTool.wlt:177,1-182,2"
@@ -189,48 +189,48 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*validateAndNormalizeInput*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`validateAndNormalizeInput[ "If[a,b,c]", Missing[ "KeyAbsent" ] ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`validateAndNormalizeInput[ "If[a,b,c]", Missing[ "KeyAbsent" ] ],
     "If[a,b,c]",
     SameTest -> SameQ,
     TestID   -> "ValidateInput-CodeString@@Tests/CodeInspectorTool.wlt:191,1-196,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`validateAndNormalizeInput[ Missing[ "KeyAbsent" ], $InstallationDirectory ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`validateAndNormalizeInput[ Missing[ "KeyAbsent" ], $InstallationDirectory ],
     $InstallationDirectory,
     SameTest -> SameQ,
     TestID   -> "ValidateInput-Directory@@Tests/CodeInspectorTool.wlt:198,1-203,2"
 ]
 
 VerificationTest[
-    (* Use a file from the MCPServer paclet that's guaranteed to exist *)
+    (* Use a file from the AgentTools paclet that's guaranteed to exist *)
     $testFile = FileNameJoin @ { DirectoryName @ $TestFileName, "Common.wl" };
-    Wolfram`MCPServer`Tools`CodeInspector`Private`validateAndNormalizeInput[ Missing[ "KeyAbsent" ], $testFile ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`validateAndNormalizeInput[ Missing[ "KeyAbsent" ], $testFile ],
     File[ $testFile ],
     SameTest -> MatchQ,
     TestID   -> "ValidateInput-File@@Tests/CodeInspectorTool.wlt:205,1-212,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`validateAndNormalizeInput[ Missing[ "KeyAbsent" ], Missing[ "KeyAbsent" ] ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`validateAndNormalizeInput[ Missing[ "KeyAbsent" ], Missing[ "KeyAbsent" ] ],
     _Failure,
-    { MCPServer::CodeInspectorNoInput },
+    { AgentTools::CodeInspectorNoInput },
     SameTest -> MatchQ,
     TestID   -> "ValidateInput-NoInput@@Tests/CodeInspectorTool.wlt:214,1-220,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`validateAndNormalizeInput[ "code", "file" ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`validateAndNormalizeInput[ "code", "file" ],
     _Failure,
-    { MCPServer::CodeInspectorAmbiguousInput },
+    { AgentTools::CodeInspectorAmbiguousInput },
     SameTest -> MatchQ,
     TestID   -> "ValidateInput-BothInputs@@Tests/CodeInspectorTool.wlt:222,1-228,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`validateAndNormalizeInput[ Missing[ "KeyAbsent" ], "/nonexistent/path/file.wl" ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`validateAndNormalizeInput[ Missing[ "KeyAbsent" ], "/nonexistent/path/file.wl" ],
     _Failure,
-    { MCPServer::CodeInspectorFileNotFound },
+    { AgentTools::CodeInspectorFileNotFound },
     SameTest -> MatchQ,
     TestID   -> "ValidateInput-FileNotFound@@Tests/CodeInspectorTool.wlt:230,1-236,2"
 ]
@@ -243,7 +243,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*runInspection - Code String*)
 VerificationTest[
-    $codeResult = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $codeResult = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         "If[a, b, b]",
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.5 |>
     ],
@@ -262,7 +262,7 @@ VerificationTest[
 
 VerificationTest[
     (* Clean code should return empty list *)
-    Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         "f[x_] := x + 1",
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.5 |>
     ],
@@ -273,7 +273,7 @@ VerificationTest[
 
 VerificationTest[
     (* Test with severity exclusions *)
-    $filteredResult = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $filteredResult = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         "If[a, b, b]",
         <| "tagExclusions" -> { }, "severityExclusions" -> { "Warning", "Error" }, "confidenceLevel" -> 0.5 |>
     ],
@@ -284,7 +284,7 @@ VerificationTest[
 
 VerificationTest[
     (* Test with tag exclusions *)
-    $tagFilteredResult = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $tagFilteredResult = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         "If[a, b, b]",
         <| "tagExclusions" -> { "DuplicateClauses::If" }, "severityExclusions" -> { }, "confidenceLevel" -> 0.5 |>
     ],
@@ -308,7 +308,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    $fileResult = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $fileResult = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         File[ $testWLFile ],
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.5 |>
     ],
@@ -338,7 +338,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    $dirResult = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $dirResult = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         $tempDir,
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.5 |>
     ],
@@ -380,7 +380,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*summaryTable*)
 VerificationTest[
-    $summaryTableResult = Wolfram`MCPServer`Tools`CodeInspector`Private`summaryTable @ {
+    $summaryTableResult = Wolfram`AgentTools`Tools`CodeInspector`Private`summaryTable @ {
         InspectionObject[ "Tag1", "Desc1", "Error", <| ConfidenceLevel -> 0.9 |> ],
         InspectionObject[ "Tag2", "Desc2", "Warning", <| ConfidenceLevel -> 0.8 |> ],
         InspectionObject[ "Tag3", "Desc3", "Error", <| ConfidenceLevel -> 0.7 |> ]
@@ -422,7 +422,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*formatLocation*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`formatLocation[
+    Wolfram`AgentTools`Tools`CodeInspector`Private`formatLocation[
         "If[a, b, b]",
         { { 1, 7 }, { 1, 8 } }
     ],
@@ -432,7 +432,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`formatLocation[
+    Wolfram`AgentTools`Tools`CodeInspector`Private`formatLocation[
         "x",
         { { 1, 1 }, { 1, 1 } }
     ],
@@ -442,7 +442,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`formatLocation[
+    Wolfram`AgentTools`Tools`CodeInspector`Private`formatLocation[
         File[ "/path/to/file.wl" ],
         { { 42, 7 }, { 42, 15 } }
     ],
@@ -452,7 +452,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`formatLocation[
+    Wolfram`AgentTools`Tools`CodeInspector`Private`formatLocation[
         "code",
         Missing[ "NotAvailable" ]
     ],
@@ -465,7 +465,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*extractCodeSnippet*)
 VerificationTest[
-    $snippetResult = Wolfram`MCPServer`Tools`CodeInspector`Private`extractCodeSnippet[
+    $snippetResult = Wolfram`AgentTools`Tools`CodeInspector`Private`extractCodeSnippet[
         "If[a, b, b]",
         { { 1, 7 }, { 1, 8 } },
         1
@@ -491,7 +491,7 @@ VerificationTest[
 
 VerificationTest[
     (* Multi-line code with context *)
-    $multiLineSnippet = Wolfram`MCPServer`Tools`CodeInspector`Private`extractCodeSnippet[
+    $multiLineSnippet = Wolfram`AgentTools`Tools`CodeInspector`Private`extractCodeSnippet[
         "line1\nline2\nIf[a, b, b]\nline4\nline5",
         { { 3, 7 }, { 3, 8 } },
         1
@@ -510,7 +510,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`extractCodeSnippet[
+    Wolfram`AgentTools`Tools`CodeInspector`Private`extractCodeSnippet[
         "code",
         Missing[ "NotAvailable" ],
         1
@@ -524,7 +524,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*formatInspection*)
 VerificationTest[
-    $formattedInspection = Wolfram`MCPServer`Tools`CodeInspector`Private`formatInspection[
+    $formattedInspection = Wolfram`AgentTools`Tools`CodeInspector`Private`formatInspection[
         InspectionObject[
             "DuplicateClauses",
             "Both branches of ``If`` are the same.",
@@ -571,7 +571,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*inspectionsToMarkdown - No Issues*)
 VerificationTest[
-    $noIssuesResult = Wolfram`MCPServer`Tools`CodeInspector`Private`inspectionsToMarkdown[
+    $noIssuesResult = Wolfram`AgentTools`Tools`CodeInspector`Private`inspectionsToMarkdown[
         { },
         "f[x_] := x + 1",
         <| "confidenceLevel" -> 0.75, "severityExclusions" -> { "Formatting" }, "tagExclusions" -> { }, "limit" -> 100 |>
@@ -606,7 +606,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*inspectionsToMarkdown - With Issues*)
 VerificationTest[
-    $withIssuesResult = Wolfram`MCPServer`Tools`CodeInspector`Private`inspectionsToMarkdown[
+    $withIssuesResult = Wolfram`AgentTools`Tools`CodeInspector`Private`inspectionsToMarkdown[
         {
             InspectionObject[
                 "DuplicateClauses",
@@ -648,7 +648,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*inspectionsToMarkdown - Truncation*)
 VerificationTest[
-    $truncatedResult = Wolfram`MCPServer`Tools`CodeInspector`Private`inspectionsToMarkdown[
+    $truncatedResult = Wolfram`AgentTools`Tools`CodeInspector`Private`inspectionsToMarkdown[
         Table[
             InspectionObject[ "Tag" <> ToString @ i, "Desc", "Warning", <| ConfidenceLevel -> 0.9 |> ],
             { i, 10 }
@@ -672,7 +672,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*inspectionsToMarkdown - File Source*)
 VerificationTest[
-    $fileSourceResult = Wolfram`MCPServer`Tools`CodeInspector`Private`inspectionsToMarkdown[
+    $fileSourceResult = Wolfram`AgentTools`Tools`CodeInspector`Private`inspectionsToMarkdown[
         {
             InspectionObject[
                 "TestIssue",
@@ -704,7 +704,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*formatCodeActions - Empty List*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`formatCodeActions[ { } ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`formatCodeActions[ { } ],
     "",
     SameTest -> SameQ,
     TestID   -> "FormatCodeActions-EmptyList@@Tests/CodeInspectorTool.wlt:706,1-711,2"
@@ -714,7 +714,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*formatCodeActions - Single Action*)
 VerificationTest[
-    $singleActionResult = Wolfram`MCPServer`Tools`CodeInspector`Private`formatCodeActions @ {
+    $singleActionResult = Wolfram`AgentTools`Tools`CodeInspector`Private`formatCodeActions @ {
         CodeParser`CodeAction[ "Delete ``,``", CodeParser`DeleteText, <| CodeParser`Source -> { { 1, 5 }, { 1, 6 } } |> ]
     },
     _String,
@@ -740,7 +740,7 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*formatCodeActions - Multiple Actions*)
 VerificationTest[
-    $multiActionResult = Wolfram`MCPServer`Tools`CodeInspector`Private`formatCodeActions @ {
+    $multiActionResult = Wolfram`AgentTools`Tools`CodeInspector`Private`formatCodeActions @ {
         CodeParser`CodeAction[ "Insert ``*``", CodeParser`InsertNode, <| CodeParser`Source -> { { 1, 5 }, { 1, 5 } } |> ],
         CodeParser`CodeAction[ "Insert ``,``", CodeParser`InsertNode, <| CodeParser`Source -> { { 1, 5 }, { 1, 5 } } |> ]
     },
@@ -767,8 +767,8 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*formatSingleCodeAction*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`formatSingleCodeAction[
-        CodeParser`CodeAction[ "Replace with ``StringQ``", CodeParser`ReplaceNode, <| "ReplacementNode" -> CodeParser`LeafNode[ Symbol, "StringQ", <||> ] |> ]
+    Wolfram`AgentTools`Tools`CodeInspector`Private`formatSingleCodeAction[
+        CodeParser`CodeAction[ "Replace with ``StringQ``", CodeParser`ReplaceNode, <| "ReplacementNode" -> CodeParser`LeafNode[ Symbol, "StringQ", <| |> ] |> ]
     ],
     _String ? (StringContainsQ[ #, "Replace with `StringQ`" ] &),
     SameTest -> MatchQ,
@@ -776,7 +776,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`formatSingleCodeAction[
+    Wolfram`AgentTools`Tools`CodeInspector`Private`formatSingleCodeAction[
         CodeParser`CodeAction[ "Delete key 1", CodeParser`DeleteNode, <| CodeParser`Source -> { { 1, 1 }, { 1, 5 } } |> ]
     ],
     _String ? (StringContainsQ[ #, "Delete key 1" ] &),
@@ -785,7 +785,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`formatSingleCodeAction[ "invalid" ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`formatSingleCodeAction[ "invalid" ],
     "",
     SameTest -> SameQ,
     TestID   -> "FormatSingleCodeAction-Invalid@@Tests/CodeInspectorTool.wlt:787,1-792,2"
@@ -795,56 +795,56 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*codeActionCommandToString*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`ReplaceText ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`ReplaceText ],
     "Replace with",
     SameTest -> SameQ,
     TestID   -> "CodeActionCommandToString-ReplaceText@@Tests/CodeInspectorTool.wlt:797,1-802,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`DeleteText ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`DeleteText ],
     "Delete",
     SameTest -> SameQ,
     TestID   -> "CodeActionCommandToString-DeleteText@@Tests/CodeInspectorTool.wlt:804,1-809,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`InsertText ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`InsertText ],
     "Insert",
     SameTest -> SameQ,
     TestID   -> "CodeActionCommandToString-InsertText@@Tests/CodeInspectorTool.wlt:811,1-816,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`ReplaceNode ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`ReplaceNode ],
     "Replace with",
     SameTest -> SameQ,
     TestID   -> "CodeActionCommandToString-ReplaceNode@@Tests/CodeInspectorTool.wlt:818,1-823,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`DeleteNode ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`DeleteNode ],
     "Delete",
     SameTest -> SameQ,
     TestID   -> "CodeActionCommandToString-DeleteNode@@Tests/CodeInspectorTool.wlt:825,1-830,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`InsertNode ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`InsertNode ],
     "Insert",
     SameTest -> SameQ,
     TestID   -> "CodeActionCommandToString-InsertNode@@Tests/CodeInspectorTool.wlt:832,1-837,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`InsertNodeAfter ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`codeActionCommandToString[ CodeParser`InsertNodeAfter ],
     "Insert after",
     SameTest -> SameQ,
     TestID   -> "CodeActionCommandToString-InsertNodeAfter@@Tests/CodeInspectorTool.wlt:839,1-844,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`codeActionCommandToString[ UnknownCommand ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`codeActionCommandToString[ UnknownCommand ],
     "UnknownCommand",
     SameTest -> SameQ,
     TestID   -> "CodeActionCommandToString-Unknown@@Tests/CodeInspectorTool.wlt:846,1-851,2"
@@ -854,21 +854,21 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*cleanLabel*)
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`cleanLabel[ "Replace with ``StringQ``" ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`cleanLabel[ "Replace with ``StringQ``" ],
     "Replace with `StringQ`",
     SameTest -> SameQ,
     TestID   -> "CleanLabel-SingleBackticks@@Tests/CodeInspectorTool.wlt:856,1-861,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`cleanLabel[ "Insert ``*`` and ``+``" ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`cleanLabel[ "Insert ``*`` and ``+``" ],
     "Insert `*` and `+`",
     SameTest -> SameQ,
     TestID   -> "CleanLabel-MultipleBackticks@@Tests/CodeInspectorTool.wlt:863,1-868,2"
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`cleanLabel[ "No backticks here" ],
+    Wolfram`AgentTools`Tools`CodeInspector`Private`cleanLabel[ "No backticks here" ],
     "No backticks here",
     SameTest -> SameQ,
     TestID   -> "CleanLabel-NoBackticks@@Tests/CodeInspectorTool.wlt:870,1-875,2"
@@ -879,7 +879,7 @@ VerificationTest[
 (*formatCodeActions Integration with formatInspection*)
 VerificationTest[
     (* Test that formatInspection includes CodeActions *)
-    $inspectionWithActions = Wolfram`MCPServer`Tools`CodeInspector`Private`formatInspection[
+    $inspectionWithActions = Wolfram`AgentTools`Tools`CodeInspector`Private`formatInspection[
         InspectionObject[
             "Comma",
             "Extra comma.",
@@ -930,12 +930,12 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         $emptyDir,
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.5 |>
     ],
     _Failure,
-    { MCPServer::CodeInspectorNoFilesFound },
+    { AgentTools::CodeInspectorNoFilesFound },
     SameTest -> MatchQ,
     TestID   -> "ErrorCase-EmptyDirectory@@Tests/CodeInspectorTool.wlt:932,1-941,2"
 ]
@@ -1126,6 +1126,61 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*Tag Exclusions Filter Correctly - File Input*)
+$collatzFile = PacletObject[ "CodeInspector" ][ "AssetLocation", "Collatz" ];
+ifCollatzFile = conditionalTest @ FileExistsQ @ $collatzFile;
+
+ifCollatzFile @ VerificationTest[
+    $collatzAllIssues = CodeInspectorToolFunction @ <|
+        "file"               -> $collatzFile,
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String? (StringContainsQ[ "## Issues" ]),
+    SameTest -> MatchQ,
+    TestID   -> "Integration-TagExclusions-File-AllIssues@@Tests/CodeInspectorTool.wlt:1133,17-1142,2"
+]
+
+ifCollatzFile @ VerificationTest[
+    $collatzTagExcluded = CodeInspectorToolFunction @ <|
+        "file"               -> $collatzFile,
+        "tagExclusions"      -> "TopLevel,ImplicitTimesStrings",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "Integration-TagExclusions-File-Excluded@@Tests/CodeInspectorTool.wlt:1144,17-1154,2"
+]
+
+ifCollatzFile @ VerificationTest[
+    (* Excluding tags should reduce the number of issues reported *)
+    StringCount[ $collatzTagExcluded, "### Issue" ] < StringCount[ $collatzAllIssues, "### Issue" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-TagExclusions-File-FewerIssues@@Tests/CodeInspectorTool.wlt:1156,17-1162,2"
+]
+
+ifCollatzFile @ VerificationTest[
+    (* Excluded tags should not appear in the output *)
+    ! StringContainsQ[ $collatzTagExcluded, "TopLevel" | "ImplicitTimesStrings" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "Integration-TagExclusions-File-TagsAbsent@@Tests/CodeInspectorTool.wlt:1164,17-1170,2"
+]
+
+ifCollatzFile @ VerificationTest[
+    CodeInspectorToolFunction @ <|
+        "file"          -> $collatzFile,
+        "tagExclusions" -> "TopLevel,ImplicitTimesStrings,NoVariables::Module"
+    |>,
+    _String? (StringFreeQ[ "Issue "~~DigitCharacter..~~": NoVariables::Module" ]),
+    SameTest -> MatchQ,
+    TestID   -> "Integration-TagExclusions-NestedTag@@Tests/CodeInspectorTool.wlt:1172,17-1180,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*Severity Exclusions Filter Correctly*)
 VerificationTest[
     $integrationSeverityExcludeResult = CodeInspectorToolFunction @ <|
@@ -1135,7 +1190,7 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "Integration-SeverityExclusions-ReturnsString@@Tests/CodeInspectorTool.wlt:1130,1-1139,2"
+    TestID   -> "Integration-SeverityExclusions-ReturnsString@@Tests/CodeInspectorTool.wlt:1185,1-1194,2"
 ]
 
 VerificationTest[
@@ -1143,7 +1198,7 @@ VerificationTest[
     StringContainsQ[ $integrationSeverityExcludeResult, "No issues found matching the specified criteria." ],
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-SeverityExclusions-FiltersCorrectly@@Tests/CodeInspectorTool.wlt:1141,1-1147,2"
+    TestID   -> "Integration-SeverityExclusions-FiltersCorrectly@@Tests/CodeInspectorTool.wlt:1196,1-1202,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1158,7 +1213,7 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "Integration-ConfidenceLevel-HighThreshold-ReturnsString@@Tests/CodeInspectorTool.wlt:1152,1-1162,2"
+    TestID   -> "Integration-ConfidenceLevel-HighThreshold-ReturnsString@@Tests/CodeInspectorTool.wlt:1207,1-1217,2"
 ]
 
 VerificationTest[
@@ -1170,14 +1225,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "Integration-ConfidenceLevel-LowThreshold-ReturnsString@@Tests/CodeInspectorTool.wlt:1164,1-1174,2"
+    TestID   -> "Integration-ConfidenceLevel-LowThreshold-ReturnsString@@Tests/CodeInspectorTool.wlt:1219,1-1229,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $integrationLowConfResult, "DuplicateClauses" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-ConfidenceLevel-LowThreshold-FindsIssues@@Tests/CodeInspectorTool.wlt:1176,1-1181,2"
+    TestID   -> "Integration-ConfidenceLevel-LowThreshold-FindsIssues@@Tests/CodeInspectorTool.wlt:1231,1-1236,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1193,7 +1248,7 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "Integration-Limit-ReturnsString@@Tests/CodeInspectorTool.wlt:1186,1-1197,2"
+    TestID   -> "Integration-Limit-ReturnsString@@Tests/CodeInspectorTool.wlt:1241,1-1252,2"
 ]
 
 VerificationTest[
@@ -1201,7 +1256,7 @@ VerificationTest[
     StringContainsQ[ $integrationLimitResult, "### Issue 1:" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-Limit-ShowsFirstIssue@@Tests/CodeInspectorTool.wlt:1199,1-1205,2"
+    TestID   -> "Integration-Limit-ShowsFirstIssue@@Tests/CodeInspectorTool.wlt:1254,1-1260,2"
 ]
 
 VerificationTest[
@@ -1209,7 +1264,7 @@ VerificationTest[
     StringContainsQ[ $integrationLimitResult, "Showing 1 of" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-Limit-ShowsTruncationNotice@@Tests/CodeInspectorTool.wlt:1207,1-1213,2"
+    TestID   -> "Integration-Limit-ShowsTruncationNotice@@Tests/CodeInspectorTool.wlt:1262,1-1268,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1224,7 +1279,7 @@ VerificationTest[
     _Failure,
     { CodeInspectorToolFunction::CodeInspectorNoInput },
     SameTest -> MatchQ,
-    TestID   -> "Integration-Error-NoInput@@Tests/CodeInspectorTool.wlt:1222,1-1228,2"
+    TestID   -> "Integration-Error-NoInput@@Tests/CodeInspectorTool.wlt:1277,1-1283,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1235,7 +1290,7 @@ VerificationTest[
     _Failure,
     { CodeInspectorToolFunction::CodeInspectorAmbiguousInput },
     SameTest -> MatchQ,
-    TestID   -> "Integration-Error-BothInputs@@Tests/CodeInspectorTool.wlt:1233,1-1239,2"
+    TestID   -> "Integration-Error-BothInputs@@Tests/CodeInspectorTool.wlt:1288,1-1294,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1246,7 +1301,7 @@ VerificationTest[
     _Failure,
     { CodeInspectorToolFunction::CodeInspectorFileNotFound },
     SameTest -> MatchQ,
-    TestID   -> "Integration-Error-FileNotFound@@Tests/CodeInspectorTool.wlt:1244,1-1250,2"
+    TestID   -> "Integration-Error-FileNotFound@@Tests/CodeInspectorTool.wlt:1299,1-1305,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1257,7 +1312,7 @@ VerificationTest[
     DirectoryQ @ $integrationEmptyDir,
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-Error-CreateEmptyDir@@Tests/CodeInspectorTool.wlt:1255,1-1261,2"
+    TestID   -> "Integration-Error-CreateEmptyDir@@Tests/CodeInspectorTool.wlt:1310,1-1316,2"
 ]
 
 VerificationTest[
@@ -1265,7 +1320,7 @@ VerificationTest[
     _Failure,
     { CodeInspectorToolFunction::CodeInspectorNoFilesFound },
     SameTest -> MatchQ,
-    TestID   -> "Integration-Error-EmptyDirectory@@Tests/CodeInspectorTool.wlt:1263,1-1269,2"
+    TestID   -> "Integration-Error-EmptyDirectory@@Tests/CodeInspectorTool.wlt:1318,1-1324,2"
 ]
 
 VerificationTest[
@@ -1273,7 +1328,7 @@ VerificationTest[
     ! DirectoryQ @ $integrationEmptyDir,
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-Cleanup-EmptyDir@@Tests/CodeInspectorTool.wlt:1271,1-1277,2"
+    TestID   -> "Integration-Cleanup-EmptyDir@@Tests/CodeInspectorTool.wlt:1326,1-1332,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1285,7 +1340,7 @@ VerificationTest[
     _Failure,
     { CodeInspectorToolFunction::CodeInspectorInvalidConfidence },
     SameTest -> MatchQ,
-    TestID   -> "Integration-OutOfRangeConfidence-ReturnsFailure@@Tests/CodeInspectorTool.wlt:1282,1-1289,2"
+    TestID   -> "Integration-OutOfRangeConfidence-ReturnsFailure@@Tests/CodeInspectorTool.wlt:1337,1-1344,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1300,21 +1355,21 @@ VerificationTest[
     StringContainsQ[ $integrationCodeResult, "| Severity | Count |" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-OutputFormat-SummaryTableHeaders@@Tests/CodeInspectorTool.wlt:1298,1-1304,2"
+    TestID   -> "Integration-OutputFormat-SummaryTableHeaders@@Tests/CodeInspectorTool.wlt:1353,1-1359,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $integrationCodeResult, "|----------|-------|" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-OutputFormat-SummaryTableSeparator@@Tests/CodeInspectorTool.wlt:1306,1-1311,2"
+    TestID   -> "Integration-OutputFormat-SummaryTableSeparator@@Tests/CodeInspectorTool.wlt:1361,1-1366,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $integrationCodeResult, "| **Total** |" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-OutputFormat-SummaryTableTotal@@Tests/CodeInspectorTool.wlt:1313,1-1318,2"
+    TestID   -> "Integration-OutputFormat-SummaryTableTotal@@Tests/CodeInspectorTool.wlt:1368,1-1373,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1325,21 +1380,21 @@ VerificationTest[
     StringMatchQ[ $integrationCodeResult, ___ ~~ "### Issue " ~~ DigitCharacter ~~ ": " ~~ ___ ],
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-OutputFormat-IssueHeader@@Tests/CodeInspectorTool.wlt:1323,1-1329,2"
+    TestID   -> "Integration-OutputFormat-IssueHeader@@Tests/CodeInspectorTool.wlt:1378,1-1384,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $integrationCodeResult, "**Location:**" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-OutputFormat-IssueLocation@@Tests/CodeInspectorTool.wlt:1331,1-1336,2"
+    TestID   -> "Integration-OutputFormat-IssueLocation@@Tests/CodeInspectorTool.wlt:1386,1-1391,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $integrationCodeResult, "**Description:**" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-OutputFormat-IssueDescription@@Tests/CodeInspectorTool.wlt:1338,1-1343,2"
+    TestID   -> "Integration-OutputFormat-IssueDescription@@Tests/CodeInspectorTool.wlt:1393,1-1398,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1349,14 +1404,14 @@ VerificationTest[
     StringContainsQ[ $integrationCodeResult, "**Code:**" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-OutputFormat-CodeHeader@@Tests/CodeInspectorTool.wlt:1348,1-1353,2"
+    TestID   -> "Integration-OutputFormat-CodeHeader@@Tests/CodeInspectorTool.wlt:1403,1-1408,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $integrationCodeResult, "```wl" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-OutputFormat-CodeBlockStart@@Tests/CodeInspectorTool.wlt:1355,1-1360,2"
+    TestID   -> "Integration-OutputFormat-CodeBlockStart@@Tests/CodeInspectorTool.wlt:1410,1-1415,2"
 ]
 
 VerificationTest[
@@ -1364,7 +1419,7 @@ VerificationTest[
     StringMatchQ[ $integrationCodeResult, ___ ~~ DigitCharacter ~~ " | " ~~ ___ ],
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-OutputFormat-LineNumbers@@Tests/CodeInspectorTool.wlt:1362,1-1368,2"
+    TestID   -> "Integration-OutputFormat-LineNumbers@@Tests/CodeInspectorTool.wlt:1417,1-1423,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1379,7 +1434,7 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "Integration-OutputFormat-CodeActionsReturnsString@@Tests/CodeInspectorTool.wlt:1373,1-1383,2"
+    TestID   -> "Integration-OutputFormat-CodeActionsReturnsString@@Tests/CodeInspectorTool.wlt:1428,1-1438,2"
 ]
 
 VerificationTest[
@@ -1392,7 +1447,7 @@ VerificationTest[
     StringContainsQ[ $integrationCodeActionsResult, "## Issues" ],  (* Valid result with issues, CodeActions are optional *)
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-OutputFormat-SuggestedFix@@Tests/CodeInspectorTool.wlt:1385,1-1396,2"
+    TestID   -> "Integration-OutputFormat-SuggestedFix@@Tests/CodeInspectorTool.wlt:1440,1-1451,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1410,28 +1465,28 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "NegatedDateObject-FileDate-ReturnsString@@Tests/CodeInspectorTool.wlt:1405,1-1414,2"
+    TestID   -> "NegatedDateObject-FileDate-ReturnsString@@Tests/CodeInspectorTool.wlt:1460,1-1469,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $negatedDateResult, "NegatedDateObject" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "NegatedDateObject-FileDate-HasTag@@Tests/CodeInspectorTool.wlt:1416,1-1421,2"
+    TestID   -> "NegatedDateObject-FileDate-HasTag@@Tests/CodeInspectorTool.wlt:1471,1-1476,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $negatedDateResult, "Negating a ``DateObject`` does not produce a meaningful result" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "NegatedDateObject-FileDate-HasDescription@@Tests/CodeInspectorTool.wlt:1423,1-1428,2"
+    TestID   -> "NegatedDateObject-FileDate-HasDescription@@Tests/CodeInspectorTool.wlt:1478,1-1483,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $negatedDateResult, "(Error" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "NegatedDateObject-FileDate-IsError@@Tests/CodeInspectorTool.wlt:1430,1-1435,2"
+    TestID   -> "NegatedDateObject-FileDate-IsError@@Tests/CodeInspectorTool.wlt:1485,1-1490,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1445,14 +1500,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "NegatedDateObject-Now-ReturnsString@@Tests/CodeInspectorTool.wlt:1440,1-1449,2"
+    TestID   -> "NegatedDateObject-Now-ReturnsString@@Tests/CodeInspectorTool.wlt:1495,1-1504,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $negatedNowResult, "NegatedDateObject" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "NegatedDateObject-Now-HasTag@@Tests/CodeInspectorTool.wlt:1451,1-1456,2"
+    TestID   -> "NegatedDateObject-Now-HasTag@@Tests/CodeInspectorTool.wlt:1506,1-1511,2"
 ]
 
 VerificationTest[
@@ -1463,14 +1518,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "NegatedDateObject-Today-ReturnsString@@Tests/CodeInspectorTool.wlt:1458,1-1467,2"
+    TestID   -> "NegatedDateObject-Today-ReturnsString@@Tests/CodeInspectorTool.wlt:1513,1-1522,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $negatedTodayResult, "NegatedDateObject" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "NegatedDateObject-Today-HasTag@@Tests/CodeInspectorTool.wlt:1469,1-1474,2"
+    TestID   -> "NegatedDateObject-Today-HasTag@@Tests/CodeInspectorTool.wlt:1524,1-1529,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1484,14 +1539,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "NegatedDateObject-DateObject-ReturnsString@@Tests/CodeInspectorTool.wlt:1479,1-1488,2"
+    TestID   -> "NegatedDateObject-DateObject-ReturnsString@@Tests/CodeInspectorTool.wlt:1534,1-1543,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $negatedDateObjectResult, "NegatedDateObject" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "NegatedDateObject-DateObject-HasTag@@Tests/CodeInspectorTool.wlt:1490,1-1495,2"
+    TestID   -> "NegatedDateObject-DateObject-HasTag@@Tests/CodeInspectorTool.wlt:1545,1-1550,2"
 ]
 
 VerificationTest[
@@ -1502,14 +1557,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "NegatedDateObject-RandomDate-ReturnsString@@Tests/CodeInspectorTool.wlt:1497,1-1506,2"
+    TestID   -> "NegatedDateObject-RandomDate-ReturnsString@@Tests/CodeInspectorTool.wlt:1552,1-1561,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $negatedRandomDateResult, "NegatedDateObject" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "NegatedDateObject-RandomDate-HasTag@@Tests/CodeInspectorTool.wlt:1508,1-1513,2"
+    TestID   -> "NegatedDateObject-RandomDate-HasTag@@Tests/CodeInspectorTool.wlt:1563,1-1568,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1523,14 +1578,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "NegatedDateObject-Multiple-ReturnsString@@Tests/CodeInspectorTool.wlt:1518,1-1527,2"
+    TestID   -> "NegatedDateObject-Multiple-ReturnsString@@Tests/CodeInspectorTool.wlt:1573,1-1582,2"
 ]
 
 VerificationTest[
     StringCount[ $multipleNegatedResult, "NegatedDateObject" ],
     4,
     SameTest -> SameQ,
-    TestID   -> "NegatedDateObject-Multiple-FindsAllFour@@Tests/CodeInspectorTool.wlt:1529,1-1534,2"
+    TestID   -> "NegatedDateObject-Multiple-FindsAllFour@@Tests/CodeInspectorTool.wlt:1584,1-1589,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1548,28 +1603,28 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "ReadStringCharacterEncoding-Basic-ReturnsString@@Tests/CodeInspectorTool.wlt:1543,1-1552,2"
+    TestID   -> "ReadStringCharacterEncoding-Basic-ReturnsString@@Tests/CodeInspectorTool.wlt:1598,1-1607,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $readStringResult, "ReadStringCharacterEncoding" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ReadStringCharacterEncoding-Basic-HasTag@@Tests/CodeInspectorTool.wlt:1554,1-1559,2"
+    TestID   -> "ReadStringCharacterEncoding-Basic-HasTag@@Tests/CodeInspectorTool.wlt:1609,1-1614,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $readStringResult, "``ReadString`` does not support the ``CharacterEncoding`` option" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ReadStringCharacterEncoding-Basic-HasDescription@@Tests/CodeInspectorTool.wlt:1561,1-1566,2"
+    TestID   -> "ReadStringCharacterEncoding-Basic-HasDescription@@Tests/CodeInspectorTool.wlt:1616,1-1621,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $readStringResult, "(Error" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ReadStringCharacterEncoding-Basic-IsError@@Tests/CodeInspectorTool.wlt:1568,1-1573,2"
+    TestID   -> "ReadStringCharacterEncoding-Basic-IsError@@Tests/CodeInspectorTool.wlt:1623,1-1628,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1583,14 +1638,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "ReadStringCharacterEncoding-NoFalsePositive-ReturnsString@@Tests/CodeInspectorTool.wlt:1578,1-1587,2"
+    TestID   -> "ReadStringCharacterEncoding-NoFalsePositive-ReturnsString@@Tests/CodeInspectorTool.wlt:1633,1-1642,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $readStringCleanResult, "ReadStringCharacterEncoding" ],
     False,
     SameTest -> SameQ,
-    TestID   -> "ReadStringCharacterEncoding-NoFalsePositive-NoTag@@Tests/CodeInspectorTool.wlt:1589,1-1594,2"
+    TestID   -> "ReadStringCharacterEncoding-NoFalsePositive-NoTag@@Tests/CodeInspectorTool.wlt:1644,1-1649,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1602,67 +1657,67 @@ VerificationTest[
 (*Line Exceeding Maximum Length*)
 VerificationTest[
     $longLineCode = "x = " <> StringJoin @ Table[ "a", 200 ];
-    $longLineInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $longLineInspections = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         $longLineCode,
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.0 |>
     ],
     { __InspectionObject },
     SameTest -> MatchQ,
-    TestID   -> "ExcessiveLineLength-Detected-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1603,1-1612,2"
+    TestID   -> "ExcessiveLineLength-Detected-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1658,1-1667,2"
 ]
 
 VerificationTest[
     MemberQ[ $longLineInspections, InspectionObject[ "ExcessiveLineLength", _, _, _ ] ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ExcessiveLineLength-Detected-HasTag@@Tests/CodeInspectorTool.wlt:1614,1-1619,2"
+    TestID   -> "ExcessiveLineLength-Detected-HasTag@@Tests/CodeInspectorTool.wlt:1669,1-1674,2"
 ]
 
 VerificationTest[
     MemberQ[ $longLineInspections, InspectionObject[ "ExcessiveLineLength", _, "Formatting", _ ] ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ExcessiveLineLength-Detected-IsFormatting@@Tests/CodeInspectorTool.wlt:1621,1-1626,2"
+    TestID   -> "ExcessiveLineLength-Detected-IsFormatting@@Tests/CodeInspectorTool.wlt:1676,1-1681,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Line Exactly at Maximum Length*)
 VerificationTest[
-    $exactLineInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $exactLineInspections = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         StringJoin @ Table[ "a", 200 ],
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.0 |>
     ],
     { ___InspectionObject },
     SameTest -> MatchQ,
-    TestID   -> "ExcessiveLineLength-ExactLimit-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1631,1-1639,2"
+    TestID   -> "ExcessiveLineLength-ExactLimit-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1686,1-1694,2"
 ]
 
 VerificationTest[
     MemberQ[ $exactLineInspections, InspectionObject[ "ExcessiveLineLength", _, _, _ ] ],
     False,
     SameTest -> SameQ,
-    TestID   -> "ExcessiveLineLength-ExactLimit-NotDetected@@Tests/CodeInspectorTool.wlt:1641,1-1646,2"
+    TestID   -> "ExcessiveLineLength-ExactLimit-NotDetected@@Tests/CodeInspectorTool.wlt:1696,1-1701,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Short Lines Only*)
 VerificationTest[
-    $shortLineInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $shortLineInspections = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         "f[x_] := x + 1\ng[y_] := y * 2",
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.0 |>
     ],
     { ___InspectionObject },
     SameTest -> MatchQ,
-    TestID   -> "ExcessiveLineLength-ShortLines-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1651,1-1659,2"
+    TestID   -> "ExcessiveLineLength-ShortLines-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1706,1-1714,2"
 ]
 
 VerificationTest[
     MemberQ[ $shortLineInspections, InspectionObject[ "ExcessiveLineLength", _, _, _ ] ],
     False,
     SameTest -> SameQ,
-    TestID   -> "ExcessiveLineLength-ShortLines-NotDetected@@Tests/CodeInspectorTool.wlt:1661,1-1666,2"
+    TestID   -> "ExcessiveLineLength-ShortLines-NotDetected@@Tests/CodeInspectorTool.wlt:1716,1-1721,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1674,74 +1729,74 @@ VerificationTest[
 (*File Exceeding Maximum Lines*)
 VerificationTest[
     $longFileCode = StringJoin @ Table[ "x = 1\n", 10001 ];
-    $longFileInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $longFileInspections = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         $longFileCode,
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.0 |>
     ],
     { __InspectionObject },
     SameTest -> MatchQ,
-    TestID   -> "ExcessiveFileLength-Detected-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1675,1-1684,2"
+    TestID   -> "ExcessiveFileLength-Detected-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1730,1-1739,2"
 ]
 
 VerificationTest[
     MemberQ[ $longFileInspections, InspectionObject[ "ExcessiveFileLength", _, _, _ ] ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ExcessiveFileLength-Detected-HasTag@@Tests/CodeInspectorTool.wlt:1686,1-1691,2"
+    TestID   -> "ExcessiveFileLength-Detected-HasTag@@Tests/CodeInspectorTool.wlt:1741,1-1746,2"
 ]
 
 VerificationTest[
     MemberQ[ $longFileInspections, InspectionObject[ "ExcessiveFileLength", _, "Formatting", _ ] ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ExcessiveFileLength-Detected-IsFormatting@@Tests/CodeInspectorTool.wlt:1693,1-1698,2"
+    TestID   -> "ExcessiveFileLength-Detected-IsFormatting@@Tests/CodeInspectorTool.wlt:1748,1-1753,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*File Within Maximum Lines*)
 VerificationTest[
-    $shortFileInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $shortFileInspections = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         StringJoin @ Table[ "x = 1\n", 100 ],
         <| "tagExclusions" -> { }, "severityExclusions" -> { }, "confidenceLevel" -> 0.0 |>
     ],
     { ___InspectionObject },
     SameTest -> MatchQ,
-    TestID   -> "ExcessiveFileLength-ShortFile-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1703,1-1711,2"
+    TestID   -> "ExcessiveFileLength-ShortFile-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1758,1-1766,2"
 ]
 
 VerificationTest[
     MemberQ[ $shortFileInspections, InspectionObject[ "ExcessiveFileLength", _, _, _ ] ],
     False,
     SameTest -> SameQ,
-    TestID   -> "ExcessiveFileLength-ShortFile-NotDetected@@Tests/CodeInspectorTool.wlt:1713,1-1718,2"
+    TestID   -> "ExcessiveFileLength-ShortFile-NotDetected@@Tests/CodeInspectorTool.wlt:1768,1-1773,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Custom Rules - Formatting Severity Exclusion*)
 VerificationTest[
-    $formattingExcludedInspections = Wolfram`MCPServer`Tools`CodeInspector`Private`runInspection[
+    $formattingExcludedInspections = Wolfram`AgentTools`Tools`CodeInspector`Private`runInspection[
         "x = " <> StringJoin @ Table[ "a", 200 ],
         <| "tagExclusions" -> { }, "severityExclusions" -> { "Formatting" }, "confidenceLevel" -> 0.0 |>
     ],
     { ___InspectionObject },
     SameTest -> MatchQ,
-    TestID   -> "FormattingExclusion-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1723,1-1731,2"
+    TestID   -> "FormattingExclusion-ReturnsInspections@@Tests/CodeInspectorTool.wlt:1778,1-1786,2"
 ]
 
 VerificationTest[
     MemberQ[ $formattingExcludedInspections, InspectionObject[ "ExcessiveLineLength", _, _, _ ] ],
     False,
     SameTest -> SameQ,
-    TestID   -> "FormattingExclusion-SuppressesLineLength@@Tests/CodeInspectorTool.wlt:1733,1-1738,2"
+    TestID   -> "FormattingExclusion-SuppressesLineLength@@Tests/CodeInspectorTool.wlt:1788,1-1793,2"
 ]
 
 VerificationTest[
     MemberQ[ $formattingExcludedInspections, InspectionObject[ "ExcessiveFileLength", _, _, _ ] ],
     False,
     SameTest -> SameQ,
-    TestID   -> "FormattingExclusion-SuppressesFileLength@@Tests/CodeInspectorTool.wlt:1740,1-1745,2"
+    TestID   -> "FormattingExclusion-SuppressesFileLength@@Tests/CodeInspectorTool.wlt:1795,1-1800,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1759,28 +1814,28 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "NothingValueInAssociation-Basic-ReturnsString@@Tests/CodeInspectorTool.wlt:1754,1-1763,2"
+    TestID   -> "NothingValueInAssociation-Basic-ReturnsString@@Tests/CodeInspectorTool.wlt:1809,1-1818,2"
 ]
 
 VerificationTest[
     StringCount[ $nothingAssocResult, "Issue " ~~ DigitCharacter.. ~~ ": NothingValueInAssociation" ],
     1,
     SameTest -> SameQ,
-    TestID   -> "NothingValueInAssociation-Basic-HasTag@@Tests/CodeInspectorTool.wlt:1765,1-1770,2"
+    TestID   -> "NothingValueInAssociation-Basic-HasTag@@Tests/CodeInspectorTool.wlt:1820,1-1825,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $nothingAssocResult, "``Nothing`` used as a value in an ``Association`` is not automatically removed" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "NothingValueInAssociation-Basic-HasDescription@@Tests/CodeInspectorTool.wlt:1772,1-1777,2"
+    TestID   -> "NothingValueInAssociation-Basic-HasDescription@@Tests/CodeInspectorTool.wlt:1827,1-1832,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $nothingAssocResult, "(Warning" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "NothingValueInAssociation-Basic-HasSeverity@@Tests/CodeInspectorTool.wlt:1779,1-1784,2"
+    TestID   -> "NothingValueInAssociation-Basic-HasSeverity@@Tests/CodeInspectorTool.wlt:1834,1-1839,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1794,14 +1849,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "NothingValueInAssociation-RuleDelayed-ReturnsString@@Tests/CodeInspectorTool.wlt:1789,1-1798,2"
+    TestID   -> "NothingValueInAssociation-RuleDelayed-ReturnsString@@Tests/CodeInspectorTool.wlt:1844,1-1853,2"
 ]
 
 VerificationTest[
     StringCount[ $nothingAssocDelayedResult, "Issue " ~~ DigitCharacter.. ~~ ": NothingValueInAssociation" ],
     1,
     SameTest -> SameQ,
-    TestID   -> "NothingValueInAssociation-RuleDelayed-HasTag@@Tests/CodeInspectorTool.wlt:1800,1-1805,2"
+    TestID   -> "NothingValueInAssociation-RuleDelayed-HasTag@@Tests/CodeInspectorTool.wlt:1855,1-1860,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1815,14 +1870,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "NothingValueInAssociation-Multiple-ReturnsString@@Tests/CodeInspectorTool.wlt:1810,1-1819,2"
+    TestID   -> "NothingValueInAssociation-Multiple-ReturnsString@@Tests/CodeInspectorTool.wlt:1865,1-1874,2"
 ]
 
 VerificationTest[
     StringCount[ $nothingAssocMultiResult, "Issue " ~~ DigitCharacter.. ~~ ": NothingValueInAssociation" ],
     3,
     SameTest -> SameQ,
-    TestID   -> "NothingValueInAssociation-Multiple-FindsAllThree@@Tests/CodeInspectorTool.wlt:1821,1-1826,2"
+    TestID   -> "NothingValueInAssociation-Multiple-FindsAllThree@@Tests/CodeInspectorTool.wlt:1876,1-1881,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1836,14 +1891,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "NothingValueInAssociation-NoFalsePositive-Clean-ReturnsString@@Tests/CodeInspectorTool.wlt:1831,1-1840,2"
+    TestID   -> "NothingValueInAssociation-NoFalsePositive-Clean-ReturnsString@@Tests/CodeInspectorTool.wlt:1886,1-1895,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $nothingAssocCleanResult, "NothingValueInAssociation" ],
     False,
     SameTest -> SameQ,
-    TestID   -> "NothingValueInAssociation-NoFalsePositive-Clean-NoTag@@Tests/CodeInspectorTool.wlt:1842,1-1847,2"
+    TestID   -> "NothingValueInAssociation-NoFalsePositive-Clean-NoTag@@Tests/CodeInspectorTool.wlt:1897,1-1902,2"
 ]
 
 (* Nothing as standalone element in Association is fine *)
@@ -1855,14 +1910,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "NothingValueInAssociation-NoFalsePositive-Standalone-ReturnsString@@Tests/CodeInspectorTool.wlt:1850,1-1859,2"
+    TestID   -> "NothingValueInAssociation-NoFalsePositive-Standalone-ReturnsString@@Tests/CodeInspectorTool.wlt:1905,1-1914,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $nothingStandaloneResult, "NothingValueInAssociation" ],
     False,
     SameTest -> SameQ,
-    TestID   -> "NothingValueInAssociation-NoFalsePositive-Standalone-NoTag@@Tests/CodeInspectorTool.wlt:1861,1-1866,2"
+    TestID   -> "NothingValueInAssociation-NoFalsePositive-Standalone-NoTag@@Tests/CodeInspectorTool.wlt:1916,1-1921,2"
 ]
 
 (* Nothing in a regular list rule is fine *)
@@ -1874,14 +1929,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "NothingValueInAssociation-NoFalsePositive-ListRule-ReturnsString@@Tests/CodeInspectorTool.wlt:1869,1-1878,2"
+    TestID   -> "NothingValueInAssociation-NoFalsePositive-ListRule-ReturnsString@@Tests/CodeInspectorTool.wlt:1924,1-1933,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $nothingListRuleResult, "NothingValueInAssociation" ],
     False,
     SameTest -> SameQ,
-    TestID   -> "NothingValueInAssociation-NoFalsePositive-ListRule-NoTag@@Tests/CodeInspectorTool.wlt:1880,1-1885,2"
+    TestID   -> "NothingValueInAssociation-NoFalsePositive-ListRule-NoTag@@Tests/CodeInspectorTool.wlt:1935,1-1940,2"
 ]
 
 (* Nothing as argument inside a value is fine *)
@@ -1893,14 +1948,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "NothingValueInAssociation-NoFalsePositive-AsArgument-ReturnsString@@Tests/CodeInspectorTool.wlt:1888,1-1897,2"
+    TestID   -> "NothingValueInAssociation-NoFalsePositive-AsArgument-ReturnsString@@Tests/CodeInspectorTool.wlt:1943,1-1952,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $nothingArgResult, "NothingValueInAssociation" ],
     False,
     SameTest -> SameQ,
-    TestID   -> "NothingValueInAssociation-NoFalsePositive-AsArgument-NoTag@@Tests/CodeInspectorTool.wlt:1899,1-1904,2"
+    TestID   -> "NothingValueInAssociation-NoFalsePositive-AsArgument-NoTag@@Tests/CodeInspectorTool.wlt:1954,1-1959,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1918,28 +1973,28 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "KeyExistsQNestedKeyPath-Basic-ReturnsString@@Tests/CodeInspectorTool.wlt:1913,1-1922,2"
+    TestID   -> "KeyExistsQNestedKeyPath-Basic-ReturnsString@@Tests/CodeInspectorTool.wlt:1968,1-1977,2"
 ]
 
 VerificationTest[
     StringCount[ $keyExistsQResult, "Issue " ~~ DigitCharacter.. ~~ ": KeyExistsQNestedKeyPath" ],
     1,
     SameTest -> SameQ,
-    TestID   -> "KeyExistsQNestedKeyPath-Basic-HasTag@@Tests/CodeInspectorTool.wlt:1924,1-1929,2"
+    TestID   -> "KeyExistsQNestedKeyPath-Basic-HasTag@@Tests/CodeInspectorTool.wlt:1979,1-1984,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $keyExistsQResult, "``KeyExistsQ`` with a ``List`` as its second argument checks for a literal list key" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "KeyExistsQNestedKeyPath-Basic-HasDescription@@Tests/CodeInspectorTool.wlt:1931,1-1936,2"
+    TestID   -> "KeyExistsQNestedKeyPath-Basic-HasDescription@@Tests/CodeInspectorTool.wlt:1986,1-1991,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $keyExistsQResult, "(Warning" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "KeyExistsQNestedKeyPath-Basic-HasSeverity@@Tests/CodeInspectorTool.wlt:1938,1-1943,2"
+    TestID   -> "KeyExistsQNestedKeyPath-Basic-HasSeverity@@Tests/CodeInspectorTool.wlt:1993,1-1998,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1953,14 +2008,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "KeyExistsQNestedKeyPath-SingleKey-ReturnsString@@Tests/CodeInspectorTool.wlt:1948,1-1957,2"
+    TestID   -> "KeyExistsQNestedKeyPath-SingleKey-ReturnsString@@Tests/CodeInspectorTool.wlt:2003,1-2012,2"
 ]
 
 VerificationTest[
     StringCount[ $keyExistsQSingleResult, "Issue " ~~ DigitCharacter.. ~~ ": KeyExistsQNestedKeyPath" ],
     1,
     SameTest -> SameQ,
-    TestID   -> "KeyExistsQNestedKeyPath-SingleKey-HasTag@@Tests/CodeInspectorTool.wlt:1959,1-1964,2"
+    TestID   -> "KeyExistsQNestedKeyPath-SingleKey-HasTag@@Tests/CodeInspectorTool.wlt:2014,1-2019,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1976,14 +2031,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "KeyExistsQNestedKeyPath-NoFalsePositive-StringKey-ReturnsString@@Tests/CodeInspectorTool.wlt:1971,1-1980,2"
+    TestID   -> "KeyExistsQNestedKeyPath-NoFalsePositive-StringKey-ReturnsString@@Tests/CodeInspectorTool.wlt:2026,1-2035,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $keyExistsQCleanResult, "KeyExistsQNestedKeyPath" ],
     False,
     SameTest -> SameQ,
-    TestID   -> "KeyExistsQNestedKeyPath-NoFalsePositive-StringKey-NoTag@@Tests/CodeInspectorTool.wlt:1982,1-1987,2"
+    TestID   -> "KeyExistsQNestedKeyPath-NoFalsePositive-StringKey-NoTag@@Tests/CodeInspectorTool.wlt:2037,1-2042,2"
 ]
 
 (* KeyExistsQ with a symbol key should not trigger *)
@@ -1995,14 +2050,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "KeyExistsQNestedKeyPath-NoFalsePositive-SymbolKey-ReturnsString@@Tests/CodeInspectorTool.wlt:1990,1-1999,2"
+    TestID   -> "KeyExistsQNestedKeyPath-NoFalsePositive-SymbolKey-ReturnsString@@Tests/CodeInspectorTool.wlt:2045,1-2054,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $keyExistsQSymbolResult, "KeyExistsQNestedKeyPath" ],
     False,
     SameTest -> SameQ,
-    TestID   -> "KeyExistsQNestedKeyPath-NoFalsePositive-SymbolKey-NoTag@@Tests/CodeInspectorTool.wlt:2001,1-2006,2"
+    TestID   -> "KeyExistsQNestedKeyPath-NoFalsePositive-SymbolKey-NoTag@@Tests/CodeInspectorTool.wlt:2056,1-2061,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -2020,28 +2075,28 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "UnreachableConditionalDefinition-OwnValue-ReturnsString@@Tests/CodeInspectorTool.wlt:2015,1-2024,2"
+    TestID   -> "UnreachableConditionalDefinition-OwnValue-ReturnsString@@Tests/CodeInspectorTool.wlt:2070,1-2079,2"
 ]
 
 VerificationTest[
     StringCount[ $ownValueCondResult, "Issue " ~~ DigitCharacter.. ~~ ": UnreachableConditionalDefinition" ],
     1,
     SameTest -> SameQ,
-    TestID   -> "UnreachableConditionalDefinition-OwnValue-HasTag@@Tests/CodeInspectorTool.wlt:2026,1-2031,2"
+    TestID   -> "UnreachableConditionalDefinition-OwnValue-HasTag@@Tests/CodeInspectorTool.wlt:2081,1-2086,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $ownValueCondResult, "conditional definition of" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "UnreachableConditionalDefinition-OwnValue-HasDescription@@Tests/CodeInspectorTool.wlt:2033,1-2038,2"
+    TestID   -> "UnreachableConditionalDefinition-OwnValue-HasDescription@@Tests/CodeInspectorTool.wlt:2088,1-2093,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $ownValueCondResult, "(Warning" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "UnreachableConditionalDefinition-OwnValue-HasSeverity@@Tests/CodeInspectorTool.wlt:2040,1-2045,2"
+    TestID   -> "UnreachableConditionalDefinition-OwnValue-HasSeverity@@Tests/CodeInspectorTool.wlt:2095,1-2100,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -2053,28 +2108,28 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "UnreachableConditionalDefinition-DownValue-ReturnsString@@Tests/CodeInspectorTool.wlt:2050,1-2057,2"
+    TestID   -> "UnreachableConditionalDefinition-DownValue-ReturnsString@@Tests/CodeInspectorTool.wlt:2105,1-2112,2"
 ]
 
 VerificationTest[
     StringCount[ $downValueCondResult, "Issue " ~~ DigitCharacter.. ~~ ": UnreachableConditionalDefinition" ],
     1,
     SameTest -> SameQ,
-    TestID   -> "UnreachableConditionalDefinition-DownValue-HasTag@@Tests/CodeInspectorTool.wlt:2059,1-2064,2"
+    TestID   -> "UnreachableConditionalDefinition-DownValue-HasTag@@Tests/CodeInspectorTool.wlt:2114,1-2119,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $downValueCondResult, "conditional definition of" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "UnreachableConditionalDefinition-DownValue-HasDescription@@Tests/CodeInspectorTool.wlt:2066,1-2071,2"
+    TestID   -> "UnreachableConditionalDefinition-DownValue-HasDescription@@Tests/CodeInspectorTool.wlt:2121,1-2126,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $downValueCondResult, "(Warning" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "UnreachableConditionalDefinition-DownValue-HasSeverity@@Tests/CodeInspectorTool.wlt:2073,1-2078,2"
+    TestID   -> "UnreachableConditionalDefinition-DownValue-HasSeverity@@Tests/CodeInspectorTool.wlt:2128,1-2133,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -2086,14 +2141,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "UnreachableConditionalDefinition-BetweenDefs-ReturnsString@@Tests/CodeInspectorTool.wlt:2083,1-2090,2"
+    TestID   -> "UnreachableConditionalDefinition-BetweenDefs-ReturnsString@@Tests/CodeInspectorTool.wlt:2138,1-2145,2"
 ]
 
 VerificationTest[
     StringCount[ $betweenDefsResult, "Issue " ~~ DigitCharacter.. ~~ ": UnreachableConditionalDefinition" ],
     1,
     SameTest -> SameQ,
-    TestID   -> "UnreachableConditionalDefinition-BetweenDefs-HasTag@@Tests/CodeInspectorTool.wlt:2092,1-2097,2"
+    TestID   -> "UnreachableConditionalDefinition-BetweenDefs-HasTag@@Tests/CodeInspectorTool.wlt:2147,1-2152,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -2107,14 +2162,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "UnreachableConditionalDefinition-Standalone-ReturnsString@@Tests/CodeInspectorTool.wlt:2104,1-2111,2"
+    TestID   -> "UnreachableConditionalDefinition-Standalone-ReturnsString@@Tests/CodeInspectorTool.wlt:2159,1-2166,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $standaloneCondResult, "UnreachableConditionalDefinition" ],
     False,
     SameTest -> SameQ,
-    TestID   -> "UnreachableConditionalDefinition-Standalone-NoTag@@Tests/CodeInspectorTool.wlt:2113,1-2118,2"
+    TestID   -> "UnreachableConditionalDefinition-Standalone-NoTag@@Tests/CodeInspectorTool.wlt:2168,1-2173,2"
 ]
 
 (* All-conditional definitions should not trigger *)
@@ -2124,14 +2179,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "UnreachableConditionalDefinition-AllConditional-ReturnsString@@Tests/CodeInspectorTool.wlt:2121,1-2128,2"
+    TestID   -> "UnreachableConditionalDefinition-AllConditional-ReturnsString@@Tests/CodeInspectorTool.wlt:2176,1-2183,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $allCondResult, "UnreachableConditionalDefinition" ],
     False,
     SameTest -> SameQ,
-    TestID   -> "UnreachableConditionalDefinition-AllConditional-NoTag@@Tests/CodeInspectorTool.wlt:2130,1-2135,2"
+    TestID   -> "UnreachableConditionalDefinition-AllConditional-NoTag@@Tests/CodeInspectorTool.wlt:2185,1-2190,2"
 ]
 
 (* Definitions with patterns in arguments should not trigger *)
@@ -2141,14 +2196,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "UnreachableConditionalDefinition-PatternArgs-ReturnsString@@Tests/CodeInspectorTool.wlt:2138,1-2145,2"
+    TestID   -> "UnreachableConditionalDefinition-PatternArgs-ReturnsString@@Tests/CodeInspectorTool.wlt:2193,1-2200,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $patternArgsResult, "UnreachableConditionalDefinition" ],
     False,
     SameTest -> SameQ,
-    TestID   -> "UnreachableConditionalDefinition-PatternArgs-NoTag@@Tests/CodeInspectorTool.wlt:2147,1-2152,2"
+    TestID   -> "UnreachableConditionalDefinition-PatternArgs-NoTag@@Tests/CodeInspectorTool.wlt:2202,1-2207,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -2166,21 +2221,21 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "AmbiguousMapPrecedence-Basic-ReturnsString@@Tests/CodeInspectorTool.wlt:2161,1-2170,2"
+    TestID   -> "AmbiguousMapPrecedence-Basic-ReturnsString@@Tests/CodeInspectorTool.wlt:2216,1-2225,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $ambiguousMapResult, "AmbiguousMapPrecedence" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "AmbiguousMapPrecedence-Basic-HasTag@@Tests/CodeInspectorTool.wlt:2172,1-2177,2"
+    TestID   -> "AmbiguousMapPrecedence-Basic-HasTag@@Tests/CodeInspectorTool.wlt:2227,1-2232,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $ambiguousMapResult, "(Warning" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "AmbiguousMapPrecedence-Basic-IsWarning@@Tests/CodeInspectorTool.wlt:2179,1-2184,2"
+    TestID   -> "AmbiguousMapPrecedence-Basic-IsWarning@@Tests/CodeInspectorTool.wlt:2234,1-2239,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -2194,21 +2249,21 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "AmbiguousMapPrecedence-QuietDeleteFile-ReturnsString@@Tests/CodeInspectorTool.wlt:2189,1-2198,2"
+    TestID   -> "AmbiguousMapPrecedence-QuietDeleteFile-ReturnsString@@Tests/CodeInspectorTool.wlt:2244,1-2253,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $ambiguousMapQuietResult, "AmbiguousMapPrecedence" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "AmbiguousMapPrecedence-QuietDeleteFile-HasTag@@Tests/CodeInspectorTool.wlt:2200,1-2205,2"
+    TestID   -> "AmbiguousMapPrecedence-QuietDeleteFile-HasTag@@Tests/CodeInspectorTool.wlt:2255,1-2260,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $ambiguousMapQuietResult, "Quiet" ] && StringContainsQ[ $ambiguousMapQuietResult, "DeleteFile" ],
     True,
     SameTest -> SameQ,
-    TestID   -> "AmbiguousMapPrecedence-QuietDeleteFile-HasSymbolNames@@Tests/CodeInspectorTool.wlt:2207,1-2212,2"
+    TestID   -> "AmbiguousMapPrecedence-QuietDeleteFile-HasSymbolNames@@Tests/CodeInspectorTool.wlt:2262,1-2267,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -2224,14 +2279,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "AmbiguousMapPrecedence-BracketApp-ReturnsString@@Tests/CodeInspectorTool.wlt:2219,1-2228,2"
+    TestID   -> "AmbiguousMapPrecedence-BracketApp-ReturnsString@@Tests/CodeInspectorTool.wlt:2274,1-2283,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $ambiguousMapBracketResult, "AmbiguousMapPrecedence" ],
     False,
     SameTest -> SameQ,
-    TestID   -> "AmbiguousMapPrecedence-BracketApp-NoTag@@Tests/CodeInspectorTool.wlt:2230,1-2235,2"
+    TestID   -> "AmbiguousMapPrecedence-BracketApp-NoTag@@Tests/CodeInspectorTool.wlt:2285,1-2290,2"
 ]
 
 (* Explicit Map should not trigger *)
@@ -2243,14 +2298,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "AmbiguousMapPrecedence-ExplicitMap-ReturnsString@@Tests/CodeInspectorTool.wlt:2238,1-2247,2"
+    TestID   -> "AmbiguousMapPrecedence-ExplicitMap-ReturnsString@@Tests/CodeInspectorTool.wlt:2293,1-2302,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $ambiguousMapExplicitResult, "AmbiguousMapPrecedence" ],
     False,
     SameTest -> SameQ,
-    TestID   -> "AmbiguousMapPrecedence-ExplicitMap-NoTag@@Tests/CodeInspectorTool.wlt:2249,1-2254,2"
+    TestID   -> "AmbiguousMapPrecedence-ExplicitMap-NoTag@@Tests/CodeInspectorTool.wlt:2304,1-2309,2"
 ]
 
 (* Plain prefix application without Map should not trigger *)
@@ -2262,14 +2317,14 @@ VerificationTest[
     |>,
     _String,
     SameTest -> MatchQ,
-    TestID   -> "AmbiguousMapPrecedence-NoMap-ReturnsString@@Tests/CodeInspectorTool.wlt:2257,1-2266,2"
+    TestID   -> "AmbiguousMapPrecedence-NoMap-ReturnsString@@Tests/CodeInspectorTool.wlt:2312,1-2321,2"
 ]
 
 VerificationTest[
     StringContainsQ[ $ambiguousMapNoMapResult, "AmbiguousMapPrecedence" ],
     False,
     SameTest -> SameQ,
-    TestID   -> "AmbiguousMapPrecedence-NoMap-NoTag@@Tests/CodeInspectorTool.wlt:2268,1-2273,2"
+    TestID   -> "AmbiguousMapPrecedence-NoMap-NoTag@@Tests/CodeInspectorTool.wlt:2323,1-2328,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -2279,14 +2334,14 @@ VerificationTest[
     CodeInspectorToolFunction @ <| "code" -> "f @ g /@ h[x]" |>,
     _String? (StringContainsQ[ "AmbiguousMapPrecedence" ]),
     SameTest -> MatchQ,
-    TestID   -> "AmbiguousMapPrecedence-NonLeafNode@@Tests/CodeInspectorTool.wlt:2278,1-2283,2"
+    TestID   -> "AmbiguousMapPrecedence-NonLeafNode@@Tests/CodeInspectorTool.wlt:2333,1-2338,2"
 ]
 
 VerificationTest[
     CodeInspectorToolFunction @ <| "code" -> "f@   g\t/@\nx" |>,
     _String? (StringContainsQ[ "AmbiguousMapPrecedence" ]),
     SameTest -> MatchQ,
-    TestID   -> "AmbiguousMapPrecedence-Whitespace@@Tests/CodeInspectorTool.wlt:2285,1-2290,2"
+    TestID   -> "AmbiguousMapPrecedence-Whitespace@@Tests/CodeInspectorTool.wlt:2340,1-2345,2"
 ]
 
 (* List RHS: f @ g /@ {x} should trigger *)
@@ -2294,7 +2349,7 @@ VerificationTest[
     CodeInspectorToolFunction @ <| "code" -> "f @ g /@ {x}" |>,
     _String? (StringContainsQ[ "AmbiguousMapPrecedence" ]),
     SameTest -> MatchQ,
-    TestID   -> "AmbiguousMapPrecedence-ListRHS@@Tests/CodeInspectorTool.wlt:2293,1-2298,2"
+    TestID   -> "AmbiguousMapPrecedence-ListRHS@@Tests/CodeInspectorTool.wlt:2348,1-2353,2"
 ]
 
 (* Parenthesized RHS: f @ g /@ (x + y) should trigger *)
@@ -2302,7 +2357,206 @@ VerificationTest[
     CodeInspectorToolFunction @ <| "code" -> "f @ g /@ (x + y)" |>,
     _String? (StringContainsQ[ "AmbiguousMapPrecedence" ]),
     SameTest -> MatchQ,
-    TestID   -> "AmbiguousMapPrecedence-ParenRHS@@Tests/CodeInspectorTool.wlt:2301,1-2306,2"
+    TestID   -> "AmbiguousMapPrecedence-ParenRHS@@Tests/CodeInspectorTool.wlt:2356,1-2361,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Custom Rules - DefinitionNoSymbol*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectDefinitionNoSymbol - Bare Blank*)
+VerificationTest[
+    $defNoSymBlankResult = CodeInspectorToolFunction @ <|
+        "code"               -> "_ := xxx",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DefinitionNoSymbol-BareBlank-ReturnsString@@Tests/CodeInspectorTool.wlt:2370,1-2379,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymBlankResult, "DefinitionNoSymbol" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-BareBlank-HasTag@@Tests/CodeInspectorTool.wlt:2381,1-2386,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymBlankResult, "does not contain a symbol to attach a rule to" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-BareBlank-HasDescription@@Tests/CodeInspectorTool.wlt:2388,1-2393,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymBlankResult, "(Error" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-BareBlank-HasSeverity@@Tests/CodeInspectorTool.wlt:2395,1-2400,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectDefinitionNoSymbol - Named Pattern with Bare Blank*)
+VerificationTest[
+    $defNoSymNamedResult = CodeInspectorToolFunction @ <|
+        "code"               -> "name_ := f[name]",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DefinitionNoSymbol-NamedBlank-ReturnsString@@Tests/CodeInspectorTool.wlt:2405,1-2414,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymNamedResult, "DefinitionNoSymbol" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-NamedBlank-HasTag@@Tests/CodeInspectorTool.wlt:2416,1-2421,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectDefinitionNoSymbol - BlankSequence and BlankNullSequence*)
+VerificationTest[
+    $defNoSymBSResult = CodeInspectorToolFunction @ <|
+        "code"               -> "__ := xxx",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DefinitionNoSymbol-BlankSequence-ReturnsString@@Tests/CodeInspectorTool.wlt:2426,1-2435,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymBSResult, "DefinitionNoSymbol" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-BlankSequence-HasTag@@Tests/CodeInspectorTool.wlt:2437,1-2442,2"
+]
+
+VerificationTest[
+    $defNoSymBNSResult = CodeInspectorToolFunction @ <|
+        "code"               -> "___ := xxx",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DefinitionNoSymbol-BlankNullSequence-ReturnsString@@Tests/CodeInspectorTool.wlt:2444,1-2453,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymBNSResult, "DefinitionNoSymbol" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-BlankNullSequence-HasTag@@Tests/CodeInspectorTool.wlt:2455,1-2460,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectDefinitionNoSymbol - PatternTest and Condition*)
+VerificationTest[
+    $defNoSymPTResult = CodeInspectorToolFunction @ <|
+        "code"               -> "_?test := xxx",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DefinitionNoSymbol-PatternTest-ReturnsString@@Tests/CodeInspectorTool.wlt:2465,1-2474,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymPTResult, "DefinitionNoSymbol" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-PatternTest-HasTag@@Tests/CodeInspectorTool.wlt:2476,1-2481,2"
+]
+
+VerificationTest[
+    $defNoSymCondResult = CodeInspectorToolFunction @ <|
+        "code"               -> "_ /; cond := xxx",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DefinitionNoSymbol-Condition-ReturnsString@@Tests/CodeInspectorTool.wlt:2483,1-2492,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymCondResult, "DefinitionNoSymbol" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-Condition-HasTag@@Tests/CodeInspectorTool.wlt:2494,1-2499,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*inspectDefinitionNoSymbol - No False Positives*)
+
+(* Valid DownValues definition should not trigger *)
+VerificationTest[
+    $defNoSymValidDV = CodeInspectorToolFunction @ <|
+        "code"               -> "f[x_] := x",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DefinitionNoSymbol-ValidDownValue-ReturnsString@@Tests/CodeInspectorTool.wlt:2506,1-2515,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymValidDV, "DefinitionNoSymbol" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-ValidDownValue-NoTag@@Tests/CodeInspectorTool.wlt:2517,1-2522,2"
+]
+
+(* Valid OwnValues definition should not trigger *)
+VerificationTest[
+    $defNoSymValidOV = CodeInspectorToolFunction @ <|
+        "code"               -> "x := 5",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DefinitionNoSymbol-ValidOwnValue-ReturnsString@@Tests/CodeInspectorTool.wlt:2525,1-2534,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymValidOV, "DefinitionNoSymbol" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-ValidOwnValue-NoTag@@Tests/CodeInspectorTool.wlt:2536,1-2541,2"
+]
+
+(* Blank with head argument should not trigger (attaches to Integer) *)
+VerificationTest[
+    $defNoSymTypedBlank = CodeInspectorToolFunction @ <|
+        "code"               -> "_Integer := xxx",
+        "severityExclusions" -> "",
+        "confidenceLevel"    -> 0.0
+    |>,
+    _String,
+    SameTest -> MatchQ,
+    TestID   -> "DefinitionNoSymbol-TypedBlank-ReturnsString@@Tests/CodeInspectorTool.wlt:2544,1-2553,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $defNoSymTypedBlank, "DefinitionNoSymbol" ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "DefinitionNoSymbol-TypedBlank-NoTag@@Tests/CodeInspectorTool.wlt:2555,1-2560,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -2313,7 +2567,7 @@ VerificationTest[
     ! DirectoryQ @ $integrationTempDir,
     True,
     SameTest -> SameQ,
-    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:2311,1-2317,2"
+    TestID   -> "Integration-Cleanup-TempDirectory@@Tests/CodeInspectorTool.wlt:2565,1-2571,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

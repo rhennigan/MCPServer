@@ -1,10 +1,10 @@
-# MCP Client Support in MCPServer
+# MCP Client Support in AgentTools
 
-This document explains how MCPServer supports different MCP client applications and how to install MCP servers into them.
+This document explains how AgentTools supports different MCP client applications and how to install MCP servers into them.
 
 ## Overview
 
-MCPServer works with **any MCP client that supports the stdio server transport**. The server communicates via standard input/output using JSON-RPC messages, which is the most common transport mechanism for local MCP servers.
+AgentTools works with **any MCP client that supports the stdio server transport**. The server communicates via standard input/output using JSON-RPC messages, which is the most common transport mechanism for local MCP servers.
 
 For convenience, `InstallMCPServer` and `UninstallMCPServer` functions are provided to automatically configure several popular client applications. These functions handle the different configuration file formats and locations used by each client.
 
@@ -21,7 +21,7 @@ The following clients have built-in support for automatic configuration via `Ins
 | Cursor | `"Cursor"` | — | JSON | No |
 | Gemini CLI | `"GeminiCLI"` | `"Gemini"` | JSON | No |
 | Antigravity | `"Antigravity"` | `"GoogleAntigravity"` | JSON | No |
-| Codex CLI | `"Codex"` | `"OpenAICodex"` | TOML | No |
+| Codex CLI | `"Codex"` | `"OpenAICodex"` | TOML | Yes |
 | OpenCode | `"OpenCode"` | — | JSON | Yes |
 | Visual Studio Code | `"VisualStudioCode"` | `"VSCode"` | JSON | Yes |
 | Windsurf | `"Windsurf"` | `"Codeium"` | JSON | No |
@@ -180,6 +180,7 @@ Note: Copilot CLI requires the `tools` field to specify which tools to enable. `
 | Scope | Config Location |
 |-------|----------------|
 | Global | `~/.codex/config.toml` |
+| Project | `.codex/config.toml` (in project root) |
 
 **Format (TOML):**
 ```toml
@@ -191,6 +192,8 @@ enabled = true
 [mcp_servers.ServerName.env]
 KEY = "value"
 ```
+
+Note: Project-level Codex configuration is stored in `.codex/config.toml`. This lets `InstallMCPServer[{"Codex", "/path/to/project"}]` install a server for just that project.
 
 ### OpenCode
 
@@ -275,7 +278,7 @@ Note: Zed uses `context_servers` instead of `mcpServers`. The inner server entry
 
 ## Using Other MCP Clients
 
-MCPServer can be used with any MCP client that supports the stdio transport. If your client is not listed above, you can manually configure it using the server's command, arguments, and environment variables.
+AgentTools can be used with any MCP client that supports the stdio transport. If your client is not listed above, you can manually configure it using the server's command, arguments, and environment variables.
 
 ### Server Configuration
 
@@ -284,7 +287,7 @@ The basic configuration requires:
 | Field | Value |
 |-------|-------|
 | Command | `/full/path/to/wolfram` (or `wolfram.exe` on Windows) |
-| Arguments | ``-run PacletSymbol["Wolfram/MCPServer","StartMCPServer"][] -noinit -noprompt`` |
+| Arguments | ``-run PacletSymbol["Wolfram/AgentTools","StartMCPServer"][] -noinit -noprompt`` |
 
 ### Environment Variables
 
@@ -356,6 +359,33 @@ Controls whether [MCP Apps](mcp-apps.md) UI resources are enabled for the instal
 
 ```wl
 InstallMCPServer["ClaudeDesktop", "EnableMCPApps" -> False]
+```
+
+### MCPServerName
+
+Controls the key used for the server entry in the client's configuration file:
+
+| Value | Behavior |
+|-------|----------|
+| `Automatic` (default) | Uses the server's `"MCPServerName"` property if set, otherwise falls back to `"Name"` |
+| `"CustomName"` | Uses the specified string as the config key |
+
+All built-in servers (`Wolfram`, `WolframAlpha`, `WolframLanguage`, `WolframPacletDevelopment`) share the config key `"Wolfram"` by default. This means installing one built-in server variant replaces any previously installed built-in variant in the same client — they are mutually exclusive configurations of the same Wolfram MCP server.
+
+To install multiple built-in servers side by side, override the config key:
+
+```wl
+InstallMCPServer["ClaudeDesktop", "Wolfram", "MCPServerName" -> "WolframBasic"]
+InstallMCPServer["ClaudeDesktop", "WolframLanguage", "MCPServerName" -> "WolframDev"]
+```
+
+User-created servers are unaffected — they continue to use their `"Name"` as the config key.
+
+This option works with both `InstallMCPServer` and `UninstallMCPServer`. When uninstalling, use the same `"MCPServerName"` override that was used at install time:
+
+```wl
+(* Uninstall the "WolframDev" entry that was installed with a custom name *)
+UninstallMCPServer["ClaudeDesktop", "WolframLanguage", "MCPServerName" -> "WolframDev"]
 ```
 
 ### ToolOptions
@@ -477,5 +507,6 @@ convertToClineFormat[ server_Association ] := Enclose[
 
 - `Kernel/SupportedClients.wl` - Supported MCP client definitions and format converters
 - `Kernel/InstallMCPServer.wl` - Installation and uninstallation implementation
+- `Kernel/DeployAgentTools.wl` - Managed deployment of agent tools (see [deploy-agent-tools.md](deploy-agent-tools.md))
 - `Kernel/CreateMCPServer.wl` - Server creation and JSON configuration generation
 - `Kernel/MCPServerObject.wl` - Server object structure

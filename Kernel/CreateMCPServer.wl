@@ -1,14 +1,13 @@
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`CreateMCPServer`" ];
+BeginPackage[ "Wolfram`AgentTools`CreateMCPServer`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
+Needs[ "Wolfram`AgentTools`"        ];
+Needs[ "Wolfram`AgentTools`Common`" ];
 
 (* TODO:
     - Support "Remote" type (deploy as cloud API)
-    - Add Initialization option
     - Add developer mode option to start from script instead
 *)
 
@@ -26,11 +25,12 @@ $includeDefinitions = True;
 CreateMCPServer // beginDefinition;
 CreateMCPServer // Options = {
     OverwriteTarget    -> $overwriteTarget,
-    IncludeDefinitions -> $includeDefinitions
+    IncludeDefinitions -> $includeDefinitions,
+    Initialization     -> None
 };
 
 CreateMCPServer[ name_String, opts: OptionsPattern[ ] ] :=
-    catchMine @ CreateMCPServer[ name, $LLMEvaluator, opts ];
+    catchMine @ CreateMCPServer[ name, Symbol[ "System`$LLMEvaluator" ], opts ];
 
 CreateMCPServer[ name_String, evaluator_LLMConfiguration, opts: OptionsPattern[ ] ] :=
     catchMine @ CreateMCPServer[ name, rewriteChatbookTools @ evaluator[ "Data" ], opts ];
@@ -39,7 +39,8 @@ CreateMCPServer[ name_String, evaluator_Association, opts: OptionsPattern[ ] ] :
     catchMine @ Block[
         {
             $overwriteTarget    = TrueQ @ OptionValue @ OverwriteTarget,
-            $includeDefinitions = TrueQ @ OptionValue @ IncludeDefinitions
+            $includeDefinitions = TrueQ @ OptionValue @ IncludeDefinitions,
+            $initialization     = OptionValue[ Automatic, Automatic, Initialization, HoldComplete ]
         },
         createMCPServer[ name, evaluator ]
     ];
@@ -69,7 +70,7 @@ createMCPServer[ name_String, evaluator_Association ] := Enclose[
 
         exported = ConfirmBy[ exportBinary[ path, wxf ], FileExistsQ, "Exported" ];
 
-        ConfirmAssert[ Developer`ReadWXFFile @ exported === data, "ExportCheck" ];
+        ConfirmBy[ Developer`ReadWXFFile @ exported, SameAs @ data, "ExportCheck" ];
 
         ConfirmBy[ MCPServerObject @ data, MCPServerObjectQ, "MCPServerObject" ]
     ],
@@ -151,15 +152,17 @@ exportBinary // endDefinition;
 createMCPServerData // beginDefinition;
 
 createMCPServerData[ name_String, evaluator_Association ] := Enclose[
-    Module[ { dir, validated },
+    Module[ { dir, init, validated },
         dir = ConfirmBy[ ensureDirectory @ mcpServerDirectory @ name, directoryQ, "Directory" ];
+        init = ConfirmMatch[ $initialization, HoldComplete[ _ ], "Initialization" ];
         validated = catchAlways @ validateMCPServerObjectData @ <|
-            "Name"          -> name,
-            "LLMEvaluator"  -> evaluator,
-            "Location"      -> dir,
-            "Transport"     -> "StandardInputOutput",
-            "ServerVersion" -> $serverVersion,
-            "ObjectVersion" -> $objectVersion
+            "Name"           -> name,
+            "LLMEvaluator"   -> evaluator,
+            "Location"       -> dir,
+            "Transport"      -> "StandardInputOutput",
+            "ServerVersion"  -> $serverVersion,
+            "ObjectVersion"  -> $objectVersion,
+            "Initialization" -> init
         |>;
         If[ AssociationQ @ validated,
             validated,
@@ -179,7 +182,23 @@ binarySerializeWithDefinitions // beginDefinition;
 binarySerializeWithDefinitions[ data_Association ] := binarySerializeWithDefinitions0 @ unpackNoEntry @ data;
 binarySerializeWithDefinitions // endDefinition;
 
-importResourceFunction[ binarySerializeWithDefinitions0, "BinarySerializeWithDefinitions" ];
+binarySerializeWithDefinitions0 // beginDefinition;
+
+binarySerializeWithDefinitions0[ data_Association ] := Enclose[
+    Module[ { defs },
+        defs = ConfirmMatch[ Language`ExtendedFullDefinition @ data, _Language`DefinitionList, "Definitions" ];
+        With[ { d = defs },
+            ConfirmBy[
+                BinarySerialize @ Unevaluated[ Language`ExtendedFullDefinition[ ] = d; data ],
+                ByteArrayQ,
+                "Result"
+            ]
+        ]
+    ],
+    throwInternalFailure
+];
+
+binarySerializeWithDefinitions0 // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)

@@ -37,9 +37,9 @@ The `symbols` parameter accepts one or more symbol names. Multiple symbols shoul
 - Unqualified symbol: `"Plus"`
 - Fully qualified symbol: ``"System`Plus"``
 - Multiple unqualified symbols: `"Plus, Subtract, Times"`
-- Multiple fully qualified symbols: ``"Wolfram`MCPServer`CreateMCPServer, Wolfram`MCPServer`StartMCPServer"``
-- Private symbol (must be qualified): ``"Wolfram`MCPServer`Common`Private`catchMine"``
-- Mixed: ``"Plus, Wolfram`MCPServer`CreateMCPServer"``
+- Multiple fully qualified symbols: ``"Wolfram`AgentTools`CreateMCPServer, Wolfram`AgentTools`StartMCPServer"``
+- Private symbol (must be qualified): ``"Wolfram`AgentTools`Common`Private`catchMine"``
+- Mixed: ``"Plus, Wolfram`AgentTools`CreateMCPServer"``
 
 **Note:** For symbols in private contexts or contexts not on `$ContextPath`, fully qualified names are required.
 
@@ -305,7 +305,7 @@ largeSymbol[args_] :=
 2. **Context Registration**: Add to `$subcontexts` in `Kernel/Tools/Tools.wl`:
    ```wl
    (* Tools: SymbolDefinition *)
-   "Wolfram`MCPServer`Tools`SymbolDefinition`"
+   "Wolfram`AgentTools`Tools`SymbolDefinition`"
    ```
 
 3. **Tool Definition Structure**:
@@ -399,7 +399,7 @@ Map[___] := <kernel function>
 {
   "tool": "SymbolDefinition",
   "parameters": {
-    "symbols": "Wolfram`MCPServer`CreateMCPServer"
+    "symbols": "Wolfram`AgentTools`CreateMCPServer"
   }
 }
 ```
@@ -426,7 +426,7 @@ e$: HoldPattern[CreateMCPServer[___]] :=
 {
   "tool": "SymbolDefinition",
   "parameters": {
-    "symbols": "Wolfram`MCPServer`Common`Private`catchMine",
+    "symbols": "Wolfram`AgentTools`Common`Private`catchMine",
     "includeContextDetails": true
   }
 }
@@ -450,7 +450,7 @@ catchMine /: SetDelayed[lhs_, catchMine @ rhs_] :=
 ```json
 {
   "System`": ["HoldComplete", "Hold", "Module", "SetDelayed"],
-  "Wolfram`MCPServer`Common`Private`": ["catchMine", "catchTop", "topLevelFailure"]
+  "Wolfram`AgentTools`Common`Private`": ["catchMine", "catchTop", "topLevelFailure"]
 }
 ```
 ````
@@ -520,7 +520,7 @@ Error: SomeLockedSymbol is `Locked` and `ReadProtected`
 {
   "tool": "SymbolDefinition",
   "parameters": {
-    "symbols": "Wolfram`MCPServer`Private`veryLargeFunction",
+    "symbols": "Wolfram`AgentTools`Private`veryLargeFunction",
     "maxLength": 1000
   }
 }

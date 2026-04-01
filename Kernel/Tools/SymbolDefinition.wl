@@ -1,12 +1,12 @@
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Package Header*)
-BeginPackage[ "Wolfram`MCPServer`Tools`SymbolDefinition`" ];
+BeginPackage[ "Wolfram`AgentTools`Tools`SymbolDefinition`" ];
 Begin[ "`Private`" ];
 
-Needs[ "Wolfram`MCPServer`"        ];
-Needs[ "Wolfram`MCPServer`Common`" ];
-Needs[ "Wolfram`MCPServer`Tools`"  ];
+Needs[ "Wolfram`AgentTools`"        ];
+Needs[ "Wolfram`AgentTools`Common`" ];
+Needs[ "Wolfram`AgentTools`Tools`"  ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -28,7 +28,7 @@ Retrieves the definitions of one or more Wolfram Language symbols and returns th
 The tool generates clean, formatted definition strings by intelligently managing the context path to minimize \
 fully qualified symbol names.
 
-Use fully qualified symbol names (e.g., System`Plus, Wolfram`MCPServer`CreateMCPServer) if the context is known.
+Use fully qualified symbol names (e.g., System`Plus, Wolfram`AgentTools`CreateMCPServer) if the context is known.
 Multiple symbols can be requested by separating them with commas.";
 
 (* ::**************************************************************************************************************:: *)
@@ -133,7 +133,7 @@ processSymbol[ name_String, maxLength_Integer ] := Enclose[
         If[ ! valid,
             Throw @ <|
                 "output" -> formatError[ name, "Invalid symbol name \"" <> name <> "\"" ],
-                "contextSymbols" -> {}
+                "contextSymbols" -> { }
             |>
         ];
 
@@ -142,7 +142,7 @@ processSymbol[ name_String, maxLength_Integer ] := Enclose[
         If[ ! exists,
             Throw @ <|
                 "output" -> formatError[ name, formatNotFoundMessage[ name ] ],
-                "contextSymbols" -> {}
+                "contextSymbols" -> { }
             |>
         ];
 
@@ -155,7 +155,7 @@ processSymbol[ name_String, maxLength_Integer ] := Enclose[
         If[ locked && readProtected,
             Throw @ <|
                 "output" -> formatError[ name, shortName <> " is `Locked` and `ReadProtected`" ],
-                "contextSymbols" -> {}
+                "contextSymbols" -> { }
             |>
         ];
 
@@ -164,10 +164,10 @@ processSymbol[ name_String, maxLength_Integer ] := Enclose[
         kernelDefs = getKernelCodeDefinitions @ name;
         allDefs    = Join[ definition, kernelDefs ];
 
-        If[ allDefs === {} || allDefs === { Null },
+        If[ allDefs === { } || allDefs === { Null },
             Throw @ <|
                 "output" -> "# " <> shortName <> "\n\nNo definitions found",
-                "contextSymbols" -> {}
+                "contextSymbols" -> { }
             |>
         ];
 
@@ -202,7 +202,7 @@ symbolExistsQ // beginDefinition;
 
 (* Names works for both qualified and unqualified symbol names,
    using $ContextPath for unqualified names *)
-symbolExistsQ[ name_String ] := Names[ name ] =!= {};
+symbolExistsQ[ name_String ] := Names[ name ] =!= { };
 
 symbolExistsQ // endDefinition;
 
@@ -273,7 +273,7 @@ extractDefinition // beginDefinition;
 extractDefinition[ name_String ] := Catch @ Module[ { sym, defString, held },
     sym = ToExpression[ name, InputForm, HoldComplete ];
     If[ ! MatchQ[ sym, HoldComplete[ _Symbol ] ],
-        Throw @ {}
+        Throw @ { }
     ];
 
     defString = Replace[
@@ -286,7 +286,7 @@ extractDefinition[ name_String ] := Catch @ Module[ { sym, defString, held },
     ];
 
     If[ defString === "Null" || defString === "",
-        {},
+        { },
         held = Quiet @ ToExpression[ defString, InputForm, HoldComplete ];
         If[ MatchQ[ held, HoldComplete[ ___ ] ],
             (* Extract elements without evaluation by wrapping each in HoldForm *)
@@ -294,7 +294,7 @@ extractDefinition[ name_String ] := Catch @ Module[ { sym, defString, held },
                 Replace[ held, HoldComplete[ args___ ] :> (HoldForm /@ Unevaluated @ { args }) ],
                 HoldForm[ Null ]
             ],
-            {}
+            { }
         ]
     ]
 ];
@@ -314,10 +314,10 @@ getKernelCodeDefinitions // beginDefinition;
 getKernelCodeDefinitions[ name_String ] := Catch @ Module[ { sym, defs },
     sym = ToExpression[ name, InputForm, HoldComplete ];
     If[ ! MatchQ[ sym, HoldComplete[ _Symbol ] ],
-        Throw @ {}
+        Throw @ { }
     ];
 
-    defs = {};
+    defs = { };
 
     Replace[
         sym,
@@ -396,7 +396,7 @@ buildOptimalContextPath // endDefinition;
 generateContextMap // beginDefinition;
 
 generateContextMap[ symbols: { ___HoldForm } ] := Catch @ Module[ { grouped, jsonParts },
-    If[ symbols === {}, Throw @ "" ];
+    If[ symbols === { }, Throw @ "" ];
 
     grouped = GroupBy[
         symbols,
@@ -533,7 +533,7 @@ formatNotFoundMessage // beginDefinition;
 formatNotFoundMessage[ name_String ] := Module[ { baseMessage, suggestions, suggestionBlock },
     baseMessage = "Symbol \"" <> name <> "\" does not exist";
     suggestions = findSuggestions @ name;
-    If[ suggestions === {},
+    If[ suggestions === { },
         baseMessage,
         suggestionBlock = "```wl\n" <> StringRiffle[ suggestions, "\n" ] <> "\n```";
         baseMessage <> "\n\nDid you mean one of the following symbols?\n" <> suggestionBlock

@@ -1,4 +1,4 @@
-BeginPackage[ "Wolfram`MCPServer`Common`" ];
+BeginPackage[ "Wolfram`AgentTools`Common`" ];
 
 `$aliasToCanonicalName;
 `$catching;
@@ -6,6 +6,7 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `$cloudNotebooks;
 `$debug;
 `$defaultMCPServer;
+`$deploymentsPath;
 `$imagePath;
 `$mcpEvaluation;
 `$objectVersion;
@@ -36,6 +37,7 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `importResourceFunction;
 `initializeVectorDatabases;
 `llmKitSubscribedQ;
+`makeDeploymentBoxes;
 `makeMCPServerObjectBoxes;
 `mcpServerDirectory;
 `mcpServerFile;
@@ -64,6 +66,12 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 
 (* Shared symbols with Tools subcontexts: *)
 `exportMarkdownString;
+
+(* Shared symbols with DeployAgentTools: *)
+`guessClientName;
+`installLocation;
+`projectInstallLocation;
+`toInstallName;
 
 (* Graphics detection and conversion: *)
 `graphicsQ;
@@ -105,5 +113,23 @@ BeginPackage[ "Wolfram`MCPServer`Common`" ];
 `$toolOptions;
 `$defaultToolOptions;
 `toolOptionValue;
+
+(* Paclet extension support: *)
+`clearPacletDefinitionCache;
+`ensurePacletForInstall;
+`findAgentToolsPaclets;
+`findInstalledPaclet;
+`findRemoteAgentToolsPaclets;
+`getAgentToolsDeclaredItems;
+`getAgentToolsExtension;
+`getAgentToolsExtensionData;
+`getAgentToolsExtensionDirectory;
+`loadPacletDefinitionFile;
+`pacletQualifiedNameQ;
+`parsePacletQualifiedName;
+`qualifyNamesInLLMEvaluator;
+`resolvePacletPrompt;
+`resolvePacletServer;
+`resolvePacletTool;
 
 EndPackage[ ];

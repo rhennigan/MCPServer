@@ -65,7 +65,7 @@ Group related work into logical units, where each task represents roughly one co
 - **One concern per task.** A task should have a clear, testable outcome. "Implement the build script" is one task; "implement the build script and write all the documentation" is two.
 - **Order by dependency.** Tasks that others depend on come first (e.g., fix a manifest before generating scripts from it).
 - **Separate hand-authored from generated.** Writing documentation is a different task from writing the code that generates artifacts.
-- **Testing and evals are their own tasks.** Don't bundle "write tests" into implementation tasks.
+- **Include tests with non-trivial code.** If a task involves writing non-trivial code (new functions, modified logic, etc.), it should include writing and running unit tests for that code as part of the same task. Only create separate testing tasks for cross-cutting concerns like integration tests, end-to-end tests, or evals that span multiple tasks.
 - **Include file paths.** Every task should list the files it touches under a `**Files:**` line.
 
 ### 5. Write the TODO File
@@ -82,8 +82,9 @@ Each item is a logical unit of work for one coding session.
 
 - [ ] **1. <Task title>**
 
-  <Description of what needs to be done and why. Include enough context
-  that someone could pick this up without re-reading the entire spec.
+  <Brief description clarifying which part of the spec this covers.
+  Only include enough information to make it clear which part of the spec this covers.
+  Don't repeat spec details — the reader has read the spec.
   Note any discrepancies found between spec and current state.>
 
   **Files:** `path/to/file1`, `path/to/file2`
