@@ -102,8 +102,18 @@ To verify the installation:
 
 ### OpenAI Codex
 
+Choose whether to install the server globally or for a single project. Project-level installation writes `.codex/config.toml` in the project root.
+
+Global installation:
+
 ```wl
 InstallMCPServer["Codex", "WolframLanguage"]
+```
+
+Project-level installation:
+
+```wl
+InstallMCPServer[{"Codex", "/path/to/project"}, "WolframLanguage"]
 ```
 
 To verify the installation from the command line:
@@ -112,7 +122,7 @@ To verify the installation from the command line:
 codex mcp get WolframLanguage
 ```
 
-The output should indicate that the "WolframLanguage" server is enabled.
+If you installed the server project-level, run the command from that project directory. The output should indicate that the "WolframLanguage" server is enabled.
 
 ### OpenCode
 

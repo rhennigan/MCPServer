@@ -21,7 +21,7 @@ The following clients have built-in support for automatic configuration via `Ins
 | Cursor | `"Cursor"` | — | JSON | No |
 | Gemini CLI | `"GeminiCLI"` | `"Gemini"` | JSON | No |
 | Antigravity | `"Antigravity"` | `"GoogleAntigravity"` | JSON | No |
-| Codex CLI | `"Codex"` | `"OpenAICodex"` | TOML | No |
+| Codex CLI | `"Codex"` | `"OpenAICodex"` | TOML | Yes |
 | OpenCode | `"OpenCode"` | — | JSON | Yes |
 | Visual Studio Code | `"VisualStudioCode"` | `"VSCode"` | JSON | Yes |
 | Windsurf | `"Windsurf"` | `"Codeium"` | JSON | No |
@@ -180,6 +180,7 @@ Note: Copilot CLI requires the `tools` field to specify which tools to enable. `
 | Scope | Config Location |
 |-------|----------------|
 | Global | `~/.codex/config.toml` |
+| Project | `.codex/config.toml` (in project root) |
 
 **Format (TOML):**
 ```toml
@@ -191,6 +192,8 @@ enabled = true
 [mcp_servers.ServerName.env]
 KEY = "value"
 ```
+
+Note: Project-level Codex configuration is stored in `.codex/config.toml`. This lets `InstallMCPServer[{"Codex", "/path/to/project"}]` install a server for just that project.
 
 ### OpenCode
 

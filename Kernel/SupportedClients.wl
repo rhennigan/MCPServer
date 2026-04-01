@@ -68,6 +68,7 @@ $supportedMCPClients = <|
         "Aliases"         -> { "OpenAICodex" },
         "ConfigFormat"    -> "TOML",
         "ConfigKey"       -> { "mcp_servers" },
+        "ProjectPath"     -> { ".codex", "config.toml" },
         "URL"             -> "https://openai.com/codex",
         "InstallLocation" :> { $HomeDirectory, ".codex", "config.toml" }
     |>,
