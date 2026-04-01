@@ -231,7 +231,7 @@ VerificationTest[
     result = Wolfram`AgentTools`Common`formatInternalFailureForMCP[
         Failure[ "AgentTools::Internal", <| |> ]
     ];
-    StringContainsQ[ result, "https://github.com/rhennigan/AgentTools/issues/new" ],
+    StringContainsQ[ result, "https://github.com/WolframResearch/AgentTools/issues/new" ],
     True,
     SameTest -> Equal,
     TestID   -> "FormatInternalFailureForMCP-ContainsIssueURL@@Tests/InternalFailureFormatting.wlt:230,1-238,2"

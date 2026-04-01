@@ -15096,7 +15096,7 @@ Notebook[
             CellID -> 553474780
            ],
            Cell[
-            "https://github.com/rhennigan/AgentTools",
+            "https://github.com/WolframResearch/AgentTools",
             "Text",
             CellID -> 833110974
            ]

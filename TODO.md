@@ -8,7 +8,7 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Source: `Kernel/CreateMCPServer.wl`
 - [x] Add `Initialization` option to `CreateMCPServer`
   - Source: `Kernel/CreateMCPServer.wl`
-- [ ] Add `ProcessDirectory` option to `InstallMCPServer` ([See Issue #69](https://github.com/rhennigan/AgentTools/issues/69))
+- [ ] Add `ProcessDirectory` option to `InstallMCPServer` ([See Issue #69](https://github.com/WolframResearch/AgentTools/issues/69))
 - [ ] Add `EnabledTools` and `DisabledTools` options to `InstallMCPServer`
   - Sets environment variables with lists of tool names to include/exclude for easy customization
 - [ ] Add `"DisplayName"` property to MCP servers

@@ -19,7 +19,7 @@ For user documentation, see the [AgentTools paclet documentation](https://paclet
 ### Cloning the Repository
 
 ```bash
-git clone https://github.com/rhennigan/AgentTools.git
+git clone https://github.com/WolframResearch/AgentTools.git
 cd AgentTools
 ```
 
