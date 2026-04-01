@@ -559,7 +559,7 @@ $priorityFailureKeys = { "Information", "ConfirmationType", "Expression", "Funct
 (* ::Section::Closed:: *)
 (*Bug Report Link Generation*)
 
-$issuesURL = "https://github.com/rhennigan/AgentTools/issues/new";
+$issuesURL = "https://github.com/WolframResearch/AgentTools/issues/new";
 
 $maxBugReportURLSize = 7000;
 (*
@@ -696,7 +696,7 @@ sourceLink[ { tag_String, file_String, { lc1_String, lc2_String } } ] :=
 sourceLink[ { tag_String, file_String, { l1_String, c1_String }, { l2_String, c2_String } } ] :=
     Module[ { id },
         id = Replace[ $releaseID, { "$RELEASE_ID$" | "None" | Except[ _String ] -> "main" } ];
-        "\n\nhttps://github.com/rhennigan/AgentTools/blob/"<>id<>"/"<>file<>"#L"<>l1<>"-L"<>l2
+        "\n\nhttps://github.com/WolframResearch/AgentTools/blob/"<>id<>"/"<>file<>"#L"<>l1<>"-L"<>l2
     ];
 
 sourceLink[ ___ ] := "";

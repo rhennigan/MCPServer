@@ -323,7 +323,7 @@ updateReleaseInfoCell[ dir_, url_, cmt_, run_ ] /;
     ];
 (* :!CodeAnalysis::EndBlock:: *)
 
-commitURL[ sha_String ] := URLBuild @ { "https://github.com/rhennigan/AgentTools/commit", sha };
+commitURL[ sha_String ] := URLBuild @ { "https://github.com/WolframResearch/AgentTools/commit", sha };
 
 
 releaseInfoCell[ release_, commit_, run_ ] := Enclose[

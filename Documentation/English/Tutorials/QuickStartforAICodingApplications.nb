@@ -1638,11 +1638,11 @@ Notebook[
                   BaseStyle -> "Hyperlink",
                   ButtonData -> {
                    URL[
-                    "https://github.com/rhennigan/AgentTools/blob/feature/quickstart-tutorials/Specs/CodeInspectorTool.md"
+                    "https://github.com/WolframResearch/AgentTools/blob/main/Specs/CodeInspectorTool.md"
                    ],
                    None
                   },
-                  ButtonNote -> "https://github.com/rhennigan/AgentTools/blob/feature/quickstart-tutorials/Specs/CodeInspectorTool.md"
+                  ButtonNote -> "https://github.com/WolframResearch/AgentTools/blob/main/Specs/CodeInspectorTool.md"
                  ],
                  " to view a real example used to implement a feature for the AgentTools paclet."
                 }
