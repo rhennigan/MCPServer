@@ -19,7 +19,7 @@ Notebook[
       CellID -> 231966260
      ],
      Cell[
-      "Implements a model context protocol server using Wolfram Language",
+      "Provides tools and integrations for connecting Wolfram Language to AI agents and LLMs",
       "Text",
       Deletable -> False,
       CellTags -> {"Description", "TemplateCell"},
