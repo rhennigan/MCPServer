@@ -50,7 +50,13 @@ Wolfram`MCPServer`Common`$thisPaclet = PacletObject @ File @ DirectoryName[ $Inp
 If[ ! AnyTrue[ $CommandLine, StringContainsQ[ "StartMCPServer" ] ],
     Message[
         Wolfram`MCPServer`MCPServer::ObsoletePaclet,
-        Hyperlink[ "Wolfram/AgentTools", "https://paclets.com/Wolfram/AgentTools" ],
-        HoldForm @ Style[ PacletInstall[ "Wolfram/AgentTools" ], ShowStringCharacters -> True ]
+        If[ $Notebooks,
+            Hyperlink[ "\"Wolfram/AgentTools\"", "https://paclets.com/Wolfram/AgentTools" ],
+            "\"Wolfram/AgentTools\""
+        ],
+        If[ $Notebooks,
+            HoldForm @ Style[ PacletInstall[ "Wolfram/AgentTools" ], ShowStringCharacters -> True ],
+            "PacletInstall[\"Wolfram/AgentTools\"]"
+        ]
     ]
 ];
