@@ -40,6 +40,12 @@ Kernel/Tools/PacletTools/
    "SubmitPaclet"
    ```
 
+3. **`docs/servers.md`** -- Update the `WolframPacletDevelopment` server documentation to list the new tools.
+
+4. **`Tests/PacletTools.wlt`** -- Add tool-level tests for path validation and result formatting.
+
+5. **Agent skill rebuild** -- Because this changes MCP tool definitions, run `Scripts/BuildAgentSkills.wls` after implementation to keep generated skill artifacts in sync.
+
 ### PacletCICD Loading
 
 All three tools depend on `Wolfram/PacletCICD`. A shared helper ensures the paclet is installed and loaded:
@@ -47,10 +53,19 @@ All three tools depend on `Wolfram/PacletCICD`. A shared helper ensures the pacl
 ```wl
 ensurePacletCICD // beginDefinition;
 
-ensurePacletCICD[] := ensurePacletCICD[] = (
-    PacletInstall[ "Wolfram/PacletCICD" ];
-    Needs[ "Wolfram`PacletCICD`" -> None ];
-);
+ensurePacletCICD[] := ensurePacletCICD[] = Enclose[
+    Module[ { paclet },
+        paclet = PacletInstall[ "Wolfram/PacletCICD" ];
+
+        If[ ! MatchQ[ paclet, _PacletObject ],
+            throwFailure[ "PacletCICDLoadFailed" ]
+        ];
+
+        Needs[ "Wolfram`PacletCICD`" -> None ];
+        Null
+    ],
+    throwInternalFailure
+];
 
 ensurePacletCICD // endDefinition;
 ```
@@ -64,22 +79,20 @@ A shared helper validates and normalizes the `path` parameter:
 ```wl
 validatePacletPath // beginDefinition;
 
-validatePacletPath[ path_String ] := Enclose[
+validatePacletPath[ path_String ] :=
     Module[ { expanded },
         expanded = ExpandFileName @ path;
-        ConfirmBy[
+
+        If[ DirectoryQ @ expanded || FileExistsQ @ expanded,
             File @ expanded,
-            DirectoryQ[ #[[1]] ] || FileExistsQ[ #[[1]] ] &,
-            "PathExists"
+            throwFailure[ "PacletToolsInvalidPath", path ]
         ]
-    ],
-    throwInternalFailure
-];
+    ];
 
 validatePacletPath // endDefinition;
 ```
 
-On failure, the tool should return a clear error message indicating the path was not found (see [Error Handling](#error-handling)).
+This helper only checks that the supplied path exists and normalizes it to `File[...]`. The `Wolfram/PacletCICD` paclet still performs the stricter validation that the target is either a paclet directory containing a definition notebook or a valid definition notebook file.
 
 ### PacletTools.wl Structure
 
@@ -111,9 +124,9 @@ Needs[ "Wolfram`AgentTools`Tools`"  ];
 
 (* ::Section::Closed:: *)
 (*Submodules*)
-Get[ "Wolfram`AgentTools`Tools`PacletTools`CheckPaclet`"  ];
-Get[ "Wolfram`AgentTools`Tools`PacletTools`BuildPaclet`"  ];
-Get[ "Wolfram`AgentTools`Tools`PacletTools`SubmitPaclet`" ];
+<< Wolfram`AgentTools`Tools`PacletTools`CheckPaclet`;
+<< Wolfram`AgentTools`Tools`PacletTools`BuildPaclet`;
+<< Wolfram`AgentTools`Tools`PacletTools`SubmitPaclet`;
 
 (* ::Section::Closed:: *)
 (*Package Footer*)
@@ -362,7 +375,7 @@ The `formatBuildResult` function handles two cases:
    - Format as a success summary table
 
 2. **`Failure[tag_, data_Association]`**:
-   - If `tag` is `"CheckPaclet::errors"`, extract the check result from `data["Result"]` and format using the same logic as `formatCheckResult`, with a "Build Aborted" header
+   - If `tag` is `"CheckPaclet::errors"`, extract the check result from `data["CheckResult"]` and format using the same logic as `formatCheckResult`, with a "Build Aborted" header
    - Otherwise, extract the failure message and format as a build error
 
 ---
@@ -461,7 +474,7 @@ Error: <message extracted from the Failure object>
 
 #### Authentication Required
 
-If the submission fails due to missing authentication (detected by checking for authentication-related failure tags or messages), the output should guide the user:
+If the submission fails due to missing authentication, the output should guide the user. In practice, `SubmitPaclet` wraps failures in `Failure["SubmitPacletFailure", <| "Result" -> innerFailure, ... |>]`, so the formatter should inspect the nested `"Result"` failure (and its message text) rather than relying only on the top-level failure tag.
 
 ````markdown
 # Paclet Submission Failed
@@ -501,17 +514,16 @@ When the `path` parameter does not point to an existing directory or file:
 Error: The path "/some/invalid/path" does not exist. Provide an absolute path to either the paclet root directory or the definition notebook (.nb) file.
 ````
 
-Implementation: Define a failure message tag (e.g. `"PacletToolsInvalidPath"`) in `Kernel/Messages.wl`:
+Implementation: Define shared `AgentTools` message tags in `Kernel/Messages.wl`:
 
 ```wl
-Wolfram`AgentTools`CheckPaclet::PacletToolsInvalidPath = "The path \"`1`\" does not exist.";
-Wolfram`AgentTools`BuildPaclet::PacletToolsInvalidPath = "The path \"`1`\" does not exist.";
-Wolfram`AgentTools`SubmitPaclet::PacletToolsInvalidPath = "The path \"`1`\" does not exist.";
+AgentTools::PacletToolsInvalidPath = "The path \"`1`\" does not exist. Provide an absolute path to either the paclet root directory or the definition notebook (.nb) file.";
+AgentTools::PacletCICDLoadFailed  = "Could not load the Wolfram/PacletCICD paclet. Ensure it is installed or that you have internet access.";
 ```
 
 #### PacletCICD Installation Failure
 
-If `PacletInstall["Wolfram/PacletCICD"]` fails (e.g. no internet):
+If `PacletInstall["Wolfram/PacletCICD"]` fails (e.g. no internet), `ensurePacletCICD[]` should throw `throwFailure["PacletCICDLoadFailed"]`:
 
 ````markdown
 Error: Could not load the Wolfram/PacletCICD paclet. Ensure it is installed or that you have internet access.
@@ -729,14 +741,14 @@ Error: The path "C:/nonexistent/path" does not exist. Provide an absolute path t
 
 1. **File Location**: `Kernel/Tools/PacletTools/` directory with four files (see [File Layout](#file-layout))
 
-2. **Submodule Pattern**: Follow the `Kernel/Tools/CodeInspector/` pattern where the main file (`PacletTools.wl`) contains tool definitions and shared helpers, and `Get` loads submodule files containing the per-tool implementations
+2. **Submodule Pattern**: Follow the `Kernel/Tools/CodeInspector/` pattern where the main file (`PacletTools.wl`) contains tool definitions and shared helpers, and then loads submodule files containing the per-tool implementations
 
-3. **Submodule Files**: Each submodule (`CheckPaclet.wl`, `BuildPaclet.wl`, `SubmitPaclet.wl`) should use a nested context:
+3. **Submodule Files**: Each submodule (`CheckPaclet.wl`, `BuildPaclet.wl`, `SubmitPaclet.wl`) should use the parent package context, matching the existing multi-file tool modules in this repo:
    ```wl
-   BeginPackage[ "Wolfram`AgentTools`Tools`PacletTools`CheckPaclet`" ];
+   BeginPackage[ "Wolfram`AgentTools`Tools`PacletTools`" ];
    Begin[ "`Private`" ];
    ```
-   They have access to symbols from the parent package's private context since they are loaded via `Get` from within that context.
+   The files are still loaded by path/context name (for example `<< Wolfram`AgentTools`Tools`PacletTools`CheckPaclet``), but they should reopen the parent package context so shared helper functions and prompt strings remain directly accessible.
 
 4. **PacletInstall**: `PacletInstall["Wolfram/PacletCICD"]` must be called before using any PacletCICD functions. It is fast for already-installed paclets. The memoized `ensurePacletCICD[]` helper handles this.
 
@@ -750,10 +762,21 @@ Error: The path "C:/nonexistent/path" does not exist. Provide an absolute path t
 
 ---
 
+## Testing
+
+Add a dedicated `Tests/PacletTools.wlt` file that covers at least:
+
+1. `validatePacletPath` returning `File[...]` for an existing directory and throwing `PacletToolsInvalidPath` for a missing path
+2. `formatCheckResult` for both an empty `Dataset` and a mixed-severity `Dataset`
+3. `formatBuildResult` for a `Failure["CheckPaclet::errors", <| "CheckResult" -> dataset, ... |>]` result
+4. `formatSubmitResult` for a nested `Failure["SubmitPacletFailure", <| "Result" -> innerFailure, ... |>]` authentication error
+
+---
+
 ## Future Considerations
 
-1. **TestPaclet Tool**: Wrap `Wolfram`PacletCICD`TestPaclet` for running paclet tests
-2. **DeployPaclet Tool**: Wrap `Wolfram`PacletCICD`DeployPaclet` for deployment to servers
+1. **TestPaclet Tool**: Wrap ``Wolfram`PacletCICD`TestPaclet`` for running paclet tests
+2. **DeployPaclet Tool**: Wrap ``Wolfram`PacletCICD`DeployPaclet`` for deployment to servers
 3. **DisabledHints Parameter**: Allow suppressing specific CheckPaclet hint tags
 4. **Target Parameter**: Expose CheckPaclet's `"Target"` option (`"Submit"` vs `"Build"`)
 5. **Dry Run for SubmitPaclet**: Validate submission requirements without actually submitting
