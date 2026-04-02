@@ -5,7 +5,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **1. Add error messages and registration points**
+- [x] **1. Add error messages and registration points**
 
   Add the two shared message tags (`PacletToolsInvalidPath`, `PacletCICDLoadFailed`) to `Messages.wl`. Add the `PacletTools` subcontext to `$subcontexts` in `Tools.wl`. Add `CheckPaclet`, `BuildPaclet`, `SubmitPaclet` to the `"WolframPacletDevelopment"` server's tool list in `DefaultServers.wl`. These are prerequisites for the implementation files.
 
