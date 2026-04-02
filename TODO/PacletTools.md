@@ -29,7 +29,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **4. Implement BuildPaclet.wl**
+- [x] **4. Implement BuildPaclet.wl**
 
   Create `BuildPaclet.wl` with the `buildPacletTool` function and `formatBuildResult` formatter. The formatter must handle `Success["PacletBuild", ...]` (extract archive path, name, version) and `Failure` results (including the `"CheckPaclet::errors"` case that reuses `formatCheckResult`). Supports the optional `check` boolean parameter.
 

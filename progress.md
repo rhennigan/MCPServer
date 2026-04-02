@@ -25,3 +25,10 @@ Use the following format incrementing the session number from the latest entry:
 - Helper functions: `formatCheckSummary` (summary table with non-zero counts), `formatCheckSections`/`formatCheckSection` (per-level numbered lists). `$checkLevels` defines the level ordering.
 - Created `Tests/PacletTools.wlt` with 26 tests covering: tool registration, `validatePacletPath` (existing dir, existing file, missing path), and `formatCheckResult` (empty dataset, empty list, mixed severity content checks, Dataset vs list equivalence, single-level-only filtering, CellID omission).
 
+## Session 4
+
+- Completed Task 4: Implemented `BuildPaclet.wl` with `buildPacletTool` function and `formatBuildResult` formatter.
+- `formatBuildResult` handles three cases: `Success["PacletBuild", ...]` (extracts name/version from archive filename pattern `Publisher__Name-Version.paclet`), `Failure["CheckPaclet::errors", ...]` (reuses check formatting via `formatCheckIssues` helper), and generic `Failure` (extracts message from `MessageTemplate` or `Message` key).
+- Helper functions: `extractPacletName` and `extractPacletVersion` parse the archive filename, `formatCheckIssues` wraps the shared `formatCheckSummary`/`formatCheckSections` without a top-level header (so the "Build Aborted" header can be used instead).
+- Added 17 new tests to `Tests/PacletTools.wlt` (total now 43) covering: build success (header, name, version, archive path), check-aborted failure (header, explanation, summary, error count, sections, items), check-aborted with Dataset input, and generic failure (header, message extraction).
+

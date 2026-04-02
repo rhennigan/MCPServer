@@ -224,4 +224,161 @@ VerificationTest[
     TestID   -> "FormatCheckResult-SingleLevelOnly@@Tests/PacletTools.wlt:215,1-225,2"
 ]
 
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*formatBuildResult*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Build Success*)
+VerificationTest[
+    $buildSuccessResult = Wolfram`AgentTools`Tools`PacletTools`Private`formatBuildResult @
+        Success[ "PacletBuild", <|
+            "PacletArchive" -> "C:/Users/dev/MyPaclet/build/DevPublisher__MyPaclet-1.0.0.paclet"
+        |> ];
+    StringQ @ $buildSuccessResult,
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatBuildResult-Success-IsString@@Tests/PacletTools.wlt:234,1-243,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $buildSuccessResult, "# Paclet Build Successful" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatBuildResult-Success-HasHeader@@Tests/PacletTools.wlt:245,1-250,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $buildSuccessResult, "| Paclet | DevPublisher/MyPaclet |" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatBuildResult-Success-HasPacletName@@Tests/PacletTools.wlt:252,1-257,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $buildSuccessResult, "| Version | 1.0.0 |" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatBuildResult-Success-HasVersion@@Tests/PacletTools.wlt:259,1-264,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $buildSuccessResult, "DevPublisher__MyPaclet-1.0.0.paclet" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatBuildResult-Success-HasArchivePath@@Tests/PacletTools.wlt:266,1-271,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Build Aborted by Check*)
+VerificationTest[
+    $buildAbortedResult = Wolfram`AgentTools`Tools`PacletTools`Private`formatBuildResult @
+        Failure[ "CheckPaclet::errors", <|
+            "CheckResult" -> {
+                <| "Level" -> "Error", "Tag" -> "MissingPublisherID", "Message" -> "No publisher ID specified", "CellID" -> 1 |>,
+                <| "Level" -> "Error", "Tag" -> "InvalidVersion",     "Message" -> "Version string is invalid",  "CellID" -> 2 |>
+            }
+        |> ];
+    StringQ @ $buildAbortedResult,
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatBuildResult-CheckAborted-IsString@@Tests/PacletTools.wlt:276,1-288,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $buildAbortedResult, "# Paclet Build Aborted" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatBuildResult-CheckAborted-HasHeader@@Tests/PacletTools.wlt:290,1-295,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $buildAbortedResult, "pre-build check found errors" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatBuildResult-CheckAborted-HasExplanation@@Tests/PacletTools.wlt:297,1-302,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $buildAbortedResult, "## Summary" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatBuildResult-CheckAborted-HasSummary@@Tests/PacletTools.wlt:304,1-309,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $buildAbortedResult, "| Error | 2 |" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatBuildResult-CheckAborted-ErrorCount@@Tests/PacletTools.wlt:311,1-316,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $buildAbortedResult, "## Errors" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatBuildResult-CheckAborted-HasErrorsSection@@Tests/PacletTools.wlt:318,1-323,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $buildAbortedResult, "**MissingPublisherID**: No publisher ID specified" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatBuildResult-CheckAborted-HasErrorItem@@Tests/PacletTools.wlt:325,1-330,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Build Aborted by Check - Dataset Input*)
+VerificationTest[
+    $buildAbortedDatasetResult = Wolfram`AgentTools`Tools`PacletTools`Private`formatBuildResult @
+        Failure[ "CheckPaclet::errors", <|
+            "CheckResult" -> Dataset @ {
+                <| "Level" -> "Error", "Tag" -> "MissingPublisherID", "Message" -> "No publisher ID specified", "CellID" -> 1 |>,
+                <| "Level" -> "Error", "Tag" -> "InvalidVersion",     "Message" -> "Version string is invalid",  "CellID" -> 2 |>
+            }
+        |> ];
+    StringQ @ $buildAbortedDatasetResult,
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatBuildResult-CheckAbortedDataset-IsString@@Tests/PacletTools.wlt:335,1-347,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $buildAbortedDatasetResult, "# Paclet Build Aborted" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatBuildResult-CheckAbortedDataset-HasHeader@@Tests/PacletTools.wlt:349,1-354,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Build Failed - Generic Failure*)
+VerificationTest[
+    $buildFailedResult = Wolfram`AgentTools`Tools`PacletTools`Private`formatBuildResult @
+        Failure[ "BuildPacletFailure", <|
+            "MessageTemplate" -> "Something went wrong during build"
+        |> ];
+    StringQ @ $buildFailedResult,
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatBuildResult-GenericFailure-IsString@@Tests/PacletTools.wlt:359,1-368,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $buildFailedResult, "# Paclet Build Failed" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatBuildResult-GenericFailure-HasHeader@@Tests/PacletTools.wlt:370,1-375,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $buildFailedResult, "Something went wrong during build" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatBuildResult-GenericFailure-HasMessage@@Tests/PacletTools.wlt:377,1-382,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)
