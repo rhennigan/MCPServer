@@ -32,3 +32,10 @@ Use the following format incrementing the session number from the latest entry:
 - Helper functions: `extractPacletName` and `extractPacletVersion` parse the archive filename, `formatCheckIssues` wraps the shared `formatCheckSummary`/`formatCheckSections` without a top-level header (so the "Build Aborted" header can be used instead).
 - Added 17 new tests to `Tests/PacletTools.wlt` (total now 43) covering: build success (header, name, version, archive path), check-aborted failure (header, explanation, summary, error count, sections, items), check-aborted with Dataset input, and generic failure (header, message extraction).
 
+## Session 5
+
+- Completed Task 5: Implemented `SubmitPaclet.wl` with `submitPacletTool` function and `formatSubmitResult` formatter.
+- `formatSubmitResult` handles three cases: `Success["ResourceSubmission", ...]` (extracts Name, Version, Message, optional UUID/SubmissionID, and Warnings), `Failure["SubmitPacletFailure", ...]` (unwraps nested `"Result"` failure and checks for authentication issues), and generic `Failure` (extracts message via `extractFailureMessage`).
+- Helper functions: `formatSubmitFailure` (auth check + generic formatting), `authenticationFailureQ` (keyword-based detection using `$authKeywords` list matching "authenticat", "CloudConnect", "$PublisherID", "sign in", "log in"). `extractFailureMessage` is reused from BuildPaclet.wl (shared Private context).
+- Added 17 new tests to `Tests/PacletTools.wlt` (total now 60) covering: submission success (header, name, version, status, confirmation), success with optional fields (UUID, SubmissionID), nested authentication failure (header, auth message, $PublisherID guidance, CloudConnect guidance), and generic nested failure (header, message extraction).
+

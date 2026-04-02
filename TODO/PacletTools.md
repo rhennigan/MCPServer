@@ -37,7 +37,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **5. Implement SubmitPaclet.wl**
+- [x] **5. Implement SubmitPaclet.wl**
 
   Create `SubmitPaclet.wl` with the `submitPacletTool` function and `formatSubmitResult` formatter. The formatter must handle `Success["ResourceSubmission", ...]` (extract name, version, status, optional UUID/SubmissionID/warnings) and `Failure` results (including nested authentication failures with user guidance).
 

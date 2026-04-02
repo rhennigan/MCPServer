@@ -381,4 +381,165 @@ VerificationTest[
     TestID   -> "FormatBuildResult-GenericFailure-HasMessage@@Tests/PacletTools.wlt:377,1-382,2"
 ]
 
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*formatSubmitResult*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Submission Success*)
+VerificationTest[
+    $submitSuccessResult = Wolfram`AgentTools`Tools`PacletTools`Private`formatSubmitResult @
+        Success[ "ResourceSubmission", <|
+            "Name"    -> "DevPublisher/MyPaclet",
+            "Version" -> "1.0.0",
+            "Message" -> "Your paclet resource is being published"
+        |> ];
+    StringQ @ $submitSuccessResult,
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSubmitResult-Success-IsString@@Tests/PacletTools.wlt:391,1-402,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $submitSuccessResult, "# Paclet Submission Successful" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSubmitResult-Success-HasHeader@@Tests/PacletTools.wlt:404,1-409,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $submitSuccessResult, "| Name | DevPublisher/MyPaclet |" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSubmitResult-Success-HasName@@Tests/PacletTools.wlt:411,1-416,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $submitSuccessResult, "| Version | 1.0.0 |" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSubmitResult-Success-HasVersion@@Tests/PacletTools.wlt:418,1-423,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $submitSuccessResult, "| Status | Your paclet resource is being published |" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSubmitResult-Success-HasStatus@@Tests/PacletTools.wlt:425,1-430,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $submitSuccessResult, "submitted to the Wolfram Language Paclet Repository" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSubmitResult-Success-HasConfirmation@@Tests/PacletTools.wlt:432,1-437,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Submission Success with Optional Fields*)
+VerificationTest[
+    $submitSuccessExtras = Wolfram`AgentTools`Tools`PacletTools`Private`formatSubmitResult @
+        Success[ "ResourceSubmission", <|
+            "Name"         -> "DevPublisher/MyPaclet",
+            "Version"      -> "1.0.0",
+            "Message"      -> "Your paclet resource is being published",
+            "UUID"         -> "abc-123-def",
+            "SubmissionID" -> "sub-456"
+        |> ];
+    StringQ @ $submitSuccessExtras,
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSubmitResult-SuccessExtras-IsString@@Tests/PacletTools.wlt:442,1-455,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $submitSuccessExtras, "| UUID | abc-123-def |" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSubmitResult-SuccessExtras-HasUUID@@Tests/PacletTools.wlt:457,1-462,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $submitSuccessExtras, "| SubmissionID | sub-456 |" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSubmitResult-SuccessExtras-HasSubmissionID@@Tests/PacletTools.wlt:464,1-469,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Nested Authentication Failure*)
+VerificationTest[
+    $submitAuthResult = Wolfram`AgentTools`Tools`PacletTools`Private`formatSubmitResult @
+        Failure[ "SubmitPacletFailure", <|
+            "Result" -> Failure[ "AuthenticationFailure", <|
+                "MessageTemplate" -> "You must authenticate before submitting. Use CloudConnect[] or set $PublisherID."
+            |> ]
+        |> ];
+    StringQ @ $submitAuthResult,
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSubmitResult-NestedAuthFailure-IsString@@Tests/PacletTools.wlt:474,1-485,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $submitAuthResult, "# Paclet Submission Failed" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSubmitResult-NestedAuthFailure-HasHeader@@Tests/PacletTools.wlt:487,1-492,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $submitAuthResult, "Authentication required" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSubmitResult-NestedAuthFailure-HasAuthMessage@@Tests/PacletTools.wlt:494,1-499,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $submitAuthResult, "$PublisherID" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSubmitResult-NestedAuthFailure-HasPublisherIDGuidance@@Tests/PacletTools.wlt:501,1-506,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $submitAuthResult, "CloudConnect[]" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSubmitResult-NestedAuthFailure-HasCloudConnectGuidance@@Tests/PacletTools.wlt:508,1-513,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Generic Nested Failure*)
+VerificationTest[
+    $submitGenericResult = Wolfram`AgentTools`Tools`PacletTools`Private`formatSubmitResult @
+        Failure[ "SubmitPacletFailure", <|
+            "Result" -> Failure[ "ServerError", <|
+                "MessageTemplate" -> "The server rejected the submission"
+            |> ]
+        |> ];
+    StringQ @ $submitGenericResult,
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSubmitResult-GenericNestedFailure-IsString@@Tests/PacletTools.wlt:518,1-529,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $submitGenericResult, "# Paclet Submission Failed" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSubmitResult-GenericNestedFailure-HasHeader@@Tests/PacletTools.wlt:531,1-536,2"
+]
+
+VerificationTest[
+    StringContainsQ[ $submitGenericResult, "The server rejected the submission" ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "FormatSubmitResult-GenericNestedFailure-HasMessage@@Tests/PacletTools.wlt:538,1-543,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)
