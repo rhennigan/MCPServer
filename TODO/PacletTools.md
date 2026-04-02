@@ -13,7 +13,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **2. Implement PacletTools.wl (main module with shared helpers and tool definitions)**
+- [x] **2. Implement PacletTools.wl (main module with shared helpers and tool definitions)**
 
   Create the `Kernel/Tools/PacletTools/` directory and the main `PacletTools.wl` file. This contains the package header, shared helpers (`ensurePacletCICD`, `validatePacletPath`), tool description strings, all three `$defaultMCPTools` definitions, and the submodule `Get` calls. Follow the `CodeInspector/CodeInspector.wl` pattern for structure.
 
