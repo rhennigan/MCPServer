@@ -21,7 +21,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **3. Implement CheckPaclet.wl**
+- [x] **3. Implement CheckPaclet.wl**
 
   Create `CheckPaclet.wl` with the `checkPacletTool` function and `formatCheckResult` formatter. The formatter must handle empty datasets ("No issues found") and mixed-severity datasets (summary table + grouped numbered lists). Must use `"FailureCondition" -> None`.
 

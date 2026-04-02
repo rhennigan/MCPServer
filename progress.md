@@ -19,3 +19,11 @@ Use the following format incrementing the session number from the latest entry:
 - Verified consistency: the context ``Wolfram`AgentTools`Tools`PacletTools` `` is registered in `Tools.wl` (line 131) and tool names match `DefaultServers.wl` (lines 113-115).
 - MCP tools (CodeInspector, TestReport) were not available in this session, so could not run automated checks.
 
+## Session 3
+
+- Completed Task 3: Implemented `CheckPaclet.wl` with `checkPacletTool` function and `formatCheckResult` formatter.
+- `formatCheckResult` handles empty datasets ("No issues found") and mixed-severity datasets (summary table + grouped numbered lists ordered Error > Warning > Suggestion). CellID is omitted from output.
+- Helper functions: `formatCheckSummary` (summary table with non-zero counts), `formatCheckSections`/`formatCheckSection` (per-level numbered lists). `$checkLevels` defines the level ordering.
+- Created `Tests/PacletTools.wlt` with 26 tests covering: tool registration, `validatePacletPath` (existing dir, existing file, missing path), and `formatCheckResult` (empty dataset, empty list, mixed severity content checks, Dataset vs list equivalence, single-level-only filtering, CellID omission).
+- Note: `catchTop` must be referenced via full context `Wolfram`AgentTools`Common`catchTop` in test files.
+
