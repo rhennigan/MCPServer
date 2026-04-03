@@ -43,3 +43,7 @@ Use the following format incrementing the session number from the latest entry:
 
 - Completed Task 6: Ran all 60 tests in `Tests/PacletTools.wlt` — all pass (100%). Tests were written incrementally during sessions 3-5 and cover: tool registration (3), `validatePacletPath` (3), `formatCheckResult` (14), `formatBuildResult` (17), `formatSubmitResult` (17). No additional test code was needed.
 
+## Session 7
+
+- Completed Task 7: Updated `docs/servers.md` to document the three new PacletTools in the `WolframPacletDevelopment` server. Added `CheckPaclet`, `BuildPaclet`, and `SubmitPaclet` to both the server's tool table and the "Tools by Server" comparison table. Updated the server description to mention check/build/submit capabilities.
+

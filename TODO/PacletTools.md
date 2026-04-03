@@ -57,7 +57,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **7. Update server documentation**
+- [x] **7. Update server documentation**
 
   Add `CheckPaclet`, `BuildPaclet`, and `SubmitPaclet` to the `WolframPacletDevelopment` tool table in `docs/servers.md`.
 

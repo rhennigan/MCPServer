@@ -84,7 +84,7 @@ This server provides comprehensive Wolfram Language development tools:
 InstallMCPServer[{"ClaudeCode", "/path/to/paclet"}, "WolframPacletDevelopment"]
 ```
 
-This server extends `WolframLanguage` with paclet documentation tools:
+This server extends `WolframLanguage` with paclet documentation and development tools:
 
 | Component | Name | Description |
 |-----------|------|-------------|
@@ -98,10 +98,13 @@ This server extends `WolframLanguage` with paclet documentation tools:
 | Tool | `CreateSymbolDoc` | Create new symbol documentation pages |
 | Tool | `EditSymbolDoc` | Edit existing symbol documentation |
 | Tool | `EditSymbolDocExamples` | Edit example sections in documentation |
+| Tool | `CheckPaclet` | Check a paclet for issues (missing metadata, invalid structure, etc.) |
+| Tool | `BuildPaclet` | Build a paclet archive (.paclet) for distribution |
+| Tool | `SubmitPaclet` | Submit a paclet to the Wolfram Language Paclet Repository |
 | Prompt | `Search` | Wolfram Language documentation search |
 | Prompt | `Notebook` | Attach notebook contents to context |
 
-**Use this when:** You're developing a Wolfram paclet and need to create or maintain documentation notebooks.
+**Use this when:** You're developing a Wolfram paclet and need to create or maintain documentation notebooks, or check/build/submit paclets.
 
 ## Server Comparison
 
@@ -122,6 +125,9 @@ This server extends `WolframLanguage` with paclet documentation tools:
 | `CreateSymbolDoc` | | | | X |
 | `EditSymbolDoc` | | | | X |
 | `EditSymbolDocExamples` | | | | X |
+| `CheckPaclet` | | | | X |
+| `BuildPaclet` | | | | X |
+| `SubmitPaclet` | | | | X |
 
 ### Prompts by Server
 
