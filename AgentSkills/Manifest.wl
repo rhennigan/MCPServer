@@ -19,7 +19,10 @@
             "WolframLanguageEvaluator",
             "SymbolDefinition",
             "TestReport",
-            "CodeInspector"
+            "CodeInspector",
+            "CheckPaclet",
+            "BuildPaclet",
+            "SubmitPaclet"
         }
     |>,
     "wolfram-notebooks" -> <|

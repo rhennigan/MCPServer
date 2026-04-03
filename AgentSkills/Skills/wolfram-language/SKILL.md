@@ -1,6 +1,6 @@
 ---
 name: wolfram-language
-description: Evaluates Wolfram Language code, searches documentation, inspects code, runs tests, and retrieves symbol definitions. Use this skill when the user needs Wolfram Language computation or development assistance, including symbolic math, data analysis, visualization, or working with .wl/.wls/.wlt files.
+description: Evaluates Wolfram Language code, searches documentation, inspects code, runs tests, retrieves symbol definitions, and supports paclet development (checking, building, submitting). Use this skill when the user needs Wolfram Language computation or development assistance, including symbolic math, data analysis, visualization, or working with .wl/.wls/.wlt files.
 compatibility: Requires the Wolfram MCP server or wolframscript on PATH
 metadata:
   author: Wolfram Research
@@ -9,7 +9,7 @@ metadata:
 
 # Wolfram Language
 
-A full Wolfram Language development environment with code evaluation, documentation search, symbol inspection, static analysis, and test execution.
+A full Wolfram Language development environment with code evaluation, documentation search, symbol inspection, static analysis, test execution, and paclet development tools.
 
 ## Prerequisites
 
@@ -50,6 +50,9 @@ Reminder: These scripts are only relevant when you do not have the equivalent MC
 | `SymbolDefinition` | Inspect how symbols are defined |
 | `TestReport` | Run `.wlt` test files and directories to verify correctness |
 | `CodeInspector` | Check Wolfram Language code or files for issues and style problems |
+| `CheckPaclet` | Check a paclet for issues before building or submitting |
+| `BuildPaclet` | Build a `.paclet` archive from a paclet directory |
+| `SubmitPaclet` | Submit a paclet to the Wolfram Language Paclet Repository |
 
 ### WolframLanguageContext
 
@@ -120,6 +123,18 @@ If the user has test files for their project (`.wlt` files), you can run them wi
 ### CodeInspector
 
 If you've edited Wolfram Language files, you should check your work with `CodeInspector`.
+
+### CheckPaclet
+
+Use `CheckPaclet` before building or submitting a paclet. It reports errors, warnings, and suggestions organized by severity. The path should be an absolute path to the paclet root directory or the definition notebook (`.nb`) file.
+
+### BuildPaclet
+
+Use `BuildPaclet` to produce a `.paclet` archive. Optionally pass `--check true` to run `CheckPaclet` before building — the build is aborted if errors are found. This can be a long-running operation for documentation-heavy paclets.
+
+### SubmitPaclet
+
+Use `SubmitPaclet` to submit a paclet to the Wolfram Language Paclet Repository. This builds the paclet internally before submitting. Requires prior authentication via `$PublisherID` or an active Wolfram Cloud connection. Use `CheckPaclet` first to verify readiness.
 
 ## Other Tips
 

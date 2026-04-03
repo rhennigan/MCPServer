@@ -47,3 +47,7 @@ Use the following format incrementing the session number from the latest entry:
 
 - Completed Task 7: Updated `docs/servers.md` to document the three new PacletTools in the `WolframPacletDevelopment` server. Added `CheckPaclet`, `BuildPaclet`, and `SubmitPaclet` to both the server's tool table and the "Tools by Server" comparison table. Updated the server description to mention check/build/submit capabilities.
 
+## Session 8
+
+- Completed Task 8: Rebuilt agent skills with `Scripts/BuildAgentSkills.wls`. Added CheckPaclet, BuildPaclet, and SubmitPaclet to the `wolfram-language` skill in `Manifest.wl`. Updated `SKILL.md` description, tools table, and per-tool guidance sections. Build generated all 12 scripts (3 new + 9 existing), distributed them to all skills, updated marketplace version, and confirmed all skills completed successfully. Generated `Scripts.md` reference includes correct usage syntax and argument tables for all new tools.
+

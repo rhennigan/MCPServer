@@ -65,7 +65,7 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **8. Rebuild agent skills**
+- [x] **8. Rebuild agent skills**
 
   Run `Scripts/BuildAgentSkills.wls` to regenerate skill artifacts now that new MCP tool definitions exist. Verify the generated output includes the new tools.
 
