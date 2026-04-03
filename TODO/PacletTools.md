@@ -45,13 +45,13 @@ Each item is a logical unit of work for one coding session.
 
 ---
 
-- [ ] **6. Write and run tests**
+- [x] **6. Write and run tests**
 
   Create `Tests/PacletTools.wlt` covering:
-  - [ ] `validatePacletPath` returns `File[...]` for existing paths and throws for missing paths
-  - [ ] `formatCheckResult` for empty dataset and mixed-severity dataset
-  - [ ] `formatBuildResult` for success and `"CheckPaclet::errors"` failure
-  - [ ] `formatSubmitResult` for success and nested authentication failure
+  - [x] `validatePacletPath` returns `File[...]` for existing paths and throws for missing paths
+  - [x] `formatCheckResult` for empty dataset and mixed-severity dataset
+  - [x] `formatBuildResult` for success and `"CheckPaclet::errors"` failure
+  - [x] `formatSubmitResult` for success and nested authentication failure
 
   **Files:** `Tests/PacletTools.wlt`
 
