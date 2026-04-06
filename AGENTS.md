@@ -171,3 +171,43 @@ The `Enclose` wrapper is only necessary if you are using any `Confirm`, `Confirm
 ## Special Considerations
 
 While working on this paclet, you are also working on the code that's running the MCP server providing your Wolfram tools. Sometimes you might run into issues related to this and you'll need to carefully consider how current changes might be affecting the MCP server.
+
+## Cursor Cloud specific instructions
+
+### Runtime Environment
+
+Wolfram Engine 14.3 runs inside a Docker container (`wolframresearch/wolframengine:14.3`). A `wolframscript` wrapper at `/usr/local/bin/wolframscript` transparently delegates to the Docker container, mounting `/workspace` and passing the `WOLFRAMSCRIPT_ENTITLEMENTID` secret.
+
+The `WOLFRAMSCRIPT_ENTITLEMENTID` environment variable must be set as a secret for all Wolfram operations to work. This is a shared cloud-managed entitlement with concurrent license limits — if you see `"License refused because all licenses are currently in use"`, wait a few minutes and retry.
+
+### Running Tests
+
+```bash
+wolframscript -f Scripts/TestPaclet.wls                         # all tests
+wolframscript -f Scripts/TestPaclet.wls Tests/SomeFile.wlt      # specific test file
+```
+
+Tests load the paclet from the source directory automatically. No pre-build step is needed.
+
+### Building the Paclet
+
+```bash
+wolframscript -f Scripts/BuildPaclet.wls                   # full build
+wolframscript -f Scripts/BuildPaclet.wls --check=false     # fast build (skip code checks)
+```
+
+Build output goes to `build/`. The `git` binary is not available inside the Docker container, so builds will show a `RunProcess::pnfd` warning for git — this is harmless.
+
+### MCP Server
+
+The MCP server communicates via stdin/stdout JSON-RPC. To test core paclet functionality without starting the full server:
+
+```bash
+wolframscript -code 'PacletDirectoryLoad["/workspace"]; Needs["Wolfram`AgentTools`"]; Print[Keys[$DefaultMCPServers]]'
+```
+
+### Key Caveats
+
+- Delete `Kernel/64Bit/AgentTools.mx` before testing source changes if it exists (MX file takes priority over source files).
+- The Docker container does not have `git` installed, so any scripts that call `git` from inside `wolframscript` will emit warnings.
+- Each `wolframscript` invocation spins up a new Docker container and consumes a license slot. Avoid running many concurrent `wolframscript` commands to prevent hitting the license limit.
