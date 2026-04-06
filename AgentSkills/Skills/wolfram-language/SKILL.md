@@ -1,15 +1,16 @@
 ---
-name: wolfram-language
-description: Evaluates Wolfram Language code, searches documentation, inspects code, runs tests, retrieves symbol definitions, and supports paclet development (checking, building, submitting). Use this skill when the user needs Wolfram Language computation or development assistance, including symbolic math, data analysis, visualization, or working with .wl/.wls/.wlt files.
+
+## name: wolfram-language
+
+## description: Evaluates Wolfram Language code, searches documentation, inspects code, runs tests, and retrieves symbol definitions. Use this skill when the user needs Wolfram Language computation or development assistance, including symbolic math, data analysis, visualization, or working with .wl/.wls/.wlt files.
 compatibility: Requires the Wolfram MCP server or wolframscript on PATH
 metadata:
   author: Wolfram Research
-  version: 2.0.0
----
+  version: 2.0.1
 
 # Wolfram Language
 
-A full Wolfram Language development environment with code evaluation, documentation search, symbol inspection, static analysis, test execution, and paclet development tools.
+A full Wolfram Language development environment with code evaluation, documentation search, symbol inspection, static analysis, and test execution.
 
 ## Prerequisites
 
@@ -43,16 +44,15 @@ Reminder: These scripts are only relevant when you do not have the equivalent MC
 
 ## Available Tools
 
-| Script | When to use |
-| --- | --- |
-| `WolframLanguageContext` | Agentic search for documentation and other Wolfram Language resources |
-| `WolframLanguageEvaluator` | Evaluate Wolfram Language code and return results |
-| `SymbolDefinition` | Inspect how symbols are defined |
-| `TestReport` | Run `.wlt` test files and directories to verify correctness |
-| `CodeInspector` | Check Wolfram Language code or files for issues and style problems |
-| `CheckPaclet` | Check a paclet for issues before building or submitting |
-| `BuildPaclet` | Build a `.paclet` archive from a paclet directory |
-| `SubmitPaclet` | Submit a paclet to the Wolfram Language Paclet Repository |
+
+| Script                     | When to use                                                           |
+| -------------------------- | --------------------------------------------------------------------- |
+| `WolframLanguageContext`   | Agentic search for documentation and other Wolfram Language resources |
+| `WolframLanguageEvaluator` | Evaluate Wolfram Language code and return results                     |
+| `SymbolDefinition`         | Inspect how symbols are defined                                       |
+| `TestReport`               | Run `.wlt` test files and directories to verify correctness           |
+| `CodeInspector`            | Check Wolfram Language code or files for issues and style problems    |
+
 
 ### WolframLanguageContext
 
@@ -86,18 +86,22 @@ Table[\[FreeformPrompt]["picture of a "<>name], {name, {"cat", "dog"}}]
 
 You can use a symbol as the second argument to specify the expected head of the parsed expression:
 
-| Input | Parsed Expression |
-| --- | --- |
-| `\[FreeformPrompt]["Pennsylvania", Entity]` | `Entity["AdministrativeDivision", {"Pennsylvania", "UnitedStates"}]` |
-| `\[FreeformPrompt]["lanthanide elements", EntityClass]` | `EntityClass["Element", "Lanthanide"]` |
-| `\[FreeformPrompt]["123 terawatt hours", Quantity]` | `Quantity[123, "Hours"*"Terawatts"]` |
+
+| Input                                                   | Parsed Expression                                                    |
+| ------------------------------------------------------- | -------------------------------------------------------------------- |
+| `\[FreeformPrompt]["Pennsylvania", Entity]`             | `Entity["AdministrativeDivision", {"Pennsylvania", "UnitedStates"}]` |
+| `\[FreeformPrompt]["lanthanide elements", EntityClass]` | `EntityClass["Element", "Lanthanide"]`                               |
+| `\[FreeformPrompt]["123 terawatt hours", Quantity]`     | `Quantity[123, "Hours"*"Terawatts"]`                                 |
+
 
 A string as the second argument represents an expected entity type, which can be an `Entity` or `EntityClass`:
 
-| Input | Parsed Expression |
-| --- | --- |
-| `\[FreeformPrompt]["Mercury", "Planet"]` | `Entity["Planet", "Mercury"]` |
+
+| Input                                                | Parsed Expression                                                  |
+| ---------------------------------------------------- | ------------------------------------------------------------------ |
+| `\[FreeformPrompt]["Mercury", "Planet"]`             | `Entity["Planet", "Mercury"]`                                      |
 | `\[FreeformPrompt]["Mercury", "MannedSpaceMission"]` | `EntityClass["MannedSpaceMission", "ProjectMercuryMannedMission"]` |
+
 
 When in doubt, use the single argument form. You'll get feedback about other valid interpretations, which you can then choose from. For example:
 
@@ -124,18 +128,7 @@ If the user has test files for their project (`.wlt` files), you can run them wi
 
 If you've edited Wolfram Language files, you should check your work with `CodeInspector`.
 
-### CheckPaclet
-
-Use `CheckPaclet` before building or submitting a paclet. It reports errors, warnings, and suggestions organized by severity. The path should be an absolute path to the paclet root directory or the definition notebook (`.nb`) file.
-
-### BuildPaclet
-
-Use `BuildPaclet` to produce a `.paclet` archive. Optionally pass `--check true` to run `CheckPaclet` before building — the build is aborted if errors are found. This can be a long-running operation for documentation-heavy paclets.
-
-### SubmitPaclet
-
-Use `SubmitPaclet` to submit a paclet to the Wolfram Language Paclet Repository. This builds the paclet internally before submitting. Requires prior authentication via `$PublisherID` or an active Wolfram Cloud connection. Use `CheckPaclet` first to verify readiness.
-
 ## Other Tips
 
-- When using Markdown formatting, you should ALWAYS use double backticks for inline code containing fully qualified symbol names: ``MyContext`MySymbol[x]``
+- When using Markdown formatting, you should ALWAYS use double backticks for inline code containing fully qualified symbol names: `MyContext`MySymbol[x]`
+

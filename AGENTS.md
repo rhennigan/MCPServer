@@ -13,6 +13,7 @@ Always use the WolframLanguageContext tool when working with Wolfram Language co
 When you make changes to paclet source code, you should also write and run tests for the changes you made using the TestReport tool and check the updated files (including test files) with the CodeInspector tool.
 
 If you need to debug code in the WolframLanguageEvaluator tool, you'll first need to evaluate:
+
 ```wl
 PacletDirectoryLoad[ "path/to/AgentTools" ];
 Get[ "Wolfram`AgentTools`" ]
@@ -55,35 +56,25 @@ See [building.md](docs/building.md) for detailed instructions.
   - `UIResources.wl`: [MCP Apps](docs/mcp-apps.md) UI resource registry and client capability detection
   - `Tools/`: Contains several files defining predefined MCP tools used by default servers. If tool schemas are modified, we need to rebuild agent skills.
   - `Prompts/`: Contains files defining predefined [MCP prompts](docs/mcp-prompts.md) used by default servers
-
 - `Assets/`: Static assets bundled with the paclet
   - `Apps/`: HTML and JSON files for [MCP Apps](docs/mcp-apps.md) UI resources
-
 - `Scripts/`: Contains utility scripts for building, testing, and running the paclet
   - `BuildAgentSkills.wls`: Generates agent skill scripts from MCP tool definitions (see [agent-skills.md](docs/agent-skills.md))
   - `Resources/SkillScriptTemplate.wls`: Template used to generate `.wls` scripts for agent skills
-
 - `AgentSkills/`: Agent skills for distributing Wolfram tools to AI coding agents (see [agent-skills.md](docs/agent-skills.md))
   - `Manifest.wl`: Maps skill names to their MCP tools and shared references
   - `References/`: Single-source shared reference files copied into every skill at build time
   - `Skills/`: Generated skill directories (wolfram-language, wolfram-alpha, wolfram-notebooks)
-
 - `.claude-plugin/`: Claude Code plugin packaging
   - `marketplace.json`: Plugin marketplace definition for distributing agent skills via Claude Code
-
 - `Notes/`: Development notes and design explorations
-
 - `Documentation/`: Contains documentation notebooks
   - `English/`: English documentation
     - `ReferencePages/Symbols/`: Reference pages for exported symbols
     - Use the ReadNotebook tool to read documentation notebooks as markdown text
-
 - `TestResources/`: Mock paclets and other test fixtures
-
 - `Tests/`: Contains test files (.wlt)
-
 - `Specs/`: Design specifications for features
-
 - `docs/`: Developer documentation
   - `testing.md`: Writing and running tests
   - `building.md`: Building the paclet for distribution
@@ -123,6 +114,7 @@ For comprehensive documentation on error handling, see [error-handling.md](docs/
 ### Exported Functions
 
 Exported functions in the main context must be declared in both the PacletInfo.wl and Kernel/Main.wl files. Define them using the following format:
+
 ```wl
 NameOfFunction // beginDefinition;
 NameOfFunction[ ... ] := catchMine @ internalFunction[ ... ];

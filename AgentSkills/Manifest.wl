@@ -19,7 +19,15 @@
             "WolframLanguageEvaluator",
             "SymbolDefinition",
             "TestReport",
-            "CodeInspector",
+            "CodeInspector"
+        }
+    |>,
+    "wolfram-paclets" -> <|
+        "References" -> {
+            "GetWolframEngine",
+            "SetUpWolframMCPServer"
+        },
+        "Scripts" -> {
             "CheckPaclet",
             "BuildPaclet",
             "SubmitPaclet"
