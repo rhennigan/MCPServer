@@ -7,7 +7,7 @@ This specification defines three MCP tools for paclet development workflows: che
 ## Goals
 
 - Create three MCP tools (`CheckPaclet`, `BuildPaclet`, `SubmitPaclet`) for the `"WolframPacletDevelopment"` server
-- Wrap `Wolfram`PacletCICD`CheckPaclet`, ``Wolfram`PacletCICD`BuildPaclet``, and ``Wolfram`PacletCICD`SubmitPaclet``
+- Wrap ``Wolfram`PacletCICD`CheckPaclet``, ``Wolfram`PacletCICD`BuildPaclet``, and ``Wolfram`PacletCICD`SubmitPaclet``
 - Convert structured outputs (Datasets, Success/Failure objects) into readable markdown for LLMs
 - Ensure `Wolfram/PacletCICD` is installed before use via `PacletInstall`
 
