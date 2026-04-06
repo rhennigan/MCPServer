@@ -173,7 +173,7 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
         ];
         existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
 
-        path    = ConfirmMatch[ configKeyPath[ ], { __String }, "ConfigKeyPath" ];
+        path    = ConfirmMatch[ configKeyPath @ target, { __String }, "ConfigKeyPath" ];
         convert = serverConverter @ $installClientName;
         server  = ConfirmBy[ convert @ server, AssociationQ, "ConvertedServer" ];
 
@@ -453,7 +453,7 @@ guessClientName[ file_? fileQ ] := Enclose[
         Switch[ split,
             { __, ".mcp.json" }, Throw[ "ClaudeCode" ],
             { __, "opencode.json" }, Throw[ "OpenCode" ],
-            { __, ".vscode", "settings.json" }, Throw[ "VisualStudioCode" ],
+            { __, ".vscode", "settings.json" | "mcp.json" }, Throw[ "VisualStudioCode" ],
             { __, ".zed", "settings.json" }, Throw[ "Zed" ]
         ];
 
@@ -514,6 +514,15 @@ guessClientNameFromJSON[ file_ ] := Enclose[
 
         (* Tier 1: unique top-level keys *)
         If[ KeyExistsQ[ json, "context_servers" ], Throw[ "Zed" ] ];
+
+        (* New mcp.json format: "servers" at root level.
+           Require the filename to be mcp.json to avoid false positives
+           from unrelated JSON files that happen to have a "servers" key. *)
+        If[ KeyExistsQ[ json, "servers" ] && AssociationQ @ json[ "servers" ],
+            With[ { name = Quiet @ ToLowerCase @ Last @ FileNameSplit @ file },
+                If[ name === "mcp.json", Throw[ "VisualStudioCode" ] ]
+            ]
+        ];
 
         If[ KeyExistsQ[ json, "mcp" ] && AssociationQ @ json[ "mcp" ],
             mcp = json[ "mcp" ];
@@ -758,9 +767,24 @@ installSuccess // endDefinition;
 (* ::Subsection::Closed:: *)
 (*configKeyPath*)
 configKeyPath // beginDefinition;
+
 configKeyPath[ ] := configKeyPath @ $installClientName;
-configKeyPath[ name_String ] /; KeyExistsQ[ $supportedMCPClients, name ] := $supportedMCPClients[ name, "ConfigKey" ];
+
+configKeyPath[ file_? fileQ ] := configKeyPath[ $installClientName, file ];
+
+(* VS Code with legacy settings.json: use the old nested key path *)
+configKeyPath[ "VisualStudioCode", File[ path_String ] ] /;
+    ToLowerCase @ FileNameTake @ path === "settings.json" := { "mcp", "servers" };
+
+configKeyPath[ name_String, _ ] /; KeyExistsQ[ $supportedMCPClients, name ] :=
+    $supportedMCPClients[ name, "ConfigKey" ];
+
+configKeyPath[ name_String ] /; KeyExistsQ[ $supportedMCPClients, name ] :=
+    $supportedMCPClients[ name, "ConfigKey" ];
+
 configKeyPath[ _ ] := { "mcpServers" };
+configKeyPath[ _, _ ] := { "mcpServers" };
+
 configKeyPath // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
@@ -799,7 +823,7 @@ readExistingMCPConfig // beginDefinition;
 
 readExistingMCPConfig[ file_ ] := Enclose[
     Catch @ Module[ { path, data },
-        path = ConfirmMatch[ configKeyPath[ ], { __String }, "ConfigKeyPath" ];
+        path = ConfirmMatch[ configKeyPath @ file, { __String }, "ConfigKeyPath" ];
         If[ ! FileExistsQ @ file, Throw @ emptyConfigForPath @ path ];
 
         (* Quiet any parsing errors, because we'll be issuing our own `InvalidMCPConfiguration` message if it fails *)
@@ -937,7 +961,7 @@ uninstallMCPServer[ target0_File, obj_MCPServerObject ] := Enclose[
         configName = ConfirmBy[ resolveMCPServerName @ obj, StringQ, "ConfigName" ];
         existing   = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
 
-        path = ConfirmMatch[ configKeyPath[ ], { __String }, "ConfigKeyPath" ];
+        path = ConfirmMatch[ configKeyPath @ target, { __String }, "ConfigKeyPath" ];
 
         With[ { keys = Sequence @@ path },
             If[ ! AssociationQ @ existing[ keys ], Throw @ Missing[ "NotInstalled", target ] ];
