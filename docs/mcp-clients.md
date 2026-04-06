@@ -222,27 +222,25 @@ Note: OpenCode uses a different format where the command and args are combined i
 
 | OS | Config Location |
 |----|----------------|
-| macOS | `~/Library/Application Support/Code/User/settings.json` |
-| Windows | `%APPDATA%\Code\User\settings.json` |
-| Linux | `~/.config/Code/User/settings.json` |
-| Project | `.vscode/settings.json` |
+| macOS | `~/Library/Application Support/Code/User/mcp.json` |
+| Windows | `%APPDATA%\Code\User\mcp.json` |
+| Linux | `~/.config/Code/User/mcp.json` |
+| Project | `.vscode/mcp.json` |
 
 **Format:**
 ```json
 {
-    "mcp": {
-        "servers": {
-            "ServerName": {
-                "command": "...",
-                "args": ["..."],
-                "env": { ... }
-            }
+    "servers": {
+        "ServerName": {
+            "command": "...",
+            "args": ["..."],
+            "env": { ... }
         }
     }
 }
 ```
 
-Note: VS Code nests servers under `mcp.servers` rather than `mcpServers`.
+Note: VS Code uses a dedicated `mcp.json` file with `servers` at the root level.
 
 ### Windsurf
 
@@ -457,7 +455,7 @@ Each entry is keyed by the canonical client name and contains an association wit
 | `"DisplayName"` | Yes | Human-readable name shown to users |
 | `"Aliases"` | Yes | List of alternative names (can be empty `{ }`) |
 | `"ConfigFormat"` | Yes | File format: `"JSON"` or `"TOML"` |
-| `"ConfigKey"` | Yes | Key path to the servers section (e.g. `{"mcpServers"}` or `{"mcp", "servers"}`) |
+| `"ConfigKey"` | Yes | Key path to the servers section (e.g. `{"mcpServers"}` or `{"servers"}`) |
 | `"URL"` | Yes | Client's website or download page |
 | `"InstallLocation"` | Yes | Config file path(s) per OS (see below) |
 | `"ProjectPath"` | No | Relative path components for project-level config |

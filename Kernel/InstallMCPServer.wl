@@ -453,7 +453,7 @@ guessClientName[ file_? fileQ ] := Enclose[
         Switch[ split,
             { __, ".mcp.json" }, Throw[ "ClaudeCode" ],
             { __, "opencode.json" }, Throw[ "OpenCode" ],
-            { __, ".vscode", "settings.json" }, Throw[ "VisualStudioCode" ],
+            { __, ".vscode", "settings.json" | "mcp.json" }, Throw[ "VisualStudioCode" ],
             { __, ".zed", "settings.json" }, Throw[ "Zed" ]
         ];
 
@@ -514,6 +514,11 @@ guessClientNameFromJSON[ file_ ] := Enclose[
 
         (* Tier 1: unique top-level keys *)
         If[ KeyExistsQ[ json, "context_servers" ], Throw[ "Zed" ] ];
+
+        (* New mcp.json format: "servers" at root level *)
+        If[ KeyExistsQ[ json, "servers" ] && AssociationQ @ json[ "servers" ],
+            Throw[ "VisualStudioCode" ]
+        ];
 
         If[ KeyExistsQ[ json, "mcp" ] && AssociationQ @ json[ "mcp" ],
             mcp = json[ "mcp" ];
