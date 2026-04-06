@@ -79,6 +79,9 @@ UninstallMCPServer[myServerObject]               (* Remove from all locations *)
 |----|----------------|
 | macOS | `~/Library/Application Support/Claude/claude_desktop_config.json` |
 | Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
+| Linux | Not registered for automatic install (see note below) |
+
+**Linux:** `InstallMCPServer["ClaudeDesktop"]` only resolves install paths on macOS and Windows (`Kernel/SupportedClients.wl`). On Linux, install manually or pass an explicit file, for example ``InstallMCPServer[File["~/.config/Claude/claude_desktop_config.json"]]`` (adjust the path if your Claude app stores its config elsewhere).
 
 **Format:**
 ```json

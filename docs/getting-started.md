@@ -158,20 +158,34 @@ AgentTools/
 ├── Assets/                    # Static assets bundled with the paclet
 │   └── Apps/                  # HTML/JSON files for MCP Apps UI resources
 ├── Kernel/                    # Core implementation
-│   ├── AgentTools.wl          # Main entry point
+│   ├── AgentTools.wl          # Main entry point (MX or Main.wl)
+│   ├── AgentToolsLoader.wl    # Reload and symbol cleanup for development
 │   ├── Main.wl                # Package loading, exported symbols
 │   ├── Common.wl              # Utilities and [error handling](error-handling.md)
+│   ├── CommonSymbols.wl       # Shared symbols between paclet files
 │   ├── CreateMCPServer.wl     # Server creation
-│   ├── StartMCPServer.wl      # Server startup
-│   ├── UIResources.wl         # MCP Apps UI resource registry
+│   ├── DefaultServers.wl      # Predefined named MCP servers
+│   ├── DeployAgentTools.wl    # Managed deployments to MCP clients
+│   ├── Files.wl               # File helpers
+│   ├── Formatting.wl          # Notebook formatting
+│   ├── InstallMCPServer.wl    # Install into supported MCP clients
+│   ├── MCPServerObject.wl     # MCP server object implementation
 │   ├── Messages.wl            # Error messages
-│   └── Tools/                 # Predefined MCP tools
+│   ├── PacletExtension.wl     # Third-party paclet extension loading
+│   ├── StartMCPServer.wl      # Server startup
+│   ├── SupportedClients.wl    # MCP client metadata and install paths
+│   ├── UIResources.wl         # MCP Apps UI resource registry
+│   ├── ValidateAgentToolsPacletExtension.wl  # Extension validation
+│   ├── Utilities.wl           # General utilities
+│   ├── Tools/                 # Predefined MCP tools
+│   └── Prompts/               # Predefined MCP prompts
 ├── Scripts/                   # Build and utility scripts
 ├── AgentSkills/               # Distributable agent skills (see [agent-skills.md](agent-skills.md))
 │   ├── Manifest.wl            # Tool-to-skill mapping
 │   ├── References/            # Shared reference files
 │   └── Skills/                # Generated skill directories
 ├── Tests/                     # Test files (.wlt)
+├── TestResources/             # Mock paclets and fixtures for tests
 ├── Specs/                     # Design specifications for features
 ├── Notes/                     # Development notes and design explorations
 ├── Documentation/             # Paclet documentation notebooks

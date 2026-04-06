@@ -105,7 +105,7 @@ docker run -i --rm `
 
 ### Claude Desktop
 
-Add to `~/.config/claude/claude_desktop_config.json` (Linux) or `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS):
+Add to `~/.config/Claude/claude_desktop_config.json` (Linux; adjust if your install uses a different path) or `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS):
 
 ```json
 {

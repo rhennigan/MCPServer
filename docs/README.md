@@ -13,7 +13,7 @@ This is the developer documentation for contributing to AgentTools. For user doc
 
 ## Core Concepts
 
-- **[Error Handling](error-handling.md)** - Error handling architecture using `catchTop`, `throwFailure`, and the `Enclose`/`Confirm` pattern
+- **[Error Handling](error-handling.md)** - Error handling architecture using `catchTop`, `catchMine`, `throwFailure`, and the `Enclose`/`Confirm` pattern
 - **[MCP Tools](tools.md)** - How MCP tools work, tool options, and how to add new tools
 - **[MCP Prompts](mcp-prompts.md)** - How MCP prompts work and how to add new prompts
 - **[MCP Apps](mcp-apps.md)** - Interactive UI resources for supported clients
@@ -31,5 +31,6 @@ This is the developer documentation for contributing to AgentTools. For user doc
 
 ## Additional Resources
 
+- [Docker](docker.md) - Running the Wolfram MCP server in containers
 - [AGENTS.md](../AGENTS.md) - Detailed development guidelines and AI agent guidance
 - [README.md](../README.md) - Project overview and quick start for users

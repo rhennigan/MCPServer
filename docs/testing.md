@@ -95,7 +95,7 @@ Run multiple test files:
 wolframscript -f Scripts/TestPaclet.wls Tests/CreateMCPServer.wlt Tests/StartMCPServer.wlt
 ```
 
-**Path resolution**: The script accepts both absolute paths and paths relative to the paclet root directory. For example, `Tests/Foo.wlt` is equivalent to the full path `H:\Documents\AgentTools\Tests\Foo.wlt`.
+**Path resolution**: The script accepts both absolute paths and paths relative to the paclet root directory (the repository root). For example, if the paclet lives at `/path/to/AgentTools`, then `Tests/Foo.wlt` resolves to `/path/to/AgentTools/Tests/Foo.wlt`.
 
 ## Unit Tests for Private Symbols
 

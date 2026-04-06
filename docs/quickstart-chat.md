@@ -30,6 +30,7 @@ This installs the default Wolfram server into Claude Desktop's configuration fil
 |----|------|
 | macOS | `~/Library/Application Support/Claude/claude_desktop_config.json` |
 | Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
+| Linux | Use ``InstallMCPServer[File["/path/to/claude_desktop_config.json"]]`` — automatic resolution for `"ClaudeDesktop"` is not registered on Linux (see [mcp-clients.md](mcp-clients.md#claude-desktop)). A common location is `~/.config/Claude/claude_desktop_config.json`. |
 
 After installation, **fully restart Claude Desktop** to load the new tools.
 
