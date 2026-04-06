@@ -21,6 +21,7 @@ The following clients have built-in support for automatic configuration via `Ins
 | Cursor | `"Cursor"` | — | JSON | No |
 | Gemini CLI | `"GeminiCLI"` | `"Gemini"` | JSON | No |
 | Antigravity | `"Antigravity"` | `"GoogleAntigravity"` | JSON | No |
+| Kiro | `"Kiro"` | — | JSON | Yes |
 | Codex CLI | `"Codex"` | `"OpenAICodex"` | TOML | Yes |
 | OpenCode | `"OpenCode"` | — | JSON | Yes |
 | Visual Studio Code | `"VisualStudioCode"` | `"VSCode"` | JSON | Yes |
@@ -174,6 +175,30 @@ Note: Copilot CLI requires the `tools` field to specify which tools to enable. `
 | Global | `~/.gemini/antigravity/mcp_config.json` |
 
 **Format:** Same as Claude Desktop (`mcpServers` key).
+
+### Kiro
+
+| Scope | Config Location |
+|-------|----------------|
+| Global | `~/.kiro/settings/mcp.json` |
+| Project | `.kiro/settings/mcp.json` (in project root) |
+
+**Format:**
+```json
+{
+    "mcpServers": {
+        "ServerName": {
+            "command": "...",
+            "args": ["..."],
+            "env": { ... },
+            "disabled": false,
+            "autoApprove": []
+        }
+    }
+}
+```
+
+Note: Kiro uses the standard `mcpServers` format with optional `disabled` and `autoApprove` fields. `InstallMCPServer` automatically adds these defaults.
 
 ### Codex CLI
 

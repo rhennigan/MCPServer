@@ -433,6 +433,103 @@ Notebook[
         Cell[
          CellGroupData[
           {
+           Cell[
+            TextData[StyleBox["Kiro", IgnoreSpellCheck -> True]],
+            "Subsection",
+            CellID -> 485644884
+           ],
+           Cell[
+            CellGroupData[
+             {
+              Cell[
+               "Global installation:",
+               "MathCaption",
+               CellID -> 680099035
+              ],
+              Cell[
+               BoxData[
+                RowBox[
+                 {
+                  "InstallMCPServer",
+                  "[",
+                  RowBox[{"\"Kiro\"", ",", "\"WolframLanguage\""}],
+                  "]"
+                 }
+                ]
+               ],
+               "Input",
+               CellID -> 508309466
+              ]
+             },
+             Open
+            ]
+           ],
+           Cell[
+            CellGroupData[
+             {
+              Cell[
+               "Project-level installation:",
+               "MathCaption",
+               CellID -> 889938143
+              ],
+              Cell[
+               BoxData[
+                RowBox[
+                 {
+                  "InstallMCPServer",
+                  "[",
+                  RowBox[
+                   {
+                    RowBox[
+                     {
+                      "{",
+                      RowBox[{"\"Kiro\"", ",", "\"/path/to/project\""}],
+                      "}"
+                     }
+                    ],
+                    ",",
+                    "\"WolframLanguage\""
+                   }
+                  ],
+                  "]"
+                 }
+                ]
+               ],
+               "Input",
+               CellID -> 27559843
+              ]
+             },
+             Open
+            ]
+           ],
+           Cell[
+            TextData[
+             {
+              "Ensure MCP is enabled in the ",
+              StyleBox["Kiro", IgnoreSpellCheck -> True],
+              " IDE by following these steps:"
+             }
+            ],
+            "Text",
+            CellID -> 152959268
+           ],
+           Cell[
+            "Click on the Kiro icon on the left side bar",
+            "Item",
+            CellID -> 2872413
+           ],
+           Cell[
+            "Under \"MCP Servers\", click on the \"Enable MCP\" button if it is not already enabled",
+            "Item",
+            CellID -> 395518729
+           ]
+          },
+          Open
+         ]
+        ],
+        Cell[
+         CellGroupData[
+          {
            Cell["OpenAI Codex", "Subsection", CellID -> 3310560],
            Cell[
             BoxData[
