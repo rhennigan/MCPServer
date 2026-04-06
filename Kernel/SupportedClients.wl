@@ -81,6 +81,16 @@ $supportedMCPClients = <|
         "URL"             -> "https://github.com/features/copilot/cli",
         "InstallLocation" :> { $HomeDirectory, ".copilot", "mcp-config.json" }
     |>,
+    "Kiro" -> <|
+        "DisplayName"     -> "Kiro",
+        "Aliases"         -> { },
+        "ConfigFormat"    -> "JSON",
+        "ConfigKey"       -> { "mcpServers" },
+        "ServerConverter" -> convertToClineFormat,
+        "URL"             -> "https://kiro.dev",
+        "ProjectPath"     -> { ".kiro", "settings", "mcp.json" },
+        "InstallLocation" :> { $HomeDirectory, ".kiro", "settings", "mcp.json" }
+    |>,
     "OpenCode" -> <|
         "DisplayName"     -> "OpenCode",
         "Aliases"         -> { },
@@ -95,13 +105,13 @@ $supportedMCPClients = <|
         "DisplayName"     -> "Visual Studio Code",
         "Aliases"         -> { "VSCode" },
         "ConfigFormat"    -> "JSON",
-        "ConfigKey"       -> { "mcp", "servers" },
+        "ConfigKey"       -> { "servers" },
         "URL"             -> "https://code.visualstudio.com",
-        "ProjectPath"     -> { ".vscode", "settings.json" },
+        "ProjectPath"     -> { ".vscode", "mcp.json" },
         "InstallLocation" -> <|
-            "MacOSX"  :> { $HomeDirectory, "Library", "Application Support", "Code", "User", "settings.json" },
-            "Windows" :> { $HomeDirectory, "AppData", "Roaming", "Code", "User", "settings.json" },
-            "Unix"    :> { $HomeDirectory, ".config", "Code", "User", "settings.json" }
+            "MacOSX"  :> { $HomeDirectory, "Library", "Application Support", "Code", "User", "mcp.json" },
+            "Windows" :> { $HomeDirectory, "AppData", "Roaming", "Code", "User", "mcp.json" },
+            "Unix"    :> { $HomeDirectory, ".config", "Code", "User", "mcp.json" }
         |>
     |>,
     "Windsurf" -> <|
