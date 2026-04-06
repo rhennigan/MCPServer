@@ -22,6 +22,7 @@ System`DeployAgentTools;
 `AgentTools;
 `CodeInspectorToolFunction;
 `CreateMCPServer;
+`CreatePreferencesContent;
 `InstallMCPServer;
 `MCPServerObject;
 `MCPServerObjectQ;
@@ -68,6 +69,7 @@ $AgentToolsContexts = {
     "Wolfram`AgentTools`InstallMCPServer`",
     "Wolfram`AgentTools`MCPServerObject`",
     "Wolfram`AgentTools`PacletExtension`",
+    "Wolfram`AgentTools`PreferencesContent`",
     "Wolfram`AgentTools`Prompts`",
     "Wolfram`AgentTools`StartMCPServer`",
     "Wolfram`AgentTools`SupportedClients`",
@@ -103,6 +105,7 @@ $AgentToolsProtectedNames = "Wolfram`AgentTools`" <> # & /@ {
     "AgentTools",
     "CodeInspectorToolFunction",
     "CreateMCPServer",
+    "CreatePreferencesContent",
     "InstallMCPServer",
     "MCPServerObject",
     "MCPServerObjectQ",
