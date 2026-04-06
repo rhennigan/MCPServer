@@ -125,7 +125,10 @@ $subcontexts = {
     "Wolfram`AgentTools`Tools`WolframAlpha`",
 
     (* Tools: WolframLanguageEvaluator *)
-    "Wolfram`AgentTools`Tools`WolframLanguageEvaluator`"
+    "Wolfram`AgentTools`Tools`WolframLanguageEvaluator`",
+
+    (* Tools: CheckPaclet, BuildPaclet, SubmitPaclet *)
+    "Wolfram`AgentTools`Tools`PacletTools`"
 };
 
 Scan[ Needs[ # -> None ] &, $subcontexts ];

@@ -87,7 +87,7 @@ AgentTools includes four predefined server configurations, each optimized for di
 | **Wolfram** (default) | General-purpose use combining computational power with natural language | `WolframContext`, `WolframLanguageEvaluator`, `WolframAlpha` |
 | **WolframAlpha** | Natural language queries without code execution | `WolframAlphaContext`*, `WolframAlpha` |
 | **WolframLanguage** | Wolfram Language development and learning | `WolframLanguageContext`, `WolframLanguageEvaluator`, `ReadNotebook`, `WriteNotebook`, `SymbolDefinition`, `CodeInspector`, `TestReport` |
-| **WolframPacletDevelopment** | Developing and maintaining Wolfram paclets | All WolframLanguage tools plus documentation tools (`CreateSymbolDoc`, `EditSymbolDoc`, `EditSymbolDocExamples`) |
+| **WolframPacletDevelopment** | Developing and maintaining Wolfram paclets | All WolframLanguage tools plus documentation tools (`CreateSymbolDoc`, `EditSymbolDoc`, `EditSymbolDocExamples`) and paclet release tools (`CheckPaclet`, `BuildPaclet`, `SubmitPaclet`) |
 
 *\*Requires [LLMKit subscription](https://www.wolfram.com/notebook-assistant-llm-kit)*
 
@@ -193,6 +193,12 @@ While only `WolframAlphaContext` *requires* an [LLMKit subscription](https://www
 - **CreateSymbolDoc** - Create new symbol documentation pages
 - **EditSymbolDoc** - Edit existing symbol documentation pages
 - **EditSymbolDocExamples** - Edit example sections of documentation
+
+### Paclet Release Tools (Paclet Development)
+
+- **CheckPaclet** - Check a paclet for issues before building or submission
+- **BuildPaclet** - Build a `.paclet` archive for distribution
+- **SubmitPaclet** - Submit a paclet to the Wolfram Language Paclet Repository
 
 ### MCP Apps Tools
 

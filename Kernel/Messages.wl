@@ -72,6 +72,10 @@ AgentTools::DeploymentNotFound              = "No deployment found with UUID \"`
 AgentTools::InvalidDeploymentData           = "Invalid deployment data: `1`.";
 AgentTools::InvalidDeployTarget             = "Invalid deployment target: `1`. Expected a client name string, {name, directory}, or File[\[Ellipsis]].";
 
+(* PacletTools messages *)
+AgentTools::PacletToolsInvalidPath          = "The path \"`1`\" does not exist. Provide an absolute path to either the paclet root directory or the definition notebook (.nb) file.";
+AgentTools::PacletCICDLoadFailed            = "Could not load the Wolfram/PacletCICD paclet. Ensure it is installed or that you have internet access.";
+
 (* Paclet extension messages *)
 AgentTools::PacletNotInstalled               = "The paclet \"`1`\" is not installed. Evaluate `2` to install it.";
 AgentTools::PacletExtensionNotFound          = "No AgentTools extension found in paclet \"`1`\".";
