@@ -81,6 +81,16 @@ $supportedMCPClients = <|
         "URL"             -> "https://github.com/features/copilot/cli",
         "InstallLocation" :> { $HomeDirectory, ".copilot", "mcp-config.json" }
     |>,
+    "Kiro" -> <|
+        "DisplayName"     -> "Kiro",
+        "Aliases"         -> { },
+        "ConfigFormat"    -> "JSON",
+        "ConfigKey"       -> { "mcpServers" },
+        "ServerConverter" -> convertToClineFormat,
+        "URL"             -> "https://kiro.dev",
+        "ProjectPath"     -> { ".kiro", "settings", "mcp.json" },
+        "InstallLocation" :> { $HomeDirectory, ".kiro", "settings", "mcp.json" }
+    |>,
     "OpenCode" -> <|
         "DisplayName"     -> "OpenCode",
         "Aliases"         -> { },
