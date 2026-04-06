@@ -176,38 +176,22 @@ While working on this paclet, you are also working on the code that's running th
 
 ### Runtime Environment
 
-Wolfram Engine 14.3 runs inside a Docker container (`wolframresearch/wolframengine:14.3`). A `wolframscript` wrapper at `/usr/local/bin/wolframscript` transparently delegates to the Docker container, mounting `/workspace` and passing the `WOLFRAMSCRIPT_ENTITLEMENTID` secret.
+Wolfram Engine 14.3 is installed natively. The `WOLFRAMSCRIPT_ENTITLEMENTID` environment variable must be set as a secret for licensing. If you see `"License refused because all licenses are currently in use"`, wait a few minutes and retry — this is a shared entitlement with concurrent license limits.
 
-The `WOLFRAMSCRIPT_ENTITLEMENTID` environment variable must be set as a secret for all Wolfram operations to work. This is a shared cloud-managed entitlement with concurrent license limits — if you see `"License refused because all licenses are currently in use"`, wait a few minutes and retry.
+### Running Tests, Building, and MCP Server
 
-### Running Tests
+See `docs/testing.md`, `docs/building.md`, and `docs/getting-started.md` for standard commands. Key quick-reference:
 
 ```bash
-wolframscript -f Scripts/TestPaclet.wls                         # all tests
+wolframscript -f Scripts/TestPaclet.wls                         # all tests (~1 min)
 wolframscript -f Scripts/TestPaclet.wls Tests/SomeFile.wlt      # specific test file
+wolframscript -f Scripts/BuildPaclet.wls --check=false          # fast build
 ```
 
-Tests load the paclet from the source directory automatically. No pre-build step is needed.
-
-### Building the Paclet
-
-```bash
-wolframscript -f Scripts/BuildPaclet.wls                   # full build
-wolframscript -f Scripts/BuildPaclet.wls --check=false     # fast build (skip code checks)
-```
-
-Build output goes to `build/`. The `git` binary is not available inside the Docker container, so builds will show a `RunProcess::pnfd` warning for git — this is harmless.
-
-### MCP Server
-
-The MCP server communicates via stdin/stdout JSON-RPC. To test core paclet functionality without starting the full server:
-
-```bash
-wolframscript -code 'PacletDirectoryLoad["/workspace"]; Needs["Wolfram`AgentTools`"]; Print[Keys[$DefaultMCPServers]]'
-```
+The MCP server communicates via stdin/stdout JSON-RPC and can be started with `MCP_SERVER_NAME=WolframLanguage wolframscript -f Scripts/StartMCPServer.wls`. The server takes ~15-20 seconds to initialize before accepting requests.
 
 ### Key Caveats
 
 - Delete `Kernel/64Bit/AgentTools.mx` before testing source changes if it exists (MX file takes priority over source files).
-- The Docker container does not have `git` installed, so any scripts that call `git` from inside `wolframscript` will emit warnings.
-- Each `wolframscript` invocation spins up a new Docker container and consumes a license slot. Avoid running many concurrent `wolframscript` commands to prevent hitting the license limit.
+- Some tests in `InstallMCPServer.wlt` and `UninstallMCPServer.wlt` produce `MessagesFailure` due to an `LLMKitSuggested` warning — these are pre-existing and not environment-related.
+- Tests in `Prompts.wlt` that exercise `WolframAlphaSearch` may fail without an LLMKit subscription.
