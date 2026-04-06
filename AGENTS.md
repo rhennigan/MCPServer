@@ -64,7 +64,7 @@ See [building.md](docs/building.md) for detailed instructions.
 - `AgentSkills/`: Agent skills for distributing Wolfram tools to AI coding agents (see [agent-skills.md](docs/agent-skills.md))
   - `Manifest.wl`: Maps skill names to their MCP tools and shared references
   - `References/`: Single-source shared reference files copied into every skill at build time
-  - `Skills/`: Generated skill directories (wolfram-language, wolfram-alpha, wolfram-notebooks)
+  - `Skills/`: Generated skill directories (wolfram-language, wolfram-paclets, wolfram-alpha, wolfram-notebooks)
 - `.claude-plugin/`: Claude Code plugin packaging
   - `marketplace.json`: Plugin marketplace definition for distributing agent skills via Claude Code
 - `Notes/`: Development notes and design explorations

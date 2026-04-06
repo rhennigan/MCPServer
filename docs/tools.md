@@ -92,6 +92,14 @@ $DefaultMCPTools = <|
 | `EditSymbolDoc` | Edits existing symbol documentation pages | WolframPacletDevelopment |
 | `EditSymbolDocExamples` | Edits example sections of symbol documentation | WolframPacletDevelopment |
 
+#### Paclet Release Tools
+
+| Tool | Description | Server |
+|------|-------------|--------|
+| `CheckPaclet` | Checks a paclet for issues before building or submission | WolframPacletDevelopment |
+| `BuildPaclet` | Builds a `.paclet` archive for distribution | WolframPacletDevelopment |
+| `SubmitPaclet` | Submits a paclet to the Wolfram Language Paclet Repository | WolframPacletDevelopment |
+
 #### MCP Apps Tools
 
 | Tool | Description | Server |
@@ -510,6 +518,7 @@ InstallMCPServer[
 - `Kernel/Tools/TestReport.wl` - Test runner tool
 - `Kernel/Tools/CodeInspector/` - Code inspection tool
 - `Kernel/Tools/PacletDocumentation/` - Documentation editing tools
+- `Kernel/Tools/PacletTools/` - Paclet check/build/submit tools
 - `Kernel/UIResources.wl` - UI resource registry for MCP Apps
 - `Kernel/MCPServerObject.wl` - Tool validation and normalization
 - `Kernel/StartMCPServer.wl` - Protocol handling for `tools/list` and `tools/call`
@@ -517,6 +526,7 @@ InstallMCPServer[
 - `Assets/Apps/` - HTML and JSON files for MCP Apps UI resources
 - `Kernel/PacletExtension.wl` - Paclet-qualified tool resolution (see [paclet-extensions.md](paclet-extensions.md))
 - `Tests/Tools.wlt` - Tests for tool functionality
+- `Tests/PacletTools.wlt` - Tests for CheckPaclet, BuildPaclet, and SubmitPaclet
 - `Tests/ToolOptions.wlt` - Tests for tool options system
 - `Specs/ToolOptions.md` - Design specification for tool options
 - `AgentSkills/Manifest.wl` - Maps tools to distributable agent skills (see [agent-skills.md](agent-skills.md))
