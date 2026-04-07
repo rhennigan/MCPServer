@@ -176,11 +176,10 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
         server = ConfirmBy[ convertToGooseFormat @ server, AssociationQ, "GooseServer" ];
         server = Prepend[ server, "name" -> configName ];
 
-        (* Read existing YAML config -- fall back to an empty mapping if missing or unparseable *)
-        existing = If[ FileExistsQ @ target,
-            Replace[ Quiet @ importYAML @ target, Except[ _? AssociationQ ] -> <| |> ],
-            <| |>
-        ];
+        (* Read existing YAML config -- empty mapping if missing, otherwise the
+           parsed Association.  Surfaces InvalidMCPConfiguration on parse failure
+           so we never silently overwrite a user-edited file. *)
+        existing   = ConfirmBy[ readExistingGooseConfig @ target, AssociationQ, "Existing" ];
         extensions = Replace[ Lookup[ existing, "extensions", <| |> ], Except[ _? AssociationQ ] -> <| |> ];
         extensions[ configName ] = server;
         existing[ "extensions" ] = extensions;
@@ -925,6 +924,37 @@ readExistingMCPConfig[ file_ ] := Enclose[
 ];
 
 readExistingMCPConfig // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*readExistingGooseConfig*)
+(* YAML counterpart to readExistingMCPConfig.  Returns an empty mapping when the
+   target file is missing or empty, otherwise returns the parsed Association.
+   On any parse failure (or a top-level value that isn't a mapping) it issues
+   InvalidMCPConfiguration so the caller never silently rewrites a file the
+   user has been editing by hand. *)
+readExistingGooseConfig // beginDefinition;
+
+readExistingGooseConfig[ file_ ] := Enclose[
+    Module[ { data },
+        If[ ! FileExistsQ @ file, Return[ <| |>, Module ] ];
+
+        (* Quiet any parsing errors, because we'll be issuing our own `InvalidMCPConfiguration` message if it fails *)
+        data = Quiet @ catchAlways @ importYAML @ file;
+
+        Which[
+            (* Empty file or empty mapping -- treat as empty config *)
+            data === <| |>, <| |>,
+            (* Valid mapping -- pass through *)
+            AssociationQ @ data, data,
+            (* Anything else (parse failure, top-level list, etc.) -- refuse to overwrite *)
+            True, throwFailure[ "InvalidMCPConfiguration", file ]
+        ]
+    ],
+    throwInternalFailure
+];
+
+readExistingGooseConfig // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

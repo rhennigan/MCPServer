@@ -8,6 +8,14 @@ Needs[ "Wolfram`AgentTools`Common`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Source label*)
+(* Threaded through the parser via Block so that InvalidYAMLFormat failures
+   can report the resolved file path (when called via importYAML) instead of
+   the generic "<input>" placeholder. *)
+$yamlSource = "<input>";
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Reading YAML*)
 
 (* ::**************************************************************************************************************:: *)
@@ -22,7 +30,9 @@ importYAML[ file_ ] := Enclose[
         content = ReadString @ path;
         If[ content === EndOfFile || content === "", Throw @ <| |> ];
         If[ ! StringQ @ content, Throw @ <| |> ];
-        ConfirmMatch[ importYAMLString @ content, _Association | _List | <| |>, "Parsed" ]
+        Block[ { $yamlSource = path },
+            ConfirmMatch[ importYAMLString @ content, _Association | _List | <| |>, "Parsed" ]
+        ]
     ],
     throwInternalFailure
 ];
@@ -199,7 +209,7 @@ parseYAMLMapping[ lines_List, startPos_Integer, blockIndent_Integer ] := Enclose
             (* Stop on dedent or sequence marker at parent indent *)
             If[ line[ "Indent" ] < blockIndent, Break[ ] ];
             If[ line[ "Indent" ] > blockIndent,
-                throwFailure[ "InvalidYAMLFormat", "<input>", line[ "Line" ],
+                throwFailure[ "InvalidYAMLFormat", $yamlSource, line[ "Line" ],
                     "unexpected indentation: " <> line[ "Text" ]
                 ]
             ];
@@ -256,11 +266,11 @@ parseMappingLine[ text_String, lineNum_ ] :=
                 Module[ { close },
                     close = findClosingQuote[ text, "\"", 2 ];
                     If[ close === Missing[ ],
-                        throwFailure[ "InvalidYAMLFormat", "<input>", lineNum, "unterminated quoted key: " <> text ]
+                        throwFailure[ "InvalidYAMLFormat", $yamlSource, lineNum, "unterminated quoted key: " <> text ]
                     ];
                     key = unescapeDoubleQuoted @ StringTake[ text, { 2, close - 1 } ];
                     If[ close >= StringLength @ text || StringTake[ text, { close + 1, close + 1 } ] =!= ":",
-                        throwFailure[ "InvalidYAMLFormat", "<input>", lineNum, "expected ':' after quoted key: " <> text ]
+                        throwFailure[ "InvalidYAMLFormat", $yamlSource, lineNum, "expected ':' after quoted key: " <> text ]
                     ];
                     valueText = StringTrim @ StringDrop[ text, close + 1 ]
                 ],
@@ -269,11 +279,11 @@ parseMappingLine[ text_String, lineNum_ ] :=
                 Module[ { close },
                     close = findClosingQuote[ text, "'", 2 ];
                     If[ close === Missing[ ],
-                        throwFailure[ "InvalidYAMLFormat", "<input>", lineNum, "unterminated quoted key: " <> text ]
+                        throwFailure[ "InvalidYAMLFormat", $yamlSource, lineNum, "unterminated quoted key: " <> text ]
                     ];
                     key = unescapeSingleQuoted @ StringTake[ text, { 2, close - 1 } ];
                     If[ close >= StringLength @ text || StringTake[ text, { close + 1, close + 1 } ] =!= ":",
-                        throwFailure[ "InvalidYAMLFormat", "<input>", lineNum, "expected ':' after quoted key: " <> text ]
+                        throwFailure[ "InvalidYAMLFormat", $yamlSource, lineNum, "expected ':' after quoted key: " <> text ]
                     ];
                     valueText = StringTrim @ StringDrop[ text, close + 1 ]
                 ],
@@ -281,7 +291,7 @@ parseMappingLine[ text_String, lineNum_ ] :=
             True,
                 colonPos = findUnquotedColon @ text;
                 If[ colonPos === Missing[ ],
-                    throwFailure[ "InvalidYAMLFormat", "<input>", lineNum, "expected ':' in mapping line: " <> text ]
+                    throwFailure[ "InvalidYAMLFormat", $yamlSource, lineNum, "expected ':' in mapping line: " <> text ]
                 ];
                 key = StringTrim @ StringTake[ text, colonPos - 1 ];
                 valueText = StringTrim @ StringDrop[ text, colonPos ]
@@ -362,7 +372,7 @@ parseYAMLSequence[ lines_List, startPos_Integer, blockIndent_Integer ] := Enclos
             line = lines[[ pos ]];
             If[ line[ "Indent" ] < blockIndent, Break[ ] ];
             If[ line[ "Indent" ] > blockIndent,
-                throwFailure[ "InvalidYAMLFormat", "<input>", line[ "Line" ],
+                throwFailure[ "InvalidYAMLFormat", $yamlSource, line[ "Line" ],
                     "unexpected indentation in sequence: " <> line[ "Text" ]
                 ]
             ];
@@ -441,15 +451,20 @@ integerStringQ // endDefinition;
 
 floatStringQ // beginDefinition;
 floatStringQ[ s_String ] := StringMatchQ[ s,
-    ("-"|"+"|"") ~~ DigitCharacter.. ~~ "." ~~ DigitCharacter... ~~ ((("e"|"E") ~~ ("-"|"+"|"") ~~ DigitCharacter..) | "")
+    ("-"|"+"|"") ~~ Alternatives[
+        DigitCharacter.. ~~ "." ~~ DigitCharacter... ~~ ((("e"|"E") ~~ ("-"|"+"|"") ~~ DigitCharacter..) | ""),
+        DigitCharacter.. ~~ ("e"|"E") ~~ ("-"|"+"|"") ~~ DigitCharacter..
+    ]
 ];
 floatStringQ // endDefinition;
 
 (* Convert a YAML-style float string to a Real.  YAML uses "e"/"E" for the
-   exponent; Wolfram Language uses "*^", so the conversion goes through a
-   StringReplace before ToExpression. *)
+   exponent (including exponent-only forms like "1e3"); Wolfram Language uses
+   "*^", so the conversion goes through a StringReplace before ToExpression.
+   The final N ensures exponent-only forms whose mantissa is integer-shaped
+   ("1e3" -> "1*^3" -> 1000) come back as a Real rather than an Integer. *)
 parseFloatString // beginDefinition;
-parseFloatString[ s_String ] := ToExpression @ StringReplace[ s, ("e"|"E") -> "*^" ];
+parseFloatString[ s_String ] := N @ ToExpression @ StringReplace[ s, ("e"|"E") -> "*^" ];
 parseFloatString // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
@@ -761,6 +776,33 @@ formatYAMLKey // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*formatYAMLReal*)
+(* Convert a Real to a YAML-compatible numeric string.  ToString on a Real can
+   emit Wolfram Language scientific notation like "1.5*^20" (or even multi-line
+   superscript form), neither of which is valid YAML.  This routine produces
+   plain decimals or "e"-style exponents that round-trip cleanly through
+   importYAMLString and external YAML parsers. *)
+formatYAMLReal // beginDefinition;
+
+formatYAMLReal[ r_Real ] :=
+    Module[ { s },
+        s = ToString @ InputForm @ r;
+        (* Strip precision markers like `MachinePrecision or `30. *)
+        s = StringReplace[ s, "`" ~~ ("MachinePrecision" | (DigitCharacter | ".") ..) -> "" ];
+        (* Convert Wolfram exponent syntax to YAML *)
+        s = StringReplace[ s, "*^" -> "e" ];
+        (* Ensure mantissas like "100." or "1.e10" become "100.0" / "1.0e10" *)
+        s = StringReplace[ s, {
+            RegularExpression[ "^([+-]?\\d+)\\.$" ] -> "$1.0",
+            RegularExpression[ "^([+-]?\\d+)\\.e([+-]?\\d+)$" ] -> "$1.0e$2"
+        } ];
+        s
+    ];
+
+formatYAMLReal // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*formatYAMLScalar*)
 formatYAMLScalar // beginDefinition;
 
@@ -768,7 +810,7 @@ formatYAMLScalar[ True  ] := "true";
 formatYAMLScalar[ False ] := "false";
 formatYAMLScalar[ Null  ] := "null";
 formatYAMLScalar[ n_Integer ] := ToString @ n;
-formatYAMLScalar[ r_Real    ] := ToString @ r;
+formatYAMLScalar[ r_Real    ] := formatYAMLReal @ r;
 
 formatYAMLScalar[ s_String ] :=
     If[ plainScalarQ @ s, s, formatDoubleQuoted @ s ];
