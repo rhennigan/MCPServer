@@ -47,6 +47,9 @@ PacletObject[ <|
                 "Wolfram`AgentTools`ValidateAgentToolsPacletExtension"
             }
         },
+        { "FrontEnd",
+            "Root" -> "FrontEnd"
+        },
         { "Documentation",
             "Root"     -> "Documentation",
             "Language" -> "English"

@@ -16,6 +16,10 @@ Needs[ "Wolfram`AgentTools`Common`" ];
 (**)
 
 
+
+tr[id_] := Dynamic[FEPrivate`FrontEndResource["AgentToolsStrings", id]];
+
+
 (* ::Section::Closed:: *)
 (*CreatePreferencesContent*)
 
@@ -29,8 +33,8 @@ Deploy[
 	Pane[
 		Column[
 			{
-				Style["[[Wolfram Agent Tools]]", FontWeight -> "Bold"],
-				Style["[[The following tools may be used by AI Harnesses:]]", FontWeight -> "Plain"],
+				Style[tr["PrefsTitle"], FontWeight -> "Bold"],
+				Style[tr["PrefsSubtitle"], FontWeight -> "Plain"],
 				
 				Grid[
 					{
@@ -54,7 +58,7 @@ Deploy[
 				Framed[
 					Column[
 						{
-							"[[AI Harnesses installed on this computer:]]",
+							tr["PrefsHarnessesLabel"],
 							mcpControlGrid[]
 						},
 						Spacings -> {Automatic, 1}
