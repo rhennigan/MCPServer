@@ -44,6 +44,11 @@ Cherry Studio stores MCP configurations in Redux state with localStorage persist
 - [x] Research how MCP servers are added to Cherry Studio and write a detailed report in [cherry-studio.md](../client-research/cherry-studio.md)
 - [x] Reject support for `InstallMCPServer["CherryStudio", ...]` - not feasible due to internal storage architecture
 
+### [Goose](https://github.com/block/goose)
+
+- [x] Research how MCP servers are added to Goose and write a detailed report in [goose.md](../client-research/goose.md)
+- [x] Implement support for `InstallMCPServer["Goose", ...]`
+
 ## On Hold
 
 ### [Continue](https://www.continue.dev/)
@@ -51,9 +56,3 @@ Cherry Studio stores MCP configurations in Redux state with localStorage persist
 Requires a more complicated implementation due to the use of YAML files.
 
 - [x] Research how MCP servers are added to Continue and write a detailed report in [continue.md](../client-research/continue.md)
-
-### [Goose](https://github.com/block/goose)
-
-Requires a more complicated implementation due to the use of YAML files.
-
-- [x] Research how MCP servers are added to Goose and write a detailed report in [goose.md](../client-research/goose.md)
