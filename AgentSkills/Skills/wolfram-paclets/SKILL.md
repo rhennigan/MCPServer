@@ -44,10 +44,10 @@ Reminder: These scripts are only relevant when you do not have the equivalent MC
 ## Available Tools
 
 
-| Script         | When to use                                               |
-| -------------- | --------------------------------------------------------- |
-| `CheckPaclet`  | Check a paclet for issues before building or submitting   |
-| `BuildPaclet`  | Build a `.paclet` archive from a paclet directory         |
+| Script | When to use |
+| --- | --- |
+| `CheckPaclet` | Check a paclet for issues before building or submitting |
+| `BuildPaclet` | Build a `.paclet` archive from a paclet directory |
 | `SubmitPaclet` | Submit a paclet to the Wolfram Language Paclet Repository |
 
 
