@@ -936,8 +936,8 @@ readExistingMCPConfig // endDefinition;
 readExistingGooseConfig // beginDefinition;
 
 readExistingGooseConfig[ file_ ] := Enclose[
-    Module[ { data },
-        If[ ! FileExistsQ @ file, Return[ <| |>, Module ] ];
+    Catch @ Module[ { data },
+        If[ ! FileExistsQ @ file, Throw @ <| |> ];
 
         (* Quiet any parsing errors, because we'll be issuing our own `InvalidMCPConfiguration` message if it fails *)
         data = Quiet @ catchAlways @ importYAML @ file;
