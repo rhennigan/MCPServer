@@ -64,6 +64,12 @@ BeginPackage[ "Wolfram`AgentTools`Common`" ];
 `setMCPServer;
 `writeTOMLFile;
 
+(* YAML support for Goose: *)
+`exportYAML;
+`exportYAMLString;
+`importYAML;
+`importYAMLString;
+
 (* Shared symbols with Tools subcontexts: *)
 `exportMarkdownString;
 
