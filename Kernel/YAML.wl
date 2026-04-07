@@ -71,7 +71,7 @@ preprocessYAMLLines // beginDefinition;
 preprocessYAMLLines[ s_String ] :=
     Module[ { rawLines, processed },
         rawLines = StringSplit[ s, "\n", All ];
-        processed = MapIndexed[
+        processed = Catenate @ MapIndexed[
             Function[ { rawLine, idx },
                 Module[ { line, withoutComment, indent, text },
                     line = StringDelete[ rawLine, "\r" ~~ EndOfString ];
@@ -82,12 +82,8 @@ preprocessYAMLLines[ s_String ] :=
                         Whitespace.. ~~ EndOfString
                     ];
                     If[ text === "",
-                        Nothing,
-                        <|
-                            "Indent" -> indent,
-                            "Text"   -> text,
-                            "Line"   -> First @ idx
-                        |>
+                        { },
+                        splitInlineSequenceMapping[ indent, text, First @ idx ]
                     ]
                 ]
             ],
@@ -97,6 +93,48 @@ preprocessYAMLLines[ s_String ] :=
     ];
 
 preprocessYAMLLines // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*splitInlineSequenceMapping*)
+(* If a line is "- key: value", split it into a "-" line at the original indent
+   plus a "key: value" line at indent+2.  This lets the existing block parser
+   handle inline sequence-mapping items uniformly via the explicit "-" form. *)
+splitInlineSequenceMapping // beginDefinition;
+
+splitInlineSequenceMapping[ indent_Integer, text_String, lineNum_Integer ] :=
+    Module[ { rest },
+        If[ ! StringStartsQ[ text, "- " ],
+            { <| "Indent" -> indent, "Text" -> text, "Line" -> lineNum |> },
+            rest = StringTrim @ StringDrop[ text, 2 ];
+            If[ inlineMappingValueQ @ rest,
+                {
+                    <| "Indent" -> indent,     "Text" -> "-",  "Line" -> lineNum |>,
+                    <| "Indent" -> indent + 2, "Text" -> rest, "Line" -> lineNum |>
+                },
+                { <| "Indent" -> indent, "Text" -> text, "Line" -> lineNum |> }
+            ]
+        ]
+    ];
+
+splitInlineSequenceMapping // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*inlineMappingValueQ*)
+(* True when the text after "- " on a sequence line looks like a mapping line
+   ("key: value") that should start an inline mapping rather than be parsed as
+   a scalar.  Quoted strings, flow constructs, and nested sequences (leading
+   "-") all stay as scalars. *)
+inlineMappingValueQ // beginDefinition;
+inlineMappingValueQ[ "" ] := False;
+inlineMappingValueQ[ text_String ] :=
+    Which[
+        StringStartsQ[ text, "\"" | "'" | "[" | "{" | "-" | "?" ], False,
+        IntegerQ @ findUnquotedColon @ text, True,
+        True, False
+    ];
+inlineMappingValueQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -729,17 +767,17 @@ formatYAMLSequenceItem // beginDefinition;
 formatYAMLSequenceItem[ <| |> ] :=
     $yamlIndent <> "- {}";
 
+(* Render the entries one indent level deeper so subsequent keys line up with
+   the first key (which sits two columns past the "-").  The first line's deeper
+   indent is then replaced with "<parent indent>- " to splice the dash in. *)
 formatYAMLSequenceItem[ as_? AssociationQ ] :=
-    Module[ { entries, firstLine, restLines },
-        entries = KeyValueMap[ formatYAMLMappingEntry, as ];
-        (* The first entry follows "- " on the current line; remaining entries are
-           indented to the same column as the first key (i.e. one extra level). *)
-        If[ entries === { },
-            $yamlIndent <> "- {}",
-            firstLine = $yamlIndent <> "- " <> StringDrop[ First @ entries, StringLength @ $yamlIndent ];
-            restLines = StringJoin[ "\n", # ] & /@ Rest @ entries;
-            firstLine <> StringJoin[ restLines ]
-        ]
+    Module[ { childIndent, body },
+        childIndent = $yamlIndent <> "  ";
+        body = descendYAML @ StringRiffle[
+            KeyValueMap[ formatYAMLMappingEntry, as ],
+            "\n"
+        ];
+        $yamlIndent <> "- " <> StringDrop[ body, StringLength @ childIndent ]
     ];
 
 formatYAMLSequenceItem[ list_List ] :=

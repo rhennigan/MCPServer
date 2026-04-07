@@ -382,6 +382,22 @@ VerificationTest[
     TestID   -> "ImportYAMLString-BlockSequence@@Tests/YAML.wlt:378,1-383,2"
 ]
 
+(* Inline mapping items: "- key: value" *)
+VerificationTest[
+    Wolfram`AgentTools`Common`importYAMLString[ "items:\n  - name: Alice\n    age: 30\n  - name: Bob\n    age: 25" ],
+    <| "items" -> { <| "name" -> "Alice", "age" -> 30 |>, <| "name" -> "Bob", "age" -> 25 |> } |>,
+    SameTest -> Equal,
+    TestID   -> "ImportYAMLString-InlineSequenceMapping@@Tests/YAML.wlt:386,1-391,2"
+]
+
+(* Quoted scalars containing colons must NOT be parsed as inline mappings *)
+VerificationTest[
+    Wolfram`AgentTools`Common`importYAMLString[ "- \"a: b\"\n- \"c: d\"" ],
+    { "a: b", "c: d" },
+    SameTest -> Equal,
+    TestID   -> "ImportYAMLString-QuotedScalarsWithColons@@Tests/YAML.wlt:394,1-399,2"
+]
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*importYAMLString -- Flow Sequences*)
@@ -389,21 +405,21 @@ VerificationTest[
     Wolfram`AgentTools`Common`importYAMLString[ "args: [1, 2, 3]" ],
     <| "args" -> { 1, 2, 3 } |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAMLString-NumericFlowSequence@@Tests/YAML.wlt:388,1-393,2"
+    TestID   -> "ImportYAMLString-NumericFlowSequence@@Tests/YAML.wlt:404,1-409,2"
 ]
 
 VerificationTest[
     Wolfram`AgentTools`Common`importYAMLString[ "args: [a, 'b, c', d]" ],
     <| "args" -> { "a", "b, c", "d" } |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAMLString-FlowSequenceQuotedComma@@Tests/YAML.wlt:395,1-400,2"
+    TestID   -> "ImportYAMLString-FlowSequenceQuotedComma@@Tests/YAML.wlt:411,1-416,2"
 ]
 
 VerificationTest[
     Wolfram`AgentTools`Common`importYAMLString[ "args: []" ],
     <| "args" -> {  } |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAMLString-EmptyFlowSequence@@Tests/YAML.wlt:402,1-407,2"
+    TestID   -> "ImportYAMLString-EmptyFlowSequence@@Tests/YAML.wlt:418,1-423,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -413,28 +429,28 @@ VerificationTest[
     Wolfram`AgentTools`Common`importYAMLString[ "# header comment\na: 1\nb: 2" ],
     <| "a" -> 1, "b" -> 2 |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAMLString-LeadingComment@@Tests/YAML.wlt:412,1-417,2"
+    TestID   -> "ImportYAMLString-LeadingComment@@Tests/YAML.wlt:428,1-433,2"
 ]
 
 VerificationTest[
     Wolfram`AgentTools`Common`importYAMLString[ "a: 1 # trailing comment\nb: 2" ],
     <| "a" -> 1, "b" -> 2 |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAMLString-TrailingComment@@Tests/YAML.wlt:419,1-424,2"
+    TestID   -> "ImportYAMLString-TrailingComment@@Tests/YAML.wlt:435,1-440,2"
 ]
 
 VerificationTest[
     Wolfram`AgentTools`Common`importYAMLString[ "a: 1\n\n\nb: 2" ],
     <| "a" -> 1, "b" -> 2 |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAMLString-BlankLines@@Tests/YAML.wlt:426,1-431,2"
+    TestID   -> "ImportYAMLString-BlankLines@@Tests/YAML.wlt:442,1-447,2"
 ]
 
 VerificationTest[
     Wolfram`AgentTools`Common`importYAMLString[ "" ],
     <| |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAMLString-Empty@@Tests/YAML.wlt:433,1-438,2"
+    TestID   -> "ImportYAMLString-Empty@@Tests/YAML.wlt:449,1-454,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -449,7 +465,7 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "RoundTrip-FlatMapping@@Tests/YAML.wlt:443,1-453,2"
+    TestID   -> "RoundTrip-FlatMapping@@Tests/YAML.wlt:459,1-469,2"
 ]
 
 VerificationTest[
@@ -476,7 +492,58 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "RoundTrip-GooseShaped@@Tests/YAML.wlt:455,1-480,2"
+    TestID   -> "RoundTrip-GooseShaped@@Tests/YAML.wlt:471,1-496,2"
+]
+
+(* Sequence of multi-key associations must round-trip cleanly. *)
+VerificationTest[
+    Module[ { data, yaml, parsed },
+        data = <|
+            "items" -> {
+                <| "name" -> "Alice", "age" -> 30 |>,
+                <| "name" -> "Bob",   "age" -> 25 |>
+            }
+        |>;
+        yaml = Wolfram`AgentTools`Common`exportYAMLString @ data;
+        parsed = Wolfram`AgentTools`Common`importYAMLString @ yaml;
+        parsed === data
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "RoundTrip-SequenceOfMultiKeyAssociations@@Tests/YAML.wlt:499,1-514,2"
+]
+
+(* Sequence item whose value is itself a nested mapping. *)
+VerificationTest[
+    Module[ { data, yaml, parsed },
+        data = <|
+            "items" -> {
+                <| "name" -> "Alice", "config" -> <| "key" -> "value" |> |>
+            }
+        |>;
+        yaml = Wolfram`AgentTools`Common`exportYAMLString @ data;
+        parsed = Wolfram`AgentTools`Common`importYAMLString @ yaml;
+        parsed === data
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "RoundTrip-SequenceItemWithNestedMapping@@Tests/YAML.wlt:517,1-531,2"
+]
+
+(* Top-level sequence of associations. *)
+VerificationTest[
+    Module[ { data, yaml, parsed },
+        data = {
+            <| "name" -> "Alice", "age" -> 30 |>,
+            <| "name" -> "Bob",   "age" -> 25 |>
+        };
+        yaml = Wolfram`AgentTools`Common`exportYAMLString @ data;
+        parsed = Wolfram`AgentTools`Common`importYAMLString @ yaml;
+        parsed === data
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "RoundTrip-TopLevelSequenceOfAssociations@@Tests/YAML.wlt:534,1-547,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -491,7 +558,7 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "ExportYAML-CreatesFile@@Tests/YAML.wlt:485,1-495,2"
+    TestID   -> "ExportYAML-CreatesFile@@Tests/YAML.wlt:552,1-562,2"
 ]
 
 VerificationTest[
@@ -505,7 +572,7 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "ExportYAML-ImportYAML-RoundTrip@@Tests/YAML.wlt:497,1-509,2"
+    TestID   -> "ExportYAML-ImportYAML-RoundTrip@@Tests/YAML.wlt:564,1-576,2"
 ]
 
 VerificationTest[
@@ -514,7 +581,7 @@ VerificationTest[
     ],
     <| |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAML-MissingFile@@Tests/YAML.wlt:511,1-518,2"
+    TestID   -> "ImportYAML-MissingFile@@Tests/YAML.wlt:578,1-585,2"
 ]
 
 VerificationTest[
@@ -531,7 +598,7 @@ VerificationTest[
     ],
     <| |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAML-EmptyFile@@Tests/YAML.wlt:520,1-535,2"
+    TestID   -> "ImportYAML-EmptyFile@@Tests/YAML.wlt:587,1-602,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -555,7 +622,7 @@ VerificationTest[
     True,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> Equal,
-    TestID   -> "ImportYAML-ParseErrorReportsFilePath@@Tests/YAML.wlt:540,1-559,2"
+    TestID   -> "ImportYAML-ParseErrorReportsFilePath@@Tests/YAML.wlt:607,1-626,2"
 ]
 
 VerificationTest[
@@ -568,7 +635,7 @@ VerificationTest[
     True,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> Equal,
-    TestID   -> "ImportYAMLString-ParseErrorReportsInputLabel@@Tests/YAML.wlt:561,1-572,2"
+    TestID   -> "ImportYAMLString-ParseErrorReportsInputLabel@@Tests/YAML.wlt:628,1-639,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
