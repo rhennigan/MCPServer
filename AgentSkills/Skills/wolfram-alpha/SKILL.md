@@ -1,11 +1,11 @@
 ---
-
-## name: wolfram-alpha
+name: wolfram-alpha
 description: Queries Wolfram|Alpha for up-to-date computational results and retrieves contextual information via semantic search. Use this skill when the user needs real-world data, calculations, or factual answers about entities in science, math, geography, history, finance, and more.
 compatibility: Requires the Wolfram MCP server or wolframscript on PATH
 metadata:
   author: Wolfram Research
-  version: 2.0.1
+  version: 2.0.0
+---
 
 # Wolfram|Alpha
 
@@ -43,12 +43,10 @@ Reminder: These scripts are only relevant when you do not have the equivalent MC
 
 ## Available Tools
 
-
-| Script                | When to use                                                       |
-| --------------------- | ----------------------------------------------------------------- |
+| Script | When to use |
+| --- | --- |
 | `WolframAlphaContext` | Retrieve contextual information about a topic via semantic search |
-| `WolframAlpha`        | Query Wolfram|Alpha for computational answers and real-world data |
-
+| `WolframAlpha` | Query Wolfram\|Alpha for computational answers and real-world data |
 
 ### WolframAlphaContext
 
@@ -75,4 +73,3 @@ Queries should be phrased in natural language, similar to how you would ask a qu
 - Always call `WolframAlphaContext` before `WolframAlpha` to ensure you have the most up-to-date context for your query.
 - If a query returns unexpected results, try rephrasing it or being more specific.
 - For complex mathematical expressions, use standard notation that Wolfram|Alpha understands (e.g., `sin(x)`, `x^2`, `sqrt(x)`).
-
