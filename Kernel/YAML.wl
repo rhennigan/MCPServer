@@ -53,6 +53,16 @@ importYAMLString[ s_String ] := Enclose[
             { _, _Integer },
             "Block"
         ];
+        (* parseYAMLBlock can stop early on a sibling construct at the same
+           indent (e.g. a mapping followed by a top-level sequence).  Anything
+           left over is content we silently dropped, which would cause
+           round-trip writes to lose data -- treat it as a parse error. *)
+        If[ finalPos <= Length @ lines,
+            throwFailure[ "InvalidYAMLFormat", $yamlSource,
+                lines[[ finalPos, "Line" ]],
+                "unexpected trailing content: " <> lines[[ finalPos, "Text" ]]
+            ]
+        ];
         Replace[ value, Null -> <| |> ]
     ],
     throwInternalFailure

@@ -638,4 +638,15 @@ VerificationTest[
     TestID   -> "ImportYAMLString-ParseErrorReportsInputLabel@@Tests/YAML.wlt:628,1-639,2"
 ]
 
+(* Trailing content (e.g. a top-level sequence after a mapping) must surface
+   as an error rather than being silently dropped. *)
+VerificationTest[
+    Wolfram`AgentTools`Common`catchAlways @
+        Wolfram`AgentTools`Common`importYAMLString[ "a: 1\nb: 2\n- one\n- two" ],
+    _Failure,
+    { AgentTools::InvalidYAMLFormat },
+    SameTest -> MatchQ,
+    TestID   -> "ImportYAMLString-TrailingSequenceAfterMapping@@Tests/YAML.wlt:643,1-650,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)
