@@ -280,15 +280,27 @@ parseYAMLMapping[ lines_List, startPos_Integer, blockIndent_Integer ] := Enclose
 
             If[ valueText === "",
                 (* Child block on subsequent lines, or empty value *)
-                If[ pos <= Length @ lines && lines[[ pos ]][ "Indent" ] > blockIndent,
-                    { value, nextPos } = ConfirmMatch[
-                        parseYAMLBlock[ lines, pos, lines[[ pos ]][ "Indent" ] ],
-                        { _, _Integer },
-                        "ChildBlock"
-                    ];
-                    pos = nextPos
-                    ,
-                    value = Null
+                Which[
+                    (* Indented child block at strictly greater indent *)
+                    pos <= Length @ lines && lines[[ pos, "Indent" ]] > blockIndent,
+                        { value, nextPos } = ConfirmMatch[
+                            parseYAMLBlock[ lines, pos, lines[[ pos, "Indent" ]] ],
+                            { _, _Integer },
+                            "ChildBlock"
+                        ];
+                        pos = nextPos,
+                    (* Compact block sequence: YAML 1.2 allows sequence items
+                       to sit at the same indent as the parent mapping key,
+                       e.g. the widely used GitHub Actions `steps:` layout. *)
+                    pos <= Length @ lines && lines[[ pos, "Indent" ]] === blockIndent && sequenceLineQ @ lines[[ pos, "Text" ]],
+                        { value, nextPos } = ConfirmMatch[
+                            parseYAMLSequence[ lines, pos, blockIndent ],
+                            { _, _Integer },
+                            "CompactSeq"
+                        ];
+                        pos = nextPos,
+                    True,
+                        value = Null
                 ],
                 value = Block[ { $yamlLine = line[ "Line" ] }, parseScalar @ valueText ]
             ];

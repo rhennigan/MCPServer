@@ -398,6 +398,42 @@ VerificationTest[
     TestID   -> "ImportYAMLString-QuotedScalarsWithColons@@Tests/YAML.wlt:394,1-399,2"
 ]
 
+(* Compact block sequence: YAML 1.2 allows sequence items at the same indent
+   as their parent mapping key (the dominant style in GitHub Actions workflows). *)
+VerificationTest[
+    Wolfram`AgentTools`Common`importYAMLString[ "args:\n- one\n- two\n- three" ],
+    <| "args" -> { "one", "two", "three" } |>,
+    SameTest -> Equal,
+    TestID   -> "ImportYAMLString-CompactBlockSequence@@Tests/YAML.wlt:403,1-408,2"
+]
+
+(* Compact sequence with inline mapping items (GitHub Actions `steps:` layout). *)
+VerificationTest[
+    Wolfram`AgentTools`Common`importYAMLString[ "steps:\n- name: Checkout\n  uses: actions/checkout@v4\n- name: Build\n  run: wolframscript -f foo.wls" ],
+    <| "steps" -> {
+        <| "name" -> "Checkout", "uses" -> "actions/checkout@v4" |>,
+        <| "name" -> "Build", "run" -> "wolframscript -f foo.wls" |>
+    } |>,
+    SameTest -> Equal,
+    TestID   -> "ImportYAMLString-CompactSequenceWithInlineMapping@@Tests/YAML.wlt:411,1-419,2"
+]
+
+(* A compact sequence must not swallow the sibling mapping key that follows. *)
+VerificationTest[
+    Wolfram`AgentTools`Common`importYAMLString[ "a:\n- x\n- y\nb: 1" ],
+    <| "a" -> { "x", "y" }, "b" -> 1 |>,
+    SameTest -> Equal,
+    TestID   -> "ImportYAMLString-CompactSequenceThenSiblingKey@@Tests/YAML.wlt:422,1-427,2"
+]
+
+(* Compact sequence nested inside an indented mapping. *)
+VerificationTest[
+    Wolfram`AgentTools`Common`importYAMLString[ "outer:\n  a:\n  - x\n  - y\n  b: 1" ],
+    <| "outer" -> <| "a" -> { "x", "y" }, "b" -> 1 |> |>,
+    SameTest -> Equal,
+    TestID   -> "ImportYAMLString-NestedCompactSequence@@Tests/YAML.wlt:430,1-435,2"
+]
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*importYAMLString -- Flow Sequences*)
@@ -405,21 +441,21 @@ VerificationTest[
     Wolfram`AgentTools`Common`importYAMLString[ "args: [1, 2, 3]" ],
     <| "args" -> { 1, 2, 3 } |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAMLString-NumericFlowSequence@@Tests/YAML.wlt:404,1-409,2"
+    TestID   -> "ImportYAMLString-NumericFlowSequence@@Tests/YAML.wlt:440,1-445,2"
 ]
 
 VerificationTest[
     Wolfram`AgentTools`Common`importYAMLString[ "args: [a, 'b, c', d]" ],
     <| "args" -> { "a", "b, c", "d" } |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAMLString-FlowSequenceQuotedComma@@Tests/YAML.wlt:411,1-416,2"
+    TestID   -> "ImportYAMLString-FlowSequenceQuotedComma@@Tests/YAML.wlt:447,1-452,2"
 ]
 
 VerificationTest[
     Wolfram`AgentTools`Common`importYAMLString[ "args: []" ],
     <| "args" -> {  } |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAMLString-EmptyFlowSequence@@Tests/YAML.wlt:418,1-423,2"
+    TestID   -> "ImportYAMLString-EmptyFlowSequence@@Tests/YAML.wlt:454,1-459,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -429,28 +465,28 @@ VerificationTest[
     Wolfram`AgentTools`Common`importYAMLString[ "# header comment\na: 1\nb: 2" ],
     <| "a" -> 1, "b" -> 2 |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAMLString-LeadingComment@@Tests/YAML.wlt:428,1-433,2"
+    TestID   -> "ImportYAMLString-LeadingComment@@Tests/YAML.wlt:464,1-469,2"
 ]
 
 VerificationTest[
     Wolfram`AgentTools`Common`importYAMLString[ "a: 1 # trailing comment\nb: 2" ],
     <| "a" -> 1, "b" -> 2 |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAMLString-TrailingComment@@Tests/YAML.wlt:435,1-440,2"
+    TestID   -> "ImportYAMLString-TrailingComment@@Tests/YAML.wlt:471,1-476,2"
 ]
 
 VerificationTest[
     Wolfram`AgentTools`Common`importYAMLString[ "a: 1\n\n\nb: 2" ],
     <| "a" -> 1, "b" -> 2 |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAMLString-BlankLines@@Tests/YAML.wlt:442,1-447,2"
+    TestID   -> "ImportYAMLString-BlankLines@@Tests/YAML.wlt:478,1-483,2"
 ]
 
 VerificationTest[
     Wolfram`AgentTools`Common`importYAMLString[ "" ],
     <| |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAMLString-Empty@@Tests/YAML.wlt:449,1-454,2"
+    TestID   -> "ImportYAMLString-Empty@@Tests/YAML.wlt:485,1-490,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -465,7 +501,7 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "RoundTrip-FlatMapping@@Tests/YAML.wlt:459,1-469,2"
+    TestID   -> "RoundTrip-FlatMapping@@Tests/YAML.wlt:495,1-505,2"
 ]
 
 VerificationTest[
@@ -492,7 +528,7 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "RoundTrip-GooseShaped@@Tests/YAML.wlt:471,1-496,2"
+    TestID   -> "RoundTrip-GooseShaped@@Tests/YAML.wlt:507,1-532,2"
 ]
 
 (* Sequence of multi-key associations must round-trip cleanly. *)
@@ -510,7 +546,7 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "RoundTrip-SequenceOfMultiKeyAssociations@@Tests/YAML.wlt:499,1-514,2"
+    TestID   -> "RoundTrip-SequenceOfMultiKeyAssociations@@Tests/YAML.wlt:535,1-550,2"
 ]
 
 (* Sequence item whose value is itself a nested mapping. *)
@@ -527,7 +563,7 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "RoundTrip-SequenceItemWithNestedMapping@@Tests/YAML.wlt:517,1-531,2"
+    TestID   -> "RoundTrip-SequenceItemWithNestedMapping@@Tests/YAML.wlt:553,1-567,2"
 ]
 
 (* Top-level sequence of associations. *)
@@ -543,7 +579,7 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "RoundTrip-TopLevelSequenceOfAssociations@@Tests/YAML.wlt:534,1-547,2"
+    TestID   -> "RoundTrip-TopLevelSequenceOfAssociations@@Tests/YAML.wlt:570,1-583,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -558,7 +594,7 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "ExportYAML-CreatesFile@@Tests/YAML.wlt:552,1-562,2"
+    TestID   -> "ExportYAML-CreatesFile@@Tests/YAML.wlt:588,1-598,2"
 ]
 
 VerificationTest[
@@ -572,7 +608,7 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "ExportYAML-ImportYAML-RoundTrip@@Tests/YAML.wlt:564,1-576,2"
+    TestID   -> "ExportYAML-ImportYAML-RoundTrip@@Tests/YAML.wlt:600,1-612,2"
 ]
 
 VerificationTest[
@@ -581,7 +617,7 @@ VerificationTest[
     ],
     <| |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAML-MissingFile@@Tests/YAML.wlt:578,1-585,2"
+    TestID   -> "ImportYAML-MissingFile@@Tests/YAML.wlt:614,1-621,2"
 ]
 
 VerificationTest[
@@ -598,7 +634,7 @@ VerificationTest[
     ],
     <| |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAML-EmptyFile@@Tests/YAML.wlt:587,1-602,2"
+    TestID   -> "ImportYAML-EmptyFile@@Tests/YAML.wlt:623,1-638,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -622,7 +658,7 @@ VerificationTest[
     True,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> Equal,
-    TestID   -> "ImportYAML-ParseErrorReportsFilePath@@Tests/YAML.wlt:607,1-626,2"
+    TestID   -> "ImportYAML-ParseErrorReportsFilePath@@Tests/YAML.wlt:643,1-662,2"
 ]
 
 VerificationTest[
@@ -635,7 +671,7 @@ VerificationTest[
     True,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> Equal,
-    TestID   -> "ImportYAMLString-ParseErrorReportsInputLabel@@Tests/YAML.wlt:628,1-639,2"
+    TestID   -> "ImportYAMLString-ParseErrorReportsInputLabel@@Tests/YAML.wlt:664,1-675,2"
 ]
 
 (* Trailing content (e.g. a top-level sequence after a mapping) must surface
@@ -646,7 +682,7 @@ VerificationTest[
     _Failure,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> MatchQ,
-    TestID   -> "ImportYAMLString-TrailingSequenceAfterMapping@@Tests/YAML.wlt:643,1-650,2"
+    TestID   -> "ImportYAMLString-TrailingSequenceAfterMapping@@Tests/YAML.wlt:679,1-686,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -663,7 +699,7 @@ VerificationTest[
     _Failure,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> MatchQ,
-    TestID   -> "ImportYAMLString-UnterminatedDoubleQuotedScalar@@Tests/YAML.wlt:660,1-667,2"
+    TestID   -> "ImportYAMLString-UnterminatedDoubleQuotedScalar@@Tests/YAML.wlt:696,1-703,2"
 ]
 
 VerificationTest[
@@ -672,7 +708,7 @@ VerificationTest[
     _Failure,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> MatchQ,
-    TestID   -> "ImportYAMLString-UnterminatedSingleQuotedScalar@@Tests/YAML.wlt:669,1-676,2"
+    TestID   -> "ImportYAMLString-UnterminatedSingleQuotedScalar@@Tests/YAML.wlt:705,1-712,2"
 ]
 
 VerificationTest[
@@ -681,7 +717,7 @@ VerificationTest[
     _Failure,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> MatchQ,
-    TestID   -> "ImportYAMLString-UnterminatedFlowSequence@@Tests/YAML.wlt:678,1-685,2"
+    TestID   -> "ImportYAMLString-UnterminatedFlowSequence@@Tests/YAML.wlt:714,1-721,2"
 ]
 
 VerificationTest[
@@ -690,7 +726,7 @@ VerificationTest[
     _Failure,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> MatchQ,
-    TestID   -> "ImportYAMLString-UnterminatedFlowMapping@@Tests/YAML.wlt:687,1-694,2"
+    TestID   -> "ImportYAMLString-UnterminatedFlowMapping@@Tests/YAML.wlt:723,1-730,2"
 ]
 
 VerificationTest[
@@ -699,7 +735,7 @@ VerificationTest[
     _Failure,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> MatchQ,
-    TestID   -> "ImportYAMLString-TrailingAfterDoubleQuotedScalar@@Tests/YAML.wlt:696,1-703,2"
+    TestID   -> "ImportYAMLString-TrailingAfterDoubleQuotedScalar@@Tests/YAML.wlt:732,1-739,2"
 ]
 
 VerificationTest[
@@ -708,7 +744,7 @@ VerificationTest[
     _Failure,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> MatchQ,
-    TestID   -> "ImportYAMLString-UnbalancedNestedFlowSequence@@Tests/YAML.wlt:705,1-712,2"
+    TestID   -> "ImportYAMLString-UnbalancedNestedFlowSequence@@Tests/YAML.wlt:741,1-748,2"
 ]
 
 VerificationTest[
@@ -717,7 +753,7 @@ VerificationTest[
     _Failure,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> MatchQ,
-    TestID   -> "ImportYAMLString-UnterminatedFlowSequenceInBlockSequence@@Tests/YAML.wlt:714,1-721,2"
+    TestID   -> "ImportYAMLString-UnterminatedFlowSequenceInBlockSequence@@Tests/YAML.wlt:750,1-757,2"
 ]
 
 (* Quoted strings inside a flow construct should still be respected -- a quoted
@@ -726,7 +762,7 @@ VerificationTest[
     Wolfram`AgentTools`Common`importYAMLString[ "key: [\"]\", \"x\"]" ],
     <| "key" -> { "]", "x" } |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAMLString-FlowSequenceWithQuotedBracket@@Tests/YAML.wlt:725,1-730,2"
+    TestID   -> "ImportYAMLString-FlowSequenceWithQuotedBracket@@Tests/YAML.wlt:761,1-766,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
