@@ -114,7 +114,7 @@ VerificationTest[
 
 VerificationTest[
     Wolfram`AgentTools`Common`exportYAMLString[ 100. ],
-    "100.0",
+    "1.0e2",
     SameTest -> Equal,
     TestID   -> "ExportYAMLString-RealWholeNumber@@Tests/YAML.wlt:115,1-120,2"
 ]

@@ -779,26 +779,12 @@ formatYAMLKey // endDefinition;
 (*formatYAMLReal*)
 (* Convert a Real to a YAML-compatible numeric string.  ToString on a Real can
    emit Wolfram Language scientific notation like "1.5*^20" (or even multi-line
-   superscript form), neither of which is valid YAML.  This routine produces
-   plain decimals or "e"-style exponents that round-trip cleanly through
-   importYAMLString and external YAML parsers. *)
+   superscript form), neither of which is valid YAML.  JSON's number grammar is
+   a strict subset of YAML 1.2's float grammar, so we delegate to the JSON
+   serializer to get plain decimals or "e"-style exponents that round-trip
+   cleanly through importYAMLString and external YAML parsers. *)
 formatYAMLReal // beginDefinition;
-
-formatYAMLReal[ r_Real ] :=
-    Module[ { s },
-        s = ToString @ InputForm @ r;
-        (* Strip precision markers like `MachinePrecision or `30. *)
-        s = StringReplace[ s, "`" ~~ ("MachinePrecision" | (DigitCharacter | ".") ..) -> "" ];
-        (* Convert Wolfram exponent syntax to YAML *)
-        s = StringReplace[ s, "*^" -> "e" ];
-        (* Ensure mantissas like "100." or "1.e10" become "100.0" / "1.0e10" *)
-        s = StringReplace[ s, {
-            RegularExpression[ "^([+-]?\\d+)\\.$" ] -> "$1.0",
-            RegularExpression[ "^([+-]?\\d+)\\.e([+-]?\\d+)$" ] -> "$1.0e$2"
-        } ];
-        s
-    ];
-
+formatYAMLReal[ r_Real ] := Developer`WriteRawJSONString @ r;
 formatYAMLReal // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
