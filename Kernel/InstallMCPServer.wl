@@ -155,6 +155,46 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
     throwInternalFailure
 ];
 
+installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_, devMode_ ] /; $installClientName === "Goose" := Enclose[
+    Module[ { target, name, configName, json, data, server, existing, extensions },
+
+        If[ verifyLLMKit, ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ] ];
+        initializeTools @ obj;
+        Confirm[ validatePacletServerDefinitions @ obj, "ValidatePacletServerDefinitions" ];
+
+        target     = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
+        name       = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
+        configName = ConfirmBy[ resolveMCPServerName @ obj, StringQ, "ConfigName" ];
+        json       = ConfirmBy[ obj[ "JSONConfiguration" ], StringQ, "JSONConfiguration" ];
+        data       = ConfirmBy[ Developer`ReadRawJSONString @ json, AssociationQ, "JSONConfiguration" ];
+        server     = ConfirmBy[ addEnvironmentVariables[ data[ "mcpServers", name ], env ], AssociationQ, "Server" ];
+        If[ devMode =!= False,
+            server[ "args" ] = ConfirmMatch[ makeDevelopmentArgs @ devMode, { __String }, "DevelopmentArgs" ]
+        ];
+
+        (* Convert to Goose's extension shape and stamp the display name *)
+        server = ConfirmBy[ convertToGooseFormat @ server, AssociationQ, "GooseServer" ];
+        server = Prepend[ server, "name" -> configName ];
+
+        (* Read existing YAML config -- fall back to an empty mapping if missing or unparseable *)
+        existing = If[ FileExistsQ @ target,
+            Replace[ Quiet @ importYAML @ target, Except[ _? AssociationQ ] -> <| |> ],
+            <| |>
+        ];
+        extensions = Replace[ Lookup[ existing, "extensions", <| |> ], Except[ _? AssociationQ ] -> <| |> ];
+        extensions[ configName ] = server;
+        existing[ "extensions" ] = extensions;
+
+        ConfirmBy[ exportYAML[ target, existing ], fileQ, "Export" ];
+
+        clearStaleBuiltInRecords[ target, configName, obj ];
+        ConfirmBy[ recordMCPInstallation[ target, obj ], FileExistsQ, "Record" ];
+
+        installSuccess[ name, target, obj ]
+    ],
+    throwInternalFailure
+];
+
 installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_, devMode_ ] := Enclose[
     Module[ { target, name, configName, json, data, server, existing, path, convert },
 
@@ -461,6 +501,7 @@ guessClientName[ file_? fileQ ] := Enclose[
         (* Try to guess from the file extension *)
         extension = ToLowerCase @ ConfirmBy[ FileExtension @ file, StringQ, "Extension" ];
         If[ extension === "toml", Throw[ "Codex" ] ];
+        If[ extension === "yaml" || extension === "yml", Throw[ "Goose" ] ];
         If[ extension === "json", Throw @ guessClientNameFromJSON @ file ];
 
         (* Try to guess from the file format (only if the file exists) *)
@@ -688,6 +729,47 @@ convertToCodexFormat[ server_Association ] := Enclose[
 ];
 
 convertToCodexFormat // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*convertToGooseFormat*)
+(* Maps the internal mcpServers entry shape (command/args/env) to Goose's
+   extensions entry shape (cmd/args/envs/enabled/type/timeout).  The display
+   "name" field is *not* set here -- the install function prepends it after
+   conversion since the converter doesn't know configName. *)
+convertToGooseFormat // beginDefinition;
+
+convertToGooseFormat[ server_Association ] := Enclose[
+    Module[ { command, args, env, result },
+        command = ConfirmMatch[ Lookup[ server, "command", Missing[ ] ], _String | _Missing, "Command" ];
+        args    = Lookup[ server, "args", { } ];
+        env     = Lookup[ server, "env" , <| |> ];
+
+        result = <| |>;
+
+        If[ command =!= Missing[ ],
+            result[ "cmd" ] = command
+        ];
+
+        If[ ListQ @ args && Length @ args > 0,
+            result[ "args" ] = args
+        ];
+
+        result[ "enabled" ] = True;
+
+        If[ AssociationQ @ env && Length @ env > 0,
+            result[ "envs" ] = env
+        ];
+
+        result[ "type"    ] = "stdio";
+        result[ "timeout" ] = 300;
+
+        result
+    ],
+    throwInternalFailure
+];
+
+convertToGooseFormat // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -945,6 +1027,33 @@ uninstallMCPServer[ target0_File, obj_MCPServerObject ] /; $installClientName ==
 
         (* Write back *)
         ConfirmBy[ writeTOMLFile[ target, updated[ "Data" ], updated ], fileQ, "Export" ];
+        ConfirmMatch[ clearRecordedInstallation[ target, obj ], { ___Association }, "Clear" ];
+
+        uninstallSuccess[ name, target, obj ]
+    ],
+    throwInternalFailure
+];
+
+uninstallMCPServer[ target0_File, obj_MCPServerObject ] /; $installClientName === "Goose" := Enclose[
+    Catch @ Module[ { target, name, configName, existing, extensions },
+
+        target     = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
+        If[ ! FileExistsQ @ target, Throw @ Missing[ "NotInstalled", target ] ];
+
+        name       = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
+        configName = ConfirmBy[ resolveMCPServerName @ obj, StringQ, "ConfigName" ];
+
+        existing = ConfirmBy[ importYAML @ target, AssociationQ, "ExistingYAML" ];
+        extensions = Lookup[ existing, "extensions", <| |> ];
+
+        If[ ! AssociationQ @ extensions || ! KeyExistsQ[ extensions, configName ],
+            Throw @ Missing[ "NotInstalled", target ]
+        ];
+
+        KeyDropFrom[ extensions, configName ];
+        existing[ "extensions" ] = extensions;
+
+        ConfirmBy[ exportYAML[ target, existing ], fileQ, "Export" ];
         ConfirmMatch[ clearRecordedInstallation[ target, obj ], { ___Association }, "Clear" ];
 
         uninstallSuccess[ name, target, obj ]

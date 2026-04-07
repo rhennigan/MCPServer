@@ -55,6 +55,18 @@ $supportedMCPClients = <|
         "URL"             -> "https://github.com/google-gemini/gemini-cli",
         "InstallLocation" :> { $HomeDirectory, ".gemini", "settings.json" }
     |>,
+    "Goose" -> <|
+        "DisplayName"     -> "Goose",
+        "Aliases"         -> { },
+        "ConfigFormat"    -> "YAML",
+        "ConfigKey"       -> { "extensions" },
+        "URL"             -> "https://block.github.io/goose/",
+        "InstallLocation" -> <|
+            "MacOSX"  :> { $HomeDirectory, ".config", "goose", "config.yaml" },
+            "Unix"    :> { $HomeDirectory, ".config", "goose", "config.yaml" },
+            "Windows" :> { $HomeDirectory, "AppData", "Roaming", "Block", "goose", "config", "config.yaml" }
+        |>
+    |>,
     "Antigravity" -> <|
         "DisplayName"     -> "Antigravity",
         "Aliases"         -> { "GoogleAntigravity" },
