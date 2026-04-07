@@ -649,4 +649,84 @@ VerificationTest[
     TestID   -> "ImportYAMLString-TrailingSequenceAfterMapping@@Tests/YAML.wlt:643,1-650,2"
 ]
 
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Malformed Scalars*)
+(* Inputs that begin with a quote or flow-construct opener but are missing the
+   matching close must surface as InvalidYAMLFormat rather than being silently
+   accepted as plain strings -- otherwise InstallMCPServer would later overwrite
+   a hand-edited config that we never actually parsed. *)
+
+VerificationTest[
+    Wolfram`AgentTools`Common`catchAlways @
+        Wolfram`AgentTools`Common`importYAMLString[ "key: \"unterminated" ],
+    _Failure,
+    { AgentTools::InvalidYAMLFormat },
+    SameTest -> MatchQ,
+    TestID   -> "ImportYAMLString-UnterminatedDoubleQuotedScalar@@Tests/YAML.wlt:660,1-667,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`catchAlways @
+        Wolfram`AgentTools`Common`importYAMLString[ "key: 'unterminated" ],
+    _Failure,
+    { AgentTools::InvalidYAMLFormat },
+    SameTest -> MatchQ,
+    TestID   -> "ImportYAMLString-UnterminatedSingleQuotedScalar@@Tests/YAML.wlt:669,1-676,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`catchAlways @
+        Wolfram`AgentTools`Common`importYAMLString[ "key: [1, 2, 3" ],
+    _Failure,
+    { AgentTools::InvalidYAMLFormat },
+    SameTest -> MatchQ,
+    TestID   -> "ImportYAMLString-UnterminatedFlowSequence@@Tests/YAML.wlt:678,1-685,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`catchAlways @
+        Wolfram`AgentTools`Common`importYAMLString[ "key: {a: 1, b: 2" ],
+    _Failure,
+    { AgentTools::InvalidYAMLFormat },
+    SameTest -> MatchQ,
+    TestID   -> "ImportYAMLString-UnterminatedFlowMapping@@Tests/YAML.wlt:687,1-694,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`catchAlways @
+        Wolfram`AgentTools`Common`importYAMLString[ "key: \"abc\" trailing" ],
+    _Failure,
+    { AgentTools::InvalidYAMLFormat },
+    SameTest -> MatchQ,
+    TestID   -> "ImportYAMLString-TrailingAfterDoubleQuotedScalar@@Tests/YAML.wlt:696,1-703,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`catchAlways @
+        Wolfram`AgentTools`Common`importYAMLString[ "key: [1, [2, 3]" ],
+    _Failure,
+    { AgentTools::InvalidYAMLFormat },
+    SameTest -> MatchQ,
+    TestID   -> "ImportYAMLString-UnbalancedNestedFlowSequence@@Tests/YAML.wlt:705,1-712,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`catchAlways @
+        Wolfram`AgentTools`Common`importYAMLString[ "items:\n  - [1, 2" ],
+    _Failure,
+    { AgentTools::InvalidYAMLFormat },
+    SameTest -> MatchQ,
+    TestID   -> "ImportYAMLString-UnterminatedFlowSequenceInBlockSequence@@Tests/YAML.wlt:714,1-721,2"
+]
+
+(* Quoted strings inside a flow construct should still be respected -- a quoted
+   "]" must not be treated as the closing bracket. *)
+VerificationTest[
+    Wolfram`AgentTools`Common`importYAMLString[ "key: [\"]\", \"x\"]" ],
+    <| "key" -> { "]", "x" } |>,
+    SameTest -> Equal,
+    TestID   -> "ImportYAMLString-FlowSequenceWithQuotedBracket@@Tests/YAML.wlt:725,1-730,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)

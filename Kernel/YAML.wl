@@ -14,6 +14,11 @@ Needs[ "Wolfram`AgentTools`Common`" ];
    the generic "<input>" placeholder. *)
 $yamlSource = "<input>";
 
+(* Threaded through the parser via Block so that parseScalar (which has no
+   line argument of its own and can be reached recursively from flow-construct
+   helpers) can attribute InvalidYAMLFormat failures to the originating line. *)
+$yamlLine = 0;
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Reading YAML*)
@@ -285,7 +290,7 @@ parseYAMLMapping[ lines_List, startPos_Integer, blockIndent_Integer ] := Enclose
                     ,
                     value = Null
                 ],
-                value = parseScalar @ valueText
+                value = Block[ { $yamlLine = line[ "Line" ] }, parseScalar @ valueText ]
             ];
 
             result[ key ] = value
@@ -397,7 +402,10 @@ findClosingQuote[ s_String, quote_String, startIdx_Integer ] :=
         i     = startIdx;
         While[ i <= n,
             ch = chars[[ i ]];
+            (* "\"" inside a double-quoted scalar is escaped as \" *)
             If[ quote === "\"" && ch === "\\" && i < n, i += 2; Continue[ ] ];
+            (* "'" inside a single-quoted scalar is escaped as '' (the only escape) *)
+            If[ quote === "'" && ch === "'" && i < n && chars[[ i + 1 ]] === "'", i += 2; Continue[ ] ];
             If[ ch === quote, Throw @ i ];
             i++
         ];
@@ -405,6 +413,48 @@ findClosingQuote[ s_String, quote_String, startIdx_Integer ] :=
     ];
 
 findClosingQuote // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*findMatchingFlowClose*)
+(* Returns the 1-based index of the close bracket that matches the open bracket
+   at openIdx, treating quoted spans as opaque and tracking nested [/{ depth.
+   Returns Missing[] if no matching close exists or the matching close has the
+   wrong shape (e.g. opened with "[" but closed with "}"). *)
+findMatchingFlowClose // beginDefinition;
+
+findMatchingFlowClose[ s_String, openIdx_Integer ] :=
+    Catch @ Module[ { chars, n, close, depth, inSingle, inDouble, i, ch },
+        chars    = Characters @ s;
+        n        = Length @ chars;
+        close    = If[ chars[[ openIdx ]] === "[", "]", "}" ];
+        depth    = 0;
+        inSingle = False;
+        inDouble = False;
+        i = openIdx;
+        While[ i <= n,
+            ch = chars[[ i ]];
+            Which[
+                inDouble && ch === "\\" && i < n, i += 2; Continue[ ],
+                inDouble && ch === "\"", inDouble = False,
+                inDouble, Null,
+                inSingle && ch === "'", inSingle = False,
+                inSingle, Null,
+                ch === "\"", inDouble = True,
+                ch === "'", inSingle = True,
+                ch === "[" || ch === "{", depth++,
+                ch === "]" || ch === "}",
+                    depth--;
+                    If[ depth === 0,
+                        Throw @ If[ ch === close, i, Missing[ ] ]
+                    ]
+            ];
+            i++
+        ];
+        Missing[ ]
+    ];
+
+findMatchingFlowClose // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -440,7 +490,7 @@ parseYAMLSequence[ lines_List, startPos_Integer, blockIndent_Integer ] := Enclos
                 ],
                 valueText = StringTrim @ StringDrop[ text, 2 ];
                 pos++;
-                value = parseScalar @ valueText
+                value = Block[ { $yamlLine = line[ "Line" ] }, parseScalar @ valueText ]
             ];
 
             AppendTo[ result, value ]
@@ -465,17 +515,22 @@ parseScalar // beginDefinition;
 parseScalar[ "" ] := Null;
 
 parseScalar[ s_String ] := Enclose[
-    Module[ { trimmed },
+    Module[ { trimmed, len },
         trimmed = StringTrim @ s;
+        len     = StringLength @ trimmed;
         Which[
             trimmed === "", Null,
-            StringStartsQ[ trimmed, "\"" ] && StringEndsQ[ trimmed, "\"" ] && StringLength @ trimmed >= 2,
+            StringStartsQ[ trimmed, "\"" ],
+                requireClosedQuotedScalar[ trimmed, "\"", len ];
                 unescapeDoubleQuoted @ StringTake[ trimmed, { 2, -2 } ],
-            StringStartsQ[ trimmed, "'" ] && StringEndsQ[ trimmed, "'" ] && StringLength @ trimmed >= 2,
+            StringStartsQ[ trimmed, "'" ],
+                requireClosedQuotedScalar[ trimmed, "'", len ];
                 unescapeSingleQuoted @ StringTake[ trimmed, { 2, -2 } ],
-            StringStartsQ[ trimmed, "[" ] && StringEndsQ[ trimmed, "]" ],
+            StringStartsQ[ trimmed, "[" ],
+                requireClosedFlowConstruct[ trimmed, "sequence", len ];
                 parseFlowSequence @ trimmed,
-            StringStartsQ[ trimmed, "{" ] && StringEndsQ[ trimmed, "}" ],
+            StringStartsQ[ trimmed, "{" ],
+                requireClosedFlowConstruct[ trimmed, "mapping", len ];
                 parseFlowMapping @ trimmed,
             trimmed === "true" || trimmed === "True" || trimmed === "TRUE", True,
             trimmed === "false" || trimmed === "False" || trimmed === "FALSE", False,
@@ -489,6 +544,56 @@ parseScalar[ s_String ] := Enclose[
 ];
 
 parseScalar // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*requireClosedQuotedScalar*)
+(* Reject quoted scalars that have no closing quote, or that have content past
+   the closing quote.  Currently $yamlLine is set by the block parsers before
+   each parseScalar call, so the failure can point at the originating line. *)
+requireClosedQuotedScalar // beginDefinition;
+
+requireClosedQuotedScalar[ trimmed_String, quote_String, len_Integer ] :=
+    Module[ { close, label },
+        close = findClosingQuote[ trimmed, quote, 2 ];
+        label = If[ quote === "\"", "double-quoted", "single-quoted" ];
+        If[ close === Missing[ ],
+            throwFailure[ "InvalidYAMLFormat", $yamlSource, $yamlLine,
+                "unterminated " <> label <> " scalar: " <> trimmed
+            ]
+        ];
+        If[ close =!= len,
+            throwFailure[ "InvalidYAMLFormat", $yamlSource, $yamlLine,
+                "unexpected content after " <> label <> " scalar: " <> trimmed
+            ]
+        ]
+    ];
+
+requireClosedQuotedScalar // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*requireClosedFlowConstruct*)
+(* Reject flow sequences/mappings whose opening "[" or "{" has no matching close,
+   has a mismatched close, or has trailing content past the close. *)
+requireClosedFlowConstruct // beginDefinition;
+
+requireClosedFlowConstruct[ trimmed_String, label_String, len_Integer ] :=
+    Module[ { close },
+        close = findMatchingFlowClose[ trimmed, 1 ];
+        If[ close === Missing[ ],
+            throwFailure[ "InvalidYAMLFormat", $yamlSource, $yamlLine,
+                "unterminated flow " <> label <> ": " <> trimmed
+            ]
+        ];
+        If[ close =!= len,
+            throwFailure[ "InvalidYAMLFormat", $yamlSource, $yamlLine,
+                "unexpected content after flow " <> label <> ": " <> trimmed
+            ]
+        ]
+    ];
+
+requireClosedFlowConstruct // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
