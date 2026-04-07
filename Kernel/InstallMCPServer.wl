@@ -1073,7 +1073,10 @@ uninstallMCPServer[ target0_File, obj_MCPServerObject ] /; $installClientName ==
         name       = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
         configName = ConfirmBy[ resolveMCPServerName @ obj, StringQ, "ConfigName" ];
 
-        existing = ConfirmBy[ importYAML @ target, AssociationQ, "ExistingYAML" ];
+        (* Read existing YAML config via the same helper as the install path so
+           parse failures surface as InvalidMCPConfiguration rather than an
+           internal failure, and the file is never rewritten. *)
+        existing = ConfirmBy[ readExistingGooseConfig @ target, AssociationQ, "Existing" ];
         extensions = Lookup[ existing, "extensions", <| |> ];
 
         If[ ! AssociationQ @ extensions || ! KeyExistsQ[ extensions, configName ],
