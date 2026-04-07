@@ -19,6 +19,12 @@ $yamlSource = "<input>";
    helpers) can attribute InvalidYAMLFormat failures to the originating line. *)
 $yamlLine = 0;
 
+(* Raw (unprocessed, only \r-stripped) input lines, threaded via Block so that
+   block scalar parsing can walk the original line text.  The preprocessed line
+   stream has already had comments stripped, so "#" characters inside the
+   scalar body would be lost if we used it. *)
+$yamlRawLines = { };
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Reading YAML*)
@@ -50,13 +56,16 @@ importYAML // endDefinition;
 importYAMLString // beginDefinition;
 
 importYAMLString[ s_String ] := Enclose[
-    Catch @ Module[ { lines, value, finalPos },
+    Catch @ Module[ { rawLines, lines, value, finalPos },
+        rawLines = splitRawYAMLLines @ s;
         lines = ConfirmMatch[ preprocessYAMLLines @ s, { ___Association }, "Lines" ];
         If[ lines === { }, Throw @ <| |> ];
-        { value, finalPos } = ConfirmMatch[
-            parseYAMLBlock[ lines, 1, 0 ],
-            { _, _Integer },
-            "Block"
+        Block[ { $yamlRawLines = rawLines },
+            { value, finalPos } = ConfirmMatch[
+                parseYAMLBlock[ lines, 1, 0 ],
+                { _, _Integer },
+                "Block"
+            ]
         ];
         (* parseYAMLBlock can stop early on a sibling construct at the same
            indent (e.g. a mapping followed by a top-level sequence).  Anything
@@ -76,6 +85,19 @@ importYAMLString[ s_String ] := Enclose[
 importYAMLString // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*splitRawYAMLLines*)
+(* Splits the input into raw lines with a trailing "\r" (from CRLF endings)
+   stripped but no other processing.  Shared between importYAMLString (for
+   block scalar lookups) and preprocessYAMLLines. *)
+splitRawYAMLLines // beginDefinition;
+
+splitRawYAMLLines[ s_String ] :=
+    StringDelete[ #, "\r" ~~ EndOfString ] & /@ StringSplit[ s, "\n", All ];
+
+splitRawYAMLLines // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*preprocessYAMLLines*)
 (* Splits the input into per-line records that include indentation, the
@@ -85,12 +107,11 @@ preprocessYAMLLines // beginDefinition;
 
 preprocessYAMLLines[ s_String ] :=
     Module[ { rawLines, processed },
-        rawLines = StringSplit[ s, "\n", All ];
+        rawLines = splitRawYAMLLines @ s;
         processed = Catenate @ MapIndexed[
             Function[ { rawLine, idx },
-                Module[ { line, withoutComment, indent, text },
-                    line = StringDelete[ rawLine, "\r" ~~ EndOfString ];
-                    withoutComment = stripCommentOutsideQuotes @ line;
+                Module[ { withoutComment, indent, text },
+                    withoutComment = stripCommentOutsideQuotes @ rawLine;
                     indent = countLeadingSpaces @ withoutComment;
                     text = StringDelete[
                         StringDrop[ withoutComment, indent ],
@@ -247,6 +268,17 @@ sequenceLineQ[ s_String ] := StringStartsQ[ s, "- " ];
 sequenceLineQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*blockScalarHeaderQ*)
+(* Recognize the header tokens that introduce a literal ("|") or folded (">")
+   block scalar, with optional chomping indicator.  Explicit indentation
+   indicators (e.g. "|2") are not currently supported. *)
+blockScalarHeaderQ // beginDefinition;
+blockScalarHeaderQ[ "|" | ">" | "|-" | "|+" | ">-" | ">+" ] := True;
+blockScalarHeaderQ[ _ ] := False;
+blockScalarHeaderQ // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*parseYAMLMapping*)
 parseYAMLMapping // beginDefinition;
@@ -278,31 +310,42 @@ parseYAMLMapping[ lines_List, startPos_Integer, blockIndent_Integer ] := Enclose
 
             pos++;
 
-            If[ valueText === "",
-                (* Child block on subsequent lines, or empty value *)
-                Which[
-                    (* Indented child block at strictly greater indent *)
-                    pos <= Length @ lines && lines[[ pos, "Indent" ]] > blockIndent,
-                        { value, nextPos } = ConfirmMatch[
-                            parseYAMLBlock[ lines, pos, lines[[ pos, "Indent" ]] ],
-                            { _, _Integer },
-                            "ChildBlock"
-                        ];
-                        pos = nextPos,
-                    (* Compact block sequence: YAML 1.2 allows sequence items
-                       to sit at the same indent as the parent mapping key,
-                       e.g. the widely used GitHub Actions `steps:` layout. *)
-                    pos <= Length @ lines && lines[[ pos, "Indent" ]] === blockIndent && sequenceLineQ @ lines[[ pos, "Text" ]],
-                        { value, nextPos } = ConfirmMatch[
-                            parseYAMLSequence[ lines, pos, blockIndent ],
-                            { _, _Integer },
-                            "CompactSeq"
-                        ];
-                        pos = nextPos,
-                    True,
-                        value = Null
-                ],
-                value = Block[ { $yamlLine = line[ "Line" ] }, parseScalar @ valueText ]
+            Which[
+                (* Empty value -- either a child block on the next lines, or Null *)
+                valueText === "",
+                    Which[
+                        (* Indented child block at strictly greater indent *)
+                        pos <= Length @ lines && lines[[ pos, "Indent" ]] > blockIndent,
+                            { value, nextPos } = ConfirmMatch[
+                                parseYAMLBlock[ lines, pos, lines[[ pos, "Indent" ]] ],
+                                { _, _Integer },
+                                "ChildBlock"
+                            ];
+                            pos = nextPos,
+                        (* Compact block sequence: YAML 1.2 allows sequence items
+                           to sit at the same indent as the parent mapping key,
+                           e.g. the widely used GitHub Actions `steps:` layout. *)
+                        pos <= Length @ lines && lines[[ pos, "Indent" ]] === blockIndent && sequenceLineQ @ lines[[ pos, "Text" ]],
+                            { value, nextPos } = ConfirmMatch[
+                                parseYAMLSequence[ lines, pos, blockIndent ],
+                                { _, _Integer },
+                                "CompactSeq"
+                            ];
+                            pos = nextPos,
+                        True,
+                            value = Null
+                    ],
+                (* Block scalar header "|", ">", "|-", "|+", ">-", ">+" *)
+                blockScalarHeaderQ @ valueText,
+                    { value, nextPos } = ConfirmMatch[
+                        parseBlockScalar[ lines, pos, blockIndent, valueText, line[ "Line" ] ],
+                        { _String, _Integer },
+                        "BlockScalar"
+                    ];
+                    pos = nextPos,
+                (* Ordinary scalar on the same line as the key *)
+                True,
+                    value = Block[ { $yamlLine = line[ "Line" ] }, parseScalar @ valueText ]
             ];
 
             result[ key ] = value
@@ -502,7 +545,15 @@ parseYAMLSequence[ lines_List, startPos_Integer, blockIndent_Integer ] := Enclos
                 ],
                 valueText = StringTrim @ StringDrop[ text, 2 ];
                 pos++;
-                value = Block[ { $yamlLine = line[ "Line" ] }, parseScalar @ valueText ]
+                If[ blockScalarHeaderQ @ valueText,
+                    { value, nextPos } = ConfirmMatch[
+                        parseBlockScalar[ lines, pos, blockIndent, valueText, line[ "Line" ] ],
+                        { _String, _Integer },
+                        "BlockScalar"
+                    ];
+                    pos = nextPos,
+                    value = Block[ { $yamlLine = line[ "Line" ] }, parseScalar @ valueText ]
+                ]
             ];
 
             AppendTo[ result, value ]
@@ -514,6 +565,160 @@ parseYAMLSequence[ lines_List, startPos_Integer, blockIndent_Integer ] := Enclos
 ];
 
 parseYAMLSequence // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*parseBlockScalar*)
+(* Parses a literal ("|") or folded (">") block scalar.  parentIndent is the
+   indent of the line that bore the block header; content lines must sit at
+   indent > parentIndent.  We walk $yamlRawLines rather than the preprocessed
+   stream because the preprocessor has already stripped comments, and body
+   content like "# heading" must be preserved verbatim.  Returns
+   { content, newPos }, where newPos is the next position in the preprocessed
+   stream past every line that belongs to the scalar body. *)
+parseBlockScalar // beginDefinition;
+
+parseBlockScalar[ lines_List, pos_Integer, parentIndent_Integer, header_String, headerLineNum_Integer ] := Enclose[
+    Module[ { style, chomping, rawLines, n, baseIndent, contentLines, i, lastIdx, body, content, newPos },
+        style    = StringTake[ header, 1 ];
+        chomping = Which[
+            StringContainsQ[ header, "-" ], "strip",
+            StringContainsQ[ header, "+" ], "keep",
+            True,                           "clip"
+        ];
+        rawLines = $yamlRawLines;
+        n        = Length @ rawLines;
+
+        (* Find base indent: the indent of the first non-blank line whose
+           indent is strictly greater than parentIndent.  Blank lines above
+           that first content line belong to the scalar body but don't
+           contribute to the base indent. *)
+        baseIndent = Missing[ ];
+        i          = headerLineNum + 1;
+        While[ i <= n,
+            If[ blankRawLineQ @ rawLines[[ i ]],
+                i++;
+                Continue[ ]
+            ];
+            With[ { leading = countLeadingSpaces @ rawLines[[ i ]] },
+                If[ leading > parentIndent, baseIndent = leading ];
+                Break[ ]
+            ]
+        ];
+
+        If[ MissingQ @ baseIndent,
+            (* No content at sufficient indent -- empty block scalar *)
+            { "", pos },
+            (* Collect content lines until we hit a non-blank line whose
+               indent drops below baseIndent (or EOF). *)
+            contentLines = { };
+            lastIdx      = headerLineNum;
+            i            = headerLineNum + 1;
+            While[ i <= n,
+                With[ { raw = rawLines[[ i ]] },
+                    Which[
+                        blankRawLineQ @ raw,
+                            AppendTo[ contentLines, "" ];
+                            lastIdx = i;
+                            i++,
+                        countLeadingSpaces[ raw ] < baseIndent,
+                            Break[ ],
+                        True,
+                            AppendTo[ contentLines, StringDrop[ raw, baseIndent ] ];
+                            lastIdx = i;
+                            i++
+                    ]
+                ]
+            ];
+
+            body = If[ style === ">",
+                foldBlockScalarLines @ contentLines,
+                StringRiffle[ contentLines, "\n" ]
+            ];
+            content = applyBlockScalarChomping[ body, chomping ];
+
+            (* Advance pos past every preprocessed line whose raw line index
+               falls within the scalar body. *)
+            newPos = pos;
+            While[ newPos <= Length @ lines && lines[[ newPos, "Line" ]] <= lastIdx,
+                newPos++
+            ];
+
+            { content, newPos }
+        ]
+    ],
+    throwInternalFailure
+];
+
+parseBlockScalar // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*blankRawLineQ*)
+blankRawLineQ // beginDefinition;
+blankRawLineQ[ s_String ] := StringTrim[ s ] === "";
+blankRawLineQ // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*stripTrailingNewlines*)
+stripTrailingNewlines // beginDefinition;
+stripTrailingNewlines[ s_String ] := StringReplace[ s, "\n".. ~~ EndOfString -> "" ];
+stripTrailingNewlines // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*applyBlockScalarChomping*)
+(* Applies one of the three YAML chomping indicators to the assembled body:
+     "strip" (trailing "-"):  remove every trailing newline
+     "clip"  (default):       keep exactly one trailing newline when body has
+                              any non-newline content, otherwise empty
+     "keep"  (trailing "+"):  preserve trailing empty lines and append the
+                              final terminator *)
+applyBlockScalarChomping // beginDefinition;
+
+applyBlockScalarChomping[ body_String, "strip" ] := stripTrailingNewlines @ body;
+
+applyBlockScalarChomping[ body_String, "clip" ] :=
+    With[ { stripped = stripTrailingNewlines @ body },
+        If[ stripped === "", "", stripped <> "\n" ]
+    ];
+
+applyBlockScalarChomping[ body_String, "keep" ] :=
+    If[ body === "", "", body <> "\n" ];
+
+applyBlockScalarChomping // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*foldBlockScalarLines*)
+(* Implements a simplified folded-scalar rule: runs of consecutive non-empty
+   lines are joined with single spaces, and blank lines are preserved as
+   literal newlines.  We don't implement the "more-indented preserved" rule
+   from the YAML spec because none of the workflow files in this repo rely
+   on it, and the omission only affects unusual mixed-indent content. *)
+foldBlockScalarLines // beginDefinition;
+
+foldBlockScalarLines[ { } ] := "";
+
+foldBlockScalarLines[ lines_List ] :=
+    Module[ { bag, inRun },
+        bag   = Internal`Bag[ ];
+        inRun = False;
+        Do[
+            If[ lines[[ i ]] === "",
+                Internal`StuffBag[ bag, "\n" ];
+                inRun = False,
+                If[ inRun, Internal`StuffBag[ bag, " " ] ];
+                Internal`StuffBag[ bag, lines[[ i ]] ];
+                inRun = True
+            ],
+            { i, 1, Length @ lines }
+        ];
+        StringJoin @ Internal`BagPart[ bag, All ]
+    ];
+
+foldBlockScalarLines // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
