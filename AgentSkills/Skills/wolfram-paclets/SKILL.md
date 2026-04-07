@@ -4,7 +4,7 @@ description: Checks, builds, and submits Wolfram Language paclets. Use this skil
 compatibility: Requires the Wolfram MCP server or wolframscript on PATH
 metadata:
   author: Wolfram Research
-  version: 2.0.1
+  version: 2.0.4
 ---
 
 # Wolfram Paclets
