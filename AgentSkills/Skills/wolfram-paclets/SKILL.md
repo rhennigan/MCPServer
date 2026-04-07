@@ -1,12 +1,11 @@
 ---
-
-## name: wolfram-paclets
-
+name: wolfram-paclets
 description: Checks, builds, and submits Wolfram Language paclets. Use this skill when working on paclet packaging, release readiness, and paclet repository submission workflows.
 compatibility: Requires the Wolfram MCP server or wolframscript on PATH
 metadata:
   author: Wolfram Research
-  version: 2.0.1
+  version: 2.0.4
+---
 
 # Wolfram Paclets
 
@@ -45,10 +44,10 @@ Reminder: These scripts are only relevant when you do not have the equivalent MC
 ## Available Tools
 
 
-| Script         | When to use                                               |
-| -------------- | --------------------------------------------------------- |
-| `CheckPaclet`  | Check a paclet for issues before building or submitting   |
-| `BuildPaclet`  | Build a `.paclet` archive from a paclet directory         |
+| Script | When to use |
+| --- | --- |
+| `CheckPaclet` | Check a paclet for issues before building or submitting |
+| `BuildPaclet` | Build a `.paclet` archive from a paclet directory |
 | `SubmitPaclet` | Submit a paclet to the Wolfram Language Paclet Repository |
 
 
@@ -67,4 +66,3 @@ Use `SubmitPaclet` to submit a paclet to the Wolfram Language Paclet Repository.
 ## Other Tips
 
 - Run `CheckPaclet` first, then `BuildPaclet`, and only then `SubmitPaclet` for a reliable release flow.
-
