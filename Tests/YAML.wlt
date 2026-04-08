@@ -785,6 +785,21 @@ VerificationTest[
     TestID   -> "ImportYAMLString-ParseErrorReportsInputLabel@@Tests/YAML.wlt:775,1-786,2"
 ]
 
+(* Errors from within parseFlowMapping must report the line the flow mapping
+   appeared on, not a hard-coded 0. *)
+VerificationTest[
+    Module[ { result, params },
+        result = Wolfram`AgentTools`Common`catchAlways @
+            Wolfram`AgentTools`Common`importYAMLString[ "foo: 1\nbar: {no_colon}" ];
+        params = If[ MatchQ[ result, _Failure ], result[ "MessageParameters" ], { } ];
+        MatchQ[ result, _Failure ] && Length[ params ] >= 2 && params[[ 2 ]] === 2
+    ],
+    True,
+    { AgentTools::InvalidYAMLFormat },
+    SameTest -> Equal,
+    TestID   -> "ImportYAMLString-FlowMappingErrorReportsLine@@Tests/YAML.wlt:790,1-801,2"
+]
+
 (* Trailing content (e.g. a top-level sequence after a mapping) must surface
    as an error rather than being silently dropped. *)
 VerificationTest[
@@ -793,7 +808,7 @@ VerificationTest[
     _Failure,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> MatchQ,
-    TestID   -> "ImportYAMLString-TrailingSequenceAfterMapping@@Tests/YAML.wlt:790,1-797,2"
+    TestID   -> "ImportYAMLString-TrailingSequenceAfterMapping@@Tests/YAML.wlt:805,1-812,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -810,7 +825,7 @@ VerificationTest[
     _Failure,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> MatchQ,
-    TestID   -> "ImportYAMLString-UnterminatedDoubleQuotedScalar@@Tests/YAML.wlt:807,1-814,2"
+    TestID   -> "ImportYAMLString-UnterminatedDoubleQuotedScalar@@Tests/YAML.wlt:822,1-829,2"
 ]
 
 VerificationTest[
@@ -819,7 +834,7 @@ VerificationTest[
     _Failure,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> MatchQ,
-    TestID   -> "ImportYAMLString-UnterminatedSingleQuotedScalar@@Tests/YAML.wlt:816,1-823,2"
+    TestID   -> "ImportYAMLString-UnterminatedSingleQuotedScalar@@Tests/YAML.wlt:831,1-838,2"
 ]
 
 VerificationTest[
@@ -828,7 +843,7 @@ VerificationTest[
     _Failure,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> MatchQ,
-    TestID   -> "ImportYAMLString-UnterminatedFlowSequence@@Tests/YAML.wlt:825,1-832,2"
+    TestID   -> "ImportYAMLString-UnterminatedFlowSequence@@Tests/YAML.wlt:840,1-847,2"
 ]
 
 VerificationTest[
@@ -837,7 +852,7 @@ VerificationTest[
     _Failure,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> MatchQ,
-    TestID   -> "ImportYAMLString-UnterminatedFlowMapping@@Tests/YAML.wlt:834,1-841,2"
+    TestID   -> "ImportYAMLString-UnterminatedFlowMapping@@Tests/YAML.wlt:849,1-856,2"
 ]
 
 VerificationTest[
@@ -846,7 +861,7 @@ VerificationTest[
     _Failure,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> MatchQ,
-    TestID   -> "ImportYAMLString-TrailingAfterDoubleQuotedScalar@@Tests/YAML.wlt:843,1-850,2"
+    TestID   -> "ImportYAMLString-TrailingAfterDoubleQuotedScalar@@Tests/YAML.wlt:858,1-865,2"
 ]
 
 VerificationTest[
@@ -855,7 +870,7 @@ VerificationTest[
     _Failure,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> MatchQ,
-    TestID   -> "ImportYAMLString-UnbalancedNestedFlowSequence@@Tests/YAML.wlt:852,1-859,2"
+    TestID   -> "ImportYAMLString-UnbalancedNestedFlowSequence@@Tests/YAML.wlt:867,1-874,2"
 ]
 
 VerificationTest[
@@ -864,7 +879,7 @@ VerificationTest[
     _Failure,
     { AgentTools::InvalidYAMLFormat },
     SameTest -> MatchQ,
-    TestID   -> "ImportYAMLString-UnterminatedFlowSequenceInBlockSequence@@Tests/YAML.wlt:861,1-868,2"
+    TestID   -> "ImportYAMLString-UnterminatedFlowSequenceInBlockSequence@@Tests/YAML.wlt:876,1-883,2"
 ]
 
 (* Quoted strings inside a flow construct should still be respected -- a quoted
@@ -873,7 +888,7 @@ VerificationTest[
     Wolfram`AgentTools`Common`importYAMLString[ "key: [\"]\", \"x\"]" ],
     <| "key" -> { "]", "x" } |>,
     SameTest -> Equal,
-    TestID   -> "ImportYAMLString-FlowSequenceWithQuotedBracket@@Tests/YAML.wlt:872,1-877,2"
+    TestID   -> "ImportYAMLString-FlowSequenceWithQuotedBracket@@Tests/YAML.wlt:887,1-892,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

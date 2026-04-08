@@ -904,7 +904,7 @@ parseFlowMapping[ s_String ] := Enclose[
             Scan[
                 Function[ item,
                     Module[ { key, valueText },
-                        { key, valueText } = parseMappingLine[ item, 0 ];
+                        { key, valueText } = parseMappingLine[ item, $yamlLine ];
                         result[ key ] = parseScalar @ valueText
                     ]
                 ],
