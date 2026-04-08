@@ -75,7 +75,8 @@ $AgentToolsContexts = {
     "Wolfram`AgentTools`Tools`",
     "Wolfram`AgentTools`UIResources`",
     "Wolfram`AgentTools`Utilities`",
-    "Wolfram`AgentTools`ValidateAgentToolsPacletExtension`"
+    "Wolfram`AgentTools`ValidateAgentToolsPacletExtension`",
+    "Wolfram`AgentTools`YAML`"
 };
 
 Scan[ Needs[ # -> None ] &, $AgentToolsContexts ];

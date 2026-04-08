@@ -20,6 +20,7 @@ The following clients have built-in support for automatic configuration via `Ins
 | Copilot CLI | `"CopilotCLI"` | `"Copilot"` | JSON | No |
 | Cursor | `"Cursor"` | — | JSON | No |
 | Gemini CLI | `"GeminiCLI"` | `"Gemini"` | JSON | No |
+| Goose | `"Goose"` | — | YAML | No |
 | Antigravity | `"Antigravity"` | `"GoogleAntigravity"` | JSON | No |
 | Kiro | `"Kiro"` | — | JSON | Yes |
 | Codex CLI | `"Codex"` | `"OpenAICodex"` | TOML | Yes |
@@ -62,7 +63,7 @@ This creates a `.mcp.json` file in the specified project directory.
 InstallMCPServer[File["/custom/path/config.json"]]
 ```
 
-For TOML files (Codex), the format is auto-detected from the `.toml` extension.
+For TOML files (Codex), the format is auto-detected from the `.toml` extension. For YAML files (Goose), the format is auto-detected from the `.yaml` or `.yml` extension.
 
 ### Uninstalling
 
@@ -175,6 +176,30 @@ Note: Copilot CLI requires the `tools` field to specify which tools to enable. `
 | Global | `~/.gemini/antigravity/mcp_config.json` |
 
 **Format:** Same as Claude Desktop (`mcpServers` key).
+
+### Goose
+
+| OS | Config Location |
+|----|----------------|
+| macOS | `~/.config/goose/config.yaml` |
+| Linux | `~/.config/goose/config.yaml` |
+| Windows | `%APPDATA%\Block\goose\config\config.yaml` |
+
+**Format (YAML):**
+```yaml
+extensions:
+  ServerName:
+    name: ServerName
+    cmd: "..."
+    args: ["...", "..."]
+    enabled: true
+    envs:
+      KEY: value
+    type: stdio
+    timeout: 300
+```
+
+Note: Goose uses YAML with an `extensions` key (not `mcpServers`) and renames several fields: `command` → `cmd`, `env` → `envs`. `InstallMCPServer` automatically adds the required `name`, `enabled: true`, `type: stdio`, and `timeout: 300` fields. Goose has no project-level configuration.
 
 ### Kiro
 
@@ -479,7 +504,7 @@ Each entry is keyed by the canonical client name and contains an association wit
 |-------|----------|-------------|
 | `"DisplayName"` | Yes | Human-readable name shown to users |
 | `"Aliases"` | Yes | List of alternative names (can be empty `{ }`) |
-| `"ConfigFormat"` | Yes | File format: `"JSON"` or `"TOML"` |
+| `"ConfigFormat"` | Yes | File format: `"JSON"`, `"TOML"`, or `"YAML"` |
 | `"ConfigKey"` | Yes | Key path to the servers section (e.g. `{"mcpServers"}` or `{"servers"}`) |
 | `"URL"` | Yes | Client's website or download page |
 | `"InstallLocation"` | Yes | Config file path(s) per OS (see below) |
