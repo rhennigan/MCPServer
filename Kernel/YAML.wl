@@ -210,6 +210,14 @@ stripCommentOutsideQuotes[ s_String ] := Enclose[
                     Internal`StuffBag[ out, ch ],
                 inDouble,
                     Internal`StuffBag[ out, ch ],
+                (* "'" inside a single-quoted scalar is escaped as "''" -- consume
+                   both quotes and remain inside the single-quoted span. *)
+                inSingle && ch === "'" && i < n && chars[[ i + 1 ]] === "'",
+                    Internal`StuffBag[ out, ch ];
+                    Internal`StuffBag[ out, chars[[ i + 1 ]] ];
+                    prev = chars[[ i + 1 ]];
+                    i += 2;
+                    Continue[ ],
                 inSingle && ch === "'",
                     inSingle = False;
                     Internal`StuffBag[ out, ch ],
@@ -940,6 +948,13 @@ splitFlowElements[ s_String ] :=
                     Internal`StuffBag[ current, ch ],
                 inDouble,
                     Internal`StuffBag[ current, ch ],
+                (* "'" inside a single-quoted scalar is escaped as "''" -- consume
+                   both quotes and remain inside the single-quoted span. *)
+                inSingle && ch === "'" && i < n && chars[[ i + 1 ]] === "'",
+                    Internal`StuffBag[ current, ch ];
+                    Internal`StuffBag[ current, chars[[ i + 1 ]] ];
+                    i += 2;
+                    Continue[ ],
                 inSingle && ch === "'",
                     inSingle = False;
                     Internal`StuffBag[ current, ch ],
