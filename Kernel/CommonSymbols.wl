@@ -11,6 +11,7 @@ BeginPackage[ "Wolfram`AgentTools`Common`" ];
 `$mcpEvaluation;
 `$objectVersion;
 `$pacletVersion;
+`$releaseID;
 `$rootPath;
 `$serverVersion;
 `$storagePath;

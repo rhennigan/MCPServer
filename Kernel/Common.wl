@@ -570,7 +570,9 @@ $maxBugReportURLSize = 7000;
 
 $maxPartLength = 500;
 
-$thisPaclet    := PacletObject[ "Wolfram/AgentTools" ];
+(* This is a temporary setting that's dynamically overwritten at load time in AgentToolsLoader.wl *)
+$thisPaclet = PacletObject @ File @ DirectoryName[ $InputFileName, 2 ];
+
 $pacletVersion := $thisPaclet[ "Version" ];
 $debugData     := debugData @ $thisPaclet[ "PacletInfo" ];
 $releaseID     := $releaseID = getReleaseID @ $thisPaclet;
@@ -587,15 +589,19 @@ getReleaseID[ paclet_PacletObject, "$RELEASE_ID$" | "None" | Except[ _String ] ]
 getReleaseID[ paclet_, id_String ] := id;
 
 
-getReleaseID0[ dir_? DirectoryQ ] :=
-    Module[ { stdOut, id },
-        stdOut = Quiet @ RunProcess[ { "git", "rev-parse", "HEAD" }, "StandardOutput", ProcessDirectory -> dir ];
-        id = If[ StringQ @ stdOut, StringTrim @ stdOut, "" ];
-        If[ StringMatchQ[ id, Repeated[ HexadecimalCharacter, { 40 } ] ],
-            id,
-            "None"
-        ]
-    ];
+getReleaseID0[ dir_? DirectoryQ ] := FirstCase[
+    Unevaluated @ {
+        Environment[ "BUILD_VCS_NUMBER_WolframLanguage_Paclets_AgentTools_AgentTools" ],
+        Environment[ "GITHUB_SHA" ],
+        Quiet @ RunProcess[ { "git", "rev-parse", "HEAD" }, "StandardOutput", ProcessDirectory -> dir ]
+    },
+    res_ :> With[
+        { str1 = res },
+        { str2 = If[ StringQ @ str1, StringTrim @ str1, "None" ] },
+        str2 /; StringMatchQ[ str2, Repeated[ HexadecimalCharacter, { 40 } ] ]
+    ],
+    "None"
+];
 
 getReleaseID0[ ___ ] := "None";
 
