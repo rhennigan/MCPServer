@@ -46,6 +46,7 @@ BeginPackage[ "Wolfram`AgentTools`Common`" ];
 `mcpServerLogFile;
 `messageFailure;
 `messagePrint;
+`mxInitialize;
 `readRawJSONFile;
 `readWXFFile;
 `relatedDocumentation;
