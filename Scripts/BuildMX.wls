@@ -52,9 +52,28 @@ copyTemporary[ dir_ ] :=
     ];
 
 copyTemporary0[ dir_, tmp_, file_ ] :=
-    With[ { rel = StringReplace[ ResourceFunction[ "RelativePath" ][ dir, file ], "\\" -> "/" ] },
-        CopyFile[ file, ResourceFunction[ "EnsureFilePath" ][ FileNameJoin @ { tmp, rel } ] ]
+    With[ { rel = relativePath[ dir, file ] },
+        CopyFile[ file, ensureFilePath @ FileNameJoin @ { tmp, rel } ]
     ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*relativePath*)
+relativePath[ dir0_, file0_ ] :=
+    Enclose @ Module[ { dir, file, relative },
+        dir = ConfirmBy[ ExpandFileName @ dir0, StringQ, "Directory" ];
+        file = ConfirmBy[ ExpandFileName @ file0, StringQ, "File" ];
+        relative = StringDelete[ file, StartOfString~~dir~~($PathnameSeparator|"") ];
+        StringReplace[ relative, "\\" -> "/" ]
+    ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*ensureFilePath*)
+ensureFilePath[ file_ ] := Enclose[
+    ConfirmBy[ GeneralUtilities`EnsureDirectory @ DirectoryName @ file, DirectoryQ, "Directory" ];
+    file
+];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -91,11 +110,11 @@ expandTags[ root_, file_ ] :=
 getNewTags[ root_, file_ ] :=
     Module[ { relativeFile },
 
-        relativeFile = StringReplace[ ResourceFunction[ "RelativePath" ][ root, file ], "\\" -> "/" ];
+        relativeFile = relativePath[ root, file ];
 
         Cases[
             codeParse @ file,
-            ResourceFunction[ "ASTPattern" ][
+            astPattern[
                 HoldPattern @ Alternatives[
                     (Confirm|ConfirmAssert)[ _, $tag1_String ],
                     (ConfirmBy|ConfirmMatch|ConfirmQuiet)[ _, _, $tag2_String ]
@@ -121,12 +140,14 @@ getNewTags[ root_, file_ ] :=
 
 $tagTemplate = StringTemplate[ "\"`Tag`@@`File`:`Line1`,`Column1`-`Line2`,`Column2`\"" ];
 
+astPattern := astPattern = ResourceFunction[ "ASTPattern", "Function" ];
+
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
 (*getTagPos*)
 getTagPos[ file_ ] := Cases[
     codeParseIndexed @ file,
-    ResourceFunction[ "ASTPattern" ][
+    astPattern[
         HoldPattern[
             Alternatives[
                 (Confirm|ConfirmAssert)[ _, $tag1_String ],
