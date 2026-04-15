@@ -102,6 +102,22 @@ VerificationTest[
 ]
 
 (* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*CloudDeploy Failure Fallback*)
+
+(* Regression test: when CloudDeploy fails, wolframAlphaToolEvaluateUI must fall back gracefully
+   instead of surfacing an internal AgentTools error *)
+VerificationTest[
+    Block[
+        { Wolfram`AgentTools`Common`$clientSupportsUI = True, CloudDeploy = ($Failed &) },
+        $DefaultMCPTools[ "WolframAlpha" ][ <| "query" -> "2+2" |> ]
+    ],
+    _String | KeyValuePattern[ "Content" -> { __Association } ],
+    SameTest -> MatchQ,
+    TestID   -> "wolframAlphaToolEvaluate-CloudDeployFallback@@Tests/WolframAlpha-UI.wlt:104,1-113,2"
+]
+
+(* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*makeUIResult*)
 

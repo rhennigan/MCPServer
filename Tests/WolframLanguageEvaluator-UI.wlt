@@ -134,6 +134,22 @@ VerificationTest[
 ]
 
 (* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*CloudDeploy Failure Fallback*)
+
+(* Regression test: when CloudDeploy fails, evaluateWolframLanguageUI must fall back gracefully
+   instead of surfacing an internal AgentTools error (previously threw $catchTopTag through Quiet) *)
+VerificationTest[
+    Block[
+        { Wolfram`AgentTools`Common`$clientSupportsUI = True, CloudDeploy = ($Failed &) },
+        $DefaultMCPTools[ "WolframLanguageEvaluator" ][ <| "code" -> "1+1", "timeConstraint" -> 30 |> ]
+    ],
+    _String | KeyValuePattern[ "Content" -> { __Association } ],
+    SameTest -> MatchQ,
+    TestID   -> "evaluateWolframLanguage-CloudDeployFallback@@Tests/WolframLanguageEvaluator-UI.wlt:136,1-144,2"
+]
+
+(* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*makeEvaluatorUIResult*)
 

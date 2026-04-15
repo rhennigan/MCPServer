@@ -123,6 +123,29 @@ skipIfScript @ VerificationTest[
     TestID   -> "WolframLanguage-ToolSchemaComplete@@Tests/StartMCPServer.wlt:118,16-124,2"
 ]
 
+(* Regression: all 7 WolframLanguage server tools must be present (issue #155) *)
+skipIfScript @ VerificationTest[
+    Sort @ $toolsResponse[[ "result", "tools", All, "name" ]],
+    Sort @ { "WolframLanguageContext", "WolframLanguageEvaluator", "ReadNotebook",
+             "WriteNotebook", "SymbolDefinition", "CodeInspector", "TestReport" },
+    TestID -> "WolframLanguage-ToolsListAllSeven@@Tests/StartMCPServer.wlt:128,16-133,2"
+]
+
+(* Regression: WolframLanguageEvaluator description must contain \[FreeformPrompt] as plain text
+   (not as a PUA Unicode character which can produce invalid JSON escapes) *)
+skipIfScript @ VerificationTest[
+    StringContainsQ[ $toolSchema[ "description" ], "\\[FreeformPrompt]" ],
+    True,
+    TestID -> "WolframLanguage-EvaluatorDescriptionFreeformPrompt@@Tests/StartMCPServer.wlt:136,16-140,2"
+]
+
+(* Regression: the full tools/list JSON response must be valid and round-trip through a JSON parser *)
+skipIfScript @ VerificationTest[
+    AssociationQ @ Developer`ReadRawJSONString @ Developer`WriteRawJSONString[ $toolsResponse, "Compact" -> True ],
+    True,
+    TestID -> "WolframLanguage-ToolsListJSONParses@@Tests/StartMCPServer.wlt:143,16-147,2"
+]
+
 skipIfScript @ VerificationTest[
     $evalResponse = SendMCPRequest[
         "tools/call",

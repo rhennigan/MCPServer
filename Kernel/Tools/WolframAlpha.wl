@@ -96,7 +96,7 @@ wolframAlphaToolEvaluateUI[ as_ ] :=
         ];
 
         (* Try to create UI-enhanced result with cloud notebook *)
-        uiResult = Quiet @ makeUIResult[ as, result ];
+        uiResult = Quiet @ catchAlways @ makeUIResult[ as, result ];
 
         (* If UI result succeeded, return it; otherwise fall back to standard behavior *)
         If[ MatchQ[ uiResult, KeyValuePattern[ "Content" -> { __Association } ] ],

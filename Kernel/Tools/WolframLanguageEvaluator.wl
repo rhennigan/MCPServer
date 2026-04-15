@@ -39,14 +39,14 @@ Do not ask permission to evaluate code.
 You have read access to local files.
 Always use the Wolfram context tool before using this tool to make sure you have the most up-to-date information.
 
-Use `\[FreeformPrompt][\"query\"]` to parse natural language into Wolfram Language expressions \
+Use `\\[FreeformPrompt][\"query\"]` to parse natural language into Wolfram Language expressions \
 (like ctrl+= in notebooks). Always use this for `Quantity`, `Entity`, `EntityClass`, etc. \
-It composes freely: `ColorNegate[\[FreeformPrompt][\"picture of a cat\"]]`.
+It composes freely: `ColorNegate[\\[FreeformPrompt][\"picture of a cat\"]]`.
 
 Examples:
 ```
-\[FreeformPrompt][\"France population\"]  (* Entity property value *)
-\[FreeformPrompt][\"123 terawatt hours\"] (* Quantity *)
+\\[FreeformPrompt][\"France population\"]  (* Entity property value *)
+\\[FreeformPrompt][\"123 terawatt hours\"] (* Quantity *)
 ```
 
 The argument MUST be a string literal \[LongDash] it parses before evaluation, so runtime construction will not work.";
@@ -246,7 +246,7 @@ evaluateWolframLanguageUI[ code_String, timeConstraint_Integer ] :=
     Module[ { savedLine, result, uiResult },
         savedLine = $line;
         result = evaluateWolframLanguageForUI[ code, timeConstraint ];
-        uiResult = Quiet @ UsingFrontEnd @ makeEvaluatorUIResult[ code, result ];
+        uiResult = Quiet @ UsingFrontEnd @ catchAlways @ makeEvaluatorUIResult[ code, result ];
         If[ MatchQ[ uiResult, KeyValuePattern[ "Content" -> { __Association } ] ],
             uiResult,
             (* UI result creation failed; reuse already-computed string to avoid re-evaluation *)
