@@ -37,10 +37,9 @@ Use a free [Wolfram Engine Developer License](https://www.wolfram.com/developer-
 1. Get a free license at https://www.wolfram.com/developer-license/
 2. Activate once interactively:
    ```bash
-   docker run -it \
+   docker run -it --entrypoint wolframscript \
      -v ./Licensing:/root/.WolframEngine/Licensing \
-     ghcr.io/wolframresearch/mcpserver:latest \
-     wolframscript
+     ghcr.io/wolframresearch/mcpserver:latest
    ```
 3. Enter your Wolfram ID credentials when prompted
 4. For subsequent runs, mount the same licensing directory:
