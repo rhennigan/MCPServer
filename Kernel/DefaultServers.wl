@@ -109,7 +109,10 @@ $defaultMCPServers[ "WolframPacletDevelopment" ] := <|
             "TestReport",
             "CreateSymbolDoc",
             "EditSymbolDoc",
-            "EditSymbolDocExamples"
+            "EditSymbolDocExamples",
+            "CheckPaclet",
+            "BuildPaclet",
+            "SubmitPaclet"
         },
         "MCPPrompts" -> { "WolframLanguageSearch", "Notebook" }
     |>

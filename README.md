@@ -31,6 +31,7 @@ A Wolfram Language toolkit for integrating with AI agents and LLMs — providing
 - **MCP Apps** for interactive UI resources in supported clients (e.g., embedded notebook viewers, Wolfram\|Alpha result displays)
 - **Agent Skills** for distributing Wolfram tools as portable skills to AI coding agents (Claude Code, Cursor, Gemini CLI, VS Code, and [more](https://agentskills.io/))
 - **Paclet extensions** allowing third-party paclets to contribute MCP tools, prompts, and servers via the `"AgentTools"` extension
+- **Docker image** for running the MCP server in a container without a local Wolfram Engine installation
 
 ## Requirements
 
@@ -50,6 +51,14 @@ PacletInstall["Wolfram/AgentTools"]
 
 ```wl
 Needs["Wolfram`AgentTools`"]
+```
+
+### Docker Image
+
+A prebuilt Docker image is available as an alternative to a local Wolfram Engine installation. See [Docker documentation](docs/docker.md) for setup and MCP client configuration examples.
+
+```bash
+docker pull ghcr.io/wolframresearch/mcpserver:latest
 ```
 
 ## Quick Start
@@ -87,7 +96,7 @@ AgentTools includes four predefined server configurations, each optimized for di
 | **Wolfram** (default) | General-purpose use combining computational power with natural language | `WolframContext`, `WolframLanguageEvaluator`, `WolframAlpha` |
 | **WolframAlpha** | Natural language queries without code execution | `WolframAlphaContext`*, `WolframAlpha` |
 | **WolframLanguage** | Wolfram Language development and learning | `WolframLanguageContext`, `WolframLanguageEvaluator`, `ReadNotebook`, `WriteNotebook`, `SymbolDefinition`, `CodeInspector`, `TestReport` |
-| **WolframPacletDevelopment** | Developing and maintaining Wolfram paclets | All WolframLanguage tools plus documentation tools (`CreateSymbolDoc`, `EditSymbolDoc`, `EditSymbolDocExamples`) |
+| **WolframPacletDevelopment** | Developing and maintaining Wolfram paclets | All WolframLanguage tools plus documentation tools (`CreateSymbolDoc`, `EditSymbolDoc`, `EditSymbolDocExamples`) and paclet release tools (`CheckPaclet`, `BuildPaclet`, `SubmitPaclet`) |
 
 *\*Requires [LLMKit subscription](https://www.wolfram.com/notebook-assistant-llm-kit)*
 
@@ -111,6 +120,7 @@ AgentTools can be installed into the following MCP client applications:
 | [Copilot CLI](https://github.com/features/copilot/cli) | `"CopilotCLI"` | No |
 | [Cursor](https://www.cursor.com) | `"Cursor"` | No |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | `"GeminiCLI"` | No |
+| [Goose](https://block.github.io/goose/) | `"Goose"` | No |
 | [Google Antigravity](https://antigravity.google) | `"Antigravity"` | No |
 | [OpenAI Codex](https://openai.com/codex) | `"Codex"` | Yes |
 | [OpenCode](https://opencode.ai) | `"OpenCode"` | Yes |
@@ -193,6 +203,12 @@ While only `WolframAlphaContext` *requires* an [LLMKit subscription](https://www
 - **CreateSymbolDoc** - Create new symbol documentation pages
 - **EditSymbolDoc** - Edit existing symbol documentation pages
 - **EditSymbolDocExamples** - Edit example sections of documentation
+
+### Paclet Release Tools (Paclet Development)
+
+- **CheckPaclet** - Check a paclet for issues before building or submission
+- **BuildPaclet** - Build a `.paclet` archive for distribution
+- **SubmitPaclet** - Submit a paclet to the Wolfram Language Paclet Repository
 
 ### MCP Apps Tools
 

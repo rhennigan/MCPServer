@@ -100,6 +100,20 @@ To verify the installation:
 - Click "Manage MCP Servers" at the top right of the panel
 - Verify that "WolframLanguage" is listed under "Installed MCP Servers"
 
+### Goose
+
+```wl
+InstallMCPServer["Goose", "WolframLanguage"]
+```
+
+To verify the installation from the command line:
+
+```shell
+goose mcp list
+```
+
+The output should indicate that the "Wolfram" extension is enabled. Both the Goose desktop app and CLI share the same `config.yaml`, so the server will be available in both.
+
 ### OpenAI Codex
 
 Choose whether to install the server globally or for a single project. Project-level installation writes `.codex/config.toml` in the project root.

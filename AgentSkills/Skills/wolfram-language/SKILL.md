@@ -4,7 +4,7 @@ description: Evaluates Wolfram Language code, searches documentation, inspects c
 compatibility: Requires the Wolfram MCP server or wolframscript on PATH
 metadata:
   author: Wolfram Research
-  version: 2.0.0
+  version: 2.1.0
 ---
 
 # Wolfram Language
@@ -43,6 +43,7 @@ Reminder: These scripts are only relevant when you do not have the equivalent MC
 
 ## Available Tools
 
+
 | Script | When to use |
 | --- | --- |
 | `WolframLanguageContext` | Agentic search for documentation and other Wolfram Language resources |
@@ -50,6 +51,7 @@ Reminder: These scripts are only relevant when you do not have the equivalent MC
 | `SymbolDefinition` | Inspect how symbols are defined |
 | `TestReport` | Run `.wlt` test files and directories to verify correctness |
 | `CodeInspector` | Check Wolfram Language code or files for issues and style problems |
+
 
 ### WolframLanguageContext
 
@@ -83,18 +85,22 @@ Table[\[FreeformPrompt]["picture of a "<>name], {name, {"cat", "dog"}}]
 
 You can use a symbol as the second argument to specify the expected head of the parsed expression:
 
+
 | Input | Parsed Expression |
 | --- | --- |
 | `\[FreeformPrompt]["Pennsylvania", Entity]` | `Entity["AdministrativeDivision", {"Pennsylvania", "UnitedStates"}]` |
 | `\[FreeformPrompt]["lanthanide elements", EntityClass]` | `EntityClass["Element", "Lanthanide"]` |
 | `\[FreeformPrompt]["123 terawatt hours", Quantity]` | `Quantity[123, "Hours"*"Terawatts"]` |
 
+
 A string as the second argument represents an expected entity type, which can be an `Entity` or `EntityClass`:
+
 
 | Input | Parsed Expression |
 | --- | --- |
 | `\[FreeformPrompt]["Mercury", "Planet"]` | `Entity["Planet", "Mercury"]` |
 | `\[FreeformPrompt]["Mercury", "MannedSpaceMission"]` | `EntityClass["MannedSpaceMission", "ProjectMercuryMannedMission"]` |
+
 
 When in doubt, use the single argument form. You'll get feedback about other valid interpretations, which you can then choose from. For example:
 

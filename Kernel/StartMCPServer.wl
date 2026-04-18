@@ -995,7 +995,6 @@ writeLog // endDefinition;
 (* stderr output causes issues with several clients, so we disable it unless we know it's safe to use *)
 stderrEnabledQ // beginDefinition;
 stderrEnabledQ[ ] := stderrEnabledQ @ $clientName;
-stderrEnabledQ[ "claude-code" ] := True;
 stderrEnabledQ[ "claude-ai" ] := True;
 stderrEnabledQ[ _ ] := False;
 stderrEnabledQ // endDefinition;

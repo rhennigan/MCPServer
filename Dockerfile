@@ -12,7 +12,7 @@
 #
 # For node-locked licensing (free but requires persistent storage):
 #   docker run -i --rm \
-#     -v ./Licensing:/root/.WolframEngine/Licensing \
+#     -v ./Licensing:/home/wolframengine/.WolframEngine/Licensing \
 #     -e MCP_SERVER_NAME=Wolfram \
 #     ghcr.io/wolframresearch/mcpserver:latest
 
@@ -79,4 +79,4 @@ USER wolframengine
 WORKDIR /workspace
 
 # Entry point - MCP servers communicate via stdin/stdout
-CMD ["wolframscript", "-f", "/opt/AgentTools/Scripts/StartMCPServer.wls"]
+ENTRYPOINT ["/bin/bash", "-c", "exec wolframscript -script /opt/AgentTools/Scripts/StartMCPServer.wls"]

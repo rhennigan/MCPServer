@@ -22,6 +22,17 @@
             "CodeInspector"
         }
     |>,
+    "wolfram-paclets" -> <|
+        "References" -> {
+            "GetWolframEngine",
+            "SetUpWolframMCPServer"
+        },
+        "Scripts" -> {
+            "CheckPaclet",
+            "BuildPaclet",
+            "SubmitPaclet"
+        }
+    |>,
     "wolfram-notebooks" -> <|
         "References" -> {
             "GetWolframEngine",

@@ -24,7 +24,7 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: wolframresearch/mcpserver
   WOLFRAMSCRIPT_ENTITLEMENTID: ${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
 
 jobs:
@@ -92,4 +92,5 @@ jobs:
         echo "Image pulled successfully"
         # Basic sanity check: verify that the container can start.
         # Note: Full runtime test requires Wolfram Engine license.
-        docker run --rm --env WOLFRAMSCRIPT_ENTITLEMENTID "$IMAGE_TAG" wolframscript -code '$Version'
+        # Override ENTRYPOINT since the default starts the MCP server on stdin.
+        docker run --rm --entrypoint wolframscript --env WOLFRAMSCRIPT_ENTITLEMENTID "$IMAGE_TAG" -code '$Version'

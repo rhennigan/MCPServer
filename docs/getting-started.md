@@ -109,7 +109,7 @@ The `"DevelopmentMode"` option works with any supported agent. Use the appropria
 | Agent | Target Name | Config Location |
 |-------|-------------|-----------------|
 | Claude Code | `{"ClaudeCode", "/path/to/project"}` | `.mcp.json` in project |
-| VS Code | `{"VisualStudioCode", "/path/to/project"}` | `.vscode/settings.json` |
+| VS Code | `{"VisualStudioCode", "/path/to/project"}` | `.vscode/mcp.json` |
 | OpenCode | `{"OpenCode", "/path/to/project"}` | `opencode.json` in project |
 
 ### Development Mode Options

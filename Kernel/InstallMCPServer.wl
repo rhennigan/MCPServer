@@ -155,6 +155,45 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
     throwInternalFailure
 ];
 
+installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_, devMode_ ] /; $installClientName === "Goose" := Enclose[
+    Module[ { target, name, configName, json, data, server, existing, extensions },
+
+        If[ verifyLLMKit, ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ] ];
+        initializeTools @ obj;
+        Confirm[ validatePacletServerDefinitions @ obj, "ValidatePacletServerDefinitions" ];
+
+        target     = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
+        name       = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
+        configName = ConfirmBy[ resolveMCPServerName @ obj, StringQ, "ConfigName" ];
+        json       = ConfirmBy[ obj[ "JSONConfiguration" ], StringQ, "JSONConfiguration" ];
+        data       = ConfirmBy[ Developer`ReadRawJSONString @ json, AssociationQ, "JSONConfiguration" ];
+        server     = ConfirmBy[ addEnvironmentVariables[ data[ "mcpServers", name ], env ], AssociationQ, "Server" ];
+        If[ devMode =!= False,
+            server[ "args" ] = ConfirmMatch[ makeDevelopmentArgs @ devMode, { __String }, "DevelopmentArgs" ]
+        ];
+
+        (* Convert to Goose's extension shape and stamp the display name *)
+        server = ConfirmBy[ convertToGooseFormat @ server, AssociationQ, "GooseServer" ];
+        server = Prepend[ server, "name" -> configName ];
+
+        (* Read existing YAML config -- empty mapping if missing, otherwise the
+           parsed Association.  Surfaces InvalidMCPConfiguration on parse failure
+           so we never silently overwrite a user-edited file. *)
+        existing   = ConfirmBy[ readExistingGooseConfig @ target, AssociationQ, "Existing" ];
+        extensions = Replace[ Lookup[ existing, "extensions", <| |> ], Except[ _? AssociationQ ] -> <| |> ];
+        extensions[ configName ] = server;
+        existing[ "extensions" ] = extensions;
+
+        ConfirmBy[ exportYAML[ target, existing ], fileQ, "Export" ];
+
+        clearStaleBuiltInRecords[ target, configName, obj ];
+        ConfirmBy[ recordMCPInstallation[ target, obj ], FileExistsQ, "Record" ];
+
+        installSuccess[ name, target, obj ]
+    ],
+    throwInternalFailure
+];
+
 installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_, devMode_ ] := Enclose[
     Module[ { target, name, configName, json, data, server, existing, path, convert },
 
@@ -173,7 +212,7 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
         ];
         existing = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
 
-        path    = ConfirmMatch[ configKeyPath[ ], { __String }, "ConfigKeyPath" ];
+        path    = ConfirmMatch[ configKeyPath @ target, { __String }, "ConfigKeyPath" ];
         convert = serverConverter @ $installClientName;
         server  = ConfirmBy[ convert @ server, AssociationQ, "ConvertedServer" ];
 
@@ -453,13 +492,15 @@ guessClientName[ file_? fileQ ] := Enclose[
         Switch[ split,
             { __, ".mcp.json" }, Throw[ "ClaudeCode" ],
             { __, "opencode.json" }, Throw[ "OpenCode" ],
-            { __, ".vscode", "settings.json" }, Throw[ "VisualStudioCode" ],
+            { __, ".vscode", "settings.json" | "mcp.json" }, Throw[ "VisualStudioCode" ],
+            { __, ".kiro", "settings", "mcp.json" }, Throw[ "Kiro" ],
             { __, ".zed", "settings.json" }, Throw[ "Zed" ]
         ];
 
         (* Try to guess from the file extension *)
         extension = ToLowerCase @ ConfirmBy[ FileExtension @ file, StringQ, "Extension" ];
         If[ extension === "toml", Throw[ "Codex" ] ];
+        If[ extension === "yaml" || extension === "yml", Throw[ "Goose" ] ];
         If[ extension === "json", Throw @ guessClientNameFromJSON @ file ];
 
         (* Try to guess from the file format (only if the file exists) *)
@@ -514,6 +555,15 @@ guessClientNameFromJSON[ file_ ] := Enclose[
 
         (* Tier 1: unique top-level keys *)
         If[ KeyExistsQ[ json, "context_servers" ], Throw[ "Zed" ] ];
+
+        (* New mcp.json format: "servers" at root level.
+           Require the filename to be mcp.json to avoid false positives
+           from unrelated JSON files that happen to have a "servers" key. *)
+        If[ KeyExistsQ[ json, "servers" ] && AssociationQ @ json[ "servers" ],
+            With[ { name = Quiet @ ToLowerCase @ Last @ FileNameSplit @ file },
+                If[ name === "mcp.json", Throw[ "VisualStudioCode" ] ]
+            ]
+        ];
 
         If[ KeyExistsQ[ json, "mcp" ] && AssociationQ @ json[ "mcp" ],
             mcp = json[ "mcp" ];
@@ -681,6 +731,47 @@ convertToCodexFormat // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*convertToGooseFormat*)
+(* Maps the internal mcpServers entry shape (command/args/env) to Goose's
+   extensions entry shape (cmd/args/envs/enabled/type/timeout).  The display
+   "name" field is *not* set here -- the install function prepends it after
+   conversion since the converter doesn't know configName. *)
+convertToGooseFormat // beginDefinition;
+
+convertToGooseFormat[ server_Association ] := Enclose[
+    Module[ { command, args, env, result },
+        command = ConfirmMatch[ Lookup[ server, "command", Missing[ ] ], _String | _Missing, "Command" ];
+        args    = Lookup[ server, "args", { } ];
+        env     = Lookup[ server, "env" , <| |> ];
+
+        result = <| |>;
+
+        If[ command =!= Missing[ ],
+            result[ "cmd" ] = command
+        ];
+
+        If[ ListQ @ args && Length @ args > 0,
+            result[ "args" ] = args
+        ];
+
+        result[ "enabled" ] = True;
+
+        If[ AssociationQ @ env && Length @ env > 0,
+            result[ "envs" ] = env
+        ];
+
+        result[ "type"    ] = "stdio";
+        result[ "timeout" ] = 300;
+
+        result
+    ],
+    throwInternalFailure
+];
+
+convertToGooseFormat // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*defaultEnvironment*)
 defaultEnvironment // beginDefinition;
 
@@ -758,9 +849,24 @@ installSuccess // endDefinition;
 (* ::Subsection::Closed:: *)
 (*configKeyPath*)
 configKeyPath // beginDefinition;
+
 configKeyPath[ ] := configKeyPath @ $installClientName;
-configKeyPath[ name_String ] /; KeyExistsQ[ $supportedMCPClients, name ] := $supportedMCPClients[ name, "ConfigKey" ];
+
+configKeyPath[ file_? fileQ ] := configKeyPath[ $installClientName, file ];
+
+(* VS Code with legacy settings.json: use the old nested key path *)
+configKeyPath[ "VisualStudioCode", File[ path_String ] ] /;
+    ToLowerCase @ FileNameTake @ path === "settings.json" := { "mcp", "servers" };
+
+configKeyPath[ name_String, _ ] /; KeyExistsQ[ $supportedMCPClients, name ] :=
+    $supportedMCPClients[ name, "ConfigKey" ];
+
+configKeyPath[ name_String ] /; KeyExistsQ[ $supportedMCPClients, name ] :=
+    $supportedMCPClients[ name, "ConfigKey" ];
+
 configKeyPath[ _ ] := { "mcpServers" };
+configKeyPath[ _, _ ] := { "mcpServers" };
+
 configKeyPath // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
@@ -799,7 +905,7 @@ readExistingMCPConfig // beginDefinition;
 
 readExistingMCPConfig[ file_ ] := Enclose[
     Catch @ Module[ { path, data },
-        path = ConfirmMatch[ configKeyPath[ ], { __String }, "ConfigKeyPath" ];
+        path = ConfirmMatch[ configKeyPath @ file, { __String }, "ConfigKeyPath" ];
         If[ ! FileExistsQ @ file, Throw @ emptyConfigForPath @ path ];
 
         (* Quiet any parsing errors, because we'll be issuing our own `InvalidMCPConfiguration` message if it fails *)
@@ -818,6 +924,37 @@ readExistingMCPConfig[ file_ ] := Enclose[
 ];
 
 readExistingMCPConfig // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*readExistingGooseConfig*)
+(* YAML counterpart to readExistingMCPConfig.  Returns an empty mapping when the
+   target file is missing or empty, otherwise returns the parsed Association.
+   On any parse failure (or a top-level value that isn't a mapping) it issues
+   InvalidMCPConfiguration so the caller never silently rewrites a file the
+   user has been editing by hand. *)
+readExistingGooseConfig // beginDefinition;
+
+readExistingGooseConfig[ file_ ] := Enclose[
+    Catch @ Module[ { data },
+        If[ ! FileExistsQ @ file, Throw @ <| |> ];
+
+        (* Quiet any parsing errors, because we'll be issuing our own `InvalidMCPConfiguration` message if it fails *)
+        data = Quiet @ catchAlways @ importYAML @ file;
+
+        Which[
+            (* Empty file or empty mapping -- treat as empty config *)
+            data === <| |>, <| |>,
+            (* Valid mapping -- pass through *)
+            AssociationQ @ data, data,
+            (* Anything else (parse failure, top-level list, etc.) -- refuse to overwrite *)
+            True, throwFailure[ "InvalidMCPConfiguration", file ]
+        ]
+    ],
+    throwInternalFailure
+];
+
+readExistingGooseConfig // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -927,6 +1064,36 @@ uninstallMCPServer[ target0_File, obj_MCPServerObject ] /; $installClientName ==
     throwInternalFailure
 ];
 
+uninstallMCPServer[ target0_File, obj_MCPServerObject ] /; $installClientName === "Goose" := Enclose[
+    Catch @ Module[ { target, name, configName, existing, extensions },
+
+        target     = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
+        If[ ! FileExistsQ @ target, Throw @ Missing[ "NotInstalled", target ] ];
+
+        name       = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
+        configName = ConfirmBy[ resolveMCPServerName @ obj, StringQ, "ConfigName" ];
+
+        (* Read existing YAML config via the same helper as the install path so
+           parse failures surface as InvalidMCPConfiguration rather than an
+           internal failure, and the file is never rewritten. *)
+        existing = ConfirmBy[ readExistingGooseConfig @ target, AssociationQ, "Existing" ];
+        extensions = Lookup[ existing, "extensions", <| |> ];
+
+        If[ ! AssociationQ @ extensions || ! KeyExistsQ[ extensions, configName ],
+            Throw @ Missing[ "NotInstalled", target ]
+        ];
+
+        KeyDropFrom[ extensions, configName ];
+        existing[ "extensions" ] = extensions;
+
+        ConfirmBy[ exportYAML[ target, existing ], fileQ, "Export" ];
+        ConfirmMatch[ clearRecordedInstallation[ target, obj ], { ___Association }, "Clear" ];
+
+        uninstallSuccess[ name, target, obj ]
+    ],
+    throwInternalFailure
+];
+
 uninstallMCPServer[ target0_File, obj_MCPServerObject ] := Enclose[
     Catch @ Module[ { target, name, configName, existing, path },
 
@@ -937,7 +1104,7 @@ uninstallMCPServer[ target0_File, obj_MCPServerObject ] := Enclose[
         configName = ConfirmBy[ resolveMCPServerName @ obj, StringQ, "ConfigName" ];
         existing   = ConfirmBy[ readExistingMCPConfig @ target, AssociationQ, "Existing" ];
 
-        path = ConfirmMatch[ configKeyPath[ ], { __String }, "ConfigKeyPath" ];
+        path = ConfirmMatch[ configKeyPath @ target, { __String }, "ConfigKeyPath" ];
 
         With[ { keys = Sequence @@ path },
             If[ ! AssociationQ @ existing[ keys ], Throw @ Missing[ "NotInstalled", target ] ];

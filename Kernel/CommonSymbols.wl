@@ -11,6 +11,7 @@ BeginPackage[ "Wolfram`AgentTools`Common`" ];
 `$mcpEvaluation;
 `$objectVersion;
 `$pacletVersion;
+`$releaseID;
 `$rootPath;
 `$serverVersion;
 `$storagePath;
@@ -45,6 +46,7 @@ BeginPackage[ "Wolfram`AgentTools`Common`" ];
 `mcpServerLogFile;
 `messageFailure;
 `messagePrint;
+`mxInitialize;
 `readRawJSONFile;
 `readWXFFile;
 `relatedDocumentation;
@@ -63,6 +65,12 @@ BeginPackage[ "Wolfram`AgentTools`Common`" ];
 `removeMCPServer;
 `setMCPServer;
 `writeTOMLFile;
+
+(* YAML support for Goose: *)
+`exportYAML;
+`exportYAMLString;
+`importYAML;
+`importYAMLString;
 
 (* Shared symbols with Tools subcontexts: *)
 `exportMarkdownString;
