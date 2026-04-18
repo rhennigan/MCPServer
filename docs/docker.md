@@ -66,10 +66,10 @@ Use an existing license associated with your Wolfram ID or get a free [Wolfram E
 
 5. Ensure the volume is mounted in your MCP client configuration (see below for examples):
    ```json
-   "-v", "./Licensing:/home/wolframengine/.WolframEngine/Licensing"
+   "-v", "/path/to/Licensing:/home/wolframengine/.WolframEngine/Licensing"
    ```
 
-**Note:** Change `./Licensing` as needed if you want to store the license information somewhere else. Ensure that the licensing directory is kept persistent and mounted on every run so that the renewed license is preserved across container restarts.
+**Note:** In MCP client configurations, use an absolute host path rather than `./Licensing`, since many clients launch `docker` with a working directory that is not the project directory. Change `/path/to/Licensing` to wherever you want to store the license information. Ensure that the licensing directory is kept persistent and mounted on every run so that the renewed license is preserved across container restarts.
 
 ## Server Configurations
 
