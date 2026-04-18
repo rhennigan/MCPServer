@@ -50,8 +50,8 @@ Use an existing license associated with your Wolfram ID or get a free [Wolfram E
 
 2. Activate once interactively:
    ```bash
-   docker run -it --entrypoint wolframscript \
-     -v ./Licensing:/home/wolframengine/.cache/Wolfram/WolframScript \
+   docker run -it --rm --entrypoint wolframscript \
+     -v ./Licensing:/home/wolframengine/.WolframEngine/Licensing \
      ghcr.io/wolframresearch/mcpserver:latest
    ```
 
@@ -59,14 +59,14 @@ Use an existing license associated with your Wolfram ID or get a free [Wolfram E
 
 4. Verify the license is activated (it should not prompt for credentials):
    ```bash
-   docker run -it --entrypoint wolframscript \
-     -v ./Licensing:/home/wolframengine/.cache/Wolfram/WolframScript \
+   docker run -it --rm --entrypoint wolframscript \
+     -v ./Licensing:/home/wolframengine/.WolframEngine/Licensing \
      ghcr.io/wolframresearch/mcpserver:latest
    ```
 
 5. Ensure the volume is mounted in your MCP client configuration (see below for examples):
    ```json
-   "-v", "./Licensing:/home/wolframengine/.cache/Wolfram/WolframScript"
+   "-v", "./Licensing:/home/wolframengine/.WolframEngine/Licensing"
    ```
 
 **Note:** Change `./Licensing` as needed if you want to store the license information somewhere else. Ensure that the licensing directory is kept persistent and mounted on every run so that the renewed license is preserved across container restarts.
@@ -168,7 +168,7 @@ For clients using node-locked licensing, include the licensing volume mount:
       "command": "docker",
       "args": [
         "run", "-i", "--rm",
-        "-v", "/path/to/Licensing:/home/wolframengine/.cache/Wolfram/WolframScript",
+        "-v", "/path/to/Licensing:/home/wolframengine/.WolframEngine/Licensing",
         "-e", "MCP_SERVER_NAME=Wolfram",
         "ghcr.io/wolframresearch/mcpserver:latest"
       ]
@@ -186,7 +186,7 @@ You can combine multiple volume mounts (licensing + workspace):
       "command": "docker",
       "args": [
         "run", "-i", "--rm",
-        "-v", "/path/to/Licensing:/home/wolframengine/.cache/Wolfram/WolframScript",
+        "-v", "/path/to/Licensing:/home/wolframengine/.WolframEngine/Licensing",
         "-v", "/path/to/your/project:/workspace",
         "-e", "MCP_SERVER_NAME=Wolfram",
         "ghcr.io/wolframresearch/mcpserver:latest"
