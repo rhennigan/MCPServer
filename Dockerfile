@@ -12,7 +12,7 @@
 #
 # For node-locked licensing (free but requires persistent storage):
 #   docker run -i --rm \
-#     -v ./Licensing:/root/.WolframEngine/Licensing \
+#     -v ./Licensing:/home/wolframengine/.WolframEngine/Licensing \
 #     -e MCP_SERVER_NAME=Wolfram \
 #     ghcr.io/wolframresearch/mcpserver:latest
 
