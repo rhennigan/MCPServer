@@ -75,6 +75,8 @@ Tools with UI-enhanced behavior:
 
 These enhancements require both MCP Apps support and an active Wolfram Cloud connection. The session flag `$deployCloudNotebooks` (initialized from `$CloudConnected`) gates deployment: if a `CloudDeploy` call fails at runtime, the helper `deployCloudNotebookForMCPApp` sets the flag to `False` and the tools fall back to their standard (non-UI) results for the rest of the session rather than surfacing an internal failure.
 
+Cloud notebooks are deployed with `AppearanceElements -> None` by default, which hides the footer links that would not be clickable inside the MCP App iframe. Some cloud accounts reject this option with `CloudDeploy::appearancenotsup`; in that case the deployment is transparently retried without `AppearanceElements`, and the unsupported status is cached in a session flag (`$includeAppearanceElements`) so subsequent deployments skip the failing attempt.
+
 The fallback is per-tool:
 
 - `WolframLanguageEvaluator` always has a text/image result it can return, so it degrades in place.
