@@ -105,15 +105,47 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*makeUIResult*)
 
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Fallback When Cloud Deployment Disabled*)
+VerificationTest[
+    Block[ {
+        Wolfram`AgentTools`Common`$clientSupportsUI    = True,
+        Wolfram`AgentTools`Common`$deployCloudNotebooks = False
+    },
+        $DefaultMCPTools[ "WolframAlpha" ][ <| "query" -> "2+2" |> ]
+    ],
+    _String | KeyValuePattern[ "Content" -> { __Association } ],
+    SameTest -> MatchQ,
+    TestID   -> "wolframAlphaToolEvaluate-NoDeploy@@Tests/WolframAlpha-UI.wlt:111,1-121,2"
+]
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*$deployedNotebookRoot*)
+(*Conditional UI Association*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*WolframAlpha Association Resolves With Deploy Enabled*)
 VerificationTest[
-    Wolfram`AgentTools`Tools`WolframAlpha`Private`$deployedNotebookRoot,
-    _String,
+    Block[ { Wolfram`AgentTools`Common`$deployCloudNotebooks = True },
+        Wolfram`AgentTools`Common`$toolUIAssociations[ "WolframAlpha" ]
+    ],
+    "ui://wolfram/wolframalpha-viewer",
+    SameTest -> Equal,
+    TestID   -> "WolframAlphaAssociation-DeployEnabled@@Tests/WolframAlpha-UI.wlt:130,1-137,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*WolframAlpha Association Is None With Deploy Disabled*)
+VerificationTest[
+    Block[ { Wolfram`AgentTools`Common`$deployCloudNotebooks = False },
+        Wolfram`AgentTools`Common`$toolUIAssociations[ "WolframAlpha" ]
+    ],
+    None,
     SameTest -> MatchQ,
-    TestID   -> "deployedNotebookRoot-IsString@@Tests/WolframAlpha-UI.wlt:112,1-117,2"
+    TestID   -> "WolframAlphaAssociation-DeployDisabled@@Tests/WolframAlpha-UI.wlt:142,1-149,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
