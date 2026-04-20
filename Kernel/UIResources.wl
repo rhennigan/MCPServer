@@ -19,8 +19,9 @@ $toolUIAssociations = <|
     "WolframAlpha" :> If[ $deployCloudNotebooks, "ui://wolfram/wolframalpha-viewer", None ]
 |>;
 
-$deployedNotebookRoot  = "AgentTools/Notebooks";
-$deployCloudNotebooks := $deployCloudNotebooks = $CloudConnected; (* must be connected to deploy notebooks *)
+$includeAppearanceElements = False;
+$deployedNotebookRoot      = "AgentTools/Notebooks";
+$deployCloudNotebooks     := $deployCloudNotebooks = $CloudConnected; (* must be connected to deploy notebooks *)
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -48,13 +49,10 @@ deployCloudNotebookForMCPApp[ nb_Notebook, identifier_ ] := Enclose[
             "Target"
         ];
 
-        deployed = CloudDeploy[
-            nb,
-            target,
-            AppearanceElements -> None,
-            AutoRemove         -> True,
-            IconRules          -> { },
-            Permissions        -> { "All" -> { "Read", "Interact" } }
+        deployed = ConfirmMatch[
+            cloudDeployTryAppearanceElements[ nb, target ],
+            _CloudObject | _? FailureQ,
+            "Deployed"
         ];
 
         If[ MatchQ[ deployed, _CloudObject ],
@@ -68,6 +66,52 @@ deployCloudNotebookForMCPApp[ nb_Notebook, identifier_ ] := Enclose[
 ];
 
 deployCloudNotebookForMCPApp // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*cloudDeployTryAppearanceElements*)
+cloudDeployTryAppearanceElements // beginDefinition;
+
+cloudDeployTryAppearanceElements[ expr_, target_ ] /; $includeAppearanceElements :=
+    cloudDeployWithAppearanceElements[ expr, target ];
+
+(* This tries to CloudDeploy with AppearanceElements -> None, since the footer links will not be clickable in the app.
+   However, some cloud accounts do not support this option, which causes CloudDeploy to fail with a message.
+   In that case, we retry without the AppearanceElements option. *)
+cloudDeployTryAppearanceElements[ expr_, target_ ] := Quiet[
+    Check[
+        CloudDeploy[
+            expr,
+            target,
+            AppearanceElements -> None,
+            AutoRemove         -> True,
+            IconRules          -> { },
+            Permissions        -> { "All" -> { "Read", "Interact" } }
+        ],
+        (* Disable this check for the remainder of the session: *)
+        $includeAppearanceElements = True;
+        cloudDeployWithAppearanceElements[ expr, target ],
+        { CloudDeploy::appearancenotsup }
+    ],
+    { CloudDeploy::appearancenotsup }
+];
+
+cloudDeployTryAppearanceElements // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*cloudDeployWithAppearanceElements*)
+cloudDeployWithAppearanceElements // beginDefinition;
+
+cloudDeployWithAppearanceElements[ expr_, target_ ] := CloudDeploy[
+    expr,
+    target,
+    AutoRemove  -> True,
+    IconRules   -> { },
+    Permissions -> { "All" -> { "Read", "Interact" } }
+];
+
+cloudDeployWithAppearanceElements // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
