@@ -19,9 +19,7 @@ System`HoldCompleteForm;
 $cloudImagePath        := CloudObject[ "AgentTools/Images", Permissions -> $cloudImagePermissions ];
 $cloudImagePermissions := If[ $imageExportMethod === "CloudPublic", "Public", "Private" ];
 $line                   = 1;
-
-$deployedNotebookRoot = "AgentTools/Notebooks";
-$outputSizeLimit      = 100000;
+$outputSizeLimit        = 100000;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -98,7 +96,7 @@ $defaultToolOptions[ "WolframLanguageEvaluator" ] = <|
 evaluateWolframLanguage // beginDefinition;
 
 evaluateWolframLanguage[ KeyValuePattern @ { "code" -> code_, "timeConstraint" -> timeConstraint_ } ] :=
-    If[ TrueQ @ $clientSupportsUI && TrueQ @ $CloudConnected,
+    If[ TrueQ @ $clientSupportsUI && TrueQ @ $deployCloudNotebooks,
         evaluateWolframLanguageUI[ code, timeConstraint ],
         evaluateWolframLanguage[ code, timeConstraint ]
     ];
@@ -292,7 +290,7 @@ makeEvaluatorUIResult[
     code0_String,
     KeyValuePattern[ { "Result" -> heldResult_, "String" -> stringResult_String } ]
 ] := Enclose[
-    Module[ { code, textContent, outLabel, inLabel, inputCell, outputCell, nb, hash, target, deployed, notebookUrl },
+    Catch @ Module[ { code, textContent, outLabel, inLabel, inputCell, outputCell, nb, deployed },
 
         code = StringTrim @ code0;
 
@@ -329,36 +327,16 @@ makeEvaluatorUIResult[
             CellLabelAutoDelete -> False
         ];
 
-        (* Hash-based cloud path *)
-        hash = ConfirmBy[ Hash[ { code, heldResult }, "Expression", "HexString" ], StringQ, "Hash" ];
-
-        target = ConfirmMatch[
-            FileNameJoin @ {
-                CloudObject[ $deployedNotebookRoot, Permissions -> { "All" -> { "Read", "Interact" } } ],
-                "WolframLanguageEvaluator",
-                StringTake[ hash, 3 ],
-                hash <> ".nb"
-            },
-            _CloudObject,
-            "Target"
-        ];
-
         deployed = ConfirmMatch[
-            CloudDeploy[
-                nb,
-                target,
-                AppearanceElements -> None,
-                AutoRemove         -> True,
-                IconRules          -> { },
-                Permissions        -> { "All" -> { "Read", "Interact" } }
-            ],
-            _CloudObject,
-            "CloudDeploy"
+            deployCloudNotebookForMCPApp[ nb, { code, heldResult } ],
+            _String|$Failed,
+            "Deployed"
         ];
 
-        notebookUrl = ConfirmBy[ First @ deployed, StringQ, "NotebookURL" ];
-
-        <| "Content" -> textContent, "_meta" -> <| "notebookUrl" -> notebookUrl |> |>
+        If[ StringQ @ deployed,
+            <| "Content" -> textContent, "_meta" -> <| "notebookUrl" -> deployed |> |>,
+            $Failed
+        ]
     ],
     throwInternalFailure
 ];

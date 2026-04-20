@@ -12,13 +12,6 @@ Needs[ "Wolfram`Chatbook`" -> "cb`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*Config*)
-
-(* Cloud path root for deployed WA notebooks *)
-$deployedNotebookRoot = "AgentTools/Notebooks";
-
-(* ::**************************************************************************************************************:: *)
-(* ::Section::Closed:: *)
 (*Prompts*)
 (* TODO: multiple queries aren't supported until the next Chatbook paclet update *)
 (* $wolframAlphaToolDescription = "\
@@ -66,12 +59,11 @@ $defaultMCPTools[ "WolframAlpha" ] := LLMTool @ <|
 (*wolframAlphaToolEvaluate*)
 wolframAlphaToolEvaluate // beginDefinition;
 
-wolframAlphaToolEvaluate[ as_ ] := (
-    If[ TrueQ @ $clientSupportsUI && TrueQ @ $CloudConnected (* must be connected to deploy notebooks *),
+wolframAlphaToolEvaluate[ as_ ] :=
+    If[ TrueQ @ $clientSupportsUI && TrueQ @ $deployCloudNotebooks,
         wolframAlphaToolEvaluateUI @ as,
         wolframAlphaToolEvaluate[ as, cb`$DefaultTools[ "WolframAlpha" ][ as ] ]
-    ]
-);
+    ];
 
 wolframAlphaToolEvaluate[ as_, result_String ] := extractWolframAlphaImages @ result;
 wolframAlphaToolEvaluate[ as_, KeyValuePattern[ "String" -> result_String ] ] := extractWolframAlphaImages @ result;
@@ -113,7 +105,7 @@ wolframAlphaToolEvaluateUI // endDefinition;
 makeUIResult // beginDefinition;
 
 makeUIResult[ as_, KeyValuePattern[ { "Result" -> waResult_, "String" -> stringResult_String } ] ] := Enclose[
-    Module[ { textContent, formatted, nb, query, target, deployed, notebookUrl },
+    Catch @ Module[ { textContent, formatted, nb, query, deployed },
 
         textContent = ConfirmMatch[
             toContentList @ extractWolframAlphaImages @ stringResult,
@@ -143,32 +135,16 @@ makeUIResult[ as_, KeyValuePattern[ { "Result" -> waResult_, "String" -> stringR
 
         query = ConfirmBy[ as[ "query" ], StringQ, "Query" ];
 
-        target = ConfirmMatch[
-            FileNameJoin @ {
-                CloudObject[ $deployedNotebookRoot, Permissions -> { "All" -> { "Read", "Interact" } } ],
-                "WolframAlpha",
-                Hash[ query, Automatic, "HexString" ] <> ".nb"
-            },
-            _CloudObject,
-            "Target"
-        ];
-
         deployed = ConfirmMatch[
-            CloudDeploy[
-                nb,
-                target,
-                Permissions       -> { "All" -> { "Read", "Interact" } },
-                AppearanceElements -> None,
-                AutoRemove         -> True,
-                IconRules          -> { }
-            ],
-            _CloudObject,
-            "CloudDeploy"
+            deployCloudNotebookForMCPApp[ nb, query ],
+            _String|$Failed,
+            "Deployed"
         ];
 
-        notebookUrl = ConfirmBy[ First @ deployed, StringQ, "NotebookURL" ];
-
-        <| "Content" -> textContent, "_meta" -> <| "notebookUrl" -> notebookUrl |> |>
+        If[ StringQ @ deployed,
+            <| "Content" -> textContent, "_meta" -> <| "notebookUrl" -> deployed |> |>,
+            $Failed
+        ]
     ],
     throwInternalFailure
 ];

@@ -18,8 +18,62 @@ $toolUIAssociations = <|
     "WolframLanguageEvaluator" -> "ui://wolfram/evaluator-viewer"
 |>;
 
+$deployedNotebookRoot  = "AgentTools/Notebooks";
+$deployCloudNotebooks := $deployCloudNotebooks = $CloudConnected; (* must be connected to deploy notebooks *)
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Cloud Notebooks*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*deployCloudNotebookForMCPApp*)
+deployCloudNotebookForMCPApp // beginDefinition;
+
+deployCloudNotebookForMCPApp[ nb_Notebook, identifier_ ] := Enclose[
+    Module[ { hash, target, deployed },
+
+        (* This should be true if this function is being called: *)
+        ConfirmAssert[ $deployCloudNotebooks, "DeployCloudNotebooksAssert" ];
+
+        hash = ConfirmBy[ Hash[ Unevaluated @ identifier, Automatic, "HexString" ], StringQ, "Hash" ];
+
+        target = ConfirmMatch[
+            FileNameJoin @ {
+                CloudObject[ $deployedNotebookRoot, Permissions -> { "All" -> { "Read", "Interact" } } ],
+                hash <> ".nb"
+            },
+            _CloudObject,
+            "Target"
+        ];
+
+        deployed = CloudDeploy[
+            nb,
+            target,
+            AppearanceElements -> None,
+            AutoRemove         -> True,
+            IconRules          -> { },
+            Permissions        -> { "All" -> { "Read", "Interact" } }
+        ];
+
+        If[ MatchQ[ deployed, _CloudObject ],
+            ConfirmBy[ First @ deployed, StringQ, "Result" ],
+            (* If deploying failed, disable cloud notebook deployment for the remainder of the session: *)
+            $deployCloudNotebooks = False;
+            $Failed
+        ]
+    ],
+    throwInternalFailure
+];
+
+deployCloudNotebookForMCPApp // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*MCP Integration Helpers*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*clientSupportsUIQ*)
 clientSupportsUIQ // beginDefinition;
 
@@ -31,7 +85,7 @@ clientSupportsUIQ[ _ ] := False;
 clientSupportsUIQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
-(* ::Section::Closed:: *)
+(* ::Subsection::Closed:: *)
 (*mcpAppsEnabledQ*)
 mcpAppsEnabledQ // beginDefinition;
 
@@ -43,7 +97,7 @@ mcpAppsEnabledQ[ ] :=
 mcpAppsEnabledQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
-(* ::Section::Closed:: *)
+(* ::Subsection::Closed:: *)
 (*initializeUIResources*)
 initializeUIResources // beginDefinition;
 
@@ -98,7 +152,7 @@ loadUIResource[ htmlFile_String ] := Enclose[
 loadUIResource // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
-(* ::Section::Closed:: *)
+(* ::Subsection::Closed:: *)
 (*listUIResources*)
 listUIResources // beginDefinition;
 
@@ -121,7 +175,7 @@ listUIResources[ ] :=
 listUIResources // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
-(* ::Section::Closed:: *)
+(* ::Subsection::Closed:: *)
 (*readUIResource*)
 readUIResource // beginDefinition;
 
@@ -147,7 +201,7 @@ readUIResource[ msg_Association, req_ ] := Enclose[
 readUIResource // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
-(* ::Section::Closed:: *)
+(* ::Subsection::Closed:: *)
 (*toolUIMetadata*)
 toolUIMetadata // beginDefinition;
 
@@ -165,7 +219,7 @@ toolUIMetadata[ toolName_String, None ] := { };
 toolUIMetadata // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
-(* ::Section::Closed:: *)
+(* ::Subsection::Closed:: *)
 (*withToolUIMetadata*)
 withToolUIMetadata // beginDefinition;
 
