@@ -15,7 +15,7 @@ $toolUIAssociations = <|
     "NotebookViewer"           -> "ui://wolfram/notebook-viewer",
     "MCPAppsTest"              -> "ui://wolfram/mcp-apps-test",
     "WolframLanguageEvaluator" -> "ui://wolfram/evaluator-viewer",
-    (* The WolframAlpha tool does not a have a text-only fallback app view, so we make it conditional *)
+    (* The WolframAlpha tool does not have a text-only fallback app view, so we make it conditional *)
     "WolframAlpha" :> If[ $deployCloudNotebooks, "ui://wolfram/wolframalpha-viewer", None ]
 |>;
 
