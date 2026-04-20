@@ -48,13 +48,10 @@ deployCloudNotebookForMCPApp[ nb_Notebook, identifier_ ] := Enclose[
             "Target"
         ];
 
-        deployed = CloudDeploy[
-            nb,
-            target,
-            AppearanceElements -> None,
-            AutoRemove         -> True,
-            IconRules          -> { },
-            Permissions        -> { "All" -> { "Read", "Interact" } }
+        deployed = ConfirmMatch[
+            cloudDeployTryAppearanceElements[ nb, target ],
+            _CloudObject | _? FailureQ,
+            "Deployed"
         ];
 
         If[ MatchQ[ deployed, _CloudObject ],
@@ -68,6 +65,38 @@ deployCloudNotebookForMCPApp[ nb_Notebook, identifier_ ] := Enclose[
 ];
 
 deployCloudNotebookForMCPApp // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*cloudDeployTryAppearanceElements*)
+(* This tries to CloudDeploy with AppearanceElements -> None, since the footer links will not be clickable in the app.
+   However, some cloud accounts do not support this option, which causes CloudDeploy to fail with a message.
+   In that case, we retry without the AppearanceElements option. *)
+cloudDeployTryAppearanceElements // beginDefinition;
+
+cloudDeployTryAppearanceElements[ expr_, target_ ] := Quiet[
+    Check[
+        CloudDeploy[
+            expr,
+            target,
+            AppearanceElements -> None,
+            AutoRemove         -> True,
+            IconRules          -> { },
+            Permissions        -> { "All" -> { "Read", "Interact" } }
+        ],
+        CloudDeploy[
+            expr,
+            target,
+            AutoRemove  -> True,
+            IconRules   -> { },
+            Permissions -> { "All" -> { "Read", "Interact" } }
+        ],
+        { CloudDeploy::appearancenotsup }
+    ],
+    { CloudDeploy::appearancenotsup }
+];
+
+cloudDeployTryAppearanceElements // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
