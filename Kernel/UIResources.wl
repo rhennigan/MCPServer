@@ -14,8 +14,9 @@ Needs[ "Wolfram`AgentTools`Common`" ];
 $toolUIAssociations = <|
     "NotebookViewer"           -> "ui://wolfram/notebook-viewer",
     "MCPAppsTest"              -> "ui://wolfram/mcp-apps-test",
-    "WolframAlpha"             -> "ui://wolfram/wolframalpha-viewer",
-    "WolframLanguageEvaluator" -> "ui://wolfram/evaluator-viewer"
+    "WolframLanguageEvaluator" -> "ui://wolfram/evaluator-viewer",
+    (* The WolframAlpha tool does not a have a text-only fallback app view, so we make it conditional *)
+    "WolframAlpha" :> If[ $deployCloudNotebooks, "ui://wolfram/wolframalpha-viewer", None ]
 |>;
 
 $deployedNotebookRoot  = "AgentTools/Notebooks";
