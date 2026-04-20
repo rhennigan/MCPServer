@@ -883,32 +883,56 @@ VerificationTest[
 (* ::Subsubsection::Closed:: *)
 (*Returns _meta for Known Tool When UI Supported*)
 VerificationTest[
-    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
+    Block[ {
+        Wolfram`AgentTools`Common`$clientSupportsUI    = True,
+        Wolfram`AgentTools`Common`$deployCloudNotebooks = True
+    },
         Wolfram`AgentTools`Common`toolUIMetadata[ "WolframAlpha" ]
     ],
     { "_meta" -> _Association },
     SameTest -> MatchQ,
-    TestID   -> "ToolUIMetadata-KnownToolWithUI@@Tests/MCPApps.wlt:885,1-892,2"
+    TestID   -> "ToolUIMetadata-KnownToolWithUI@@Tests/MCPApps.wlt:885,1-895,2"
 ]
 
 VerificationTest[
-    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
+    Block[ {
+        Wolfram`AgentTools`Common`$clientSupportsUI    = True,
+        Wolfram`AgentTools`Common`$deployCloudNotebooks = True
+    },
         meta = Wolfram`AgentTools`Common`toolUIMetadata[ "WolframAlpha" ];
         ("_meta" /. meta)[ "ui", "resourceUri" ]
     ],
     "ui://wolfram/wolframalpha-viewer",
     SameTest -> Equal,
-    TestID   -> "ToolUIMetadata-CorrectResourceURI@@Tests/MCPApps.wlt:894,1-902,2"
+    TestID   -> "ToolUIMetadata-CorrectResourceURI@@Tests/MCPApps.wlt:897,1-908,2"
 ]
 
 VerificationTest[
-    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
+    Block[ {
+        Wolfram`AgentTools`Common`$clientSupportsUI    = True,
+        Wolfram`AgentTools`Common`$deployCloudNotebooks = True
+    },
         meta = Wolfram`AgentTools`Common`toolUIMetadata[ "WolframAlpha" ];
         ("_meta" /. meta)[ "ui", "visibility" ]
     ],
     { "model", "app" },
     SameTest -> Equal,
-    TestID   -> "ToolUIMetadata-CorrectVisibility@@Tests/MCPApps.wlt:904,1-912,2"
+    TestID   -> "ToolUIMetadata-CorrectVisibility@@Tests/MCPApps.wlt:910,1-921,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*WolframAlpha _meta Conditional On $deployCloudNotebooks*)
+VerificationTest[
+    Block[ {
+        Wolfram`AgentTools`Common`$clientSupportsUI    = True,
+        Wolfram`AgentTools`Common`$deployCloudNotebooks = False
+    },
+        Wolfram`AgentTools`Common`toolUIMetadata[ "WolframAlpha" ]
+    ],
+    { },
+    SameTest -> Equal,
+    TestID   -> "ToolUIMetadata-WolframAlphaNoDeploy@@Tests/MCPApps.wlt:926,1-936,2"
 ]
 
 VerificationTest[
@@ -917,7 +941,7 @@ VerificationTest[
     ],
     { "_meta" -> KeyValuePattern[ "ui" -> KeyValuePattern[ "resourceUri" -> "ui://wolfram/evaluator-viewer" ] ] },
     SameTest -> MatchQ,
-    TestID   -> "ToolUIMetadata-EvaluatorTool@@Tests/MCPApps.wlt:914,1-921,2"
+    TestID   -> "ToolUIMetadata-EvaluatorTool@@Tests/MCPApps.wlt:938,1-945,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -929,7 +953,7 @@ VerificationTest[
     ],
     { },
     SameTest -> Equal,
-    TestID   -> "ToolUIMetadata-UnknownTool@@Tests/MCPApps.wlt:926,1-933,2"
+    TestID   -> "ToolUIMetadata-UnknownTool@@Tests/MCPApps.wlt:950,1-957,2"
 ]
 
 VerificationTest[
@@ -938,7 +962,7 @@ VerificationTest[
     ],
     { },
     SameTest -> Equal,
-    TestID   -> "ToolUIMetadata-KnownToolNoUI@@Tests/MCPApps.wlt:935,1-942,2"
+    TestID   -> "ToolUIMetadata-KnownToolNoUI@@Tests/MCPApps.wlt:959,1-966,2"
 ]
 
 VerificationTest[
@@ -947,7 +971,7 @@ VerificationTest[
     ],
     { },
     SameTest -> Equal,
-    TestID   -> "ToolUIMetadata-KnownToolUIUnset@@Tests/MCPApps.wlt:944,1-951,2"
+    TestID   -> "ToolUIMetadata-KnownToolUIUnset@@Tests/MCPApps.wlt:968,1-975,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -958,7 +982,10 @@ VerificationTest[
 (* ::Subsubsection::Closed:: *)
 (*Adds _meta When UI Supported*)
 VerificationTest[
-    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
+    Block[ {
+        Wolfram`AgentTools`Common`$clientSupportsUI    = True,
+        Wolfram`AgentTools`Common`$deployCloudNotebooks = True
+    },
         tools = {
             <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |>,
             <| "name" -> "OtherTool",    "description" -> "test", "inputSchema" -> <| |> |>
@@ -968,11 +995,14 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "WithToolUIMetadata-AddsMetaToKnownTool@@Tests/MCPApps.wlt:960,1-972,2"
+    TestID   -> "WithToolUIMetadata-AddsMetaToKnownTool@@Tests/MCPApps.wlt:984,1-999,2"
 ]
 
 VerificationTest[
-    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
+    Block[ {
+        Wolfram`AgentTools`Common`$clientSupportsUI    = True,
+        Wolfram`AgentTools`Common`$deployCloudNotebooks = True
+    },
         tools = {
             <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |>,
             <| "name" -> "OtherTool",    "description" -> "test", "inputSchema" -> <| |> |>
@@ -982,11 +1012,14 @@ VerificationTest[
     ],
     False,
     SameTest -> Equal,
-    TestID   -> "WithToolUIMetadata-NoMetaForUnknownTool@@Tests/MCPApps.wlt:974,1-986,2"
+    TestID   -> "WithToolUIMetadata-NoMetaForUnknownTool@@Tests/MCPApps.wlt:1001,1-1016,2"
 ]
 
 VerificationTest[
-    Block[ { Wolfram`AgentTools`Common`$clientSupportsUI = True },
+    Block[ {
+        Wolfram`AgentTools`Common`$clientSupportsUI    = True,
+        Wolfram`AgentTools`Common`$deployCloudNotebooks = True
+    },
         tools = {
             <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |>
         };
@@ -995,7 +1028,7 @@ VerificationTest[
     ],
     "ui://wolfram/wolframalpha-viewer",
     SameTest -> Equal,
-    TestID   -> "WithToolUIMetadata-CorrectMetaContent@@Tests/MCPApps.wlt:988,1-999,2"
+    TestID   -> "WithToolUIMetadata-CorrectMetaContent@@Tests/MCPApps.wlt:1018,1-1032,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1010,7 +1043,7 @@ VerificationTest[
     ],
     { <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |> },
     SameTest -> Equal,
-    TestID   -> "WithToolUIMetadata-NoChangesWhenNoUI@@Tests/MCPApps.wlt:1004,1-1014,2"
+    TestID   -> "WithToolUIMetadata-NoChangesWhenNoUI@@Tests/MCPApps.wlt:1037,1-1047,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1026,7 +1059,7 @@ VerificationTest[
     ],
     { "WolframAlpha", "WA tool", <| "type" -> "object" |> },
     SameTest -> Equal,
-    TestID   -> "WithToolUIMetadata-PreservesExistingFields@@Tests/MCPApps.wlt:1019,1-1030,2"
+    TestID   -> "WithToolUIMetadata-PreservesExistingFields@@Tests/MCPApps.wlt:1052,1-1063,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -1035,7 +1068,8 @@ VerificationTest[
 
 VerificationTest[
     Block[ {
-        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$clientSupportsUI    = True,
+        Wolfram`AgentTools`Common`$deployCloudNotebooks = True,
         Wolfram`AgentTools`StartMCPServer`Private`$toolList = {
             <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |>,
             <| "name" -> "OtherTool",    "description" -> "test", "inputSchema" -> <| |> |>
@@ -1051,12 +1085,13 @@ VerificationTest[
     ],
     True,
     SameTest -> Equal,
-    TestID   -> "HandleMethod-ToolsList-UIMetaPresent@@Tests/MCPApps.wlt:1036,1-1055,2"
+    TestID   -> "HandleMethod-ToolsList-UIMetaPresent@@Tests/MCPApps.wlt:1069,1-1089,2"
 ]
 
 VerificationTest[
     Block[ {
-        Wolfram`AgentTools`Common`$clientSupportsUI = True,
+        Wolfram`AgentTools`Common`$clientSupportsUI    = True,
+        Wolfram`AgentTools`Common`$deployCloudNotebooks = True,
         Wolfram`AgentTools`StartMCPServer`Private`$toolList = {
             <| "name" -> "WolframAlpha", "description" -> "test", "inputSchema" -> <| |> |>,
             <| "name" -> "OtherTool",    "description" -> "test", "inputSchema" -> <| |> |>
@@ -1072,7 +1107,7 @@ VerificationTest[
     ],
     False,
     SameTest -> Equal,
-    TestID   -> "HandleMethod-ToolsList-NoMetaForUnlinkedTool@@Tests/MCPApps.wlt:1057,1-1076,2"
+    TestID   -> "HandleMethod-ToolsList-NoMetaForUnlinkedTool@@Tests/MCPApps.wlt:1091,1-1111,2"
 ]
 
 VerificationTest[
@@ -1092,7 +1127,71 @@ VerificationTest[
     ],
     False,
     SameTest -> Equal,
-    TestID   -> "HandleMethod-ToolsList-NoMetaWhenNoUI@@Tests/MCPApps.wlt:1078,1-1096,2"
+    TestID   -> "HandleMethod-ToolsList-NoMetaWhenNoUI@@Tests/MCPApps.wlt:1113,1-1131,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*$deployCloudNotebooks*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Is a Boolean*)
+VerificationTest[
+    BooleanQ @ Wolfram`AgentTools`Common`$deployCloudNotebooks,
+    True,
+    SameTest -> Equal,
+    TestID   -> "DeployCloudNotebooks-Boolean@@Tests/MCPApps.wlt:1140,1-1145,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Blocking Overrides Cached Value*)
+VerificationTest[
+    Block[ { Wolfram`AgentTools`Common`$deployCloudNotebooks = True },
+        Wolfram`AgentTools`Common`$deployCloudNotebooks
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "DeployCloudNotebooks-BlockTrue@@Tests/MCPApps.wlt:1150,1-1157,2"
+]
+
+VerificationTest[
+    Block[ { Wolfram`AgentTools`Common`$deployCloudNotebooks = False },
+        Wolfram`AgentTools`Common`$deployCloudNotebooks
+    ],
+    False,
+    SameTest -> Equal,
+    TestID   -> "DeployCloudNotebooks-BlockFalse@@Tests/MCPApps.wlt:1159,1-1166,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*deployCloudNotebookForMCPApp*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Asserts Deploy Enabled*)
+VerificationTest[
+    Quiet @ Block[ { Wolfram`AgentTools`Common`$deployCloudNotebooks = False },
+        Wolfram`AgentTools`Common`deployCloudNotebookForMCPApp[
+            Notebook @ { Cell[ "test", "Input" ] },
+            "some-id"
+        ]
+    ],
+    _Failure,
+    SameTest -> MatchQ,
+    TestID   -> "DeployCloudNotebookForMCPApp-AssertsDeployEnabled@@Tests/MCPApps.wlt:1175,1-1185,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*Invalid Arguments*)
+VerificationTest[
+    Quiet @ Wolfram`AgentTools`Common`deployCloudNotebookForMCPApp[ "not a notebook", "id" ],
+    _Failure,
+    SameTest -> MatchQ,
+    TestID   -> "DeployCloudNotebookForMCPApp-NotANotebook@@Tests/MCPApps.wlt:1190,1-1195,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

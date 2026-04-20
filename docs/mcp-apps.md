@@ -73,7 +73,12 @@ Tools with UI-enhanced behavior:
 | `WolframAlpha` | Deploys a cloud notebook with formatted Wolfram\|Alpha pods and returns `notebookUrl` in `_meta` |
 | `WolframLanguageEvaluator` | Deploys a cloud notebook with evaluation results and returns `notebookUrl` in `_meta` |
 
-These enhancements require both MCP Apps support and an active Wolfram Cloud connection (`$CloudConnected`). If either condition is not met, the tools fall back to their standard behavior.
+These enhancements require both MCP Apps support and an active Wolfram Cloud connection. The session flag `$deployCloudNotebooks` (initialized from `$CloudConnected`) gates deployment: if a `CloudDeploy` call fails at runtime, the helper `deployCloudNotebookForMCPApp` sets the flag to `False` and the tools fall back to their standard (non-UI) results for the rest of the session rather than surfacing an internal failure.
+
+The fallback is per-tool:
+
+- `WolframLanguageEvaluator` always has a text/image result it can return, so it degrades in place.
+- `WolframAlpha` has no text-only fallback app view, so its entry in `$toolUIAssociations` is itself conditional on `$deployCloudNotebooks` — when the flag is `False`, no `_meta.ui` is attached to the tool definition and the client never sees it as a UI-enabled tool.
 
 ## Available UI Resources
 
@@ -113,7 +118,7 @@ The mapping between tools and their UI resources is defined in `$toolUIAssociati
 |------|----------------|
 | `NotebookViewer` | `ui://wolfram/notebook-viewer` |
 | `MCPAppsTest` | `ui://wolfram/mcp-apps-test` |
-| `WolframAlpha` | `ui://wolfram/wolframalpha-viewer` |
+| `WolframAlpha` | `ui://wolfram/wolframalpha-viewer` (only when `$deployCloudNotebooks` is `True`) |
 | `WolframLanguageEvaluator` | `ui://wolfram/evaluator-viewer` |
 
 ## Disabling MCP Apps
@@ -196,7 +201,9 @@ Add tests in `Tests/` for the new resource. See the existing test files (`Tests/
 |--------|---------|-------------|
 | `$clientSupportsUI` | `Common` | Whether the current client supports MCP Apps |
 | `$uiResourceRegistry` | `Common` | Association of loaded UI resources keyed by URI |
-| `$toolUIAssociations` | `Common` | Mapping of tool names to UI resource URIs |
+| `$toolUIAssociations` | `Common` | Mapping of tool names to UI resource URIs (entries may be `RuleDelayed` to gate on `$deployCloudNotebooks`) |
+| `$deployCloudNotebooks` | `Common` | Session flag gating cloud notebook deployment; initialized from `$CloudConnected` and set to `False` after a deployment failure |
+| `deployCloudNotebookForMCPApp` | `Common` | Shared helper that deploys a notebook for a UI-enhanced tool result and disables `$deployCloudNotebooks` on failure |
 | `clientSupportsUIQ` | `Common` | Checks if an `initialize` message advertises UI support |
 | `mcpAppsEnabledQ` | `Common` | Checks the `MCP_APPS_ENABLED` environment variable |
 | `initializeUIResources` | `Common` | Loads HTML assets into the resource registry |

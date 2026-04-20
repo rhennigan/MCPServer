@@ -82,17 +82,10 @@ VerificationTest[
 (* ::Section::Closed:: *)
 (*Config Constants*)
 VerificationTest[
-    Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`$deployedNotebookRoot,
-    _String,
-    SameTest -> MatchQ,
-    TestID   -> "deployedNotebookRoot-IsString@@Tests/WolframLanguageEvaluator-UI.wlt:84,1-89,2"
-]
-
-VerificationTest[
     Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`$outputSizeLimit,
     _Integer?Positive,
     SameTest -> MatchQ,
-    TestID   -> "outputSizeLimit-IsPositiveInteger@@Tests/WolframLanguageEvaluator-UI.wlt:91,1-96,2"
+    TestID   -> "outputSizeLimit-IsPositiveInteger@@Tests/WolframLanguageEvaluator-UI.wlt:84,1-89,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -108,7 +101,7 @@ VerificationTest[
     ],
     _String | KeyValuePattern[ "Content" -> { __Association } ],
     SameTest -> MatchQ,
-    TestID   -> "evaluateWolframLanguage-NoUI@@Tests/WolframLanguageEvaluator-UI.wlt:105,1-112,2"
+    TestID   -> "evaluateWolframLanguage-NoUI@@Tests/WolframLanguageEvaluator-UI.wlt:98,1-105,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -120,7 +113,7 @@ VerificationTest[
     ],
     _String | KeyValuePattern[ "Content" -> { __Association } ],
     SameTest -> MatchQ,
-    TestID   -> "evaluateWolframLanguage-WithUI@@Tests/WolframLanguageEvaluator-UI.wlt:117,1-124,2"
+    TestID   -> "evaluateWolframLanguage-WithUI@@Tests/WolframLanguageEvaluator-UI.wlt:110,1-117,2"
 ]
 
 VerificationTest[
@@ -130,7 +123,22 @@ VerificationTest[
         StringQ @ $evalUIResult
     ],
     True,
-    TestID -> "evaluateWolframLanguage-WithUI-HasContent@@Tests/WolframLanguageEvaluator-UI.wlt:126,1-134,2"
+    TestID -> "evaluateWolframLanguage-WithUI-HasContent@@Tests/WolframLanguageEvaluator-UI.wlt:119,1-127,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*UI Support But Cloud Deployment Disabled - Falls Back*)
+VerificationTest[
+    Block[ {
+        Wolfram`AgentTools`Common`$clientSupportsUI    = True,
+        Wolfram`AgentTools`Common`$deployCloudNotebooks = False
+    },
+        $DefaultMCPTools[ "WolframLanguageEvaluator" ][ <| "code" -> "1+1", "timeConstraint" -> 30 |> ]
+    ],
+    _String | KeyValuePattern[ "Content" -> { __Association } ],
+    SameTest -> MatchQ,
+    TestID   -> "evaluateWolframLanguage-NoDeploy@@Tests/WolframLanguageEvaluator-UI.wlt:132,1-142,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -144,14 +152,14 @@ VerificationTest[
     Quiet @ Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`makeEvaluatorUIResult[ "1+1", "plain string" ],
     $Failed | _Failure,
     SameTest -> MatchQ,
-    TestID   -> "makeEvaluatorUIResult-PlainStringFails@@Tests/WolframLanguageEvaluator-UI.wlt:143,1-148,2"
+    TestID   -> "makeEvaluatorUIResult-PlainStringFails@@Tests/WolframLanguageEvaluator-UI.wlt:151,1-156,2"
 ]
 
 VerificationTest[
     Quiet @ Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`makeEvaluatorUIResult[ "1+1", $Failed ],
     $Failed | _Failure,
     SameTest -> MatchQ,
-    TestID   -> "makeEvaluatorUIResult-FailedInput@@Tests/WolframLanguageEvaluator-UI.wlt:150,1-155,2"
+    TestID   -> "makeEvaluatorUIResult-FailedInput@@Tests/WolframLanguageEvaluator-UI.wlt:158,1-163,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -164,7 +172,7 @@ VerificationTest[
     ],
     $Failed | _Failure,
     SameTest -> MatchQ,
-    TestID   -> "makeEvaluatorUIResult-MissingResultKey@@Tests/WolframLanguageEvaluator-UI.wlt:160,1-168,2"
+    TestID   -> "makeEvaluatorUIResult-MissingResultKey@@Tests/WolframLanguageEvaluator-UI.wlt:168,1-176,2"
 ]
 
 VerificationTest[
@@ -174,7 +182,7 @@ VerificationTest[
     ],
     $Failed | _Failure,
     SameTest -> MatchQ,
-    TestID   -> "makeEvaluatorUIResult-MissingStringKey@@Tests/WolframLanguageEvaluator-UI.wlt:170,1-178,2"
+    TestID   -> "makeEvaluatorUIResult-MissingStringKey@@Tests/WolframLanguageEvaluator-UI.wlt:178,1-186,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
