@@ -1,7 +1,7 @@
 <|
 "AgentToolsStrings" -> {
 
-	"PrefsTitle" -> LanguageSwitched["Wolfram Agent Tools", <|
+	"prefsTitle" -> LanguageSwitched["Wolfram Agent Tools", <|
 		"ChineseSimplified"  -> "Wolfram Agent Tools",
 		"ChineseTraditional" -> "Wolfram Agent Tools",
 		"French"             -> "Wolfram Agent Tools",
@@ -10,7 +10,7 @@
 		"Spanish"            -> "Wolfram Agent Tools"
 	|>],
 	
-	"PrefsSubtitle" -> LanguageSwitched["LLMs and their calling harnesses can be configured to use either of the following tools:", <|
+	"prefsSubtitle" -> LanguageSwitched["LLMs and their calling harnesses can be configured to use either of the following tools:", <|
 		"ChineseSimplified"  -> "LLMs and their calling harnesses can be configured to use either of the following tools:",
 		"ChineseTraditional" -> "LLMs and their calling harnesses can be configured to use either of the following tools:",
 		"French"             -> "LLMs and their calling harnesses can be configured to use either of the following tools:",
@@ -19,7 +19,7 @@
 		"Spanish"            -> "LLMs and their calling harnesses can be configured to use either of the following tools:"
 	|>],
 	
-	"PrefsDocsLinkText" -> LanguageSwitched["Documentation", <|
+	"prefsDocsLinkText" -> LanguageSwitched["Documentation", <|
 		"ChineseSimplified"  -> "Documentation",
 		"ChineseTraditional" -> "Documentation",
 		"French"             -> "Documentation",
@@ -28,7 +28,7 @@
 		"Spanish"            -> "Documentation"
 	|>],
 	
-	"PrefsComputationTools" -> LanguageSwitched["Computation Tools", <|
+	"prefsComputationTools" -> LanguageSwitched["Computation Tools", <|
 		"ChineseSimplified"  -> "Computation Tools",
 		"ChineseTraditional" -> "Computation Tools",
 		"French"             -> "Computation Tools",
@@ -37,7 +37,7 @@
 		"Spanish"            -> "Computation Tools"
 	|>],
 	
-	"PrefsComputationToolsDescription" -> LanguageSwitched["Tools for general computation and knowledge", <|
+	"prefsComputationToolsDescription" -> LanguageSwitched["Tools for general computation and knowledge", <|
 		"ChineseSimplified"  -> "Tools for general computation and knowledge",
 		"ChineseTraditional" -> "Tools for general computation and knowledge",
 		"French"             -> "Tools for general computation and knowledge",
@@ -46,7 +46,7 @@
 		"Spanish"            -> "Tools for general computation and knowledge"
 	|>],
 	
-	"PrefsDevelopmentTools" -> LanguageSwitched["Development Tools", <|
+	"prefsDevelopmentTools" -> LanguageSwitched["Development Tools", <|
 		"ChineseSimplified"  -> "Development Tools",
 		"ChineseTraditional" -> "Development Tools",
 		"French"             -> "Development Tools",
@@ -55,7 +55,7 @@
 		"Spanish"            -> "Development Tools"
 	|>],
 	
-	"PrefsDevelopmentToolsDescription" -> LanguageSwitched["Tools for Wolfram Language development", <|
+	"prefsDevelopmentToolsDescription" -> LanguageSwitched["Tools for Wolfram Language development", <|
 		"ChineseSimplified"  -> "Tools for Wolfram Language development",
 		"ChineseTraditional" -> "Tools for Wolfram Language development",
 		"French"             -> "Tools for Wolfram Language development",
@@ -64,7 +64,7 @@
 		"Spanish"            -> "Tools for Wolfram Language development"
 	|>],
 	
-	"PrefsHarnessesConfigured" -> LanguageSwitched["Configured:", <|
+	"prefsHarnessesConfigured" -> LanguageSwitched["Configured:", <|
 		"ChineseSimplified"  -> "Configured:",
 		"ChineseTraditional" -> "Configured:",
 		"French"             -> "Configured:",
@@ -73,13 +73,40 @@
 		"Spanish"            -> "Configured:"
 	|>],
 	
-	"PrefsHarnessesMore" -> LanguageSwitched["More:", <|
+	"prefsHarnessesMore" -> LanguageSwitched["More:", <|
 		"ChineseSimplified"  -> "More:",
 		"ChineseTraditional" -> "More:",
 		"French"             -> "More:",
 		"Japanese"           -> "More:",
 		"Korean"             -> "More:",
 		"Spanish"            -> "More:"
+	|>],
+
+	"prefsPickTool" -> LanguageSwitched["Pick a tool", <|
+		"ChineseSimplified"  -> "Pick a tool",
+		"ChineseTraditional" -> "Pick a tool",
+		"French"             -> "Pick a tool",
+		"Japanese"           -> "Pick a tool",
+		"Korean"             -> "Pick a tool",
+		"Spanish"            -> "Pick a tool"
+	|>],
+	
+	"prefsNoTool" -> LanguageSwitched["No tool", <|
+		"ChineseSimplified"  -> "No tool",
+		"ChineseTraditional" -> "No tool",
+		"French"             -> "No tool",
+		"Japanese"           -> "No tool",
+		"Korean"             -> "No tool",
+		"Spanish"            -> "No tool"
+	|>],
+
+	"prefsInstallLocation" -> LanguageSwitched["Install location:", <|
+		"ChineseSimplified"  -> "Install location:",
+		"ChineseTraditional" -> "Install location:",
+		"French"             -> "Install location:",
+		"Japanese"           -> "Install location:",
+		"Korean"             -> "Install location:",
+		"Spanish"            -> "Install location:"
 	|>]
 	
 },
@@ -90,7 +117,32 @@
 
 "AgentToolsExpressions" -> {
 
-"PrefsComputationToolsIcon" -> GraphicsBox[
+
+
+"prefsDownPointer" -> (GraphicsBox[
+  {#1, LineBox[{{0, 0.75}, {0.5, 0.25}, {1, 0.75}}]},
+  ImageSize->#2,
+  PlotRange->{0, 1}]&),
+
+
+(*
+"prefsRemoveIcon" -> (GraphicsBox[
+  {#1, LineBox[{{{0, 0}, {1, 1}}, {{1, 0}, {0, 1}}}]},
+  ImageSize->#2,
+  PlotRange->{-0.25, 1.25}]&),
+*)
+
+
+(*
+"prefsRestoreIcon" -> (GraphicsBox[
+  {#1, Arrowheads[{{0.5, Automatic}}], 
+   ArrowBox[CircleBox[{0, 0}, 1, NCache[{Rational[-3, 4] Pi, Rational[3, 4] Pi}, {-2.356194490192345, 2.356194490192345}]]]},
+  ImageSize->#2,
+  PlotRange->{-1.5, 1.5}]&),
+*)
+
+
+"prefsComputationToolsIcon" -> GraphicsBox[
   TagBox[RasterBox[CompressedData["
 1:eJzVfNdyXFmW3YSkBz3qF/QX8yhF6EWvo9AHzIRaE3pphXp6uruaVSyyyGLR
 exIgvPfeA4QH0iCBRBqkz0R6pPdI75bWuZlJgCyymqPujhgxYhfczXvP3mfv
@@ -313,7 +365,7 @@ Z65qlZ9f99f2//8Cqsbupw==
   ImageSizeRaw->{32., 34.},
   PlotRange->{{0, 32.}, {0, 34.}}],
   
-"PrefsInfoIcon" -> (GraphicsBox[
+"prefsInfoIcon" -> (GraphicsBox[
    {Thickness[0.05555555555555555], FaceForm[{#1, Opacity[1.]}], 
     FilledCurveBox[{{{1, 4, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 
       3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}}, {{0, 2, 0}, {1, 3, 3}, {0, 1, 0}, {1, 3, 
@@ -366,7 +418,7 @@ vpU0X+/en4xVTZeHf1qtd83LU75P//9evQc62+ka
        8.9999}, {16., 12.8599}, {12.859000000000002`, 15.9999}, {9.000000000000002, 15.9999}}}]},
    AspectRatio->Automatic,
    ImageSize->#2,
-   PlotRange->{{0., 18.}, {0., 18.}}] & ),
+   PlotRange->{{0., 18.}, {0., 18.}}] & )
 
 
 }
