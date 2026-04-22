@@ -1840,6 +1840,213 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Amazon Q Developer Support*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Install Location for Amazon Q Developer*)
+
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
+
+VerificationTest[
+    Wolfram`AgentTools`Common`installLocation[ "AmazonQ", "Windows" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-AmazonQ-Windows@@Tests/InstallMCPServer.wlt:AmazonQ-Windows"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`installLocation[ "AmazonQ", "MacOSX" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-AmazonQ-MacOSX@@Tests/InstallMCPServer.wlt:AmazonQ-MacOSX"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`installLocation[ "AmazonQ", "Unix" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-AmazonQ-Unix@@Tests/InstallMCPServer.wlt:AmazonQ-Unix"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`InstallMCPServer`Private`installDisplayName[ "AmazonQ" ],
+    "Amazon Q Developer",
+    SameTest -> Equal,
+    TestID   -> "InstallDisplayName-AmazonQ@@Tests/InstallMCPServer.wlt:AmazonQ-DisplayName"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`toInstallName[ "AmazonQ" ],
+    "AmazonQ",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-AmazonQ@@Tests/InstallMCPServer.wlt:AmazonQ-Name"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`toInstallName[ "AmazonQDeveloper" ],
+    "AmazonQ",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-AmazonQ-Alias-AmazonQDeveloper@@Tests/InstallMCPServer.wlt:AmazonQ-Alias-1"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`toInstallName[ "Q" ],
+    "AmazonQ",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-AmazonQ-Alias-Q@@Tests/InstallMCPServer.wlt:AmazonQ-Alias-2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`toInstallName[ "QDeveloper" ],
+    "AmazonQ",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-AmazonQ-Alias-QDeveloper@@Tests/InstallMCPServer.wlt:AmazonQ-Alias-3"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Project Install Location*)
+VerificationTest[
+    Module[ { path, result },
+        path = FileNameJoin @ { $TemporaryDirectory, "TestProject" };
+        result = Wolfram`AgentTools`Common`projectInstallLocation[ "AmazonQ", path ];
+        FileNameTake[ First @ result, -2 ]
+    ],
+    FileNameJoin @ { ".amazonq", "mcp.json" },
+    SameTest -> Equal,
+    TestID   -> "ProjectInstallLocation-AmazonQ@@Tests/InstallMCPServer.wlt:AmazonQ-ProjectPath"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Amazon Q Install and Uninstall*)
+VerificationTest[
+    amazonQConfigFile = testConfigFile[];
+    installResult = InstallMCPServer[ amazonQConfigFile, "WolframLanguage", "VerifyLLMKit" -> False, "ApplicationName" -> "AmazonQ" ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-AmazonQ-Basic@@Tests/InstallMCPServer.wlt:AmazonQ-Install"
+]
+
+VerificationTest[
+    FileExistsQ[ amazonQConfigFile ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-AmazonQ-FileExists@@Tests/InstallMCPServer.wlt:AmazonQ-FileExists"
+]
+
+VerificationTest[
+    Module[ { content },
+        content = Import[ amazonQConfigFile, "RawJSON" ];
+        KeyExistsQ[ content, "mcpServers" ] && KeyExistsQ[ content[ "mcpServers" ], "Wolfram" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-AmazonQ-VerifyContent@@Tests/InstallMCPServer.wlt:AmazonQ-VerifyContent"
+]
+
+VerificationTest[
+    Module[ { content, server },
+        content = Import[ amazonQConfigFile, "RawJSON" ];
+        server = content[ "mcpServers", "Wolfram" ];
+        KeyExistsQ[ server, "command" ] &&
+        ! KeyExistsQ[ server, "disabled" ] &&
+        ! KeyExistsQ[ server, "autoApprove" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-AmazonQ-VerifyFields@@Tests/InstallMCPServer.wlt:AmazonQ-VerifyFields"
+]
+
+VerificationTest[
+    uninstallResult = UninstallMCPServer[ amazonQConfigFile, "WolframLanguage", "ApplicationName" -> "AmazonQ" ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "UninstallMCPServer-AmazonQ-Basic@@Tests/InstallMCPServer.wlt:AmazonQ-Uninstall"
+]
+
+VerificationTest[
+    Module[ { content },
+        content = Import[ amazonQConfigFile, "RawJSON" ];
+        KeyExistsQ[ content, "mcpServers" ] && ! KeyExistsQ[ content[ "mcpServers" ], "Wolfram" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "UninstallMCPServer-AmazonQ-VerifyRemoval@@Tests/InstallMCPServer.wlt:AmazonQ-VerifyRemoval"
+]
+
+VerificationTest[
+    cleanupTestFiles[ amazonQConfigFile ],
+    { Null },
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-AmazonQ-Cleanup@@Tests/InstallMCPServer.wlt:AmazonQ-Cleanup"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Amazon Q Preserves Existing Config*)
+VerificationTest[
+    amazonQConfigFile = testConfigFile[];
+    Export[ amazonQConfigFile, <| "customSetting" -> True, "mcpServers" -> <| |> |>, "JSON" ];
+    installResult = InstallMCPServer[ amazonQConfigFile, "WolframLanguage", "VerifyLLMKit" -> False, "ApplicationName" -> "AmazonQ" ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-AmazonQ-PreserveExisting@@Tests/InstallMCPServer.wlt:AmazonQ-Preserve"
+]
+
+VerificationTest[
+    Module[ { content },
+        content = Import[ amazonQConfigFile, "RawJSON" ];
+        KeyExistsQ[ content, "customSetting" ] && content[ "customSetting" ] === True &&
+        KeyExistsQ[ content[ "mcpServers" ], "Wolfram" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-AmazonQ-VerifyPreserved@@Tests/InstallMCPServer.wlt:AmazonQ-VerifyPreserved"
+]
+
+VerificationTest[
+    cleanupTestFiles[ amazonQConfigFile ],
+    { Null },
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-AmazonQ-PreserveExisting-Cleanup@@Tests/InstallMCPServer.wlt:AmazonQ-Preserve-Cleanup"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Amazon Q Path Auto-Detection*)
+VerificationTest[
+    Module[ { dir, file, result },
+        dir = CreateDirectory @ FileNameJoin @ { $TemporaryDirectory, CreateUUID[ "amzq-" ], ".amazonq" };
+        file = File @ FileNameJoin @ { dir, "mcp.json" };
+        result = InstallMCPServer[ file, "WolframLanguage", "VerifyLLMKit" -> False ];
+        cleanupTestFiles[ file ];
+        result
+    ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-AmazonQ-AutoDetect-Project@@Tests/InstallMCPServer.wlt:AmazonQ-Auto-Project"
+]
+
+VerificationTest[
+    Module[ { dir, file, result },
+        dir = CreateDirectory @ FileNameJoin @ { $TemporaryDirectory, CreateUUID[ "amzq-" ], ".aws", "amazonq" };
+        file = File @ FileNameJoin @ { dir, "mcp.json" };
+        result = InstallMCPServer[ file, "WolframLanguage", "VerifyLLMKit" -> False ];
+        cleanupTestFiles[ file ];
+        result
+    ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-AmazonQ-AutoDetect-Global@@Tests/InstallMCPServer.wlt:AmazonQ-Auto-Global"
+]
+
+(* :!CodeAnalysis::EndBlock:: *)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*$SupportedMCPClients*)
 VerificationTest[
     $SupportedMCPClients,
@@ -1850,14 +2057,14 @@ VerificationTest[
 
 VerificationTest[
     Length @ $SupportedMCPClients,
-    14,
+    15,
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-Has14Clients@@Tests/InstallMCPServer.wlt:1851,1-1856,2"
+    TestID   -> "SupportedMCPClients-Has15Clients@@Tests/InstallMCPServer.wlt:1851,1-1856,2"
 ]
 
 VerificationTest[
     Keys @ $SupportedMCPClients,
-    { "Antigravity", "ClaudeCode", "ClaudeDesktop", "Cline", "Codex", "CopilotCLI", "Cursor", "GeminiCLI", "Goose", "Kiro", "OpenCode", "VisualStudioCode", "Windsurf", "Zed" },
+    { "AmazonQ", "Antigravity", "ClaudeCode", "ClaudeDesktop", "Cline", "Codex", "CopilotCLI", "Cursor", "GeminiCLI", "Goose", "Kiro", "OpenCode", "VisualStudioCode", "Windsurf", "Zed" },
     SameTest -> Equal,
     TestID   -> "SupportedMCPClients-KeysSorted@@Tests/InstallMCPServer.wlt:1858,1-1863,2"
 ]

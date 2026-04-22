@@ -134,6 +134,15 @@ $supportedMCPClients = <|
         "URL"             -> "https://codeium.com/windsurf",
         "InstallLocation" :> { $HomeDirectory, ".codeium", "windsurf", "mcp_config.json" }
     |>,
+    "AmazonQ" -> <|
+        "DisplayName"     -> "Amazon Q Developer",
+        "Aliases"         -> { "AmazonQDeveloper", "Q", "QDeveloper" },
+        "ConfigFormat"    -> "JSON",
+        "ConfigKey"       -> { "mcpServers" },
+        "URL"             -> "https://aws.amazon.com/q/developer/",
+        "ProjectPath"     -> { ".amazonq", "mcp.json" },
+        "InstallLocation" :> { $HomeDirectory, ".aws", "amazonq", "mcp.json" }
+    |>,
     "Cline" -> <|
         "DisplayName"     -> "Cline",
         "Aliases"         -> { },

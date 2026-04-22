@@ -114,6 +114,7 @@ AgentTools can be installed into the following MCP client applications:
 
 | Client | Name | Project Support |
 |--------|------|-----------------|
+| [Amazon Q Developer](https://aws.amazon.com/q/developer/) | `"AmazonQ"` | Yes |
 | [Claude Code](https://code.claude.com) | `"ClaudeCode"` | Yes |
 | [Claude Desktop](https://claude.ai/download) | `"ClaudeDesktop"` | No |
 | [Cline](https://cline.bot) | `"Cline"` | No |

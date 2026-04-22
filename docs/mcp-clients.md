@@ -14,6 +14,7 @@ The following clients have built-in support for automatic configuration via `Ins
 
 | Client | Canonical Name | Aliases | Config Format | Project Support |
 |--------|---------------|---------|---------------|-----------------|
+| Amazon Q Developer | `"AmazonQ"` | `"AmazonQDeveloper"`, `"Q"`, `"QDeveloper"` | JSON | Yes |
 | Claude Code | `"ClaudeCode"` | — | JSON | Yes |
 | Claude Desktop | `"ClaudeDesktop"` | `"Claude"` | JSON | No |
 | Cline | `"Cline"` | — | JSON | No |
@@ -74,6 +75,28 @@ UninstallMCPServer[myServerObject]               (* Remove from all locations *)
 ```
 
 ## Client Configuration Details
+
+### Amazon Q Developer
+
+| Scope | Config Location |
+|-------|----------------|
+| Global | `~/.aws/amazonq/mcp.json` |
+| Project | `.amazonq/mcp.json` (in project root) |
+
+**Format:**
+```json
+{
+    "mcpServers": {
+        "ServerName": {
+            "command": "...",
+            "args": ["..."],
+            "env": { ... }
+        }
+    }
+}
+```
+
+Amazon Q Developer supports an optional `timeout` field (milliseconds, default 120000) per server entry. `InstallMCPServer` does not emit `timeout`; Amazon Q uses its default when absent. Runtime fields like `disabled` and per-tool auto-approve are managed through the Amazon Q IDE UI, not in `mcp.json`.
 
 ### Claude Desktop
 

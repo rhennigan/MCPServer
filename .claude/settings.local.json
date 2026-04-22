@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "mcp__WolframLanguage__TestReport",
+      "mcp__WolframLanguage__WolframLanguageEvaluator",
+      "mcp__WolframLanguage__CodeInspector"
+    ]
+  }
+}
