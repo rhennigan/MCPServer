@@ -17,6 +17,20 @@ For Wolfram Language development, it's recommended to use the **WolframLanguage*
 
 All installation methods use the `InstallMCPServer` function. Open a Wolfram Language session and run the appropriate command for your application.
 
+### Augment Code
+
+```wl
+InstallMCPServer["AugmentCode", "WolframLanguage"]
+```
+
+To verify the installation from the command line:
+
+```shell
+auggie mcp list
+```
+
+The output should indicate that the "WolframLanguage" server is configured.
+
 ### Claude Code
 
 Choose whether to install the server globally or project-level. Global installation is available in all projects, while project-level installation is available only in a specific project directory.

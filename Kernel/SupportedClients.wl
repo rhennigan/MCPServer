@@ -75,6 +75,14 @@ $supportedMCPClients = <|
         "URL"             -> "https://antigravity.google",
         "InstallLocation" :> { $HomeDirectory, ".gemini", "antigravity", "mcp_config.json" }
     |>,
+    "AugmentCode" -> <|
+        "DisplayName"     -> "Augment Code",
+        "Aliases"         -> { "Auggie", "Augment" },
+        "ConfigFormat"    -> "JSON",
+        "ConfigKey"       -> { "mcpServers" },
+        "URL"             -> "https://www.augmentcode.com",
+        "InstallLocation" :> { $HomeDirectory, ".augment", "settings.json" }
+    |>,
     "Codex" -> <|
         "DisplayName"     -> "Codex CLI",
         "Aliases"         -> { "OpenAICodex" },

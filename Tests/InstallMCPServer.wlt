@@ -1530,6 +1530,190 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Augment Code Support*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Install Location for AugmentCode*)
+VerificationTest[
+    Wolfram`AgentTools`Common`installLocation[ "AugmentCode", "Windows" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-AugmentCode-Windows"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`installLocation[ "AugmentCode", "MacOSX" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-AugmentCode-MacOSX"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`installLocation[ "AugmentCode", "Unix" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-AugmentCode-Unix"
+]
+
+(* Install location path must end with .augment/settings.json on all platforms *)
+VerificationTest[
+    Module[ { file, split },
+        file = Wolfram`AgentTools`Common`installLocation[ "AugmentCode", $OperatingSystem ];
+        split = FileNameSplit @ First @ file;
+        Take[ split, -2 ]
+    ],
+    { ".augment", "settings.json" },
+    SameTest -> Equal,
+    TestID   -> "InstallLocation-AugmentCode-PathShape"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Name Normalization*)
+VerificationTest[
+    Wolfram`AgentTools`Common`toInstallName[ "AugmentCode" ],
+    "AugmentCode",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-AugmentCode"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`toInstallName[ "Auggie" ],
+    "AugmentCode",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-Auggie"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`toInstallName[ "Augment" ],
+    "AugmentCode",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-Augment"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`InstallMCPServer`Private`installDisplayName[ "AugmentCode" ],
+    "Augment Code",
+    SameTest -> Equal,
+    TestID   -> "InstallDisplayName-AugmentCode"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*AugmentCode Install and Uninstall*)
+VerificationTest[
+    augmentConfigFile = testConfigFile[];
+    installResult = InstallMCPServer[ augmentConfigFile, "WolframLanguage", "VerifyLLMKit" -> False, "ApplicationName" -> "AugmentCode" ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-AugmentCode-Basic"
+]
+
+VerificationTest[
+    FileExistsQ[ augmentConfigFile ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-AugmentCode-FileExists"
+]
+
+VerificationTest[
+    Module[ { content },
+        content = Import[ augmentConfigFile, "RawJSON" ];
+        KeyExistsQ[ content, "mcpServers" ] && KeyExistsQ[ content[ "mcpServers" ], "Wolfram" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-AugmentCode-VerifyContent"
+]
+
+(* AugmentCode uses the standard mcpServers format: no Cline-style disabled/autoApprove fields
+   and no Copilot-style tools field should be added *)
+VerificationTest[
+    Module[ { content, server },
+        content = Import[ augmentConfigFile, "RawJSON" ];
+        server = content[ "mcpServers", "Wolfram" ];
+        KeyExistsQ[ server, "command" ] &&
+        ! KeyExistsQ[ server, "disabled" ] &&
+        ! KeyExistsQ[ server, "autoApprove" ] &&
+        ! KeyExistsQ[ server, "tools" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-AugmentCode-StandardFormat"
+]
+
+VerificationTest[
+    uninstallResult = UninstallMCPServer[ augmentConfigFile, "WolframLanguage", "ApplicationName" -> "AugmentCode" ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "UninstallMCPServer-AugmentCode-Basic"
+]
+
+VerificationTest[
+    Module[ { content },
+        content = Import[ augmentConfigFile, "RawJSON" ];
+        KeyExistsQ[ content, "mcpServers" ] && ! KeyExistsQ[ content[ "mcpServers" ], "Wolfram" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "UninstallMCPServer-AugmentCode-VerifyRemoval"
+]
+
+VerificationTest[
+    cleanupTestFiles[ augmentConfigFile ],
+    { Null },
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-AugmentCode-Cleanup"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*$SupportedMCPClients metadata for AugmentCode*)
+VerificationTest[
+    $SupportedMCPClients[ "AugmentCode", "DisplayName" ],
+    "Augment Code",
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-AugmentCodeDisplayName"
+]
+
+VerificationTest[
+    Sort @ $SupportedMCPClients[ "AugmentCode", "Aliases" ],
+    Sort @ { "Auggie", "Augment" },
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-AugmentCodeAliases"
+]
+
+VerificationTest[
+    $SupportedMCPClients[ "AugmentCode", "ConfigFormat" ],
+    "JSON",
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-AugmentCodeConfigFormat"
+]
+
+VerificationTest[
+    $SupportedMCPClients[ "AugmentCode", "ConfigKey" ],
+    { "mcpServers" },
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-AugmentCodeConfigKey"
+]
+
+VerificationTest[
+    $SupportedMCPClients[ "AugmentCode", "ProjectSupport" ],
+    False,
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-AugmentCodeProjectSupport"
+]
+
+VerificationTest[
+    StringStartsQ[ $SupportedMCPClients[ "AugmentCode", "URL" ], "https://" ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-AugmentCodeURL"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Zed Support*)
 
 (* ::**************************************************************************************************************:: *)
@@ -2057,14 +2241,14 @@ VerificationTest[
 
 VerificationTest[
     Length @ $SupportedMCPClients,
-    15,
+    16,
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-Has15Clients@@Tests/InstallMCPServer.wlt:1851,1-1856,2"
+    TestID   -> "SupportedMCPClients-Has16Clients@@Tests/InstallMCPServer.wlt:1851,1-1856,2"
 ]
 
 VerificationTest[
     Keys @ $SupportedMCPClients,
-    { "AmazonQ", "Antigravity", "ClaudeCode", "ClaudeDesktop", "Cline", "Codex", "CopilotCLI", "Cursor", "GeminiCLI", "Goose", "Kiro", "OpenCode", "VisualStudioCode", "Windsurf", "Zed" },
+    { "AmazonQ", "Antigravity", "AugmentCode", "ClaudeCode", "ClaudeDesktop", "Cline", "Codex", "CopilotCLI", "Cursor", "GeminiCLI", "Goose", "Kiro", "OpenCode", "VisualStudioCode", "Windsurf", "Zed" },
     SameTest -> Equal,
     TestID   -> "SupportedMCPClients-KeysSorted@@Tests/InstallMCPServer.wlt:1858,1-1863,2"
 ]

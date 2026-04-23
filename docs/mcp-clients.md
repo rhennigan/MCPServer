@@ -15,6 +15,7 @@ The following clients have built-in support for automatic configuration via `Ins
 | Client | Canonical Name | Aliases | Config Format | Project Support |
 |--------|---------------|---------|---------------|-----------------|
 | Amazon Q Developer | `"AmazonQ"` | `"AmazonQDeveloper"`, `"Q"`, `"QDeveloper"` | JSON | Yes |
+| Augment Code | `"AugmentCode"` | `"Auggie"`, `"Augment"` | JSON | No |
 | Claude Code | `"ClaudeCode"` | — | JSON | Yes |
 | Claude Desktop | `"ClaudeDesktop"` | `"Claude"` | JSON | No |
 | Cline | `"Cline"` | — | JSON | No |
@@ -199,6 +200,16 @@ Note: Copilot CLI requires the `tools` field to specify which tools to enable. `
 | Global | `~/.gemini/antigravity/mcp_config.json` |
 
 **Format:** Same as Claude Desktop (`mcpServers` key).
+
+### Augment Code
+
+| Scope | Config Location |
+|-------|----------------|
+| Global | `~/.augment/settings.json` |
+
+**Format:** Same as Claude Desktop (`mcpServers` key).
+
+Note: Augment Code uses a single config file at `~/.augment/settings.json` on all platforms (macOS, Windows, Linux). It supports stdio, HTTP, and SSE transports; `InstallMCPServer` writes the standard stdio form. Augment Code has no project-level MCP configuration — server entries can also be managed from the Auggie CLI via `auggie mcp add` / `auggie mcp list` / `auggie mcp remove`.
 
 ### Goose
 

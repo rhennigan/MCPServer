@@ -4,7 +4,9 @@
       "WebFetch(domain:github.com)",
       "mcp__WolframLanguage__TestReport",
       "mcp__WolframLanguage__WolframLanguageEvaluator",
-      "mcp__WolframLanguage__CodeInspector"
+      "mcp__WolframLanguage__CodeInspector",
+      "WebFetch(domain:docs.augmentcode.com)",
+      "mcp__WolframLanguage__ReadNotebook"
     ]
   }
 }
