@@ -189,13 +189,21 @@ extractLeadingRegexFlags // endDefinition;
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
 (*stripInnerRegexModifiers*)
-(* Remove scope-less inline modifiers like "(?-m-s)" that wrap RegularExpression[] contents.
-   These have no JS equivalent; the surrounding "(?:...)" non-capturing group is left in place. *)
+(* Strip the scope-less inline modifier prefixes that PatternConvert inserts at the start of a
+   "(?:...)" wrapper around RegularExpression[] contents. Matching only the "(?:(?-...)" wrapper
+   form avoids silently altering mid-pattern modifiers in user-supplied regexes. *)
 stripInnerRegexModifiers // beginDefinition;
 
 stripInnerRegexModifiers[ s_String ] := StringReplace[
     s,
-    "(?-m-s)" | "(?-s-m)" | "(?-ms)" | "(?-sm)" | "(?-s)" | "(?-m)" -> ""
+    {
+        "(?:(?-m-s)" -> "(?:",
+        "(?:(?-s-m)" -> "(?:",
+        "(?:(?-ms)"  -> "(?:",
+        "(?:(?-sm)"  -> "(?:",
+        "(?:(?-s)"   -> "(?:",
+        "(?:(?-m)"   -> "(?:"
+    }
 ];
 
 stripInnerRegexModifiers // endDefinition;
