@@ -611,3 +611,295 @@ VerificationTest[
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*toJSRegex*)
+
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Dotall and basic flag stripping*)
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms).*" ],
+    "[\\s\\S]*",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-DotStarWithDotAll@@Tests/StartMCPServer.wlt:625,1-630,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)\\d+" ],
+    "\\d+",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-DigitCharacterPlus@@Tests/StartMCPServer.wlt:632,1-637,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "\\d+" ],
+    "\\d+",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-NoLeadingFlags@@Tests/StartMCPServer.wlt:639,1-644,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?i)foo" ],
+    "foo",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-IgnoreCaseFlagStripped@@Tests/StartMCPServer.wlt:646,1-651,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "" ],
+    "",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-EmptyString@@Tests/StartMCPServer.wlt:653,1-658,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*POSIX character classes*)
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)[[:alpha:]]" ],
+    "[a-zA-Z]",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-POSIXAlpha@@Tests/StartMCPServer.wlt:663,1-668,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)[[:digit:]]" ],
+    "[0-9]",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-POSIXDigit@@Tests/StartMCPServer.wlt:670,1-675,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)[[:alnum:]]" ],
+    "[a-zA-Z0-9]",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-POSIXAlnum@@Tests/StartMCPServer.wlt:677,1-682,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)[[:upper:]]" ],
+    "[A-Z]",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-POSIXUpper@@Tests/StartMCPServer.wlt:684,1-689,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)[[:lower:]]" ],
+    "[a-z]",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-POSIXLower@@Tests/StartMCPServer.wlt:691,1-696,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)[[:xdigit:]]" ],
+    "[0-9a-fA-F]",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-POSIXXdigit@@Tests/StartMCPServer.wlt:698,1-703,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)[[:space:]]" ],
+    "[\\s]",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-POSIXSpace@@Tests/StartMCPServer.wlt:705,1-710,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)[[:blank:]]" ],
+    "[ \\t]",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-POSIXBlank@@Tests/StartMCPServer.wlt:712,1-717,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)[[:cntrl:]]" ],
+    "[\\x00-\\x1F\\x7F]",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-POSIXCntrl@@Tests/StartMCPServer.wlt:719,1-724,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)[[:print:]]" ],
+    "[\\x20-\\x7E]",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-POSIXPrint@@Tests/StartMCPServer.wlt:726,1-731,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)[[:graph:]]" ],
+    "[\\x21-\\x7E]",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-POSIXGraph@@Tests/StartMCPServer.wlt:733,1-738,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)[[:punct:]]" ],
+    "[!-/:-@[-`{-~]",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-POSIXPunct@@Tests/StartMCPServer.wlt:740,1-745,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)[[:alpha:][:digit:]]" ],
+    "[a-zA-Z0-9]",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-POSIXCombined@@Tests/StartMCPServer.wlt:747,1-752,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)[^[:alpha:]]" ],
+    "[^a-zA-Z]",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-POSIXNegated@@Tests/StartMCPServer.wlt:754,1-759,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*PCRE anchors*)
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)\\Aprefix.*suffix\\z" ],
+    "^prefix[\\s\\S]*suffix$",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-StartOfStringEndOfString@@Tests/StartMCPServer.wlt:764,1-769,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)foo\\Z" ],
+    "foo$",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-CapitalZEnd@@Tests/StartMCPServer.wlt:771,1-776,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Unicode escapes*)
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)\\x{A0}" ],
+    "\\xA0",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-Unicode2Digit@@Tests/StartMCPServer.wlt:781,1-786,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)\\x{0}" ],
+    "\\x00",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-Unicode1DigitPadded@@Tests/StartMCPServer.wlt:788,1-793,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)\\x{abc}" ],
+    "\\u0abc",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-Unicode3DigitPadded@@Tests/StartMCPServer.wlt:795,1-800,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)\\x{ABCD}" ],
+    "\\uABCD",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-Unicode4Digit@@Tests/StartMCPServer.wlt:802,1-807,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)\\x{1F600}" ],
+    "\\u{1F600}",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-Unicode5DigitSupplementary@@Tests/StartMCPServer.wlt:809,1-814,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)[[:alpha:]\\x{f6b2}-\\x{f6b5}]" ],
+    "[a-zA-Z\\uf6b2-\\uf6b5]",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-LetterCharacterWithPUA@@Tests/StartMCPServer.wlt:816,1-821,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Inner (?-m-s) modifier stripping*)
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)(?:(?-m-s)\\d+)" ],
+    "(?:\\d+)",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-StripInnerModifier@@Tests/StartMCPServer.wlt:826,1-831,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)(?:(?-s)abc)" ],
+    "(?:abc)",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-StripInnerModifierSOnly@@Tests/StartMCPServer.wlt:833,1-838,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)(?:(?-m-s)a.b)" ],
+    "(?:a[\\s\\S]b)",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-InnerDotOverMatches@@Tests/StartMCPServer.wlt:840,1-845,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Dotall walker preserves escapes and classes*)
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)a\\.b" ],
+    "a\\.b",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-EscapedDotUntouched@@Tests/StartMCPServer.wlt:850,1-855,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)[.]" ],
+    "[.]",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-DotInClassUntouched@@Tests/StartMCPServer.wlt:857,1-862,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)[.xyz\\.]" ],
+    "[.xyz\\.]",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-DotInLargerClassUntouched@@Tests/StartMCPServer.wlt:864,1-869,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)\\(.+?\\)" ],
+    "\\([\\s\\S]+?\\)",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-ShortestGroup@@Tests/StartMCPServer.wlt:871,1-876,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms)^# .+$" ],
+    "^# [\\s\\S]+$",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-LineAnchorsPreserved@@Tests/StartMCPServer.wlt:878,1-883,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Output is a valid JavaScript regex for common inputs*)
+
+(* These are the actual "pattern" strings LLMTool's JSONSchema emits for the default tools.
+   Without the fix, JS validators choke on "(?ms)". *)
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms).*" ],
+    Except[ _? (StringContainsQ[ "(?" ]) ],
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-NoFlagGroupInOutput@@Tests/StartMCPServer.wlt:891,1-896,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toJSRegex[ "(?ms).*" ],
+    Except[ _? (StringStartsQ[ "/" ]) ],
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-NoLiteralDelimiters@@Tests/StartMCPServer.wlt:898,1-903,2"
+]
+
+(* :!CodeAnalysis::EndBlock:: *)

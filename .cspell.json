@@ -1,9 +1,11 @@
 {
     "words": [
         "Agentic",
+        "alnum",
         "BUILDKIT",
         "buildx",
         "CICD",
+        "cntrl",
         "Collatz",
         "dpkg",
         "Embedder",
@@ -28,7 +30,9 @@
         "opencode",
         "pacletreadonly",
         "patt",
+        "PCRE",
         "prebuild",
+        "punct",
         "pwfile",
         "reranking",
         "sandboxed",
@@ -53,6 +57,7 @@
         "WOLFRAMINIT",
         "wolframresearch",
         "worktrees",
+        "xdigit",
         "zoomable"
     ],
     "ignoreRegExpList": [
