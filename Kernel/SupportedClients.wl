@@ -80,6 +80,7 @@ $supportedMCPClients = <|
         "Aliases"         -> { "Auggie", "Augment" },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "mcpServers" },
+        "ServerConverter" -> convertToAugmentCodeFormat,
         "URL"             -> "https://www.augmentcode.com",
         "InstallLocation" :> { $HomeDirectory, ".augment", "settings.json" }
     |>,
@@ -276,6 +277,68 @@ convertToClineFormat[ server_Association ] := Enclose[
 ];
 
 convertToClineFormat // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*convertToAugmentCodeFormat*)
+(* Augment Code's CLI shell-invokes the MCP command on Windows, which breaks when the
+   wolfram.exe path contains spaces (e.g. "C:\Program Files\..."). Coerce the command to
+   its 8.3 short-path form on Windows so the unquoted shell invocation resolves correctly. *)
+convertToAugmentCodeFormat // beginDefinition;
+
+convertToAugmentCodeFormat[ server_Association ] :=
+    convertToAugmentCodeFormat[ server, $OperatingSystem ];
+
+convertToAugmentCodeFormat[ server_Association, os_String ] := Enclose[
+    Module[ { result, command, shortCommand },
+        result = ConfirmBy[ server, AssociationQ, "Server" ];
+        If[ os === "Windows",
+            command = Lookup[ result, "command", Missing[ ] ];
+            If[ StringQ @ command && StringContainsQ[ command, " " ],
+                shortCommand = toWindowsShortPath @ command;
+                If[ StringQ @ shortCommand && shortCommand =!= command,
+                    result[ "command" ] = shortCommand
+                ]
+            ]
+        ];
+        result
+    ],
+    throwInternalFailure
+];
+
+convertToAugmentCodeFormat // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*toWindowsShortPath*)
+(* Resolve a Windows path to its 8.3 short form by shelling out to PowerShell's
+   Scripting.FileSystemObject COM interface. Returns the original path on any failure. *)
+toWindowsShortPath // beginDefinition;
+
+toWindowsShortPath[ path_String ] := Enclose[
+    Module[ { escaped, out, trimmed },
+        If[ ! FileExistsQ @ path, Return[ path, Module ] ];
+        escaped = StringReplace[ path, "'" -> "''" ];
+        out = Quiet @ RunProcess[
+            {
+                "powershell",
+                "-NoProfile",
+                "-Command",
+                "(New-Object -ComObject Scripting.FileSystemObject).GetFile('" <> escaped <> "').ShortPath"
+            },
+            "StandardOutput"
+        ];
+        If[ ! StringQ @ out, Return[ path, Module ] ];
+        trimmed = StringTrim @ out;
+        If[ StringLength @ trimmed > 0 && ! StringContainsQ[ trimmed, " " ],
+            trimmed,
+            path
+        ]
+    ],
+    throwInternalFailure
+];
+
+toWindowsShortPath // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

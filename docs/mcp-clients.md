@@ -211,6 +211,8 @@ Note: Copilot CLI requires the `tools` field to specify which tools to enable. `
 
 Note: Augment Code uses a single config file at `~/.augment/settings.json` on all platforms (macOS, Windows, Linux). It supports stdio, HTTP, and SSE transports; `InstallMCPServer` writes the standard stdio form. Augment Code has no project-level MCP configuration — server entries can also be managed from the Auggie CLI via `auggie mcp add` / `auggie mcp list` / `auggie mcp remove`.
 
+On Windows, `InstallMCPServer` automatically rewrites the `command` to its 8.3 short-path form (e.g. `C:\PROGRA~1\WOLFRA~1\Wolfram\15.0\wolfram.exe`) to work around a shell-invocation quirk where spaces in `C:\Program Files\...` cause cmd.exe to fail with `'C:\Program' is not recognized as an internal or external command`.
+
 ### Goose
 
 | OS | Config Location |

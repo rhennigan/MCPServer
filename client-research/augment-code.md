@@ -81,8 +81,8 @@ Augment Code's MCP configuration is straightforward to implement because:
 1. Add a single-path `InstallLocation` (same on all OSes)
 2. Add name aliases (`"Auggie"`, `"Augment"`)
 3. Display name "Augment Code"
-4. Uses standard format - no special handling in `installMCPServer` needed
-5. No `ProjectPath` (project-level not supported)
+4. No `ProjectPath` (project-level not supported)
+5. **Windows-specific quirk**: Augment Code shell-invokes the configured `command` on Windows, which breaks when the path contains spaces (e.g. `C:\Program Files\...`). cmd.exe splits the unquoted path on the first space and reports `'C:\Program' is not recognized as an internal or external command, operable program or batch file`. A `ServerConverter` is used to coerce the `command` to its 8.3 short-path form on Windows (e.g. `C:\PROGRA~1\WOLFRA~1\Wolfram\15.0\wolfram.exe`) so shell invocation resolves correctly. Other clients (Claude Desktop, Cursor, etc.) don't need this because they spawn the process directly rather than via a shell.
 
 ### Proposed Configuration
 

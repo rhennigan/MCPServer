@@ -6,7 +6,8 @@
       "mcp__WolframLanguage__WolframLanguageEvaluator",
       "mcp__WolframLanguage__CodeInspector",
       "WebFetch(domain:docs.augmentcode.com)",
-      "mcp__WolframLanguage__ReadNotebook"
+      "mcp__WolframLanguage__ReadNotebook",
+      "Bash(wolframscript -f \"C:\\\\Wolfram Workspace\\\\AgentTools\\\\aug_smoke.wls\")"
     ]
   }
 }

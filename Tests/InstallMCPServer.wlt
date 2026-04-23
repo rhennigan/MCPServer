@@ -1669,6 +1669,131 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*convertToAugmentCodeFormat*)
+
+(* Non-Windows: converter returns the entry unchanged regardless of the command path *)
+VerificationTest[
+    Wolfram`AgentTools`SupportedClients`Private`convertToAugmentCodeFormat[
+        <|
+            "command" -> "/usr/local/bin/wolfram",
+            "args" -> { "-run", "test" },
+            "env" -> <| "KEY" -> "value" |>
+        |>,
+        "Unix"
+    ],
+    <|
+        "command" -> "/usr/local/bin/wolfram",
+        "args" -> { "-run", "test" },
+        "env" -> <| "KEY" -> "value" |>
+    |>,
+    SameTest -> Equal,
+    TestID   -> "ConvertToAugmentCodeFormat-NonWindows"
+]
+
+(* Non-Windows with a space-containing command: still unchanged *)
+VerificationTest[
+    Wolfram`AgentTools`SupportedClients`Private`convertToAugmentCodeFormat[
+        <| "command" -> "/Applications/Wolfram Desktop.app/Contents/MacOS/wolfram" |>,
+        "MacOSX"
+    ],
+    <| "command" -> "/Applications/Wolfram Desktop.app/Contents/MacOS/wolfram" |>,
+    SameTest -> Equal,
+    TestID   -> "ConvertToAugmentCodeFormat-NonWindows-WithSpaces"
+]
+
+(* Windows with a space-free command: unchanged (no short-path lookup needed) *)
+VerificationTest[
+    Wolfram`AgentTools`SupportedClients`Private`convertToAugmentCodeFormat[
+        <|
+            "command" -> "C:\\Wolfram\\wolfram.exe",
+            "args" -> { "-run", "test" }
+        |>,
+        "Windows"
+    ],
+    <|
+        "command" -> "C:\\Wolfram\\wolfram.exe",
+        "args" -> { "-run", "test" }
+    |>,
+    SameTest -> Equal,
+    TestID   -> "ConvertToAugmentCodeFormat-Windows-NoSpaces"
+]
+
+(* Missing command: converter should not error *)
+VerificationTest[
+    Wolfram`AgentTools`SupportedClients`Private`convertToAugmentCodeFormat[
+        <| "args" -> { "-run", "test" } |>,
+        "Windows"
+    ],
+    <| "args" -> { "-run", "test" } |>,
+    SameTest -> Equal,
+    TestID   -> "ConvertToAugmentCodeFormat-MissingCommand"
+]
+
+(* Windows with a space-containing path to a non-existent file: falls back to the
+   original path (toWindowsShortPath returns unchanged when the file does not exist) *)
+VerificationTest[
+    Wolfram`AgentTools`SupportedClients`Private`convertToAugmentCodeFormat[
+        <| "command" -> "C:\\Does Not Exist\\wolfram.exe" |>,
+        "Windows"
+    ],
+    <| "command" -> "C:\\Does Not Exist\\wolfram.exe" |>,
+    SameTest -> Equal,
+    TestID   -> "ConvertToAugmentCodeFormat-Windows-NonExistentPath"
+]
+
+(* 1-arg form dispatches to 2-arg form using $OperatingSystem *)
+VerificationTest[
+    Wolfram`AgentTools`SupportedClients`Private`convertToAugmentCodeFormat @ <|
+        "command" -> "/no/spaces/here"
+    |>,
+    <| "command" -> "/no/spaces/here" |>,
+    SameTest -> Equal,
+    TestID   -> "ConvertToAugmentCodeFormat-OneArgForm"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*toWindowsShortPath*)
+
+(* Non-existent path: returns the input unchanged *)
+VerificationTest[
+    Wolfram`AgentTools`SupportedClients`Private`toWindowsShortPath[
+        "C:\\__this_path_does_not_exist_" <> CreateUUID[] <> "__\\wolfram.exe"
+    ],
+    _String? (! StringContainsQ[ #, "~" ] &),
+    SameTest -> MatchQ,
+    TestID   -> "ToWindowsShortPath-NonExistent"
+]
+
+(* Space-free existing path on Windows: result equals the input (no short form needed).
+   On non-Windows, the file probably exists and the function still returns a string. *)
+VerificationTest[
+    With[ { result = Wolfram`AgentTools`SupportedClients`Private`toWindowsShortPath @ $TemporaryDirectory },
+        StringQ @ result
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "ToWindowsShortPath-ReturnsString"
+]
+
+(* Windows-only: the wolfram.exe short path should not contain spaces when the
+   original is in "Program Files" *)
+If[ $OperatingSystem === "Windows",
+    VerificationTest[
+        Module[ { candidate, shortPath },
+            candidate = "C:\\Program Files\\Wolfram Research\\Wolfram\\15.0\\wolfram.exe";
+            If[ ! FileExistsQ @ candidate, Return[ True, Module ] ];
+            shortPath = Wolfram`AgentTools`SupportedClients`Private`toWindowsShortPath @ candidate;
+            StringQ @ shortPath && ! StringContainsQ[ shortPath, " " ]
+        ],
+        True,
+        SameTest -> Equal,
+        TestID   -> "ToWindowsShortPath-WolframExe"
+    ]
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*$SupportedMCPClients metadata for AugmentCode*)
 VerificationTest[
     $SupportedMCPClients[ "AugmentCode", "DisplayName" ],
