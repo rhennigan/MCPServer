@@ -317,7 +317,7 @@ createMCPToolData[ mcpName_String, tool: HoldPattern[ _LLMTool ] ] := Enclose[
 
         data = ConfirmBy[ tool[ "Data" ], AssociationQ, "Data" ];
         description = safeString @ ConfirmBy[ tool[ "Description" ], StringQ, "Description" ];
-        inputSchema = ConfirmBy[ tool[ "JSONSchema" ], AssociationQ, "InputSchema" ];
+        inputSchema = ConfirmBy[ toolSchema @ tool, AssociationQ, "InputSchema" ];
 
         title = Lookup[ data, "DisplayName", Missing[ ] ];
         If[ StringQ @ title, title = safeString @ title ];
@@ -336,6 +336,44 @@ createMCPToolData[ mcpName_String, tool: HoldPattern[ _LLMTool ] ] := Enclose[
 ];
 
 createMCPToolData // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*toolSchema*)
+toolSchema // beginDefinition;
+
+toolSchema[ tool: HoldPattern[ _LLMTool ] ] := ReplaceAll[
+    ReplaceAll[
+        tool[ "JSONSchema" ],
+        (* Make sure regex patterns are valid in JavaScript *)
+        as: KeyValuePattern[ "pattern" -> regex_String ] :>
+            RuleCondition @ <| as, "pattern" -> toJSRegex @ regex |>
+    ],
+    (* Make sure strings are valid UTF-8 *)
+    s_String :> RuleCondition @ safeString @ s
+];
+
+toolSchema // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*toJSRegex*)
+toJSRegex // beginDefinition;
+
+toJSRegex[ regex_String ] := FixedPoint[
+    StringReplace @ {
+        (* POSIX character classes *)
+        "[[:alpha:]]"  :> "[a-zA-Z]",
+        "[[:xdigit:]]" :> "[0-9a-fA-F]",
+
+        (* Replace (?flags) with /pattern/flags *)
+        StartOfString ~~ "(?" ~~ Shortest[ flags___ ] ~~ ")" ~~ patt__ ~~ EndOfString :>
+            "/" <> patt <> "/" <> flags
+    },
+    regex
+];
+
+toJSRegex // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
