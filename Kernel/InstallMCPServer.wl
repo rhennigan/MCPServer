@@ -194,6 +194,49 @@ installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMK
     throwInternalFailure
 ];
 
+(* Augment Code VS Code extension: mcpServers.json is a flat JSON array at the root,
+   not an object with an "mcpServers" key. Each entry has its own "name" field. *)
+installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_, devMode_ ] /; $installClientName === "AugmentCodeIDE" := Enclose[
+    Module[ { target, name, configName, json, data, server, convert, existing, idx },
+
+        If[ verifyLLMKit, ConfirmMatch[ checkLLMKitRequirements @ obj, _String|None, "LLMKitCheck" ] ];
+        initializeTools @ obj;
+        Confirm[ validatePacletServerDefinitions @ obj, "ValidatePacletServerDefinitions" ];
+
+        target     = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
+        name       = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
+        configName = ConfirmBy[ resolveMCPServerName @ obj, StringQ, "ConfigName" ];
+        json       = ConfirmBy[ obj[ "JSONConfiguration" ], StringQ, "JSONConfiguration" ];
+        data       = ConfirmBy[ Developer`ReadRawJSONString @ json, AssociationQ, "JSONConfiguration" ];
+        server     = ConfirmBy[ addEnvironmentVariables[ data[ "mcpServers", name ], env ], AssociationQ, "Server" ];
+        If[ devMode =!= False,
+            server[ "args" ] = ConfirmMatch[ makeDevelopmentArgs @ devMode, { __String }, "DevelopmentArgs" ]
+        ];
+
+        (* Convert to the VS Code extension's array-entry shape and stamp the display name *)
+        convert = serverConverter @ $installClientName;
+        server = ConfirmBy[ convert @ server, AssociationQ, "AugmentIDEServer" ];
+        server = Prepend[ server, "name" -> configName ];
+
+        (* Read existing array config (empty list if missing/empty) and upsert by name *)
+        existing = ConfirmBy[ readExistingAugmentCodeIDEConfig @ target, ListQ, "Existing" ];
+        idx = FirstPosition[ existing, KeyValuePattern @ { "name" -> configName }, Missing[ "NotFound" ] ];
+        existing = If[ MatchQ[ idx, _Missing ],
+            Append[ existing, server ],
+            ReplacePart[ existing, First @ idx -> server ]
+        ];
+
+        ConfirmBy[ writeRawJSONFile[ target, existing ], FileExistsQ, "Export" ];
+        ConfirmAssert[ readRawJSONFile @ target === existing, "ExportCheck" ];
+
+        clearStaleBuiltInRecords[ target, configName, obj ];
+        ConfirmBy[ recordMCPInstallation[ target, obj ], FileExistsQ, "Record" ];
+
+        installSuccess[ name, target, obj ]
+    ],
+    throwInternalFailure
+];
+
 installMCPServer[ target0_File, obj_MCPServerObject, env_Association, verifyLLMKit_, devMode_ ] := Enclose[
     Module[ { target, name, configName, json, data, server, existing, path, convert },
 
@@ -496,7 +539,8 @@ guessClientName[ file_? fileQ ] := Enclose[
             { __, ".kiro", "settings", "mcp.json" }, Throw[ "Kiro" ],
             { __, ".zed", "settings.json" }, Throw[ "Zed" ],
             { __, ".amazonq", "mcp.json" }, Throw[ "AmazonQ" ],
-            { __, ".aws", "amazonq", "mcp.json" }, Throw[ "AmazonQ" ]
+            { __, ".aws", "amazonq", "mcp.json" }, Throw[ "AmazonQ" ],
+            { __, "augment.vscode-augment", "augment-global-state", "mcpservers.json" }, Throw[ "AugmentCodeIDE" ]
         ];
 
         (* Try to guess from the file extension *)
@@ -929,6 +973,33 @@ readExistingMCPConfig // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*readExistingAugmentCodeIDEConfig*)
+(* Array-rooted counterpart to readExistingMCPConfig, for the Augment Code VS Code
+   extension's mcpServers.json. Returns an empty list when the target file is missing
+   or empty, otherwise returns the parsed List. On any parse failure (or a top-level
+   value that isn't a list) it issues InvalidMCPConfiguration so the caller never
+   silently rewrites a file the user has been editing by hand. *)
+readExistingAugmentCodeIDEConfig // beginDefinition;
+
+readExistingAugmentCodeIDEConfig[ file_ ] := Enclose[
+    Catch @ Module[ { data },
+        If[ ! FileExistsQ @ file, Throw @ { } ];
+
+        data = Quiet @ readRawJSONFile @ ExpandFileName @ file;
+
+        If[ data === Missing[ "EmptyFile" ], Throw @ { } ];
+
+        If[ ! ListQ @ data, throwFailure[ "InvalidMCPConfiguration", file ] ];
+
+        data
+    ],
+    throwInternalFailure
+];
+
+readExistingAugmentCodeIDEConfig // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*readExistingGooseConfig*)
 (* YAML counterpart to readExistingMCPConfig.  Returns an empty mapping when the
    target file is missing or empty, otherwise returns the parsed Association.
@@ -1059,6 +1130,33 @@ uninstallMCPServer[ target0_File, obj_MCPServerObject ] /; $installClientName ==
 
         (* Write back *)
         ConfirmBy[ writeTOMLFile[ target, updated[ "Data" ], updated ], fileQ, "Export" ];
+        ConfirmMatch[ clearRecordedInstallation[ target, obj ], { ___Association }, "Clear" ];
+
+        uninstallSuccess[ name, target, obj ]
+    ],
+    throwInternalFailure
+];
+
+(* Augment Code VS Code extension: remove an entry matched by "name" from the
+   root-level JSON array. *)
+uninstallMCPServer[ target0_File, obj_MCPServerObject ] /; $installClientName === "AugmentCodeIDE" := Enclose[
+    Catch @ Module[ { target, name, configName, existing, filtered },
+
+        target = ConfirmBy[ ensureFilePath @ target0, fileQ, "Target" ];
+        If[ ! FileExistsQ @ target, Throw @ Missing[ "NotInstalled", target ] ];
+
+        name       = ConfirmBy[ obj[ "Name" ], StringQ, "Name" ];
+        configName = ConfirmBy[ resolveMCPServerName @ obj, StringQ, "ConfigName" ];
+
+        existing = ConfirmBy[ readExistingAugmentCodeIDEConfig @ target, ListQ, "Existing" ];
+        filtered = DeleteCases[ existing, KeyValuePattern @ { "name" -> configName } ];
+
+        If[ Length @ filtered === Length @ existing,
+            Throw @ Missing[ "NotInstalled", target ]
+        ];
+
+        ConfirmBy[ writeRawJSONFile[ target, filtered ], FileExistsQ, "Export" ];
+        ConfirmAssert[ readRawJSONFile @ target === filtered, "ExportCheck" ];
         ConfirmMatch[ clearRecordedInstallation[ target, obj ], { ___Association }, "Clear" ];
 
         uninstallSuccess[ name, target, obj ]

@@ -84,6 +84,22 @@ $supportedMCPClients = <|
         "URL"             -> "https://www.augmentcode.com",
         "InstallLocation" :> { $HomeDirectory, ".augment", "settings.json" }
     |>,
+    "AugmentCodeIDE" -> <|
+        "DisplayName"     -> "Augment Code (VS Code)",
+        "Aliases"         -> { "AugmentCodeVSCode", "AugmentVSCode", "AuggieVSCode" },
+        "ConfigFormat"    -> "JSON",
+        "ConfigKey"       -> { },
+        "ServerConverter" -> convertToAugmentCodeIDEFormat,
+        "URL"             -> "https://marketplace.visualstudio.com/items?itemName=augment.vscode-augment",
+        "InstallLocation" -> <|
+            "MacOSX"  :> { $HomeDirectory, "Library", "Application Support", "Code", "User", "globalStorage",
+                           "augment.vscode-augment", "augment-global-state", "mcpServers.json" },
+            "Windows" :> { $HomeDirectory, "AppData", "Roaming", "Code", "User", "globalStorage",
+                           "augment.vscode-augment", "augment-global-state", "mcpServers.json" },
+            "Unix"    :> { $HomeDirectory, ".config", "Code", "User", "globalStorage",
+                           "augment.vscode-augment", "augment-global-state", "mcpServers.json" }
+        |>
+    |>,
     "Codex" -> <|
         "DisplayName"     -> "Codex CLI",
         "Aliases"         -> { "OpenAICodex" },
@@ -307,6 +323,50 @@ convertToAugmentCodeFormat[ server_Association, os_String ] := Enclose[
 ];
 
 convertToAugmentCodeFormat // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*convertToAugmentCodeIDEFormat*)
+(* The Augment Code VS Code extension stores MCP servers as a flat JSON array at the
+   root of its settings file (mcpServers.json), not as a keyed dict under "mcpServers".
+   Each entry carries a "type" field and its own "name". This converter maps the
+   standard mcpServers entry shape to the array-entry shape; the caller is responsible
+   for prepending the "name" field after conversion (the converter does not know the
+   configName). Applies the same Windows short-path coercion as the CLI variant, because
+   the extension shell-invokes commands too. *)
+convertToAugmentCodeIDEFormat // beginDefinition;
+
+convertToAugmentCodeIDEFormat[ server_Association ] :=
+    convertToAugmentCodeIDEFormat[ server, $OperatingSystem ];
+
+convertToAugmentCodeIDEFormat[ server_Association, os_String ] := Enclose[
+    Module[ { command, args, env, result },
+        result = <| "type" -> "stdio" |>;
+
+        command = Lookup[ server, "command", Missing[ ] ];
+        If[ StringQ @ command,
+            If[ os === "Windows" && StringContainsQ[ command, " " ],
+                result[ "command" ] = toWindowsShortPath @ command,
+                result[ "command" ] = command
+            ]
+        ];
+
+        args = Lookup[ server, "args", { } ];
+        If[ ListQ @ args && Length @ args > 0,
+            result[ "args" ] = args
+        ];
+
+        env = Lookup[ server, "env", <| |> ];
+        If[ AssociationQ @ env && Length @ env > 0,
+            result[ "env" ] = env
+        ];
+
+        result
+    ],
+    throwInternalFailure
+];
+
+convertToAugmentCodeIDEFormat // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)

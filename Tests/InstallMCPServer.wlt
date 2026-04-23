@@ -1752,6 +1752,430 @@ VerificationTest[
 ]
 
 (* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Augment Code IDE Support*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Install Location for AugmentCodeIDE*)
+VerificationTest[
+    Wolfram`AgentTools`Common`installLocation[ "AugmentCodeIDE", "Windows" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-AugmentCodeIDE-Windows"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`installLocation[ "AugmentCodeIDE", "MacOSX" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-AugmentCodeIDE-MacOSX"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`installLocation[ "AugmentCodeIDE", "Unix" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-AugmentCodeIDE-Unix"
+]
+
+(* Install location must end with augment.vscode-augment/augment-global-state/mcpServers.json on all platforms *)
+VerificationTest[
+    Module[ { file, split },
+        file = Wolfram`AgentTools`Common`installLocation[ "AugmentCodeIDE", $OperatingSystem ];
+        split = FileNameSplit @ First @ file;
+        Take[ split, -3 ]
+    ],
+    { "augment.vscode-augment", "augment-global-state", "mcpServers.json" },
+    SameTest -> Equal,
+    TestID   -> "InstallLocation-AugmentCodeIDE-PathShape"
+]
+
+(* Install locations for AugmentCode (CLI) and AugmentCodeIDE must differ *)
+VerificationTest[
+    Wolfram`AgentTools`Common`installLocation[ "AugmentCode", $OperatingSystem ]
+        =!= Wolfram`AgentTools`Common`installLocation[ "AugmentCodeIDE", $OperatingSystem ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallLocation-AugmentCode-vs-AugmentCodeIDE-Distinct"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Name Normalization*)
+VerificationTest[
+    Wolfram`AgentTools`Common`toInstallName[ "AugmentCodeIDE" ],
+    "AugmentCodeIDE",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-AugmentCodeIDE"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`toInstallName[ "AugmentCodeVSCode" ],
+    "AugmentCodeIDE",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-AugmentCodeVSCode"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`toInstallName[ "AugmentVSCode" ],
+    "AugmentCodeIDE",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-AugmentVSCode"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`toInstallName[ "AuggieVSCode" ],
+    "AugmentCodeIDE",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-AuggieVSCode"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`InstallMCPServer`Private`installDisplayName[ "AugmentCodeIDE" ],
+    "Augment Code (VS Code)",
+    SameTest -> Equal,
+    TestID   -> "InstallDisplayName-AugmentCodeIDE"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*AugmentCodeIDE Install and Uninstall*)
+VerificationTest[
+    augmentIDEConfigFile = testConfigFile[];
+    installResult = InstallMCPServer[ augmentIDEConfigFile, "WolframLanguage", "VerifyLLMKit" -> False, "ApplicationName" -> "AugmentCodeIDE" ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-AugmentCodeIDE-Basic"
+]
+
+VerificationTest[
+    FileExistsQ[ augmentIDEConfigFile ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-AugmentCodeIDE-FileExists"
+]
+
+(* The file root is a JSON array, not an object *)
+VerificationTest[
+    Module[ { content },
+        content = Import[ augmentIDEConfigFile, "RawJSON" ];
+        ListQ @ content
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-AugmentCodeIDE-RootIsArray"
+]
+
+(* Verify the Wolfram server entry is present with the required array-entry fields *)
+VerificationTest[
+    Module[ { content, entry },
+        content = Import[ augmentIDEConfigFile, "RawJSON" ];
+        entry = SelectFirst[ content, MatchQ[ #, KeyValuePattern @ { "name" -> "Wolfram" } ] &, Missing[ ] ];
+        AssociationQ @ entry &&
+        entry[ "type" ] === "stdio" &&
+        entry[ "name" ] === "Wolfram" &&
+        StringQ @ entry[ "command" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-AugmentCodeIDE-EntryShape"
+]
+
+(* Installing the same server a second time should upsert (not duplicate) *)
+VerificationTest[
+    InstallMCPServer[ augmentIDEConfigFile, "WolframLanguage", "VerifyLLMKit" -> False, "ApplicationName" -> "AugmentCodeIDE" ];
+    Module[ { content, matches },
+        content = Import[ augmentIDEConfigFile, "RawJSON" ];
+        matches = Select[ content, MatchQ[ #, KeyValuePattern @ { "name" -> "Wolfram" } ] & ];
+        Length @ matches
+    ],
+    1,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-AugmentCodeIDE-Idempotent"
+]
+
+(* A second, differently-named server is appended (not replaced) *)
+VerificationTest[
+    InstallMCPServer[ augmentIDEConfigFile, "WolframAlpha", "VerifyLLMKit" -> False, "ApplicationName" -> "AugmentCodeIDE", "MCPServerName" -> "WolframAlphaExtra" ];
+    Module[ { content, names },
+        content = Import[ augmentIDEConfigFile, "RawJSON" ];
+        names = Sort @ DeleteDuplicates @ Cases[ content, KeyValuePattern @ { "name" -> n_String } :> n ];
+        names
+    ],
+    { "Wolfram", "WolframAlphaExtra" },
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-AugmentCodeIDE-MultiServer"
+]
+
+VerificationTest[
+    uninstallResult = UninstallMCPServer[ augmentIDEConfigFile, "WolframLanguage", "ApplicationName" -> "AugmentCodeIDE" ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "UninstallMCPServer-AugmentCodeIDE-Basic"
+]
+
+VerificationTest[
+    Module[ { content, matches },
+        content = Import[ augmentIDEConfigFile, "RawJSON" ];
+        matches = Select[ content, MatchQ[ #, KeyValuePattern @ { "name" -> "Wolfram" } ] & ];
+        Length @ matches
+    ],
+    0,
+    SameTest -> Equal,
+    TestID   -> "UninstallMCPServer-AugmentCodeIDE-VerifyRemoval"
+]
+
+(* Uninstalling the other entry as well leaves an empty array, not a removed file *)
+VerificationTest[
+    UninstallMCPServer[ augmentIDEConfigFile, "WolframAlpha", "ApplicationName" -> "AugmentCodeIDE", "MCPServerName" -> "WolframAlphaExtra" ];
+    Import[ augmentIDEConfigFile, "RawJSON" ],
+    { },
+    SameTest -> Equal,
+    TestID   -> "UninstallMCPServer-AugmentCodeIDE-EmptiesToArray"
+]
+
+(* Uninstalling a server that isn't installed returns NotInstalled, not an error *)
+VerificationTest[
+    UninstallMCPServer[ augmentIDEConfigFile, "WolframLanguage", "ApplicationName" -> "AugmentCodeIDE" ],
+    Missing[ "NotInstalled", _ ],
+    SameTest -> MatchQ,
+    TestID   -> "UninstallMCPServer-AugmentCodeIDE-NotInstalled"
+]
+
+VerificationTest[
+    cleanupTestFiles[ augmentIDEConfigFile ],
+    { Null },
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-AugmentCodeIDE-Cleanup"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*convertToAugmentCodeIDEFormat*)
+
+(* Basic shape transform: adds "type" -> "stdio", preserves command/args/env *)
+VerificationTest[
+    Wolfram`AgentTools`SupportedClients`Private`convertToAugmentCodeIDEFormat[
+        <|
+            "command" -> "/usr/local/bin/wolfram",
+            "args" -> { "-run", "test" },
+            "env" -> <| "KEY" -> "value" |>
+        |>,
+        "Unix"
+    ],
+    <|
+        "type" -> "stdio",
+        "command" -> "/usr/local/bin/wolfram",
+        "args" -> { "-run", "test" },
+        "env" -> <| "KEY" -> "value" |>
+    |>,
+    SameTest -> Equal,
+    TestID   -> "ConvertToAugmentCodeIDEFormat-Basic"
+]
+
+(* Non-Windows with a space-containing path: does NOT apply short-path coercion *)
+VerificationTest[
+    Wolfram`AgentTools`SupportedClients`Private`convertToAugmentCodeIDEFormat[
+        <| "command" -> "/Applications/Wolfram Desktop.app/Contents/MacOS/wolfram" |>,
+        "MacOSX"
+    ],
+    <|
+        "type" -> "stdio",
+        "command" -> "/Applications/Wolfram Desktop.app/Contents/MacOS/wolfram"
+    |>,
+    SameTest -> Equal,
+    TestID   -> "ConvertToAugmentCodeIDEFormat-NonWindows-WithSpaces"
+]
+
+(* Windows with a space-free command: unchanged *)
+VerificationTest[
+    Wolfram`AgentTools`SupportedClients`Private`convertToAugmentCodeIDEFormat[
+        <| "command" -> "C:\\Wolfram\\wolfram.exe", "args" -> { "-run" } |>,
+        "Windows"
+    ],
+    <|
+        "type" -> "stdio",
+        "command" -> "C:\\Wolfram\\wolfram.exe",
+        "args" -> { "-run" }
+    |>,
+    SameTest -> Equal,
+    TestID   -> "ConvertToAugmentCodeIDEFormat-Windows-NoSpaces"
+]
+
+(* Missing command: converter should not error, just omit "command" *)
+VerificationTest[
+    Wolfram`AgentTools`SupportedClients`Private`convertToAugmentCodeIDEFormat[
+        <| "args" -> { "-run" } |>,
+        "Windows"
+    ],
+    <|
+        "type" -> "stdio",
+        "args" -> { "-run" }
+    |>,
+    SameTest -> Equal,
+    TestID   -> "ConvertToAugmentCodeIDEFormat-MissingCommand"
+]
+
+(* Converter does NOT set the "name" field — the install flow prepends it after conversion *)
+VerificationTest[
+    KeyExistsQ[
+        Wolfram`AgentTools`SupportedClients`Private`convertToAugmentCodeIDEFormat[
+            <| "command" -> "/tmp/wolfram" |>,
+            "Unix"
+        ],
+        "name"
+    ],
+    False,
+    SameTest -> Equal,
+    TestID   -> "ConvertToAugmentCodeIDEFormat-NoNameField"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*readExistingAugmentCodeIDEConfig*)
+
+(* Non-existent file returns empty list *)
+VerificationTest[
+    Wolfram`AgentTools`InstallMCPServer`Private`readExistingAugmentCodeIDEConfig @ File @
+        FileNameJoin @ { $TemporaryDirectory, "ide_noexist_" <> CreateUUID[] <> ".json" },
+    { },
+    SameTest -> Equal,
+    TestID   -> "ReadExistingAugmentCodeIDEConfig-NonExistent"
+]
+
+(* Empty file returns empty list *)
+VerificationTest[
+    Module[ { file },
+        file = File @ FileNameJoin @ { $TemporaryDirectory, "ide_empty_" <> CreateUUID[] <> ".json" };
+        WithCleanup[
+            CreateFile[ First @ file ];
+            Wolfram`AgentTools`InstallMCPServer`Private`readExistingAugmentCodeIDEConfig @ file,
+            Quiet @ DeleteFile @ First @ file
+        ]
+    ],
+    { },
+    SameTest -> Equal,
+    TestID   -> "ReadExistingAugmentCodeIDEConfig-EmptyFile"
+]
+
+(* File with a valid array is returned as-is *)
+VerificationTest[
+    Module[ { file, result },
+        file = File @ FileNameJoin @ { $TemporaryDirectory, "ide_array_" <> CreateUUID[] <> ".json" };
+        WithCleanup[
+            Developer`WriteRawJSONFile[ First @ file, { <| "name" -> "X", "type" -> "stdio" |> } ];
+            result = Wolfram`AgentTools`InstallMCPServer`Private`readExistingAugmentCodeIDEConfig @ file,
+            Quiet @ DeleteFile @ First @ file
+        ];
+        result
+    ],
+    { <| "name" -> "X", "type" -> "stdio" |> },
+    SameTest -> Equal,
+    TestID   -> "ReadExistingAugmentCodeIDEConfig-ValidArray"
+]
+
+(* File with a non-list top level issues InvalidMCPConfiguration when installing.
+   (Calling readExistingAugmentCodeIDEConfig directly returns the data because
+   throwFailure only throws inside the catchMine wrapper used by InstallMCPServer.) *)
+VerificationTest[
+    Module[ { file },
+        file = FileNameJoin @ { $TemporaryDirectory, "ide_obj_" <> CreateUUID[] <> ".json" };
+        WithCleanup[
+            Developer`WriteRawJSONFile[ file, <| "mcpServers" -> <| |> |> ];
+            Quiet @ InstallMCPServer[ File @ file, "WolframLanguage",
+                "VerifyLLMKit" -> False, "ApplicationName" -> "AugmentCodeIDE" ],
+            Quiet @ DeleteFile @ file
+        ]
+    ],
+    _Failure,
+    SameTest -> MatchQ,
+    TestID   -> "ReadExistingAugmentCodeIDEConfig-NonListRoot"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Client Detection from File Path*)
+
+(* File at the VS Code extension's settings location is auto-detected as AugmentCodeIDE
+   when installing without an explicit "ApplicationName" — the resulting file is an
+   array (AugmentCodeIDE format), not an object (AugmentCode/CLI format). *)
+VerificationTest[
+    Module[ { dir, file, result },
+        dir = FileNameJoin @ { $TemporaryDirectory,
+            "guess_" <> CreateUUID[], "augment.vscode-augment", "augment-global-state" };
+        CreateDirectory[ dir, CreateIntermediateDirectories -> True ];
+        file = FileNameJoin @ { dir, "mcpServers.json" };
+        WithCleanup[
+            InstallMCPServer[ File @ file, "WolframLanguage", "VerifyLLMKit" -> False ];
+            result = Import[ file, "RawJSON" ],
+            Quiet @ DeleteDirectory[ dir, DeleteContents -> True ];
+            Quiet @ DeleteDirectory[ DirectoryName @ dir ]
+        ];
+        ListQ @ result &&
+        AnyTrue[ result, MatchQ[ #, KeyValuePattern @ { "name" -> _String, "type" -> "stdio" } ] & ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "GuessClientName-AugmentCodeIDE-PathMatch"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*$SupportedMCPClients metadata for AugmentCodeIDE*)
+VerificationTest[
+    $SupportedMCPClients[ "AugmentCodeIDE", "DisplayName" ],
+    "Augment Code (VS Code)",
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-AugmentCodeIDEDisplayName"
+]
+
+VerificationTest[
+    Sort @ $SupportedMCPClients[ "AugmentCodeIDE", "Aliases" ],
+    Sort @ { "AugmentCodeVSCode", "AugmentVSCode", "AuggieVSCode" },
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-AugmentCodeIDEAliases"
+]
+
+VerificationTest[
+    $SupportedMCPClients[ "AugmentCodeIDE", "ConfigFormat" ],
+    "JSON",
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-AugmentCodeIDEConfigFormat"
+]
+
+(* Empty ConfigKey signals the root of the file is an array, not a keyed object *)
+VerificationTest[
+    $SupportedMCPClients[ "AugmentCodeIDE", "ConfigKey" ],
+    { },
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-AugmentCodeIDEConfigKey"
+]
+
+VerificationTest[
+    $SupportedMCPClients[ "AugmentCodeIDE", "ProjectSupport" ],
+    False,
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-AugmentCodeIDEProjectSupport"
+]
+
+VerificationTest[
+    StringStartsQ[ $SupportedMCPClients[ "AugmentCodeIDE", "URL" ], "https://" ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-AugmentCodeIDEURL"
+]
+
+(* AugmentCode (CLI) and AugmentCodeIDE (VS Code) must be distinct entries with distinct display names *)
+VerificationTest[
+    $SupportedMCPClients[ "AugmentCode", "DisplayName" ]
+        =!= $SupportedMCPClients[ "AugmentCodeIDE", "DisplayName" ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-AugmentCode-vs-AugmentCodeIDE-Distinct"
+]
+
+(* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*toWindowsShortPath*)
 
@@ -2366,14 +2790,14 @@ VerificationTest[
 
 VerificationTest[
     Length @ $SupportedMCPClients,
-    16,
+    17,
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-Has16Clients@@Tests/InstallMCPServer.wlt:1851,1-1856,2"
+    TestID   -> "SupportedMCPClients-Has17Clients@@Tests/InstallMCPServer.wlt:1851,1-1856,2"
 ]
 
 VerificationTest[
     Keys @ $SupportedMCPClients,
-    { "AmazonQ", "Antigravity", "AugmentCode", "ClaudeCode", "ClaudeDesktop", "Cline", "Codex", "CopilotCLI", "Cursor", "GeminiCLI", "Goose", "Kiro", "OpenCode", "VisualStudioCode", "Windsurf", "Zed" },
+    { "AmazonQ", "Antigravity", "AugmentCode", "AugmentCodeIDE", "ClaudeCode", "ClaudeDesktop", "Cline", "Codex", "CopilotCLI", "Cursor", "GeminiCLI", "Goose", "Kiro", "OpenCode", "VisualStudioCode", "Windsurf", "Zed" },
     SameTest -> Equal,
     TestID   -> "SupportedMCPClients-KeysSorted@@Tests/InstallMCPServer.wlt:1858,1-1863,2"
 ]
@@ -2388,7 +2812,7 @@ VerificationTest[
             KeyExistsQ[ meta, "ConfigFormat" ] &&
             KeyExistsQ[ meta, "ProjectSupport" ] &&
             KeyExistsQ[ meta, "ConfigKey" ] &&
-            MatchQ[ meta[ "ConfigKey" ], { __String } ] &&
+            MatchQ[ meta[ "ConfigKey" ], { ___String } ] &&
             KeyExistsQ[ meta, "URL" ]
         ]
     ],

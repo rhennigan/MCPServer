@@ -19,17 +19,23 @@ All installation methods use the `InstallMCPServer` function. Open a Wolfram Lan
 
 ### Augment Code
 
+Augment Code has two independent configurations — one for the Auggie CLI and one for the VS Code extension. Install into whichever you use.
+
+For the Auggie CLI:
+
 ```wl
 InstallMCPServer["AugmentCode", "WolframLanguage"]
 ```
 
-To verify the installation from the command line:
+Verify with `auggie mcp list`.
 
-```shell
-auggie mcp list
+For the Augment Code VS Code extension:
+
+```wl
+InstallMCPServer["AugmentCodeIDE", "WolframLanguage"]
 ```
 
-The output should indicate that the "WolframLanguage" server is configured.
+Then reload the VS Code window (`Ctrl+Shift+P` → "Reload Window"). The server will appear in the Augment Settings panel's MCP section.
 
 ### Claude Code
 
