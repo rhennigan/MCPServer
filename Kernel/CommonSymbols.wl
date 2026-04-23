@@ -57,6 +57,7 @@ BeginPackage[ "Wolfram`AgentTools`Common`" ];
 `throwFailure;
 `throwInternalFailure;
 `throwTop;
+`toJSRegex;
 `validateMCPServerObjectData;
 `writeRawJSONFile;
 `writeWXFFile;
