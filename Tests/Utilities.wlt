@@ -201,7 +201,7 @@ VerificationTest[
 
 VerificationTest[
     Wolfram`AgentTools`Common`toJSRegex[ "(?ms)\\x{abc}" ],
-    "\\u0abc",
+    "\\u0ABC",
     SameTest -> MatchQ,
     TestID   -> "ToJSRegex-Unicode3DigitPadded@@Tests/Utilities.wlt:202,1-207,2"
 ]
@@ -236,9 +236,31 @@ VerificationTest[
 
 VerificationTest[
     Wolfram`AgentTools`Common`toJSRegex[ "(?ms)[[:alpha:]\\x{f6b2}-\\x{f6b5}]" ],
-    "[a-zA-Z\\uf6b2-\\uf6b5]",
+    "[a-zA-Z\\uF6B2-\\uF6B5]",
     SameTest -> MatchQ,
     TestID   -> "ToJSRegex-LetterCharacterWithPUA@@Tests/Utilities.wlt:237,1-242,2"
+]
+
+(* Zero-padded escapes must be classified by numeric value, not string length. *)
+VerificationTest[
+    Wolfram`AgentTools`Common`toJSRegex[ "(?ms)\\x{0000A0}" ],
+    "\\xA0",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-UnicodeZeroPaddedLatin1@@Tests/Utilities.wlt:245,1-250,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`toJSRegex[ "(?ms)\\x{00ABCD}" ],
+    "\\uABCD",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-UnicodeZeroPaddedBMP@@Tests/Utilities.wlt:252,1-257,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`toJSRegex[ "(?ms)\\x{000010FFFF}" ],
+    "\\uDBFF\\uDFFF",
+    SameTest -> MatchQ,
+    TestID   -> "ToJSRegex-UnicodeZeroPaddedSupplementary@@Tests/Utilities.wlt:259,1-264,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -248,21 +270,21 @@ VerificationTest[
     Wolfram`AgentTools`Common`toJSRegex[ "(?ms)(?:(?-m-s)\\d+)" ],
     "(?:\\d+)",
     SameTest -> MatchQ,
-    TestID   -> "ToJSRegex-StripInnerModifier@@Tests/Utilities.wlt:247,1-252,2"
+    TestID   -> "ToJSRegex-StripInnerModifier@@Tests/Utilities.wlt:269,1-274,2"
 ]
 
 VerificationTest[
     Wolfram`AgentTools`Common`toJSRegex[ "(?ms)(?:(?-s)abc)" ],
     "(?:abc)",
     SameTest -> MatchQ,
-    TestID   -> "ToJSRegex-StripInnerModifierSOnly@@Tests/Utilities.wlt:254,1-259,2"
+    TestID   -> "ToJSRegex-StripInnerModifierSOnly@@Tests/Utilities.wlt:276,1-281,2"
 ]
 
 VerificationTest[
     Wolfram`AgentTools`Common`toJSRegex[ "(?ms)(?:(?-m-s)a.b)" ],
     "(?:a[\\s\\S]b)",
     SameTest -> MatchQ,
-    TestID   -> "ToJSRegex-InnerDotOverMatches@@Tests/Utilities.wlt:261,1-266,2"
+    TestID   -> "ToJSRegex-InnerDotOverMatches@@Tests/Utilities.wlt:283,1-288,2"
 ]
 
 (* Mid-pattern modifiers outside the "(?:(?-...)" wrapper form must pass through untouched,
@@ -271,14 +293,14 @@ VerificationTest[
     Wolfram`AgentTools`Common`toJSRegex[ "a(?-s)b" ],
     "a(?-s)b",
     SameTest -> MatchQ,
-    TestID   -> "ToJSRegex-MidPatternModifierPreserved@@Tests/Utilities.wlt:270,1-275,2"
+    TestID   -> "ToJSRegex-MidPatternModifierPreserved@@Tests/Utilities.wlt:292,1-297,2"
 ]
 
 VerificationTest[
     Wolfram`AgentTools`Common`toJSRegex[ "foo(?-m-s)bar" ],
     "foo(?-m-s)bar",
     SameTest -> MatchQ,
-    TestID   -> "ToJSRegex-MidPatternCombinedModifierPreserved@@Tests/Utilities.wlt:277,1-282,2"
+    TestID   -> "ToJSRegex-MidPatternCombinedModifierPreserved@@Tests/Utilities.wlt:299,1-304,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -288,35 +310,35 @@ VerificationTest[
     Wolfram`AgentTools`Common`toJSRegex[ "(?ms)a\\.b" ],
     "a\\.b",
     SameTest -> MatchQ,
-    TestID   -> "ToJSRegex-EscapedDotUntouched@@Tests/Utilities.wlt:287,1-292,2"
+    TestID   -> "ToJSRegex-EscapedDotUntouched@@Tests/Utilities.wlt:309,1-314,2"
 ]
 
 VerificationTest[
     Wolfram`AgentTools`Common`toJSRegex[ "(?ms)[.]" ],
     "[.]",
     SameTest -> MatchQ,
-    TestID   -> "ToJSRegex-DotInClassUntouched@@Tests/Utilities.wlt:294,1-299,2"
+    TestID   -> "ToJSRegex-DotInClassUntouched@@Tests/Utilities.wlt:316,1-321,2"
 ]
 
 VerificationTest[
     Wolfram`AgentTools`Common`toJSRegex[ "(?ms)[.xyz\\.]" ],
     "[.xyz\\.]",
     SameTest -> MatchQ,
-    TestID   -> "ToJSRegex-DotInLargerClassUntouched@@Tests/Utilities.wlt:301,1-306,2"
+    TestID   -> "ToJSRegex-DotInLargerClassUntouched@@Tests/Utilities.wlt:323,1-328,2"
 ]
 
 VerificationTest[
     Wolfram`AgentTools`Common`toJSRegex[ "(?ms)\\(.+?\\)" ],
     "\\([\\s\\S]+?\\)",
     SameTest -> MatchQ,
-    TestID   -> "ToJSRegex-ShortestGroup@@Tests/Utilities.wlt:308,1-313,2"
+    TestID   -> "ToJSRegex-ShortestGroup@@Tests/Utilities.wlt:330,1-335,2"
 ]
 
 VerificationTest[
     Wolfram`AgentTools`Common`toJSRegex[ "(?ms)^# .+$" ],
     "^# [\\s\\S]+$",
     SameTest -> MatchQ,
-    TestID   -> "ToJSRegex-LineAnchorsPreserved@@Tests/Utilities.wlt:315,1-320,2"
+    TestID   -> "ToJSRegex-LineAnchorsPreserved@@Tests/Utilities.wlt:337,1-342,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -329,14 +351,14 @@ VerificationTest[
     Wolfram`AgentTools`Common`toJSRegex[ "(?ms).*" ],
     Except[ _? (StringContainsQ[ "(?" ]) ],
     SameTest -> MatchQ,
-    TestID   -> "ToJSRegex-NoFlagGroupInOutput@@Tests/Utilities.wlt:328,1-333,2"
+    TestID   -> "ToJSRegex-NoFlagGroupInOutput@@Tests/Utilities.wlt:350,1-355,2"
 ]
 
 VerificationTest[
     Wolfram`AgentTools`Common`toJSRegex[ "(?ms).*" ],
     Except[ _? (StringStartsQ[ "/" ]) ],
     SameTest -> MatchQ,
-    TestID   -> "ToJSRegex-NoLiteralDelimiters@@Tests/Utilities.wlt:335,1-340,2"
+    TestID   -> "ToJSRegex-NoLiteralDelimiters@@Tests/Utilities.wlt:357,1-362,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

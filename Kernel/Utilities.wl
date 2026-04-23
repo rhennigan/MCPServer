@@ -271,11 +271,15 @@ convertUnicodeEscapes // endDefinition;
 (*convertHexEscape*)
 convertHexEscape // beginDefinition;
 
-convertHexEscape[ hex_String ] := With[ { len = StringLength @ hex },
+(* Branch on the parsed code point, not the hex payload length. Leading zeros are valid in
+   \x{...} (e.g. "\x{0000A0}" is U+00A0), so classifying by string length would mis-route
+   zero-padded BMP escapes into the surrogate-pair path and fail the supplementary-range
+   assert. *)
+convertHexEscape[ hex_String ] := With[ { cp = FromDigits[ hex, 16 ] },
     Which[
-        len <= 2, "\\x" <> StringPadLeft[ hex, 2, "0" ],
-        len <= 4, "\\u" <> StringPadLeft[ hex, 4, "0" ],
-        True    , supplementaryToSurrogatePair @ hex
+        cp <= 16^^FF  , "\\x" <> ToUpperCase @ IntegerString[ cp, 16, 2 ],
+        cp <= 16^^FFFF, "\\u" <> ToUpperCase @ IntegerString[ cp, 16, 4 ],
+        True          , supplementaryToSurrogatePair @ hex
     ]
 ];
 
