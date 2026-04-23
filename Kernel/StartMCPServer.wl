@@ -317,7 +317,7 @@ createMCPToolData[ mcpName_String, tool: HoldPattern[ _LLMTool ] ] := Enclose[
 
         data = ConfirmBy[ tool[ "Data" ], AssociationQ, "Data" ];
         description = safeString @ ConfirmBy[ tool[ "Description" ], StringQ, "Description" ];
-        inputSchema = ConfirmBy[ tool[ "JSONSchema" ], AssociationQ, "InputSchema" ];
+        inputSchema = ConfirmBy[ toolSchema @ tool, AssociationQ, "InputSchema" ];
 
         title = Lookup[ data, "DisplayName", Missing[ ] ];
         If[ StringQ @ title, title = safeString @ title ];
@@ -336,6 +336,40 @@ createMCPToolData[ mcpName_String, tool: HoldPattern[ _LLMTool ] ] := Enclose[
 ];
 
 createMCPToolData // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*toolSchema*)
+toolSchema // beginDefinition;
+
+toolSchema[ tool: HoldPattern[ _LLMTool ] ] := Enclose[
+    ReplaceAll[
+        ReplaceAll[
+            tool[ "JSONSchema" ],
+            (* Make sure regex patterns are valid in JavaScript *)
+            {
+                (* The vast majority of patterns will just be the one that matches anything,
+                   since it's the pattern produced by the basic "String" Interpreter.
+                   We can safely drop it, since it's redundant. *)
+                as: KeyValuePattern[ "pattern" -> "(?ms).*" ] :>
+                    RuleCondition @ KeyDrop[ as, "pattern" ],
+
+                (* For other patterns produced via `Interpreter[Restricted["String", pattern]]`,
+                   we attempt to convert to JS-compatible format. *)
+                as: KeyValuePattern[ "pattern" -> regex_String ] :>
+                    RuleCondition @ <|
+                        as,
+                        "pattern" -> ConfirmBy[ toJSRegex @ regex, StringQ, "ToJSRegex" ]
+                    |>
+            }
+        ],
+        (* Make sure strings in schemas do not contain private-use characters *)
+        s_String :> RuleCondition @ safeString @ s
+    ],
+    throwInternalFailure
+];
+
+toolSchema // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
