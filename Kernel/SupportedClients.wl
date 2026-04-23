@@ -85,8 +85,8 @@ $supportedMCPClients = <|
         "InstallLocation" :> { $HomeDirectory, ".augment", "settings.json" }
     |>,
     "AugmentCodeIDE" -> <|
-        "DisplayName"     -> "Augment Code (VS Code)",
-        "Aliases"         -> { "AugmentCodeVSCode", "AugmentVSCode", "AuggieVSCode" },
+        "DisplayName"     -> "Augment Code IDE",
+        "Aliases"         -> { "AugmentCodeIDE", "AugmentIDE", "AuggieIDE" },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { },
         "ServerConverter" -> convertToAugmentCodeIDEFormat,
