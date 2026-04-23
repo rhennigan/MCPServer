@@ -13,6 +13,10 @@ Consolidated list of TODO/FIXME items from the codebase.
   - Sets environment variables with lists of tool names to include/exclude for easy customization
 - [ ] Add `"DisplayName"` property to MCP servers
   - When installing, uses the display name as the config key, but keeps the `MCP_SERVER_NAME` environment variable as the canonical name
+- [ ] Warn on unhandled regex patterns when creating an MCP server
+  - Attempt `toJSRegex` conversion on tool schema regex patterns and issue a warning for any constructs that pass through unchanged (likely JS-incompatible)
+  - Only a warning since many schema validators will still accept the pattern as-is
+  - Source: `Kernel/Utilities.wl`
 
 ## MCP Protocol Support
 

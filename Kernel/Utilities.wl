@@ -125,23 +125,44 @@ chatbookVersionCheck0 // endDefinition;
    best-effort ECMA 262 pattern suitable for JSON Schema "pattern" fields consumed by
    JavaScript-based validators.
 
-   Non-goals: we do not try to sanitize arbitrary user-supplied PCRE; we target the patterns
-   that LLMTool's JSONSchema emits via StringPattern`PatternConvert. Known limitations are
-   documented in the plan at C:\Users\rhennigan\.claude\plans\we-need-to-make-rippling-sketch.md *)
+   Intentional non-goals and accepted limitations:
+
+   - No attempt to simulate multiline `^`/`$`: if the original had `m` and contained raw `^`/`$`
+     (from `StartOfLine`/`EndOfLine`), the converted pattern treats them as start/end-of-string in JS.
+     Schema patterns rarely use line anchors, and any workaround (`(?:^|(?<=\n))`) bloats output and risks
+     validator compatibility issues.
+
+   - PCRE-only constructs that pass through untouched from user-supplied `RegularExpression[...]` bodies
+     (atomic groups `(?>...)`, possessive quantifiers `*+`, named groups `(?P<x>...)`) are left alone.
+     Those are user escape hatches; if a user puts PCRE-only syntax in a schema pattern, they own the compatibility.
+
+   - `u`-flag is not available to us - we are producing bare pattern strings for JSON Schema consumers who may or may
+     not set it.
+*)
 
 toJSRegex // beginDefinition;
 
-toJSRegex[ regex_String ] := Module[ { body, hadDotAll },
-    { body, hadDotAll } = extractLeadingRegexFlags @ regex;
-    body = stripInnerRegexModifiers @ body;
-    body = convertPOSIXClasses @ body;
-    body = convertPCREAnchors @ body;
-    body = convertUnicodeEscapes @ body;
-    If[ hadDotAll, body = convertDotAllDots @ body ];
-    body
+toJSRegex[ regex_String ] := Enclose[
+    Module[ { body, hadDotAll },
+        { body, hadDotAll } = ConfirmMatch[ extractLeadingRegexFlags @ regex, { _String, True|False }, "Extract" ];
+
+        body = ConfirmBy[ stripInnerRegexModifiers @ body, StringQ, "StripInnerRegexModifiers" ];
+        body = ConfirmBy[ convertPOSIXClasses @ body     , StringQ, "ConvertPOSIXClasses"      ];
+        body = ConfirmBy[ convertPCREAnchors @ body      , StringQ, "ConvertPCREAnchors"       ];
+        body = ConfirmBy[ convertUnicodeEscapes @ body   , StringQ, "ConvertUnicodeEscapes"    ];
+
+        If[ hadDotAll,
+            ConfirmBy[ convertDotAllDots @ body, StringQ, "ConvertDotAllDots" ],
+            body
+        ]
+    ],
+    throwInternalFailure
 ];
 
 toJSRegex // endDefinition;
+
+(* TODO: When creating an MCP server, we could attempt this conversion and issue a warning message if there are any
+   unhandled patterns. This would only be a warning since many schema validators will still accept the pattern as-is. *)
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
