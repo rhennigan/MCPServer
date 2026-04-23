@@ -346,10 +346,12 @@ toolSchema[ tool: HoldPattern[ _LLMTool ] ] := ReplaceAll[
     ReplaceAll[
         tool[ "JSONSchema" ],
         (* Make sure regex patterns are valid in JavaScript *)
-        as: KeyValuePattern[ "pattern" -> regex_String ] :>
-            RuleCondition @ <| as, "pattern" -> toJSRegex @ regex |>
+        {
+            as: KeyValuePattern[ "pattern" -> "(?ms).*" ] :> RuleCondition @ KeyDrop[ as, "pattern" ],
+            as: KeyValuePattern[ "pattern" -> regex_String ] :> RuleCondition @ <| as, "pattern" -> toJSRegex @ regex |>
+        }
     ],
-    (* Make sure strings are valid UTF-8 *)
+    (* Make sure strings in schemas do not contain private-use characters *)
     s_String :> RuleCondition @ safeString @ s
 ];
 
