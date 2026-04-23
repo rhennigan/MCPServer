@@ -255,8 +255,8 @@ convertPCREAnchors // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*convertUnicodeEscapes*)
 (* Convert "\x{HEX}" to the narrowest JS-valid form. "\xNN" and "\uNNNN" work without the u
-   flag; "\u{NNNNN}" requires it - Wolfram's auto-generated patterns only contain BMP codes,
-   so the supplementary case is a documented limitation. *)
+   flag; supplementary code points (> U+FFFF) are emitted as UTF-16 surrogate pairs so the
+   output stays valid without requiring the JS "u" flag. *)
 convertUnicodeEscapes // beginDefinition;
 
 convertUnicodeEscapes[ s_String ] := StringReplace[
@@ -275,11 +275,35 @@ convertHexEscape[ hex_String ] := With[ { len = StringLength @ hex },
     Which[
         len <= 2, "\\x" <> StringPadLeft[ hex, 2, "0" ],
         len <= 4, "\\u" <> StringPadLeft[ hex, 4, "0" ],
-        True    , "\\u{" <> hex <> "}"
+        True    , supplementaryToSurrogatePair @ hex
     ]
 ];
 
 convertHexEscape // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*supplementaryToSurrogatePair*)
+(* Encode a supplementary-plane code point (U+10000..U+10FFFF) as a UTF-16 surrogate pair of
+   "\uXXXX" escapes. JS regexes match a supplementary character via its surrogate pair even
+   without the "u" flag, so this keeps output valid for JSON Schema validators that do not set
+   it. *)
+supplementaryToSurrogatePair // beginDefinition;
+
+supplementaryToSurrogatePair[ hex_String ] := Enclose[
+    Module[ { cp, offset, hi, lo },
+        cp = FromDigits[ hex, 16 ];
+        ConfirmAssert[ 16^^10000 <= cp <= 16^^10FFFF, "SupplementaryRange" ];
+        offset = cp - 16^^10000;
+        hi = 16^^D800 + BitShiftRight[ offset, 10 ];
+        lo = 16^^DC00 + BitAnd[ offset, 16^^3FF ];
+        "\\u" <> ToUpperCase @ IntegerString[ hi, 16, 4 ] <>
+            "\\u" <> ToUpperCase @ IntegerString[ lo, 16, 4 ]
+    ],
+    throwInternalFailure
+];
+
+supplementaryToSurrogatePair // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
