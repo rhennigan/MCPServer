@@ -342,17 +342,31 @@ createMCPToolData // endDefinition;
 (*toolSchema*)
 toolSchema // beginDefinition;
 
-toolSchema[ tool: HoldPattern[ _LLMTool ] ] := ReplaceAll[
+toolSchema[ tool: HoldPattern[ _LLMTool ] ] := Enclose[
     ReplaceAll[
-        tool[ "JSONSchema" ],
-        (* Make sure regex patterns are valid in JavaScript *)
-        {
-            as: KeyValuePattern[ "pattern" -> "(?ms).*" ] :> RuleCondition @ KeyDrop[ as, "pattern" ],
-            as: KeyValuePattern[ "pattern" -> regex_String ] :> RuleCondition @ <| as, "pattern" -> toJSRegex @ regex |>
-        }
+        ReplaceAll[
+            tool[ "JSONSchema" ],
+            (* Make sure regex patterns are valid in JavaScript *)
+            {
+                (* The vast majority of patterns will just be the one that matches anything,
+                   since it's the pattern produced by the basic "String" Interpreter.
+                   We can safely drop it, since it's redundant. *)
+                as: KeyValuePattern[ "pattern" -> "(?ms).*" ] :>
+                    RuleCondition @ KeyDrop[ as, "pattern" ],
+
+                (* For other patterns produced via `Interpreter[Restricted["String", pattern]]`,
+                   we attempt to convert to JS-compatible format. *)
+                as: KeyValuePattern[ "pattern" -> regex_String ] :>
+                    RuleCondition @ <|
+                        as,
+                        "pattern" -> ConfirmBy[ toJSRegex @ regex, StringQ, "ToJSRegex" ]
+                    |>
+            }
+        ],
+        (* Make sure strings in schemas do not contain private-use characters *)
+        s_String :> RuleCondition @ safeString @ s
     ],
-    (* Make sure strings in schemas do not contain private-use characters *)
-    s_String :> RuleCondition @ safeString @ s
+    throwInternalFailure
 ];
 
 toolSchema // endDefinition;
