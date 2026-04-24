@@ -272,7 +272,7 @@ The `deleteDeployment` function:
 
 `MakeBoxes` is defined via an UpValue using ``BoxForm`ArrangeSummaryBox``:
 
-- **Summary rows**: ClientName, Server
+- **Summary rows**: ClientName, Toolset
 - **Hidden rows**: Scope, ConfigFile, Tools
 
 ---
