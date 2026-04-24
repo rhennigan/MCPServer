@@ -184,6 +184,7 @@ AgentToolsDeployment[ <|
     "Timestamp"      -> DateObject[ ... ],
     "PacletVersion"  -> "1.8.0",
     "CreatedBy"      -> "DeployAgentTools",
+    "Toolset"        -> "WolframLanguage",
     "MCP"            -> <|
         "ClientName" -> "ClaudeDesktop",
         "Target"     -> "ClaudeDesktop",
@@ -204,10 +205,11 @@ AgentToolsDeployment[ <|
 | `"Timestamp"` | `DateObject` recording when the deployment was created. |
 | `"PacletVersion"` | Paclet version string at the time of deployment. |
 | `"CreatedBy"` | Always `"DeployAgentTools"`. |
+| `"Toolset"` | Toolset name string (e.g. `"WolframLanguage"`). The canonical top-level name for the deployed MCP server. |
 | `"MCP"` | MCP server component data. |
 | `"MCP"/"ClientName"` | The canonical or inferred client name used for grouping and filtering (e.g. `"ClaudeDesktop"`). Falls back to `"Unknown"` when no client can be inferred. |
 | `"MCP"/"Target"` | The normalized user-facing target: a canonical client name string (e.g. `"ClaudeDesktop"`), a `{name, dir}` pair for project-level deployments (e.g. `{"ClaudeCode", "/path/to/project"}`), or `File[...]` for direct file targets. |
-| `"MCP"/"Server"` | Server name string (e.g. `"WolframLanguage"`). |
+| `"MCP"/"Server"` | Legacy toolset name key. Retained for backward compatibility with deployments written before the `"Toolset"` rename; new deployments keep writing this alongside the top-level `"Toolset"`. |
 | `"MCP"/"ConfigFile"` | `File[...]` pointing to the client's configuration file that was modified. This is the canonical identity used when checking for existing deployments. |
 | `"MCP"/"Options"` | The `InstallMCPServer` options that were used, stored for use by `DeleteObject`. |
 | `"Skills"` | Reserved for phase 2. Empty association in phase 1. |
@@ -230,7 +232,8 @@ dep["MCP", "Options"]
 | `"UUID"` | UUID string | `data["UUID"]` |
 | `"ClientName"` | Canonical or inferred client name string | `data["MCP", "ClientName"]` |
 | `"Target"` | Client name string or `File` | `data["MCP", "Target"]` |
-| `"Server"` | Server name string | `data["MCP", "Server"]` |
+| `"Toolset"` | Toolset name string | `data["Toolset"]`, falling back to legacy `data["MCP", "Server"]` |
+| `"Server"` | Legacy toolset name (alias for `"Toolset"`, retained for backward compatibility) | `data["MCP", "Server"]` |
 | `"ConfigFile"` | `File[...]` | `data["MCP", "ConfigFile"]` |
 | `"Scope"` | `"Global"`, `File[...]`, or `Missing["Unknown"]` | Derived from `data["MCP", "Target"]` |
 | `"Timestamp"` | `DateObject` | `data["Timestamp"]` |
@@ -261,7 +264,7 @@ AgentToolsDeployment /: DeleteObject[dep_AgentToolsDeployment] := catchTop[
 
 The `deleteDeployment` function:
 
-1. Calls `UninstallMCPServer[dep["ConfigFile"], dep["Server"], <filtered options>]` using `FilterRules[dep["MCP", "Options"], Options[UninstallMCPServer]]` to pass only `UninstallMCPServer`-valid options (e.g. `"ApplicationName"`, `"MCPServerName"`). This is wrapped in `catchAlways` to tolerate cases where the config has already been manually modified or removed.
+1. Calls `UninstallMCPServer[dep["ConfigFile"], dep["Toolset"], <filtered options>]` using `FilterRules[dep["MCP", "Options"], Options[UninstallMCPServer]]` to pass only `UninstallMCPServer`-valid options (e.g. `"ApplicationName"`, `"MCPServerName"`). This is wrapped in `catchAlways` to tolerate cases where the config has already been manually modified or removed.
 2. Deletes the deployment directory: `DeleteDirectory[deploymentDirectory[dep["UUID"]], DeleteContents -> True]`.
 3. Returns `Null`.
 
@@ -269,7 +272,7 @@ The `deleteDeployment` function:
 
 `MakeBoxes` is defined via an UpValue using ``BoxForm`ArrangeSummaryBox``:
 
-- **Summary rows**: ClientName, Server
+- **Summary rows**: ClientName, Toolset
 - **Hidden rows**: Scope, ConfigFile, Tools
 
 ---

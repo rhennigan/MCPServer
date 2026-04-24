@@ -133,7 +133,7 @@ makeDeploymentSummaryRows // beginDefinition;
 
 makeDeploymentSummaryRows[ dep_ ] := Flatten @ {
     summaryItem[ "ClientName", dep[ "ClientName" ] ],
-    summaryItem[ "Server"    , dep[ "Server"     ] ]
+    summaryItem[ "Toolset"   , dep[ "Toolset"    ] ]
 };
 
 makeDeploymentSummaryRows // endDefinition;
