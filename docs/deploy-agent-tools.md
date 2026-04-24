@@ -90,14 +90,15 @@ dep["MCP", "Options"]
 | `"UUID"` | UUID string uniquely identifying the deployment |
 | `"ClientName"` | Canonical client name (e.g. `"ClaudeDesktop"`) |
 | `"Target"` | Original target specification |
-| `"Server"` | Server name string (e.g. `"WolframLanguage"`) |
+| `"Toolset"` | Toolset name string (e.g. `"WolframLanguage"`). The canonical name for the deployed MCP server. |
+| `"Server"` | Legacy shortcut for `data["MCP", "Server"]`. New deployments dual-write this alongside `"Toolset"`; prefer `"Toolset"` in new code. |
 | `"ConfigFile"` | `File[...]` pointing to the client's config file |
 | `"Timestamp"` | `DateObject` when the deployment was created |
 | `"PacletVersion"` | Paclet version at deployment time |
-| `"MCPServerObject"` | The `MCPServerObject` for the deployed server |
+| `"MCPServerObject"` | The `MCPServerObject` for the deployed toolset |
 | `"Scope"` | Deployment scope: `"Global"` for named clients, or `File[...]` directory for project-level deployments |
-| `"Tools"` | List of tools provided by the deployed server |
-| `"LLMConfiguration"` | The `LLMConfiguration` for the deployed server |
+| `"Tools"` | List of tools provided by the deployed toolset |
+| `"LLMConfiguration"` | The `LLMConfiguration` for the deployed toolset |
 | `"Data"` | Full internal data association |
 | `"Location"` | `File[...]` deployment directory |
 | `"Properties"` | List of all property names |
