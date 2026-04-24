@@ -107,6 +107,24 @@
 		"Japanese"           -> "Install location:",
 		"Korean"             -> "Install location:",
 		"Spanish"            -> "Install location:"
+	|>],
+	
+	"prefsSpecificDirectories" -> LanguageSwitched["Settings for specific directories:", <|
+		"ChineseSimplified"  -> "Settings for specific directories:",
+		"ChineseTraditional" -> "Settings for specific directories:",
+		"French"             -> "Settings for specific directories:",
+		"Japanese"           -> "Settings for specific directories:",
+		"Korean"             -> "Settings for specific directories:",
+		"Spanish"            -> "Settings for specific directories:"
+	|>],
+	
+	"prefsUninstallTool" -> LanguageSwitched["Uninstall this tool", <|
+		"ChineseSimplified"  -> "Uninstall this tool",
+		"ChineseTraditional" -> "Uninstall this tool",
+		"French"             -> "Uninstall this tool",
+		"Japanese"           -> "Uninstall this tool",
+		"Korean"             -> "Uninstall this tool",
+		"Spanish"            -> "Uninstall this tool"
 	|>]
 	
 },
@@ -125,12 +143,10 @@
   PlotRange->{0, 1}]&),
 
 
-(*
 "prefsRemoveIcon" -> (GraphicsBox[
   {#1, LineBox[{{{0, 0}, {1, 1}}, {{1, 0}, {0, 1}}}]},
   ImageSize->#2,
   PlotRange->{-0.25, 1.25}]&),
-*)
 
 
 (*

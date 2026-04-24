@@ -195,67 +195,102 @@ that name mapping.
 clientControls[client_] := 
 	DynamicModule[{update = 0},
 		Grid[
-			{{
-				(* menu *)
-				PopupMenu[
-					Dynamic[update;
-						Switch[#["Server"]& /@ DeployedAgentTools[client],
-							{___, "Wolfram", ___}, update = 1; "ComputationTools",
-							{___, "WolframLanguage", ___}, update = 1; "DevelopmentTools",
-							_, None
-						],
-						(Switch[#,
-							"ComputationTools",
-								DeleteObject[DeployedAgentTools[client]];
-								DeployAgentTools[client, "Wolfram"],
-							"DevelopmentTools",
-								DeleteObject[DeployedAgentTools[client]];
-								DeployAgentTools[client, "WolframLanguage"],
-							None | 0,
-								DeleteObject[DeployedAgentTools[client]];
-						];
-						++update)&
-					]
-					,
-					{
-						None -> Dynamic[If[update === 0,
-							Style[tr["prefsPickTool"], Italic],
-							tr["prefsNoTool"]]],
-						Delimiter,
-						"ComputationTools" -> tr["prefsComputationTools"],
-						"DevelopmentTools" -> tr["prefsDevelopmentTools"]
-					},
-					Style[tr["prefsPickTool"], FontSlant -> "Italic", FontColor -> ldsGray[0.4]],
-					Framed[
-						Grid[
-							{{
-								Item[
-									Dynamic[update;
-										Switch[#["Server"]& /@ DeployedAgentTools[client],
-											{___, "Wolfram", ___}, tr["prefsComputationTools"],
-											{___, "WolframLanguage", ___}, tr["prefsDevelopmentTools"],
-											_, Dynamic[If[update === 0,
-												Style[tr["prefsPickTool"], Italic, FontColor -> ldsGray[0.4]],
-												tr["prefsNoTool"]]]
-										]
+			{
+				{
+					(* menu *)
+					PopupMenu[
+						Dynamic[update;
+							Switch[{#["Server"], #["Scope"]}& /@ DeployedAgentTools[client],
+								{___, {"Wolfram", "Global"}, ___}, update = 1; "ComputationTools",
+								{___, {"WolframLanguage", "Global"}, ___}, update = 1; "DevelopmentTools",
+								_, None
+							],
+							(Switch[#,
+								"ComputationTools",
+									DeleteObject[DeployedAgentTools[client]];
+									DeployAgentTools[client, "Wolfram"],
+								"DevelopmentTools",
+									DeleteObject[DeployedAgentTools[client]];
+									DeployAgentTools[client, "WolframLanguage"],
+								None | 0,
+									DeleteObject[DeployedAgentTools[client]];
+							];
+							++update)&
+						]
+						,
+						{
+							None -> Dynamic[If[update === 0,
+								Style[tr["prefsPickTool"], Italic],
+								tr["prefsNoTool"]]],
+							Delimiter,
+							"ComputationTools" -> tr["prefsComputationTools"],
+							"DevelopmentTools" -> tr["prefsDevelopmentTools"]
+						},
+						Style[tr["prefsPickTool"], FontSlant -> "Italic", FontColor -> ldsGray[0.4]],
+						Framed[
+							Grid[
+								{{
+									Item[
+										Dynamic[update;
+											Switch[{#["Server"], #["Scope"]}& /@ DeployedAgentTools[client],
+												{___, {"Wolfram", "Global"}, ___}, tr["prefsComputationTools"],
+												{___, {"WolframLanguage", "Global"}, ___}, tr["prefsDevelopmentTools"],
+												_, Dynamic[If[update === 0,
+													Style[tr["prefsPickTool"], Italic, FontColor -> ldsGray[0.4]],
+													tr["prefsNoTool"]]]
+											]
+										],
+										ItemSize -> Fit
 									],
-									ItemSize -> Fit
-								],
-								icon["prefsDownPointer", ldsGray[0.2], 10]
-							}},
-							Alignment -> Left
+									icon["prefsDownPointer", ldsGray[0.2], 10]
+								}},
+								Alignment -> Left
+							],
+							RoundingRadius -> 3,
+							ImageSize -> 400,
+							FrameStyle -> (*ldsGray[0.85]*)Dynamic[If[CurrentValue["MouseOver"], ldsGray[0.7], ldsGray[0.85]]],
+							Background -> (*ldsGray[0.97]*)Dynamic[If[CurrentValue["MouseOver"], ldsGray[0.9], ldsGray[0.97]]]
 						],
-						RoundingRadius -> 3,
 						ImageSize -> 400,
-						FrameStyle -> (*ldsGray[0.85]*)Dynamic[If[CurrentValue["MouseOver"], ldsGray[0.7], ldsGray[0.85]]],
-						Background -> (*ldsGray[0.97]*)Dynamic[If[CurrentValue["MouseOver"], ldsGray[0.9], ldsGray[0.97]]]
+						Appearance -> "ActionMenu"
 					],
-					ImageSize -> 400,
-					Appearance -> "ActionMenu"
-				],
-				(* info link *)
-				Dynamic[update; infoLink[client]]
-			}}
+					(* info link *)
+					Dynamic[update; infoLink[client]]
+				},
+				(* per-directory settings *)
+				Module[{dirsettings},
+					dirsettings = Select[
+						DeployedAgentTools[client],
+						MatchQ[{#["Server"], #["Scope"]}, {"Wolfram" | "WolframLanguage", _File}]&
+					];
+					If[dirsettings === {},
+						Nothing,
+						{
+							Pane[
+								Grid[
+									{
+										{
+											Style[tr["prefsSpecificDirectories"], Smaller, FontColor -> ldsGray[0.5], Bold],
+											SpanFromLeft,
+											SpanFromLeft
+										},
+										Splice[dirSettingsRow /@ dirsettings]
+									},
+									Alignment -> {{Left, Right, Right}},
+									ItemSize -> {{Automatic, Fit, Automatic}},
+									Spacings -> {1,Automatic}
+								],
+								ImageSize -> 390,
+								Alignment -> Left,
+								ImageMargins -> 5
+							],
+							""
+						}
+					]
+				]
+			},
+			Alignment -> Left,
+			BaselinePosition -> 1
 		]
 	]
 
@@ -270,8 +305,8 @@ clientControls[client_] :=
 infoLink[client_] := 
 	Module[{objs, info, locations},
 		objs = DeployedAgentTools[client];
-		info = {#["MCP"]["Server"], #["MCP"]["ConfigFile"]}& /@ objs;
-		locations = Cases[info, {"Wolfram" | "WolframLanguage", File[loc_]} :> loc];
+		info = {#["Scope"], #["MCP"]["Server"], #["MCP"]["ConfigFile"]}& /@ objs;
+		locations = Cases[info, {"Global", "Wolfram" | "WolframLanguage", File[loc_]} :> loc];
 		
 		If[
 			MatchQ[locations, {__String}],
@@ -308,6 +343,48 @@ infoLink[client_] :=
 			""
 		]
 	]
+
+
+(* ::Section::Closed:: *)
+(*dirSettingsRow*)
+
+
+dirSettingsRow[obj_] := 
+	{
+		MouseAppearance[
+			Button[
+				Row[{
+					Replace[obj["Scope"], 
+						File[path_String] :> 
+							FE`Evaluate[FEPrivate`TruncateStringToWidth[path, "Input", 200, Left]]
+					],
+					" \[UpperRightArrow]"
+				}],
+				SystemOpen[obj["Scope"]],
+				Appearance -> None,
+				DefaultBaseStyle -> {},
+				BaseStyle -> {FontColor -> Dynamic[If[CurrentValue["MouseOver"], StandardBlue, ldsGray[0.5]]]},
+				ImageMargins -> {{5,0},{0,0}},
+				Tooltip -> ToBoxes @ First @ obj["Scope"]
+			],
+			"LinkHand"
+		],
+		Replace[obj["Server"],{
+			"Wolfram" :> tr["prefsComputationTools"],
+			"WolframLanguage" :> tr["prefsDevelopmentTools"]
+		}],
+		Button[
+			Mouseover[
+				icon["prefsRemoveIcon", ldsGray[0.2], 10],
+				icon["prefsRemoveIcon", StandardRed, 10]
+			],
+			DeleteObject[obj],
+			Appearance -> None,
+			DefaultBaseStyle -> {},
+			BaseStyle -> {FontColor -> Dynamic[If[CurrentValue["MouseOver"], StandardBlue, ldsGray[0.5]]]},
+			Tooltip -> ToBoxes @ tr["prefsUninstallTool"]
+		]
+	}
 
 
 (* ::Section::Closed:: *)
