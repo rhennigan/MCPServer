@@ -17,7 +17,7 @@ Nothing from the spec is implemented yet.
 
 ---
 
-- [ ] **2. Build the client-request infrastructure (`MCPClientRequests.wl`)**
+- [x] **2. Build the client-request infrastructure (`MCPClientRequests.wl`)**
 
   Subsystem 1. Includes the `processRequest` and notifications-branch edits
   in `StartMCPServer.wl`, the symbol declarations in `CommonSymbols.wl`, and

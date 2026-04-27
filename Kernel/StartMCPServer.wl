@@ -494,7 +494,14 @@ processRequest[ ] :=
         message = ConfirmBy[ Developer`ReadRawJSONString @ stdin, AssociationQ ];
         writeLog[ "Request" -> message ];
         method = Lookup[ message, "method", None ];
-        id = Lookup[ message, "id", Null ];
+        id     = Lookup[ message, "id", Null ];
+
+        (* Response to one of our outstanding server-to-client requests *)
+        If[ method === None && StringQ @ id && KeyExistsQ[ $mcpClientRequests, id ],
+            handleClientResponse[ id, message ];
+            Throw @ Null
+        ];
+
         req = <| "jsonrpc" -> "2.0", "id" -> id |>;
         response = catchAlways @ handleMethod[ method, message, req ];
         If[ method === "tools/list", $warmupTools = True ];
@@ -530,8 +537,12 @@ handleMethod[ "prompts/get"   , msg_, req_ ] := <| req, "result" -> getPrompt[ m
 handleMethod[ "tools/list"    , msg_, req_ ] := <| req, "result" -> <| "tools" -> withToolUIMetadata @ $toolList |> |>;
 handleMethod[ "tools/call"    , msg_, req_ ] := <| req, "result" -> evaluateTool[ msg, req ] |>;
 
-(* Ignored *)
-handleMethod[ method_String, _, req_ ] /; StringStartsQ[ method, "notifications/" ] := Null;
+(* Notifications: dispatch to handleNotification, then drop the response *)
+handleMethod[ method_String, msg_, req_ ] /; StringStartsQ[ method, "notifications/" ] := (
+    handleNotification[ method, msg ];
+    Null
+);
+
 handleMethod[ _, _, KeyValuePattern[ "id" -> Null ] ] := Null;
 
 (* Unknown method *)
