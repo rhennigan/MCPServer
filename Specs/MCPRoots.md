@@ -162,23 +162,21 @@ The roots-specific logic lives in **`Kernel/MCPRoots.wl`**.
 ### Session State
 
 ```wl
-$clientSupportsRoots            = False;
-$clientSupportsRootsListChanged = False;
-$mcpRoot                        = None;   (* resolved root directory string, or None *)
+$clientSupportsRoots = False;
+$mcpRoot             = None;   (* resolved root directory string, or None *)
 ```
 
 These are declared in `Kernel/CommonSymbols.wl` so they are reachable from `StartMCPServer.wl` and tools.
 
 ### Capability Detection (during `initialize`)
 
-In `handleMethod["initialize", …]` (today at lines 518–522 of `StartMCPServer.wl`), alongside the existing `$clientSupportsUI` line:
+In `handleMethod["initialize", …]` (today at lines 518–523 of `StartMCPServer.wl`), alongside the existing `$clientSupportsUI` line:
 
 ```wl
-$clientSupportsRoots            = ! MissingQ @ msg[ "params", "capabilities", "roots" ];
-$clientSupportsRootsListChanged = TrueQ      @ msg[ "params", "capabilities", "roots", "listChanged" ];
+$clientSupportsRoots = ! MissingQ @ msg[ "params", "capabilities", "roots" ];
 ```
 
-The server does **not** advertise any new server-side capability of its own — `roots` is purely a client capability per the MCP specification. The existing TODO at lines 516–517 of `StartMCPServer.wl` is removed when this code lands.
+The `listChanged` sub-capability is not separately tracked: per the MCP spec, a client may only send `notifications/roots/list_changed` if it advertised `listChanged: true`, and the server's response is the same either way (re-fetch). The server does **not** advertise any new server-side capability of its own — `roots` is purely a client capability per the MCP specification. The existing TODO at lines 516–517 of `StartMCPServer.wl` is removed when this code lands.
 
 ### `onClientInitialized` — Triggering the First `roots/list`
 
@@ -200,7 +198,7 @@ onClientInitialized // endDefinition;
 ```wl
 handleRootsListResponse // beginDefinition;
 
-handleRootsListResponse[ _request_, response_Association ] :=
+handleRootsListResponse[ request_, response_Association ] :=
     Catch @ Module[ { roots, root },
         If[ KeyExistsQ[ response, "error" ],
             writeLog[ "RootsListError" -> response[ "error" ] ];
@@ -272,7 +270,7 @@ The notes call out that `useEvaluatorKernel[SetDirectory[root]]` must be invoked
 
 Guard the call with `toolOptionValue[ "WolframLanguageEvaluator", "Method" ] === "Local"`. The existing `useEvaluatorKernel` helper intentionally evaluates in the main kernel when the evaluator method is not `"Local"`; without this guard, default `"Session"` mode would call `SetDirectory[root]` twice and grow the main kernel's directory stack twice per root application.
 
-`useEvaluatorKernel` needs to be declared in `Kernel/CommonSymbols.wl` so it is reachable from other files.
+`useEvaluatorKernel` is currently declared at the package level of `Kernel/Tools/Tools.wl` (in the `Wolfram`AgentTools`Tools`` context). Move that declaration to `Kernel/CommonSymbols.wl` so `MCPRoots.wl` can resolve it without needing to load the Tools subcontext first. The definition stays in `Kernel/Tools/WolframLanguageEvaluator.wl`, which already `Needs` the Common context, so the existing definition still attaches to the symbol after the move. Existing callers (`Kernel/Tools/SymbolDefinition.wl`) already `Needs` both Common and Tools, so they continue to resolve the symbol unqualified.
 
 ### Re-applying on `notifications/roots/list_changed`
 
@@ -342,8 +340,9 @@ Tools should therefore tolerate `$mcpRoot === None` and behave as they do today.
 | `Kernel/MCPClientRequests.wl` | NEW | `$mcpClientRequests`, `sendClientRequest`, `handleClientResponse`, `handleNotification` |
 | `Kernel/MCPRoots.wl` | NEW | `$mcpRoot`, capability flags, `onClientInitialized`, `onRootsListChanged`, `handleRootsListResponse`, `pickFirstValidRoot`, `rootURIToPath`, `applyMCPRoot` |
 | `Kernel/StartMCPServer.wl` | EDIT | `processRequest` distinguishes responses from requests; `handleMethod["initialize", …]` reads roots capabilities; notifications branch routes through `handleNotification`; remove TODO at lines 516–517 |
-| `Kernel/CommonSymbols.wl` | EDIT | Declare `$mcpClientRequests`, `$mcpRoot`, `$clientSupportsRoots`, `$clientSupportsRootsListChanged`, plus the new helper symbols |
-| `Kernel/Main.wl` | EDIT | Load the two new files; avoid relying on unqualified `useEvaluatorKernel` resolution before `Kernel/Tools/Tools.wl` has loaded |
+| `Kernel/CommonSymbols.wl` | EDIT | Declare the cross-file symbols: `$mcpClientRequests`, `$mcpRoot`, `$clientSupportsRoots`, `sendClientRequest`, `handleClientResponse`, `handleNotification`, `onClientInitialized`, `onRootsListChanged`. Also relocate `useEvaluatorKernel` here from `Kernel/Tools/Tools.wl` (remove the `` `useEvaluatorKernel; `` line there). Symbols only used inside a single new file (`pickFirstValidRoot`, `rootURIToPath`, `applyMCPRoot`, `handleRootsListResponse`) stay private to that file. |
+| `Kernel/Tools/Tools.wl` | EDIT | Drop the `` `useEvaluatorKernel; `` declaration line; the symbol now lives in CommonSymbols.wl |
+| `Kernel/Main.wl` | EDIT | Add `"Wolfram`AgentTools`MCPClientRequests`"` and `"Wolfram`AgentTools`MCPRoots`"` to `$AgentToolsContexts` so the new files load |
 | `Kernel/Tools/TestReport.wl` | EDIT | Add `ProcessDirectory -> If[ StringQ @ $mcpRoot, $mcpRoot, Inherited ]` to the `RunProcess` call (~line 100) |
 | `Kernel/Tools/WolframLanguageEvaluator.wl` | NO CHANGE | The local kernel's directory is set via `useEvaluatorKernel[SetDirectory[…]]` from `applyMCPRoot`; tool code does not need to know about `$mcpRoot` |
 | `Tests/MCPServerTestUtilities.wl` | EDIT | Add helpers to initialize with arbitrary client capabilities, read server-to-client requests, and send JSON-RPC responses back to the server |
