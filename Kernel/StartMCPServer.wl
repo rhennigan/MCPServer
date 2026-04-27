@@ -520,11 +520,10 @@ processRequest // endDefinition;
 (*handleMethod*)
 handleMethod // beginDefinition;
 
-(* TODO: if the client supports roots, we should query for them and set directory appropriately
-   https://modelcontextprotocol.io/specification/2025-11-25/client/roots#protocol-messages *)
 handleMethod[ "initialize", msg_, req_ ] := (
     $clientName = Replace[ msg[[ "params", "clientInfo", "name" ]], Except[ _String ] :> None ];
     $clientSupportsUI = mcpAppsEnabledQ[ ] && clientSupportsUIQ @ msg;
+    $clientSupportsRoots = ! MissingQ @ msg[ "params", "capabilities", "roots" ];
     If[ ! stderrEnabledQ[ ], $Messages = { } ];
     <| req, "result" -> initResponse[ $currentMCPServer, msg ] |>
 );

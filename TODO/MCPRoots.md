@@ -29,7 +29,7 @@ Nothing from the spec is implemented yet.
 
 ---
 
-- [ ] **3. Build the roots feature (`MCPRoots.wl`)**
+- [x] **3. Build the roots feature (`MCPRoots.wl`)**
 
   Subsystem 2. Includes the `useEvaluatorKernel` relocation
   (`Tools/Tools.wl:8` → `CommonSymbols.wl`), the `$clientSupportsRoots`

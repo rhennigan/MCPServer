@@ -116,6 +116,11 @@ BeginPackage[ "Wolfram`AgentTools`Common`" ];
 `onRootsListChanged;
 `sendClientRequest;
 
+(* MCP roots: *)
+`$clientSupportsRoots;
+`$mcpRoot;
+`useEvaluatorKernel;
+
 (* MCP Apps / UI resources: *)
 `$clientSupportsUI;
 `$uiResourceRegistry;

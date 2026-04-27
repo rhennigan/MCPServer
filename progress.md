@@ -109,3 +109,67 @@ Notes for the next session:
   `(handleNotification[method, msg]; Null)` wrapper in
   `handleMethod`'s notifications branch, so this is harmless in production
   but worth knowing if you grep for "unhandled notification" behavior.
+
+## Session 3
+
+Completed Task 3 of `TODO/MCPRoots.md` — built the roots feature
+(Subsystem 2).
+
+Changes:
+
+- New `Kernel/MCPRoots.wl` with `$clientSupportsRoots`, `$mcpRoot`, the
+  `onClientInitialized` and `onRootsListChanged` handlers, and the private
+  helpers `handleRootsListResponse`, `pickFirstValidRoot`, `rootURIToPath`,
+  and `applyMCPRoot`. The session-state vars are reset to their initial
+  values in `addToMXInitialization` so a fresh MX load starts clean.
+- `Kernel/CommonSymbols.wl`: declared `$clientSupportsRoots`, `$mcpRoot`,
+  and (per the spec) hoisted `useEvaluatorKernel` here so `MCPRoots.wl`
+  can call it without needing to load the Tools subcontext first. The
+  definition still lives in `Kernel/Tools/WolframLanguageEvaluator.wl`.
+- `Kernel/Tools/Tools.wl`: dropped the `` `useEvaluatorKernel; ``
+  package-scope declaration since the symbol now lives in CommonSymbols.
+- `Kernel/StartMCPServer.wl`: removed the TODO at the top of
+  `handleMethod["initialize", ...]` and added the
+  `$clientSupportsRoots = ! MissingQ @ msg["params", "capabilities", "roots"]`
+  side-effect alongside the existing `$clientSupportsUI` line.
+- `Kernel/Main.wl`: added `Wolfram\`AgentTools\`MCPRoots\`` to
+  `$AgentToolsContexts` (alphabetical position after `MCPClientRequests`,
+  before `MCPServerObject`).
+- New `Tests/MCPRoots.wlt` with 22 tests covering: session-state types
+  (`BooleanQ` + `None|String`), `rootURIToPath` (file-scheme, non-file,
+  non-string), `pickFirstValidRoot` (single, multi-fallback, empty,
+  no-uri-key, non-file scheme, all-invalid, non-list),
+  `handleRootsListResponse` (success, error, empty, all-invalid),
+  `onClientInitialized` (no-cap and with-cap), and `onRootsListChanged`
+  (no-cap and with-cap).
+
+Test runs:
+
+- `Tests/MCPRoots.wlt` — 22/22 pass.
+- `Tests/MCPClientRequests.wlt` — 11/11 still pass (regression).
+- `Tests/StartMCPServer.wlt` — 68/68 still pass (regression).
+- `Tests/MCPApps.wlt` — 74/74 still pass (regression).
+- `Tests/Tools.wlt` — 59/59 still pass (`useEvaluatorKernel` relocation).
+
+CodeInspector clean on all changed files.
+
+Notes for the next session:
+
+- Two gotchas hit while writing the unit tests, both worth knowing if you
+  add more `pickFirstValidRoot` / `handleRootsListResponse` tests:
+  - `WithCleanup[result = ...; check = DirectoryQ[result], DeleteDirectory[...]]`
+    must compute the boolean *before* the cleanup runs. Earlier drafts had
+    `WithCleanup[result = ..., DeleteDirectory[...]]; DirectoryQ[result]`,
+    which checks `DirectoryQ` after the directory has been deleted — gives
+    `False` even though the function returned the right path.
+  - `applyMCPRoot` is private to `MCPRoots.wl`. Tests stub it via
+    `Block[ { Wolfram\`AgentTools\`MCPRoots\`Private\`applyMCPRoot = ... }, ... ]`
+    so `handleRootsListResponse` can be exercised without actually calling
+    `SetDirectory` / `useEvaluatorKernel`.
+- Task 4 (`TestReport` `$mcpRoot` plumbing) is the natural next step.
+  `$mcpRoot` is now declared in `CommonSymbols.wl` so the call site in
+  `Kernel/Tools/TestReport.wl` can reference it directly.
+- Task 5 (end-to-end roots handshake tests) is now unblocked. The flow is:
+  `MCPInitialize["Capabilities" -> <| "roots" -> <| "listChanged" -> True |> |>]`
+  → `ReadMCPMessage[]` to grab the server's `roots/list` request →
+  `SendMCPResponse[id, <| "roots" -> {...} |>]` to reply.
