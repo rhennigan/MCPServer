@@ -399,42 +399,28 @@ Deploy[
 	Pane[
 		Column[
 			{
+				Style[tr["prefsInfo"], FontColor -> ldsGray[0.2]],
 				Grid[
 					{{
-						Item[Style[tr["prefsTitle"], FontWeight -> "Bold"], ItemSize -> Fit],
+						Item[tr["prefsSubtitle"], ItemSize -> Fit],
 						Item[docsLink[], Alignment -> Right]
 					}},
 					Alignment -> Left,
+					BaseStyle -> {LinebreakAdjustments -> {1, 10, 1, 0, 1}},
 					Spacings -> {0,0}
 				],
-				Style[tr["prefsSubtitle"], FontWeight -> "Plain", FontColor -> ldsGray[0.4]],
 				
-				Grid[
-					{
-						{
-							icon["prefsComputationToolsIcon"],
-							Column[{
-								Style[tr["prefsComputationTools"], FontWeight -> "DemiBold"],
-								Style[tr["prefsComputationToolsDescription"], FontColor -> ldsGray[0.4]]
-							}]
-						},
-						{
-							icon["prefsComputationToolsIcon"],
-							Column[{
-								Style[tr["prefsDevelopmentTools"], FontWeight -> "DemiBold"],
-								Style[tr["prefsDevelopmentToolsDescription"], FontColor -> ldsGray[0.4]]
-							}]
-						}
-					},
-					Alignment -> {Left, Top},
-					Spacings -> {1,1}
-				],
+				Style[tr["prefsComputationTools"], FontWeight -> "DemiBold"],
+				Style[tr["prefsComputationToolsDescription"], FontColor -> ldsGray[0.4]],
 				
+				Style[tr["prefsDevelopmentTools"], FontWeight -> "DemiBold"],
+				Style[tr["prefsDevelopmentToolsDescription"], FontColor -> ldsGray[0.4]],
+
 				clientInterfaces[]
 			},
-			Dividers -> {None, {None, None, None, ldsGray[0.85], None}},
+			Dividers -> {None, {None, ldsGray[0.85], None, None, None, None, ldsGray[0.85], None}},
 			ItemSize -> Scaled[1],
-			Spacings -> {Automatic, {0,0.5,1.5,3,2,2,1}}
+			Spacings -> {Automatic, {0,2,1.5,0.6,1.5,0.6,3}}
 		],
 		Alignment -> Left,
 		ImageMargins -> 20
