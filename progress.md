@@ -173,3 +173,59 @@ Notes for the next session:
   `MCPInitialize["Capabilities" -> <| "roots" -> <| "listChanged" -> True |> |>]`
   → `ReadMCPMessage[]` to grab the server's `roots/list` request →
   `SendMCPResponse[id, <| "roots" -> {...} |>]` to reply.
+
+## Session 4
+
+Completed Task 4 of `TODO/MCPRoots.md` — wired `$mcpRoot` into `TestReport`'s
+`RunProcess` call.
+
+Changes:
+
+- `Kernel/Tools/TestReport.wl`: the `RunProcess` call at line 100 now passes
+  `ProcessDirectory -> If[ StringQ @ $mcpRoot, $mcpRoot, Inherited ]`, matching
+  the spec pattern. `$mcpRoot` is already declared in `CommonSymbols.wl` (from
+  Session 3), so the file resolves the symbol via the existing `Needs[
+  "Wolfram\`AgentTools\`Common\`" ]`.
+- `Tests/Tools.wlt`: added a new `$mcpRoot` subsection (between Basic Examples
+  and Error Cases) with a single `skipIfGitHubActions`-guarded test
+  (`TestReport-McpRootRelativePath`). The test is structured to actually
+  exercise the new `ProcessDirectory` plumbing rather than passing
+  coincidentally:
+  - It does NOT call `SetDirectory[tmpDir]` — parent CWD stays put.
+  - It passes an absolute path to `TestReport` so the parent's `validatePath`
+    succeeds without depending on CWD.
+  - The .wlt file under `$mcpRoot` does `FileExistsQ["marker.txt"]` (relative).
+    That only resolves when the subprocess started by `RunProcess` is in
+    `$mcpRoot`, which is exactly what the new `ProcessDirectory` argument
+    guarantees.
+  - Result is asserted via `StringContainsQ[ result, "**Overall Result** |
+    Success" ]`.
+
+Test runs:
+
+- `Tests/Tools.wlt` — 60/60 pass (was 59 + the new test).
+- `Tests/MCPRoots.wlt` — 22/22 still pass (regression).
+- `Tests/MCPClientRequests.wlt` — 11/11 still pass (regression).
+- `Tests/StartMCPServer.wlt` — 68/68 still pass (regression).
+
+CodeInspector clean on `Kernel/Tools/TestReport.wl` and `Tests/Tools.wlt`.
+
+Notes for the next session:
+
+- Only Task 5 (end-to-end roots handshake tests in `Tests/StartMCPServer.wlt`)
+  remains. All prerequisites are in place: the `MCPInitialize "Capabilities"`,
+  `ReadMCPMessage`, and `SendMCPResponse` helpers from Session 1; the
+  `MCPClientRequests` infrastructure from Session 2; and the `MCPRoots` feature
+  from Session 3.
+- An aborted earlier draft of the Tools.wlt test used a relative path
+  (`"TestFile1.wlt"`) directly. That fails because `validatePath` runs in the
+  parent process and uses parent CWD, not `$mcpRoot` — `FileExistsQ` returned
+  False and `throwFailure["TestFileNotFound", ...]` fired before `RunProcess`
+  was ever called. The current marker-file approach sidesteps this by using
+  an absolute path for `TestReport` and putting the relative-path check inside
+  the subprocess-evaluated .wlt file.
+- The spec does not call for changing `validatePath` to consult `$mcpRoot`
+  directly. In production, `applyMCPRoot` does `SetDirectory[$mcpRoot]`, so
+  `Directory[]` (and therefore `FileExistsQ`) implicitly track `$mcpRoot` in
+  the parent. The `ProcessDirectory` we just added is the safety belt for the
+  subprocess.

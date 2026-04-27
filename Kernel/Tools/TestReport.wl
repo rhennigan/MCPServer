@@ -97,7 +97,14 @@ testReport[ files: { __String }, timeConstraint: $$size, memoryConstraint: $$siz
             memoryConstraintString
         };
 
-        result = ConfirmBy[ RunProcess @ processArgs, AssociationQ, "Result" ];
+        result = ConfirmBy[
+            RunProcess[
+                processArgs,
+                ProcessDirectory -> If[ StringQ @ $mcpRoot, $mcpRoot, Inherited ]
+            ],
+            AssociationQ,
+            "Result"
+        ];
 
         If[ result[ "ExitCode" ] =!= 0, throwFailure[ "TestKernelFailure" ] ];
 

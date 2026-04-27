@@ -45,7 +45,7 @@ Nothing from the spec is implemented yet.
 
 ---
 
-- [ ] **4. Wire `$mcpRoot` into `TestReport`'s `RunProcess` call**
+- [x] **4. Wire `$mcpRoot` into `TestReport`'s `RunProcess` call**
 
   The single call site at `Kernel/Tools/TestReport.wl:100`, plus the relative-
   path test in `Tests/Tools.wlt` (guarded with the existing `$allowExternal`

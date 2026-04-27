@@ -533,6 +533,42 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*$mcpRoot*)
+
+(* The subprocess started by the external RunProcess path runs in $mcpRoot. The .wlt
+   file uses a relative path (FileExistsQ["marker.txt"]) that only resolves when the
+   subprocess's CWD is the temporary root, which exercises the ProcessDirectory plumbing. *)
+skipIfGitHubActions @ VerificationTest[
+    Module[ { tmpDir, savedRoot, testFile, result, ok },
+        tmpDir    = CreateDirectory[ ];
+        savedRoot = Wolfram`AgentTools`Common`$mcpRoot;
+        testFile  = FileNameJoin @ { tmpDir, "MarkerTest.wlt" };
+        WithCleanup[
+            Export[ FileNameJoin @ { tmpDir, "marker.txt" }, "ok", "Text" ];
+            Export[
+                testFile,
+                "VerificationTest[ FileExistsQ[ \"marker.txt\" ], True, TestID -> \"MarkerFound\" ]",
+                "Text"
+            ];
+            Wolfram`AgentTools`Common`$mcpRoot = tmpDir;
+            result = $testReportTool @ <|
+                "paths"     -> testFile,
+                "newKernel" -> True
+            |>;
+            ok = StringQ @ result &&
+                 StringContainsQ[ result, "**Overall Result** | Success" ],
+            Wolfram`AgentTools`Common`$mcpRoot = savedRoot;
+            DeleteDirectory[ tmpDir, DeleteContents -> True ]
+        ];
+        ok
+    ],
+    True,
+    SameTest -> MatchQ,
+    TestID   -> "TestReport-McpRootRelativePath@@Tests/Tools.wlt:541,23-568,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*Error Cases*)
 
 (* GH#65: Nonexistent path should produce TestFileNotFound, not an internal failure *)
@@ -541,7 +577,7 @@ VerificationTest[
     Failure[ "AgentTools::TestFileNotFound", _Association ],
     { AgentTools::TestFileNotFound },
     SameTest -> MatchQ,
-    TestID   -> "TestReport-NonexistentFile-GH#65@@Tests/Tools.wlt:539,1-545,2"
+    TestID   -> "TestReport-NonexistentFile-GH#65@@Tests/Tools.wlt:575,1-581,2"
 ]
 
 VerificationTest[
@@ -549,7 +585,7 @@ VerificationTest[
     _? (FreeQ[ "AgentTools::Internal" ]),
     { AgentTools::TestFileNotFound },
     SameTest -> MatchQ,
-    TestID   -> "TestReport-NoInternalFailure-GH#65@@Tests/Tools.wlt:547,1-553,2"
+    TestID   -> "TestReport-NoInternalFailure-GH#65@@Tests/Tools.wlt:583,1-589,2"
 ]
 
 VerificationTest[
@@ -562,7 +598,7 @@ VerificationTest[
     _? (FreeQ[ "AgentTools::Internal" ]),
     { AgentTools::TestFileNotFound },
     SameTest -> MatchQ,
-    TestID   -> "TestReport-MixedValidInvalidPaths-GH#65@@Tests/Tools.wlt:555,1-566,2"
+    TestID   -> "TestReport-MixedValidInvalidPaths-GH#65@@Tests/Tools.wlt:591,1-602,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -579,7 +615,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveNames@@Tests/Tools.wlt:575,1-583,2"
+    TestID   -> "ToolProperties-AllHaveNames@@Tests/Tools.wlt:611,1-619,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -592,7 +628,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveDescriptions@@Tests/Tools.wlt:588,1-596,2"
+    TestID   -> "ToolProperties-AllHaveDescriptions@@Tests/Tools.wlt:624,1-632,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -605,5 +641,5 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveParameters@@Tests/Tools.wlt:601,1-609,2"
+    TestID   -> "ToolProperties-AllHaveParameters@@Tests/Tools.wlt:637,1-645,2"
 ]
