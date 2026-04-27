@@ -7,7 +7,7 @@ Nothing from the spec is implemented yet.
 
 ---
 
-- [ ] **1. Extend `MCPServerTestUtilities.wl` for server-to-client traffic**
+- [x] **1. Extend `MCPServerTestUtilities.wl` for server-to-client traffic**
 
   The harness primitives every later integration test depends on: arbitrary
   client capabilities in `MCPInitialize`, plus helpers to read a server-issued

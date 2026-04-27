@@ -11,6 +11,8 @@ BeginPackage[ "Wolfram`AgentToolsTests`MCPServerTestUtilities`" ];
 `StopMCPTestServer;
 `SendMCPRequest;
 `SendMCPNotification;
+`SendMCPResponse;
+`ReadMCPMessage;
 `MCPInitialize;
 
 Begin[ "`Private`" ];
@@ -298,29 +300,109 @@ SendMCPNotification[ method_String, params_Association ] := Catch @ Module[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*ReadMCPMessage*)
+(* Reads a single JSON-RPC message from the server's stdout. Used to receive
+   server-issued requests (e.g. `roots/list`) and out-of-band notifications
+   that the standard `SendMCPRequest` flow does not handle. *)
+ReadMCPMessage // ClearAll;
+ReadMCPMessage // Options = { "Timeout" -> 60 };
+
+ReadMCPMessage[ opts: OptionsPattern[ ] ] := Catch @ Module[
+    { timeout, process, message },
+
+    timeout = OptionValue[ "Timeout" ];
+    process = $MCPTestProcess;
+
+    If[ ! processQ @ process,
+        Throw @ Failure[ "MCPTestServerNotRunning", <| "Message" -> "MCP test server is not running" |> ]
+    ];
+
+    message = TimeConstrained[
+        readJSONResponse @ process,
+        timeout,
+        $TimedOut
+    ];
+
+    If[ message === $TimedOut,
+        Throw @ Failure[ "MCPTimeout", <|
+            "MessageTemplate"   :> "Reading MCP message timed out after `1` seconds.",
+            "MessageParameters" -> { timeout }
+        |> ]
+    ];
+
+    message
+];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*SendMCPResponse*)
+(* Sends a JSON-RPC response back to the server, identified by `id`. Two-arg
+   form sends a successful response with the given `result`; three-arg form
+   sends an error response with the given JSON-RPC error code and message. *)
+SendMCPResponse // ClearAll;
+
+SendMCPResponse[ id_, result_ ] :=
+    sendMCPResponse0[ id, <| "result" -> result |> ];
+
+SendMCPResponse[ id_, code_Integer, message_String ] :=
+    sendMCPResponse0[ id, <| "error" -> <| "code" -> code, "message" -> message |> |> ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*sendMCPResponse0*)
+sendMCPResponse0 // ClearAll;
+
+sendMCPResponse0[ id_, payload_Association ] := Catch @ Module[
+    { process, response, responseJSON },
+
+    process = $MCPTestProcess;
+
+    If[ ! processQ @ process,
+        Throw @ Failure[ "MCPTestServerNotRunning", <| "Message" -> "MCP test server is not running" |> ]
+    ];
+
+    response = <|
+        "jsonrpc" -> "2.0",
+        "id"      -> id,
+        payload
+    |>;
+
+    responseJSON = Developer`WriteRawJSONString[ response, "Compact" -> True ];
+
+    WriteLine[ process, responseJSON ];
+
+    (* Server doesn't reply to responses; small pause for the message loop *)
+    Pause[ 0.05 ];
+
+    Null
+];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*MCPInitialize*)
 MCPInitialize // ClearAll;
 MCPInitialize // Options = {
-    "ClientName" -> "test-client",
+    "ClientName"      -> "test-client",
     "ProtocolVersion" -> "2024-11-05",
-    "Timeout" -> 60
+    "Capabilities"    -> <| |>,
+    "Timeout"         -> 60
 };
 
 MCPInitialize[ opts: OptionsPattern[ ] ] := Module[
-    { clientName, protocolVersion, timeout, response },
+    { clientName, protocolVersion, capabilities, timeout, params, response },
 
-    clientName = OptionValue[ "ClientName" ];
+    clientName      = OptionValue[ "ClientName" ];
     protocolVersion = OptionValue[ "ProtocolVersion" ];
-    timeout = OptionValue[ "Timeout" ];
+    capabilities    = OptionValue[ "Capabilities" ];
+    timeout         = OptionValue[ "Timeout" ];
 
-    response = SendMCPRequest[
-        "initialize",
-        <|
-            "clientInfo" -> <| "name" -> clientName |>,
-            "protocolVersion" -> protocolVersion
-        |>,
-        "Timeout" -> timeout
-    ];
+    params = <|
+        "clientInfo"      -> <| "name" -> clientName |>,
+        "protocolVersion" -> protocolVersion,
+        "capabilities"    -> If[ AssociationQ @ capabilities, capabilities, <| |> ]
+    |>;
+
+    response = SendMCPRequest[ "initialize", params, "Timeout" -> timeout ];
 
     If[ AssociationQ @ response && KeyExistsQ[ response, "result" ],
         SendMCPNotification[ "notifications/initialized" ]
