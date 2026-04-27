@@ -49,6 +49,7 @@ $deploymentProperties = {
     "Skills",
     "Target",
     "Timestamp",
+    "Toolset",
     "Tools",
     "UUID"
 };
@@ -117,11 +118,19 @@ getDeploymentProperty[ data_Association, "Target"     ] := data[ "MCP", "Target"
 getDeploymentProperty[ data_Association, "Server"     ] := data[ "MCP", "Server" ];
 getDeploymentProperty[ data_Association, "ConfigFile" ] := data[ "MCP", "ConfigFile" ];
 
+(* Toolset: canonical name with fallback through legacy MCP/Server *)
+getDeploymentProperty[ data_Association, "Toolset" ] :=
+    FirstCase[
+        { data[ "Toolset" ], data[ "MCP", "Server" ] },
+        _String? StringQ,
+        Missing[ "NotAvailable" ]
+    ];
+
 (* Derived properties *)
 getDeploymentProperty[ data_Association, "Data"             ] := data;
 getDeploymentProperty[ data_Association, "LLMConfiguration" ] := getDeploymentProperty[ data, "MCPServerObject" ][ "LLMConfiguration" ];
 getDeploymentProperty[ data_Association, "Location"         ] := deploymentDirectory[ data[ "MCP", "ClientName" ], data[ "UUID" ] ];
-getDeploymentProperty[ data_Association, "MCPServerObject"  ] := MCPServerObject @ data[ "MCP", "Server" ];
+getDeploymentProperty[ data_Association, "MCPServerObject"  ] := MCPServerObject @ getDeploymentProperty[ data, "Toolset" ];
 getDeploymentProperty[ data_Association, "Properties"       ] := $deploymentProperties;
 getDeploymentProperty[ data_Association, "Scope"            ] := getDeploymentScope @ data[ "MCP", "Target" ];
 getDeploymentProperty[ data_Association, "Tools"            ] := getDeploymentProperty[ data, "MCPServerObject" ][ "Tools" ];
@@ -198,7 +207,7 @@ deleteDeployment[ dep_AgentToolsDeployment ] := Enclose[
             Normal @ dep[ "MCP", "Options" ],
             Options @ UninstallMCPServer
         ];
-        catchAlways @ UninstallMCPServer[ dep[ "ConfigFile" ], dep[ "Server" ], Sequence @@ options ];
+        catchAlways @ UninstallMCPServer[ dep[ "ConfigFile" ], dep[ "Toolset" ], Sequence @@ options ];
 
         (* Remove deployment directory *)
         uuid = ConfirmBy[ dep[ "UUID" ], StringQ, "UUID" ];
@@ -305,6 +314,7 @@ deployAgentTools[ target_, server_MCPServerObject, opts0: $$deployAgentToolsOpti
             "Timestamp"     -> Now,
             "PacletVersion" -> $pacletVersion,
             "CreatedBy"     -> "DeployAgentTools",
+            "Toolset"       -> server[ "Name" ],
             "MCP"           -> <|
                 "ClientName" -> clientName,
                 "Target"     -> normalizedTarget,

@@ -528,6 +528,182 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*toolSchema*)
+
+(* Regression for the bugfix that motivated these tests: Restricted["String", DigitCharacter..]
+   produced "(?ms)\\d+" from LLMTool, which JS validators choke on. toolSchema should emit "\\d+". *)
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toolSchema[
+        LLMTool[ "T", { "x" -> Restricted[ "String", DigitCharacter.. ] }, f ]
+    ],
+    <|
+        "type" -> "object",
+        "properties" -> <| "x" -> <| "type" -> "string", "pattern" -> "\\d+" |> |>,
+        "required" -> { "x" }
+    |>,
+    SameTest -> MatchQ,
+    TestID   -> "ToolSchema-RestrictedDigitCharacter@@Tests/StartMCPServer.wlt:535,1-546,2"
+]
+
+(* The basic "String" Interpreter produces a redundant "(?ms).*" pattern -- toolSchema drops it. *)
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toolSchema[
+        LLMTool[ "T", { "x" -> "String" }, f ]
+    ],
+    <|
+        "type" -> "object",
+        "properties" -> <| "x" -> <| "type" -> "string" |> |>,
+        "required" -> { "x" }
+    |>,
+    SameTest -> MatchQ,
+    TestID   -> "ToolSchema-PlainStringDropsMatchAnyPattern@@Tests/StartMCPServer.wlt:549,1-560,2"
+]
+
+(* No parameters -> empty properties and no required keys. *)
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toolSchema[
+        LLMTool[ "T", { }, f ]
+    ],
+    <| "type" -> "object", "properties" -> <| |>, "required" -> { } |>,
+    SameTest -> MatchQ,
+    TestID   -> "ToolSchema-NoParameters@@Tests/StartMCPServer.wlt:563,1-570,2"
+]
+
+(* Non-string types have no "pattern" field, so toolSchema passes them through untouched. *)
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toolSchema[
+        LLMTool[ "T", { "n" -> "Number" }, f ]
+    ],
+    <|
+        "type" -> "object",
+        "properties" -> <| "n" -> <| "type" -> "number" |> |>,
+        "required" -> { "n" }
+    |>,
+    SameTest -> MatchQ,
+    TestID   -> "ToolSchema-NumberType@@Tests/StartMCPServer.wlt:573,1-584,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toolSchema[
+        LLMTool[ "T", { "i" -> "Integer" }, f ]
+    ],
+    <|
+        "type" -> "object",
+        "properties" -> <| "i" -> <| "type" -> "integer" |> |>,
+        "required" -> { "i" }
+    |>,
+    SameTest -> MatchQ,
+    TestID   -> "ToolSchema-IntegerType@@Tests/StartMCPServer.wlt:586,1-597,2"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toolSchema[
+        LLMTool[ "T", { "b" -> "Boolean" }, f ]
+    ],
+    <|
+        "type" -> "object",
+        "properties" -> <| "b" -> <| "type" -> "boolean" |> |>,
+        "required" -> { "b" }
+    |>,
+    SameTest -> MatchQ,
+    TestID   -> "ToolSchema-BooleanType@@Tests/StartMCPServer.wlt:599,1-610,2"
+]
+
+(* Optional parameter is absent from "required". *)
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toolSchema[
+        LLMTool[ "T", { "x" -> <| "Interpreter" -> "String", "Required" -> False |> }, f ]
+    ],
+    <|
+        "type" -> "object",
+        "properties" -> <| "x" -> <| "type" -> "string" |> |>,
+        "required" -> { }
+    |>,
+    SameTest -> MatchQ,
+    TestID   -> "ToolSchema-OptionalParameter@@Tests/StartMCPServer.wlt:613,1-624,2"
+]
+
+(* Help text shows up as "description" on the parameter schema. *)
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toolSchema[
+        LLMTool[ "T", { "x" -> <| "Interpreter" -> "String", "Help" -> "A string parameter" |> }, f ]
+    ],
+    <|
+        "type" -> "object",
+        "properties" -> <|
+            "x" -> <| "type" -> "string", "description" -> "A string parameter" |>
+        |>,
+        "required" -> { "x" }
+    |>,
+    SameTest -> MatchQ,
+    TestID   -> "ToolSchema-ParameterWithHelp@@Tests/StartMCPServer.wlt:627,1-640,2"
+]
+
+(* Multiple parameters of mixed types preserve order in "required". *)
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toolSchema[
+        LLMTool[ "T", { "a" -> "String", "b" -> "Integer" }, f ]
+    ],
+    <|
+        "type" -> "object",
+        "properties" -> <|
+            "a" -> <| "type" -> "string" |>,
+            "b" -> <| "type" -> "integer" |>
+        |>,
+        "required" -> { "a", "b" }
+    |>,
+    SameTest -> MatchQ,
+    TestID   -> "ToolSchema-MultipleParameters@@Tests/StartMCPServer.wlt:643,1-657,2"
+]
+
+(* Restricted enumeration: the "(?ms)(?:red|green|blue)" pattern from LLMTool should lose its leading flags. *)
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toolSchema[
+        LLMTool[ "T", { "color" -> Restricted[ "String", { "red", "green", "blue" } ] }, f ]
+    ],
+    <|
+        "type" -> "object",
+        "properties" -> <|
+            "color" -> <| "type" -> "string", "pattern" -> "(?:red|green|blue)" |>
+        |>,
+        "required" -> { "color" }
+    |>,
+    SameTest -> MatchQ,
+    TestID   -> "ToolSchema-RestrictedEnumeration@@Tests/StartMCPServer.wlt:660,1-673,2"
+]
+
+(* Private-use-area (PUA) characters in strings are escaped via safeString/convertPUACharacters. *)
+VerificationTest[
+    Wolfram`AgentTools`StartMCPServer`Private`toolSchema[
+        LLMTool[
+            "T",
+            { "x" -> <| "Interpreter" -> "String", "Help" -> "desc" <> FromCharacterCode[ 16^^E000 ] <> "end" |> },
+            f
+        ]
+    ],
+    <|
+        "type" -> "object",
+        "properties" -> <|
+            "x" -> <| "type" -> "string", "description" -> "desc\\:e000end" |>
+        |>,
+        "required" -> { "x" }
+    |>,
+    SameTest -> MatchQ,
+    TestID   -> "ToolSchema-PUACharactersEscaped@@Tests/StartMCPServer.wlt:676,1-693,2"
+]
+
+(* Return value is an Association suitable for direct use as a JSON Schema object. *)
+VerificationTest[
+    AssociationQ @ Wolfram`AgentTools`StartMCPServer`Private`toolSchema[
+        LLMTool[ "T", { "x" -> "String" }, f ]
+    ],
+    True,
+    SameTest -> MatchQ,
+    TestID   -> "ToolSchema-ReturnsAssociation@@Tests/StartMCPServer.wlt:696,1-703,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*createMCPToolData with name override*)
 VerificationTest[
     tool = LLMTool[ <| "Name" -> "Search", "Description" -> "Search things", "Function" -> Identity, "Parameters" -> { } |> ];
@@ -535,7 +711,7 @@ VerificationTest[
     data[ "name" ],
     "Search1",
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPToolData-NameOverride@@Tests/StartMCPServer.wlt:532,1-539,2"
+    TestID   -> "CreateMCPToolData-NameOverride@@Tests/StartMCPServer.wlt:708,1-715,2"
 ]
 
 VerificationTest[
@@ -544,7 +720,7 @@ VerificationTest[
     data[ "description" ],
     "Search things",
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPToolData-DescriptionPreserved@@Tests/StartMCPServer.wlt:541,1-548,2"
+    TestID   -> "CreateMCPToolData-DescriptionPreserved@@Tests/StartMCPServer.wlt:717,1-724,2"
 ]
 
 VerificationTest[
@@ -553,7 +729,7 @@ VerificationTest[
     dataOriginal[ "name" ],
     "MyTool",
     SameTest -> MatchQ,
-    TestID   -> "CreateMCPToolData-SingleArgUsesToolName@@Tests/StartMCPServer.wlt:550,1-557,2"
+    TestID   -> "CreateMCPToolData-SingleArgUsesToolName@@Tests/StartMCPServer.wlt:726,1-733,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -569,7 +745,7 @@ VerificationTest[
     { disambiguated["Search1"]["Description"], disambiguated["Search2"]["Description"] },
     { "Search JIRA", "Search Slack" },
     SameTest -> MatchQ,
-    TestID   -> "DisambiguateIntegration-LookupRouting@@Tests/StartMCPServer.wlt:562,1-573,2"
+    TestID   -> "DisambiguateIntegration-LookupRouting@@Tests/StartMCPServer.wlt:738,1-749,2"
 ]
 
 VerificationTest[
@@ -581,7 +757,7 @@ VerificationTest[
     toolDataList[[ All, "name" ]],
     { "Search1", "Search2" },
     SameTest -> MatchQ,
-    TestID   -> "DisambiguateIntegration-WireNames@@Tests/StartMCPServer.wlt:575,1-585,2"
+    TestID   -> "DisambiguateIntegration-WireNames@@Tests/StartMCPServer.wlt:751,1-761,2"
 ]
 
 VerificationTest[
@@ -595,7 +771,7 @@ VerificationTest[
     Keys @ result,
     { "Search1", "Evaluate1", "Search2", "Evaluate2", "Unique" },
     SameTest -> MatchQ,
-    TestID   -> "DisambiguateToolNames-MultipleGroups@@Tests/StartMCPServer.wlt:587,1-599,2"
+    TestID   -> "DisambiguateToolNames-MultipleGroups@@Tests/StartMCPServer.wlt:763,1-775,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -607,7 +783,7 @@ VerificationTest[
     True,
     True,
     SameTest -> MatchQ,
-    TestID   -> "PacletCleanup-UnloadMockPaclet@@Tests/StartMCPServer.wlt:604,1-611,2"
+    TestID   -> "PacletCleanup-UnloadMockPaclet@@Tests/StartMCPServer.wlt:780,1-787,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

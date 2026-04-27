@@ -1,17 +1,10 @@
 {
     "words": [
         "Agentic",
-<<<<<<< HEAD
-        "AmazonQ",
-=======
-        "alnum",
->>>>>>> main
         "BUILDKIT",
         "buildx",
         "CICD",
-        "cntrl",
         "Collatz",
-        "Dotall",
         "dpkg",
         "Embedder",
         "ENTITLEMENTID",
@@ -35,9 +28,7 @@
         "opencode",
         "pacletreadonly",
         "patt",
-        "PCRE",
         "prebuild",
-        "punct",
         "pwfile",
         "reranking",
         "sandboxed",
@@ -62,7 +53,6 @@
         "WOLFRAMINIT",
         "wolframresearch",
         "worktrees",
-        "xdigit",
         "zoomable"
     ],
     "ignoreRegExpList": [

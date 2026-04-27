@@ -54,6 +54,7 @@ See [building.md](docs/building.md) for detailed instructions.
   - `StartMCPServer.wl`: Implementation for starting MCP servers
   - `ValidateAgentToolsPacletExtension.wl`: Validation of `"AgentTools"` [paclet extensions](docs/paclet-extensions.md)
   - `UIResources.wl`: [MCP Apps](docs/mcp-apps.md) UI resource registry, client capability detection, and shared cloud notebook deployment helper
+  - `Utilities.wl`: General-purpose helpers — LLMKit subscription checks, Chatbook version verification, and `toJSRegex` for converting ICU/PCRE patterns to ECMA 262 (used when sanitizing tool schema `"pattern"` fields)
   - `YAML.wl`: YAML import/export helpers (`importYAML`, `importYAMLString`, `exportYAML`, `exportYAMLString`) used by YAML-based MCP clients (e.g. Goose)
   - `Tools/`: Contains several files defining predefined MCP tools used by default servers. If tool schemas are modified, we need to rebuild agent skills.
   - `Prompts/`: Contains files defining predefined [MCP prompts](docs/mcp-prompts.md) used by default servers
