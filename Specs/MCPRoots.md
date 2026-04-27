@@ -206,7 +206,7 @@ handleRootsListResponse[ _request_, response_Association ] :=
             writeLog[ "RootsListError" -> response[ "error" ] ];
             Throw @ Null
         ];
-        roots = Lookup[ response, { "result", "roots" }, { } ];
+        roots = response[ "result", "roots" ];
         root  = pickFirstValidRoot @ roots;
         If[ StringQ @ root,
             applyMCPRoot @ root,
@@ -254,8 +254,10 @@ applyMCPRoot // beginDefinition;
 
 applyMCPRoot[ root_String ] := (
     $mcpRoot = root;
-    SetDirectory[ root ];
-    useEvaluatorKernel[ SetDirectory[ root ] ];   (* runs in the local evaluator kernel *)
+    SetDirectory @ root;
+    If[ toolOptionValue[ "WolframLanguageEvaluator", "Method" ] === "Local",
+        useEvaluatorKernel @ SetDirectory @ root (* runs in the local evaluator kernel *)
+    ];
     writeLog[ "RootApplied" -> root ];
 );
 
@@ -268,7 +270,9 @@ applyMCPRoot // endDefinition;
 
 The notes call out that `useEvaluatorKernel[SetDirectory[root]]` must be invoked when `$evaluatorMethod === "Local"`, since the local evaluator kernel is a separate process with its own `Directory[]`. Doing this **eagerly** in `applyMCPRoot` means that when a tool like `WolframLanguageEvaluator` first runs, that kernel is already sitting in the right directory.
 
-If `$evaluatorMethod` is not `"Local"`, `useEvaluatorKernel[SetDirectory[root]]` reduces to a no-op via the existing definition, so this line is safe in all configurations.
+Guard the call with `toolOptionValue[ "WolframLanguageEvaluator", "Method" ] === "Local"`. The existing `useEvaluatorKernel` helper intentionally evaluates in the main kernel when the evaluator method is not `"Local"`; without this guard, default `"Session"` mode would call `SetDirectory[root]` twice and grow the main kernel's directory stack twice per root application.
+
+`useEvaluatorKernel` needs to be declared in `Kernel/CommonSymbols.wl` so it is reachable from other files.
 
 ### Re-applying on `notifications/roots/list_changed`
 
@@ -292,6 +296,7 @@ Tools that invoke external processes via `RunProcess` must explicitly pass `Proc
 The known call sites:
 
 - `Kernel/Tools/TestReport.wl` (~line 100) — `RunProcess` invocation for the external Wolfram process running tests.
+- `Kernel/Common.wl` also calls `RunProcess` for `git rev-parse`, but it already passes `ProcessDirectory -> dir` intentionally. Do **not** replace that with `$mcpRoot`; it is release-ID plumbing, not a tool execution working directory.
 
 Pattern:
 
@@ -302,7 +307,7 @@ RunProcess[
 ]
 ```
 
-Any additional `RunProcess` call sites discovered during implementation get the same treatment.
+Any additional tool-facing `RunProcess` call sites discovered during implementation get the same treatment. Calls that already use a deliberate, explicit `ProcessDirectory` for another purpose should be reviewed case-by-case rather than mechanically changed.
 
 ### Error and Edge-Case Behavior
 
@@ -338,9 +343,23 @@ Tools should therefore tolerate `$mcpRoot === None` and behave as they do today.
 | `Kernel/MCPRoots.wl` | NEW | `$mcpRoot`, capability flags, `onClientInitialized`, `onRootsListChanged`, `handleRootsListResponse`, `pickFirstValidRoot`, `rootURIToPath`, `applyMCPRoot` |
 | `Kernel/StartMCPServer.wl` | EDIT | `processRequest` distinguishes responses from requests; `handleMethod["initialize", …]` reads roots capabilities; notifications branch routes through `handleNotification`; remove TODO at lines 516–517 |
 | `Kernel/CommonSymbols.wl` | EDIT | Declare `$mcpClientRequests`, `$mcpRoot`, `$clientSupportsRoots`, `$clientSupportsRootsListChanged`, plus the new helper symbols |
-| `Kernel/Main.wl` | EDIT | Load the two new files |
+| `Kernel/Main.wl` | EDIT | Load the two new files; avoid relying on unqualified `useEvaluatorKernel` resolution before `Kernel/Tools/Tools.wl` has loaded |
 | `Kernel/Tools/TestReport.wl` | EDIT | Add `ProcessDirectory -> If[ StringQ @ $mcpRoot, $mcpRoot, Inherited ]` to the `RunProcess` call (~line 100) |
 | `Kernel/Tools/WolframLanguageEvaluator.wl` | NO CHANGE | The local kernel's directory is set via `useEvaluatorKernel[SetDirectory[…]]` from `applyMCPRoot`; tool code does not need to know about `$mcpRoot` |
+| `Tests/MCPServerTestUtilities.wl` | EDIT | Add helpers to initialize with arbitrary client capabilities, read server-to-client requests, and send JSON-RPC responses back to the server |
+| `Tests/StartMCPServer.wlt` | EDIT | Add integration tests for initialize-with-roots, `notifications/initialized` issuing `roots/list`, root response handling, and `notifications/roots/list_changed` issuing another request |
+| `Tests/Tools.wlt` | EDIT | Add focused coverage that `TestReport` honors `$mcpRoot` for relative paths when running through the external `RunProcess` path |
+
+---
+
+## Testing Plan
+
+- Unit-test `pickFirstValidRoot` and `rootURIToPath` with valid file URIs, non-file URIs, missing `"uri"` entries, nonexistent directories, and multi-root fallback ordering.
+- Unit-test `handleRootsListResponse` with success, error response, missing `"result"`, missing `"roots"`, empty roots, and invalid roots. Include a regression test that a nested result is read correctly rather than via `Lookup[response, {"result", "roots"}, {}]`.
+- Extend `Tests/MCPServerTestUtilities.wl` so integration tests can respond to server-to-client `roots/list` requests. The existing `SendMCPRequest` helper only covers client-to-server requests and will treat the server's `roots/list` message as an ordinary response unless there is a dedicated helper.
+- Add `Tests/StartMCPServer.wlt` integration coverage for the full handshake: initialize with `<| "roots" -> <| "listChanged" -> True |> |>`, send `notifications/initialized`, read the server's `roots/list`, respond with a temporary directory root, and verify a later evaluator call observes that directory via `Directory[]`.
+- Add a `notifications/roots/list_changed` integration test that verifies a second `roots/list` request is emitted and the new response replaces `$mcpRoot`.
+- Add `Tests/Tools.wlt` coverage for `TestReport` using a relative path under a temporary `$mcpRoot` with `"newKernel" -> True`, guarded consistently with the existing `$allowExternal` convention.
 
 ---
 
@@ -405,7 +424,7 @@ Tools should therefore tolerate `$mcpRoot === None` and behave as they do today.
 }
 ```
 
-Server applies: `$mcpRoot = "H:\\Documents\\AgentTools"`, `SetDirectory[$mcpRoot]`, `useEvaluatorKernel[SetDirectory[$mcpRoot]]`. Subsequent `tools/call` invocations resolve relative paths against this root, and `RunProcess` calls in `TestReport` start in this directory.
+Server applies: `$mcpRoot = "H:\\Documents\\AgentTools"` and `SetDirectory[$mcpRoot]`; when the evaluator method is `"Local"`, it also applies `SetDirectory[$mcpRoot]` inside the local evaluator kernel. Subsequent `tools/call` invocations resolve relative paths against this root, and `RunProcess` calls in `TestReport` start in this directory.
 
 ### Example 2 — Multi-Root with Invalid First Entry
 
@@ -470,6 +489,6 @@ Response result is `{ "roots": [] }`. `pickFirstValidRoot` returns `None`; `appl
 2. **Multi-root awareness** — tools that legitimately span multiple project directories could be extended to consume the full roots list rather than only the first valid entry.
 3. **Root marker scoring** — replace the strict "first valid" heuristic with one that prefers roots containing project markers (`PacletInfo.wl`, `.git`, `.claude/`).
 4. **Directory-stack hygiene** — track a baseline directory at startup and `ResetDirectory[]` before each `SetDirectory[root]` to prevent stack growth across many `list_changed` events.
-5. **Local kernel restart resilience** — re-run `useEvaluatorKernel[SetDirectory[$mcpRoot]]` defensively before each tool invocation that uses the local kernel, so a kernel restart mid-session doesn't lose the root.
+5. **Local kernel restart resilience** — when the evaluator method is `"Local"`, re-run `useEvaluatorKernel[SetDirectory[$mcpRoot]]` defensively before each tool invocation that uses the local kernel, so a kernel restart mid-session doesn't lose the root.
 6. **Reuse for sampling and elicitation** — the generic `sendClientRequest` infrastructure paves the way for `sampling/createMessage` and `elicitation/create` requests to the client; future specs can reference this one rather than redefining the registry.
 7. **Server-initiated roots query without `roots` capability** — the spec currently keys off the client capability; if the protocol later allows opportunistic queries, lift that gate.
