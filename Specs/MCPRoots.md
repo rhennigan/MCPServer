@@ -219,23 +219,12 @@ handleRootsListResponse // endDefinition;
 
 ### URI → Path Conversion and Validation
 
-MCP root entries look like `<| "uri" -> "file:///C:/Users/.../proj", "name" -> "..." |>`. We must convert the `file://` URI to a native path, then verify it's an existing directory.
+MCP root entries look like `<| "uri" -> "file:///C:/Users/.../proj", "name" -> "..." |>`. We must convert the `file://` URI to a native path, then verify it's an existing directory. `ExpandFileName[LocalObject[uri]]` handles the platform-specific URI parsing for us — on Windows it yields `C:\path\to\file` for `file:///C:/path/to/file`, and on Unix it yields `/path/to/file` for `file:///path/to/file`.
 
 ```wl
 rootURIToPath // beginDefinition;
-
-rootURIToPath[ uri_String? (StringStartsQ[ "file://" ]) ] :=
-    Module[ { rest, decoded },
-        rest    = StringDelete[ uri, StartOfString ~~ "file://" ];
-        (* On Windows, file:///C:/... has a leading slash before the drive letter that must go *)
-        rest    = If[ $OperatingSystem === "Windows" && StringMatchQ[ rest, "/" ~~ LetterCharacter ~~ ":" ~~ ___ ],
-                      StringDrop[ rest, 1 ], rest ];
-        decoded = URLDecode @ rest;
-        ExpandFileName @ decoded
-    ];
-
+rootURIToPath[ uri_String? (StringStartsQ[ "file://" ]) ] := ExpandFileName @ LocalObject @ uri;
 rootURIToPath[ _ ] := None;
-
 rootURIToPath // endDefinition;
 ```
 
