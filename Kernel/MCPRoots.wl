@@ -77,9 +77,26 @@ pickFirstValidRoot // endDefinition;
 (* ::Section::Closed:: *)
 (*rootURIToPath*)
 rootURIToPath // beginDefinition;
-rootURIToPath[ uri_String /; StringStartsQ[ uri, "file://" ] ] := ExpandFileName @ LocalObject @ uri;
+rootURIToPath[ uri_String /; StringStartsQ[ uri, "file://" ] ] := ExpandFileName @ LocalObject @ normalizeFileURI @ uri;
 rootURIToPath[ _ ] := None;
 rootURIToPath // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*normalizeFileURI*)
+(* Some clients (e.g. Claude Code on Windows) emit malformed file:// URIs containing
+   backslashes and only two slashes before a drive letter, like
+   "file://H:\\Documents\\AgentTools". Convert those to a well-formed
+   "file:///H:/Documents/AgentTools" so LocalObject can decode them correctly. *)
+normalizeFileURI // beginDefinition;
+
+normalizeFileURI[ uri_String ] :=
+    StringReplace[
+        StringReplace[ uri, "\\" -> "/" ],
+        StartOfString ~~ "file://" ~~ c: LetterCharacter ~~ ":/" :> "file:///" <> c <> ":/"
+    ];
+
+normalizeFileURI // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
