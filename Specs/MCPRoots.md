@@ -90,7 +90,7 @@ processRequest[ ] :=
         (* New: response to one of our outstanding requests *)
         If[ method === None && StringQ @ id && KeyExistsQ[ $mcpClientRequests, id ],
             handleClientResponse[ id, message ];
-            Return[ Null, Module ]
+            Throw @ Null
         ];
 
         req      = <| "jsonrpc" -> "2.0", "id" -> id |>;
@@ -112,9 +112,9 @@ Returning `Null` for a recognized response causes the main loop's `If[ Associati
 handleClientResponse // beginDefinition;
 
 handleClientResponse[ id_String, message_Association ] :=
-    Module[ { entry, handler, request },
+    Catch @ Module[ { entry, handler, request },
         entry = Lookup[ $mcpClientRequests, id, None ];
-        If[ entry === None, Return @ Null ];
+        If[ entry === None, Throw @ Null ];
         handler = entry[ "handler" ];
         request = entry[ "request" ];
         KeyDropFrom[ $mcpClientRequests, id ];
@@ -132,15 +132,13 @@ If the response contains an `"error"` key instead of a `"result"`, the handler i
 
 ### Notification Dispatch — `handleNotification`
 
-Today all `notifications/*` messages are silently dropped (see line 534 of `StartMCPServer.wl`). To fire actions on specific notifications without breaking the catch-all behavior for unknown ones, introduce a small dispatcher:
+Today all `notifications/*` messages are silently dropped (see `handleMethod` in `StartMCPServer.wl`). To fire actions on specific notifications without breaking the catch-all behavior for unknown ones, introduce a small dispatcher:
 
 ```wl
 handleNotification // beginDefinition;
-
-handleNotification[ "notifications/initialized"        , msg_ ] := onClientInitialized[ msg ];
-handleNotification[ "notifications/roots/list_changed" , msg_ ] := onRootsListChanged[ msg ];
+handleNotification[ "notifications/initialized"        , msg_ ] := onClientInitialized @ msg;
+handleNotification[ "notifications/roots/list_changed" , msg_ ] := onRootsListChanged @ msg;
 handleNotification[ _, _ ] := Null;   (* unknown notifications: still ignored *)
-
 handleNotification // endDefinition;
 ```
 
@@ -203,10 +201,10 @@ onClientInitialized // endDefinition;
 handleRootsListResponse // beginDefinition;
 
 handleRootsListResponse[ _request_, response_Association ] :=
-    Module[ { roots, root },
+    Catch @ Module[ { roots, root },
         If[ KeyExistsQ[ response, "error" ],
             writeLog[ "RootsListError" -> response[ "error" ] ];
-            Return @ Null
+            Throw @ Null
         ];
         roots = Lookup[ response, { "result", "roots" }, { } ];
         root  = pickFirstValidRoot @ roots;
