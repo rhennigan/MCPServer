@@ -55,7 +55,7 @@ Nothing from the spec is implemented yet.
 
 ---
 
-- [ ] **5. End-to-end roots handshake tests in `Tests/StartMCPServer.wlt`**
+- [x] **5. End-to-end roots handshake tests in `Tests/StartMCPServer.wlt`**
 
   The four scenarios from the testing plan (initialize-with-roots, initialized
   triggers `roots/list`, response handling, `list_changed` re-fetch) plus the

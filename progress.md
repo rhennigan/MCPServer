@@ -229,3 +229,77 @@ Notes for the next session:
   `Directory[]` (and therefore `FileExistsQ`) implicitly track `$mcpRoot` in
   the parent. The `ProcessDirectory` we just added is the safety belt for the
   subprocess.
+
+## Session 5
+
+Completed Task 5 of `TODO/MCPRoots.md` — end-to-end roots handshake integration
+tests in `Tests/StartMCPServer.wlt`. All five scenarios from the testing plan
+now have coverage. With this, `TODO/MCPRoots.md` is fully implemented.
+
+Changes:
+
+- `Tests/StartMCPServer.wlt`: added two new top-level sections after the
+  Wolfram smoke tests and before "Paclet Resolution":
+  - **Roots Handshake (With Roots Capability)** — full positive flow:
+    - Server starts.
+    - Two temp directories are created with marker files (`rootmarker1.txt`
+      in tmp1, `rootmarker2.txt` in tmp2). The marker files are the
+      verification mechanism: a relative-path `FileExistsQ` from inside the
+      server kernel only resolves correctly when `applyMCPRoot` has set the
+      kernel's CWD to the corresponding tmp directory.
+    - `MCPInitialize` is called with
+      `"Capabilities" -> <| "roots" -> <| "listChanged" -> True |> |>`,
+      which sends initialize + `notifications/initialized`.
+    - `ReadMCPMessage[]` grabs the server-issued `roots/list` request.
+    - `SendMCPResponse[id, <| "roots" -> {...} |>]` replies with tmp1.
+    - A `tools/call` for `WolframLanguageEvaluator` evaluating
+      `FileExistsQ["rootmarker1.txt"]` returns `True` — proving the root
+      was applied.
+    - `SendMCPNotification["notifications/roots/list_changed"]` triggers
+      a second `roots/list` request (`ReadMCPMessage` again).
+    - Asserts the second request has a fresh UUID (different from the
+      first) so client-side correlation does not collide.
+    - Replies with tmp2 and verifies via
+      `{ FileExistsQ["rootmarker1.txt"], FileExistsQ["rootmarker2.txt"] }`
+      → `{False, True}` (the new root replaces the old one — and yes, the
+      `SetDirectory` stack note from the spec is borne out: only the most
+      recently set directory is observed).
+    - Cleanup: stop server, delete tmp dirs.
+  - **Roots Handshake (Without Roots Capability)** — negative path:
+    - Server starts.
+    - `MCPInitialize[]` (no `"Capabilities"` opt) defaults to `<| |>`.
+    - `ReadMCPMessage[ "Timeout" -> 3 ]` is asserted to return `_Failure`
+      (it times out because the server emits nothing in response to
+      `notifications/initialized` when `$clientSupportsRoots = False`).
+    - Cleanup: stop server.
+
+Test runs:
+
+- `Tests/StartMCPServer.wlt` — 81/81 pass (was 68 + 13 new tests).
+- `Tests/MCPRoots.wlt` — 22/22 still pass (regression).
+- `Tests/MCPClientRequests.wlt` — 11/11 still pass (regression).
+- `Tests/Tools.wlt` — 60/60 still pass (regression).
+
+CodeInspector clean on `Tests/StartMCPServer.wlt`.
+
+Notes for future work:
+
+- The whole `TODO/MCPRoots.md` is now done; no remaining tasks.
+- A few details about the integration tests that future maintainers should
+  know:
+  - The marker-file approach was chosen over checking `Directory[]` text
+    output directly, because the WLE tool's text formatting of a path
+    string varies (quoted vs unquoted, escaped backslashes vs not), and
+    `StringContainsQ` against a raw basename can be flaky if the basename
+    happens to overlap with surrounding output. A `True` / `False` /
+    `{False, True}` literal check is unambiguous.
+  - The negative test uses `"Timeout" -> 3` for `ReadMCPMessage`. Internally
+    `readJSONResponse` polls for up to 10 s before failing on its own; the
+    outer `TimeConstrained` in `ReadMCPMessage` interrupts at 3 s so the
+    test fails fast rather than waiting the full 10 s.
+  - The `notifications/roots/list_changed` test relies on the existing
+    `SendMCPNotification` helper (which already handles arbitrary
+    notification methods) — no new test-utility helper was needed.
+  - These tests use `skipIfScript` like the rest of the integration tests
+    in this file, so they only run from `TestReport[...]` (notebook /
+    MCP) and are skipped under `wolframscript`.
