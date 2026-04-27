@@ -48,6 +48,8 @@ See [building.md](docs/building.md) for detailed instructions.
   - `Files.wl`: Helper functions for file operations
   - `Formatting.wl`: Definitions for formatting in notebooks
   - `InstallMCPServer.wl`: Implementation for installing MCP servers for use in some common MCP client applications
+  - `MCPClientRequests.wl`: Server-to-client request infrastructure (request registry, response correlation, notification dispatch) used by [MCP roots](docs/mcp-roots.md) and other server-initiated requests
+  - `MCPRoots.wl`: [MCP roots](docs/mcp-roots.md) handshake — issues `roots/list`, normalizes `file://` URIs (including malformed Windows variants), and applies the selected directory to the kernel, evaluator, and `RunProcess` calls
   - `MCPServerObject.wl`: Defines the MCP server object format
   - `Messages.wl`: Definitions for error messages
   - `PacletExtension.wl`: Paclet discovery, name resolution, and definition loading for the [paclet extension](docs/paclet-extensions.md) system
@@ -89,6 +91,7 @@ See [building.md](docs/building.md) for detailed instructions.
   - `code-inspector-rules.md`: Adding custom CodeInspector rules
   - `agent-skills.md`: Agent skills system, build process, and how to add new skills
   - `deploy-agent-tools.md`: Deployment management for agent tools
+  - `mcp-roots.md`: MCP roots handshake, working-directory propagation, and guidance for tools that resolve relative paths
   - `paclet-extensions.md`: Third-party paclet extension system for contributing tools, prompts, and servers
 
 ### MCP Documentation
