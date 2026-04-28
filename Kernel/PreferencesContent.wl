@@ -193,7 +193,7 @@ that name mapping.
 
 
 clientControls[client_] := 
-	DynamicModule[{update = 0},
+	DynamicModule[{update = 0, dirsettings},
 		Grid[
 			{
 				{
@@ -258,16 +258,21 @@ clientControls[client_] :=
 					(* info link *)
 					Dynamic[update; infoLink[client]]
 				},
-				(* per-directory settings *)
-				Module[{dirsettings},
-					dirsettings = Select[
-						DeployedAgentTools[client],
-						MatchQ[{#["Server"], #["Scope"]}, {"Wolfram" | "WolframLanguage", _File}]&
-					];
-					If[dirsettings === {},
-						Nothing,
-						{
-							Pane[
+				(*
+					We cache per-directory settings when each instance of the interface is
+					created. This allows us to continue displaying the info for any such
+					objects, suitably restyled, after they have been removed by clicking
+					the 'x' button.
+				*)
+				dirsettings = Cases[
+					{#, #["Server"], #["Scope"], True}& /@ DeployedAgentTools[client],
+					{_, "Wolfram" | "WolframLanguage", _File, _}
+				];
+				If[dirsettings === {},
+					Nothing,
+					{
+						Pane[
+							Dynamic[
 								Grid[
 									{
 										{
@@ -275,19 +280,24 @@ clientControls[client_] :=
 											SpanFromLeft,
 											SpanFromLeft
 										},
-										Splice[dirSettingsRow /@ dirsettings]
+										Splice @ Table[
+											dirSettingsRow[Dynamic[dirsettings], i, dirsettings[[i]]],
+											{i, Length[dirsettings]}
+										]
 									},
 									Alignment -> {{Left, Right, Right}},
 									ItemSize -> {{Automatic, Fit, Automatic}},
-									Spacings -> {1,Automatic}
+									Spacings -> {1,Automatic},
+									BaseStyle -> {PrivateFontOptions -> {"OperatorSubstitution" -> False}}
 								],
-								ImageSize -> 390,
-								Alignment -> Left,
-								ImageMargins -> 5
+								TrackedSymbols :> {dirsettings}
 							],
-							""
-						}
-					]
+							ImageSize -> 390,
+							Alignment -> Left,
+							ImageMargins -> 5
+						],
+						""
+					}
 				]
 			},
 			Alignment -> Left,
@@ -350,39 +360,53 @@ infoLink[client_] :=
 (*dirSettingsRow*)
 
 
-dirSettingsRow[obj_] := 
+dirSettingsRow[Dynamic[dirsettings_], i_, {obj_, server_, scope_, active_}] := 
 	{
 		MouseAppearance[
 			Button[
 				Row[{
-					Replace[obj["Scope"], 
+					Replace[scope, 
 						File[path_String] :> 
-							FE`Evaluate[FEPrivate`TruncateStringToWidth[path, "Input", 200, Left]]
+							FE`Evaluate[FEPrivate`TruncateStringToWidth[path, "ControlStyle", 200, Left]]
 					],
-					" \[UpperRightArrow]"
-				}],
-				SystemOpen[obj["Scope"]],
+					If[active, " \[UpperRightArrow]", Nothing]
+				}]				
+				,
+				SystemOpen[scope],
 				Appearance -> None,
 				DefaultBaseStyle -> {},
-				BaseStyle -> {FontColor -> Dynamic[If[CurrentValue["MouseOver"], StandardBlue, ldsGray[0.5]]]},
+				Enabled -> active,
+				BaseStyle -> {
+					FontColor -> Dynamic[If[active && CurrentValue["MouseOver"], StandardBlue, ldsGray[0.5]]],
+					FontVariations -> If[active, {}, {"StrikeThrough" -> True}],
+					FontSize -> Inherited
+				},
 				ImageMargins -> {{5,0},{0,0}},
 				Tooltip -> ToBoxes @ First @ obj["Scope"]
 			],
-			"LinkHand"
+			If[active, "LinkHand", Automatic]
 		],
-		Replace[obj["Server"],{
-			"Wolfram" :> tr["prefsComputationTools"],
-			"WolframLanguage" :> tr["prefsDevelopmentTools"]
-		}],
+		Style[
+			Replace[server, {
+				"Wolfram" :> tr["prefsComputationTools"],
+				"WolframLanguage" :> tr["prefsDevelopmentTools"]
+			}],
+			FontColor -> If[active, Inherited, ldsGray[0.5], Inherited],
+			FontVariations -> If[active, {}, {"StrikeThrough" -> True}]
+		],
 		Button[
 			Mouseover[
 				icon["prefsRemoveIcon", ldsGray[0.2], 10],
 				icon["prefsRemoveIcon", StandardRed, 10]
 			],
-			DeleteObject[obj],
+			DeleteObject[obj];
+			dirsettings[[i, 4]] = False,
 			Appearance -> None,
 			DefaultBaseStyle -> {},
-			BaseStyle -> {FontColor -> Dynamic[If[CurrentValue["MouseOver"], StandardBlue, ldsGray[0.5]]]},
+			BaseStyle -> {
+				FontColor -> Dynamic[If[CurrentValue["MouseOver"], StandardBlue, ldsGray[0.5]]],
+				ShowContents -> active
+			},
 			Tooltip -> ToBoxes @ tr["prefsUninstallTool"]
 		]
 	}
