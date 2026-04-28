@@ -220,13 +220,14 @@ clientControls[client_] :=
 						,
 						{
 							None -> Dynamic[If[update === 0,
-								Style[tr["prefsPickTool"], Italic],
-								tr["prefsNoTool"]]],
+								tr["prefsPickTool"],
+								tr["prefsNoTool"]
+							]],
 							Delimiter,
 							"ComputationTools" -> tr["prefsComputationTools"],
 							"DevelopmentTools" -> tr["prefsDevelopmentTools"]
 						},
-						Style[tr["prefsPickTool"], FontSlant -> "Italic", FontColor -> ldsGray[0.4]],
+						Style[tr["prefsPickTool"], FontColor -> ldsGray[0.5]],
 						Framed[
 							Grid[
 								{{
@@ -236,7 +237,7 @@ clientControls[client_] :=
 												{___, {"Wolfram", "Global"}, ___}, tr["prefsComputationTools"],
 												{___, {"WolframLanguage", "Global"}, ___}, tr["prefsDevelopmentTools"],
 												_, Dynamic[If[update === 0,
-													Style[tr["prefsPickTool"], Italic, FontColor -> ldsGray[0.4]],
+													Style[tr["prefsPickTool"], FontColor -> ldsGray[0.5]],
 													tr["prefsNoTool"]]]
 											]
 										],
@@ -399,31 +400,30 @@ Deploy[
 	Pane[
 		Column[
 			{
-				Style[tr["prefsInfo"], FontColor -> ldsGray[0.2]],
 				Grid[
 					{{
 						Item[tr["prefsSubtitle"], ItemSize -> Fit],
 						Item[docsLink[], Alignment -> Right]
 					}},
-					Alignment -> Left,
+					Alignment -> {Left, Center},
 					BaseStyle -> {LinebreakAdjustments -> {1, 10, 1, 0, 1}},
-					Spacings -> {0,0}
+					Spacings -> {2,0}
 				],
 				
 				Style[tr["prefsComputationTools"], FontWeight -> "DemiBold"],
-				Style[tr["prefsComputationToolsDescription"], FontColor -> ldsGray[0.4]],
+				Style[tr["prefsComputationToolsDescription"], FontColor -> ldsGray[0.4], Italic],
 				
 				Style[tr["prefsDevelopmentTools"], FontWeight -> "DemiBold"],
-				Style[tr["prefsDevelopmentToolsDescription"], FontColor -> ldsGray[0.4]],
+				Style[tr["prefsDevelopmentToolsDescription"], FontColor -> ldsGray[0.4], Italic],
 
 				clientInterfaces[]
 			},
-			Dividers -> {None, {None, ldsGray[0.85], None, None, None, None, ldsGray[0.85], None}},
+			Dividers -> {None, {None, None, None, None, None, ldsGray[0.85], None}},
 			ItemSize -> Scaled[1],
-			Spacings -> {Automatic, {0,2,1.5,0.6,1.5,0.6,3}}
+			Spacings -> {Automatic, {0,1.4,0.5,1.4,0.5,3}}
 		],
 		Alignment -> Left,
-		ImageMargins -> 20
+		ImageMargins -> {{25,25},{11,11}}
 	]
 ]
 

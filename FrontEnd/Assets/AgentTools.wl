@@ -1,15 +1,6 @@
 <|
 "AgentToolsStrings" -> {
 
-	"prefsInfo" -> LanguageSwitched["Make your desktop Wolfram System accessible to AI systems", <|
-		"ChineseSimplified"  -> "Make your desktop Wolfram System accessible to AI systems",
-		"ChineseTraditional" -> "Make your desktop Wolfram System accessible to AI systems",
-		"French"             -> "Make your desktop Wolfram System accessible to AI systems",
-		"Japanese"           -> "Make your desktop Wolfram System accessible to AI systems",
-		"Korean"             -> "Make your desktop Wolfram System accessible to AI systems",
-		"Spanish"            -> "Make your desktop Wolfram System accessible to AI systems"
-	|>],
-	
 	"prefsSubtitle" -> LanguageSwitched["LLMs and their calling harnesses can be configured to access your Wolfram System through either of the following toolsets:", <|
 		"ChineseSimplified"  -> "LLMs and their calling harnesses can be configured to access your Wolfram System through either of the following toolsets:",
 		"ChineseTraditional" -> "LLMs and their calling harnesses can be configured to access your Wolfram System through either of the following toolsets:",
