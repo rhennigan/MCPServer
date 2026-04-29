@@ -38,7 +38,7 @@ docsLink[] :=
 	MouseAppearance[
 		Button[
 			Framed[
-				Row[{tr["prefsDocsLinkText"], " \[UpperRightArrow]"}, BaseStyle -> "DialogStyle"],
+				Row[{tr["prefsDocsLinkText"], " \[UpperRightArrow]"}, BaseStyle -> {FontSize -> Inherited - 2}],
 				RoundingRadius -> 2,
 				FrameMargins -> {{5,5},{1,1}},
 				FrameStyle -> Dynamic[If[CurrentValue["MouseOver"], ldsGray[0.7], ldsGray[0.85]]],
@@ -52,7 +52,9 @@ docsLink[] :=
 				(* FIXME: Where should this link go? *)
 				SystemOpen["https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/AgentTools/"]
 			],
-			Appearance -> None
+			Appearance -> None,
+			BaseStyle -> {},
+			DefaultBaseStyle -> {}
 		],
 		"LinkHand"
 	]
@@ -253,7 +255,10 @@ clientControls[client_] :=
 							Background -> (*ldsGray[0.97]*)Dynamic[If[CurrentValue["MouseOver"], ldsGray[0.9], ldsGray[0.97]]]
 						],
 						ImageSize -> 400,
-						Appearance -> "ActionMenu"
+						Appearance -> "ActionMenu",
+						BaseStyle -> {}, (* needed to avoid very strange notebook-level settings in the Preferences Dialog *)
+						DefaultBaseStyle -> {},
+						DefaultMenuStyle -> {}
 					],
 					(* info link *)
 					Dynamic[update; infoLink[client]]
