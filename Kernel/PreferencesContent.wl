@@ -124,8 +124,10 @@ clientInterfaces[] :=
 			initdone = False;
 			clients = Keys @ Wolfram`AgentTools`$SupportedMCPClients;
 			servers = Keys @ Wolfram`AgentTools`$DefaultMCPServers;
-			clientnamespacer = PaneSelector[Thread[clients -> clients], True];
-			configuredclients = Cases[clients, Alternatives @@ Map[#["ClientName"]&, DeployedAgentTools[]]];
+			clientnamespacer = PaneSelector[KeyValueMap[#1 -> #2["DisplayName"]&, Wolfram`AgentTools`$SupportedMCPClients], True];
+			configuredclients = Cases[clients, Alternatives @@
+				Map[#["ClientName"]&, Select[DeployedAgentTools[ ], MatchQ[#["Toolset"], "Wolfram" | "WolframLanguage"]&]]
+			];
 			initdone = True;
 		),
 		SynchronousInitialization -> False,
@@ -155,13 +157,17 @@ clientRow[client_, spacer_] :=
 
 
 clientName[client_, spacer_] :=
-	With[{url = Wolfram`AgentTools`$SupportedMCPClients[client]["URL"]},
+	With[{
+			displayname = Wolfram`AgentTools`$SupportedMCPClients[client]["DisplayName"],
+			url = Wolfram`AgentTools`$SupportedMCPClients[client]["URL"]
+		},
+		
 		If[
 			StringQ[url],
 			PaneSelector[
 				{
 					True -> Hyperlink[
-							client,
+							displayname,
 							url,
 							Tooltip -> ToBoxes[url],
 							BaseStyle -> {FontColor -> ldsGray[0]},
@@ -205,20 +211,22 @@ clientControls[client_] :=
 					(* menu *)
 					PopupMenu[
 						Dynamic[update;
-							Switch[{#["Server"], #["Scope"]}& /@ DeployedAgentTools[client],
+							Switch[{#["Toolset"], #["Scope"]}& /@ DeployedAgentTools[client],
 								{___, {"Wolfram", "Global"}, ___}, update = 1; "ComputationTools",
 								{___, {"WolframLanguage", "Global"}, ___}, update = 1; "DevelopmentTools",
 								_, None
 							],
 							(Switch[#,
 								"ComputationTools",
-									DeleteObject[DeployedAgentTools[client]];
-									DeployAgentTools[client, "Wolfram"],
+									DeployAgentTools[client, "Wolfram", OverwriteTarget -> True],
 								"DevelopmentTools",
-									DeleteObject[DeployedAgentTools[client]];
-									DeployAgentTools[client, "WolframLanguage"],
+									DeployAgentTools[client, "WolframLanguage", OverwriteTarget -> True],
 								None | 0,
-									DeleteObject[DeployedAgentTools[client]];
+									(* Only delete global "Wofram" or "WolframLanguage" deployments *)
+									DeleteObject @ Select[
+										DeployedAgentTools @ client,
+										#["Scope"] === "Global" && MatchQ[#["Toolset"], "Wolfram"|"WolframLanguage"]&
+									]
 							];
 							++update)&
 						]
@@ -238,7 +246,7 @@ clientControls[client_] :=
 								{{
 									Item[
 										Dynamic[update;
-											Switch[{#["Server"], #["Scope"]}& /@ DeployedAgentTools[client],
+											Switch[{#["Toolset"], #["Scope"]}& /@ DeployedAgentTools[client],
 												{___, {"Wolfram", "Global"}, ___}, tr["prefsComputationTools"],
 												{___, {"WolframLanguage", "Global"}, ___}, tr["prefsDevelopmentTools"],
 												_, Dynamic[If[update === 0,
@@ -273,7 +281,7 @@ clientControls[client_] :=
 					the 'x' button.
 				*)
 				dirsettings = Cases[
-					{#, #["Server"], #["Scope"], True}& /@ DeployedAgentTools[client],
+					{#, #["Toolset"], #["Scope"], True}& /@ DeployedAgentTools[client],
 					{_, "Wolfram" | "WolframLanguage", _File, _}
 				];
 				If[dirsettings === {},
