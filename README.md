@@ -270,6 +270,7 @@ CreateMCPServer["My MCP Server", <|
 | `DeployAgentTools[target]` | Deploy tools to a client with tracked deployment management |
 | `ValidateAgentToolsPacletExtension[paclet]` | Validate an `"AgentTools"` paclet extension |
 | `DeployedAgentTools[]` | List all tracked deployments |
+| `CreatePreferencesContent[]` | Build the preferences panel UI for managing deployed Wolfram toolsets (see [docs/preferences-content.md](docs/preferences-content.md)) |
 
 ### Deployment Objects
 

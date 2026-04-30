@@ -19,6 +19,7 @@
 			<fileset dir='${basedir}'>
 				<include name='PacletInfo.wl'/>
 				<include name='Assets/**'/>
+				<include name='FrontEnd/**'/>
 				<include name='Kernel/**'/>
 			</fileset>
 		</copy>

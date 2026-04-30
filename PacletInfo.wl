@@ -36,6 +36,7 @@ PacletObject[ <|
                 "Wolfram`AgentTools`AgentTools",
                 "Wolfram`AgentTools`CodeInspectorToolFunction",
                 "Wolfram`AgentTools`CreateMCPServer",
+                "Wolfram`AgentTools`CreatePreferencesContent",
                 "Wolfram`AgentTools`InstallMCPServer",
                 "Wolfram`AgentTools`MCPServerObject",
                 "Wolfram`AgentTools`MCPServerObjectQ",
@@ -45,6 +46,9 @@ PacletObject[ <|
                 "Wolfram`AgentTools`UninstallMCPServer",
                 "Wolfram`AgentTools`ValidateAgentToolsPacletExtension"
             }
+        },
+        { "FrontEnd",
+            "Root" -> "FrontEnd"
         },
         { "Documentation",
             "Root"     -> "Documentation",
