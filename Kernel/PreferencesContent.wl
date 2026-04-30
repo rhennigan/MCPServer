@@ -472,7 +472,7 @@ Deploy[
 
 
 
-CreatePreferencesContent // endDefinition;
+CreatePreferencesContent // endExportedDefinition;
 
 
 (* ::Section::Closed:: *)
