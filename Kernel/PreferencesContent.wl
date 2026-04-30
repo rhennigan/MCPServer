@@ -37,7 +37,7 @@ $allowDirectoryOperations = False;
 (*docsLink*)
 
 
-docsLink[] := 
+docsLink[] :=
 	MouseAppearance[
 		Button[
 			Framed[
@@ -67,40 +67,40 @@ docsLink[] :=
 (*clientInterfaces*)
 
 
-clientInterfaces[] := 
-	DynamicModule[{update = 0, clients, servers, configuredclients, clientnamespacer, initdone},
-	
+clientInterfaces[] :=
+	DynamicModule[{update = 0, clients, servers, configuredClients, clientNameSpacer, initDone},
+
 		Dynamic[
 			Which[
-				initdone =!= True,
+				initDone =!= True,
 					ProgressIndicator[Appearance -> "Necklace"],
-				
+
 				MatchQ[clients, Except[{__String}]],
 					Style["[[The list of supported MCP clients is not available.]]", Italic, FontColor -> ldsGray[0.5]],
 				MatchQ[servers, Except[{__String}]],
 					Style["[[The list of default MCP servers is not available.]]", Italic, FontColor -> ldsGray[0.5]],
-				
-				configuredclients === clients (* all *),
+
+				configuredClients === clients (* all *),
 					Column[
 						Prepend[
-							clientRow[#, clientnamespacer]& /@ configuredclients,
+							clientRow[#, clientNameSpacer]& /@ configuredClients,
 							Style[tr["prefsHarnessesConfigured"], Smaller, FontColor -> ldsGray[0.5], Bold]
 						],
 						ItemSize -> Scaled[1]
 					],
-				MatchQ[configuredclients, {__String}], (* some *)
+				MatchQ[configuredClients, {__String}], (* some *)
 					Column[
 						{
 							Column[
 								Prepend[
-									clientRow[#, clientnamespacer]& /@ configuredclients,
+									clientRow[#, clientNameSpacer]& /@ configuredClients,
 									Style[tr["prefsHarnessesConfigured"], Smaller, FontColor -> ldsGray[0.5], Bold]
 								],
 								Spacings -> {0.4,0.4}
 							],
 							Column[
 								Prepend[
-									clientRow[#, clientnamespacer]& /@ DeleteCases[clients, Alternatives @@ configuredclients],
+									clientRow[#, clientNameSpacer]& /@ DeleteCases[clients, Alternatives @@ configuredClients],
 									Style[tr["prefsHarnessesMore"], Smaller, FontColor -> ldsGray[0.5], Bold]
 								],
 								Spacings -> {0.4,0.4}
@@ -113,25 +113,25 @@ clientInterfaces[] :=
 					],
 				True, (* none *)
 					Column[
-						clientRow[#, clientnamespacer]& /@ clients,
+						clientRow[#, clientNameSpacer]& /@ clients,
 						ItemSize -> Scaled[1]
 					]
 			],
-			TrackedSymbols :> {initdone}
+			TrackedSymbols :> {initDone}
 		],
-	
+
 		Initialization :> (
-			initdone = False;
+			initDone = False;
 			clients = Keys @ Wolfram`AgentTools`$SupportedMCPClients;
 			servers = Keys @ Wolfram`AgentTools`$DefaultMCPServers;
-			clientnamespacer = PaneSelector[KeyValueMap[#1 -> #2["DisplayName"]&, Wolfram`AgentTools`$SupportedMCPClients], True];
-			configuredclients = Cases[clients, Alternatives @@
+			clientNameSpacer = PaneSelector[KeyValueMap[#1 -> #2["DisplayName"]&, Wolfram`AgentTools`$SupportedMCPClients], True];
+			configuredClients = Cases[clients, Alternatives @@
 				Map[#["ClientName"]&, Select[DeployedAgentTools[ ], MatchQ[#["Toolset"], "Wolfram" | "WolframLanguage"]&]]
 			];
-			initdone = True;
+			initDone = True;
 		),
 		SynchronousInitialization -> False,
-		UnsavedVariables :> {update, clients, servers, configuredclients, clientnamespacer, initdone}
+		UnsavedVariables :> {update, clients, servers, configuredClients, clientNameSpacer, initDone}
 	]
 
 
@@ -158,16 +158,16 @@ clientRow[client_, spacer_] :=
 
 clientName[client_, spacer_] :=
 	With[{
-			displayname = Wolfram`AgentTools`$SupportedMCPClients[client]["DisplayName"],
+			displayName = Wolfram`AgentTools`$SupportedMCPClients[client]["DisplayName"],
 			url = Wolfram`AgentTools`$SupportedMCPClients[client]["URL"]
 		},
-		
+
 		If[
 			StringQ[url],
 			PaneSelector[
 				{
 					True -> Hyperlink[
-							displayname,
+							displayName,
 							url,
 							Tooltip -> ToBoxes[url],
 							BaseStyle -> {FontColor -> ldsGray[0]},
@@ -203,8 +203,8 @@ that name mapping.
 *)
 
 
-clientControls[client_] := 
-	DynamicModule[{update = 0, dirsettings},
+clientControls[client_] :=
+	DynamicModule[{update = 0, dirSettings},
 		Grid[
 			{
 				{
@@ -222,7 +222,7 @@ clientControls[client_] :=
 								"DevelopmentTools",
 									DeployAgentTools[client, "WolframLanguage", OverwriteTarget -> True],
 								None | 0,
-									(* Only delete global "Wofram" or "WolframLanguage" deployments *)
+									(* Only delete global "Wolfram" or "WolframLanguage" deployments *)
 									DeleteObject @ Select[
 										DeployedAgentTools @ client,
 										#["Scope"] === "Global" && MatchQ[#["Toolset"], "Wolfram"|"WolframLanguage"]&
@@ -280,11 +280,11 @@ clientControls[client_] :=
 					objects, suitably restyled, after they have been removed by clicking
 					the 'x' button.
 				*)
-				dirsettings = Cases[
+				dirSettings = Cases[
 					{#, #["Toolset"], #["Scope"], True}& /@ DeployedAgentTools[client],
 					{_, "Wolfram" | "WolframLanguage", _File, _}
 				];
-				If[dirsettings === {},
+				If[dirSettings === {},
 					Nothing,
 					{
 						Pane[
@@ -297,8 +297,8 @@ clientControls[client_] :=
 											If[$allowDirectoryOperations, SpanFromLeft, Nothing]
 										},
 										Splice @ Table[
-											dirSettingsRow[Dynamic[dirsettings], i, dirsettings[[i]]],
-											{i, Length[dirsettings]}
+											dirSettingsRow[Dynamic[dirSettings], i, dirSettings[[i]]],
+											{i, Length[dirSettings]}
 										]
 									},
 									Alignment -> {{Left, Right, Right}},
@@ -306,7 +306,7 @@ clientControls[client_] :=
 									Spacings -> {1,Automatic},
 									BaseStyle -> {PrivateFontOptions -> {"OperatorSubstitution" -> False}}
 								],
-								TrackedSymbols :> {dirsettings}
+								TrackedSymbols :> {dirSettings}
 							],
 							ImageSize -> 390,
 							Alignment -> Left,
@@ -329,12 +329,12 @@ clientControls[client_] :=
 (* Styling of this link/tooltip matches the standard Preferences dialog styling for such. *)
 
 
-infoLink[client_] := 
-	Module[{objs, info, locations},
-		objs = DeployedAgentTools[client];
-		info = {#["Scope"], #["MCP"]["Server"], #["MCP"]["ConfigFile"]}& /@ objs;
+infoLink[client_] :=
+	Module[{objects, info, locations},
+		objects = DeployedAgentTools[client];
+		info = {#["Scope"], #["MCP"]["Server"], #["MCP"]["ConfigFile"]}& /@ objects;
 		locations = Cases[info, {"Global", "Wolfram" | "WolframLanguage", File[loc_]} :> loc];
-		
+
 		If[
 			MatchQ[locations, {__String}],
 			With[{locations = locations},
@@ -376,17 +376,17 @@ infoLink[client_] :=
 (*dirSettingsRow*)
 
 
-dirSettingsRow[Dynamic[dirsettings_], i_, {obj_, server_, scope_, active_}] := 
+dirSettingsRow[Dynamic[dirSettings_], i_, {obj_, server_, scope_, active_}] :=
 	{
 		MouseAppearance[
 			Button[
 				Row[{
-					Replace[scope, 
-						File[path_String] :> 
+					Replace[scope,
+						File[path_String] :>
 							FE`Evaluate[FEPrivate`TruncateStringToWidth[path, "ControlStyle", 200, Left]]
 					],
 					If[active, " \[UpperRightArrow]", Nothing]
-				}]				
+				}]
 				,
 				SystemOpen[scope],
 				Appearance -> None,
@@ -417,7 +417,7 @@ dirSettingsRow[Dynamic[dirsettings_], i_, {obj_, server_, scope_, active_}] :=
 					icon["prefsRemoveIcon", StandardRed, 10]
 				],
 				DeleteObject[obj];
-				dirsettings[[i, 4]] = False,
+				dirSettings[[i, 4]] = False,
 				Appearance -> None,
 				DefaultBaseStyle -> {},
 				BaseStyle -> {
@@ -438,7 +438,7 @@ dirSettingsRow[Dynamic[dirsettings_], i_, {obj_, server_, scope_, active_}] :=
 CreatePreferencesContent // beginDefinition;
 
 
-CreatePreferencesContent[] := 
+CreatePreferencesContent[] :=
 Deploy[
 	Pane[
 		Column[
@@ -452,10 +452,10 @@ Deploy[
 					BaseStyle -> {LinebreakAdjustments -> {1, 10, 1, 0, 1}},
 					Spacings -> {2,0}
 				],
-				
+
 				Style[tr["prefsComputationTools"], FontWeight -> "DemiBold"],
 				Style[tr["prefsComputationToolsDescription"], FontColor -> ldsGray[0.4], Italic],
-				
+
 				Style[tr["prefsDevelopmentTools"], FontWeight -> "DemiBold"],
 				Style[tr["prefsDevelopmentToolsDescription"], FontColor -> ldsGray[0.4], Italic],
 
