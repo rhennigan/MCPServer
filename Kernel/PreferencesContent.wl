@@ -363,7 +363,7 @@ infoLink[client_] :=
 							FontSize -> 11
 						}
 					],
-					SystemOpen[DirectoryName[#]]& /@ locations,
+					SystemOpen @ DirectoryName @ First @ locations,
 					Appearance -> None
 				]
 			],
