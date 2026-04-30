@@ -66,6 +66,8 @@ $AgentToolsContexts = {
     "Wolfram`AgentTools`Formatting`",
     "Wolfram`AgentTools`Graphics`",
     "Wolfram`AgentTools`InstallMCPServer`",
+    "Wolfram`AgentTools`MCPClientRequests`",
+    "Wolfram`AgentTools`MCPRoots`",
     "Wolfram`AgentTools`MCPServerObject`",
     "Wolfram`AgentTools`PacletExtension`",
     "Wolfram`AgentTools`Prompts`",

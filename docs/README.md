@@ -17,6 +17,7 @@ This is the developer documentation for contributing to AgentTools. For user doc
 - **[MCP Tools](tools.md)** - How MCP tools work, tool options, and how to add new tools
 - **[MCP Prompts](mcp-prompts.md)** - How MCP prompts work and how to add new prompts
 - **[MCP Apps](mcp-apps.md)** - Interactive UI resources for supported clients
+- **[MCP Roots](mcp-roots.md)** - Project-directory handshake that aligns the server, evaluator, and external tools with the client's working directory
 - **[Predefined Servers](servers.md)** - Available server configurations and how to choose the right one
 - **[MCP Clients](mcp-clients.md)** - Supported client applications and configuration
 - **[CodeInspector Rules](code-inspector-rules.md)** - Adding custom CodeInspector rules and current rule catalog

@@ -5,7 +5,6 @@ BeginPackage[ "Wolfram`AgentTools`Tools`" ];
 (* Symbols shared in Tools subcontexts: *)
 `$defaultMCPTools;
 `importMarkdownString;
-`useEvaluatorKernel;
 
 Begin[ "`Private`" ];
 

@@ -347,6 +347,21 @@ For tools that need to access definitions from the evaluator kernel (when using 
 toolFunction[ args_ ] := useEvaluatorKernel @ toolFunction0 @ args;
 ```
 
+### Honoring the Project Root
+
+When the client advertises the `roots` capability, AgentTools selects a project directory and stores it in `$mcpRoot` (see [mcp-roots.md](mcp-roots.md)). The main server kernel and the local evaluator kernel are automatically `SetDirectory`'d to that path, so tools that evaluate Wolfram Language code or read files via `Import` etc. inherit the project root with no extra work.
+
+Tools that spawn external processes via `RunProcess` should pass `ProcessDirectory -> $mcpRoot` (with a `None` fallback) so the child process also starts in the project root:
+
+```wl
+RunProcess[
+    processArgs,
+    ProcessDirectory -> If[ StringQ @ $mcpRoot, $mcpRoot, Inherited ]
+]
+```
+
+`$mcpRoot` is exported from `Wolfram`AgentTools`Common``. Tools must tolerate `$mcpRoot === None` (no client root, capability not advertised, etc.) and fall back to the kernel's working directory.
+
 ### Initialization
 
 Use the `"Initialization"` property for lazy setup (e.g., loading vector databases):
@@ -526,6 +541,7 @@ InstallMCPServer[
 - `Kernel/DefaultServers.wl` - Server configurations with `"Tools"` settings
 - `Assets/Apps/` - HTML and JSON files for MCP Apps UI resources
 - `Kernel/PacletExtension.wl` - Paclet-qualified tool resolution (see [paclet-extensions.md](paclet-extensions.md))
+- `Kernel/MCPRoots.wl` - Project-root handshake (`$mcpRoot`); see [mcp-roots.md](mcp-roots.md)
 - `Tests/Tools.wlt` - Tests for tool functionality
 - `Tests/PacletTools.wlt` - Tests for CheckPaclet, BuildPaclet, and SubmitPaclet
 - `Tests/ToolOptions.wlt` - Tests for tool options system

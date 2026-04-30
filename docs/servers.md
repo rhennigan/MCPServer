@@ -293,6 +293,12 @@ To disable MCP Apps for a specific installation, use:
 InstallMCPServer["ClaudeDesktop", "EnableMCPApps" -> False]
 ```
 
+## MCP Roots Support
+
+All predefined servers support the [MCP roots](mcp-roots.md) handshake. When a client advertises the `roots` capability (e.g., Claude Code passing the project directory the user opened), the server queries `roots/list`, picks the first valid directory, and propagates it to the kernel, the local evaluator, and tools that invoke external processes (`TestReport`). Relative paths the LLM passes to a tool then resolve against the user's project rather than against the server's startup directory.
+
+If the client does not advertise `roots`, no `roots/list` request is sent and tools fall back to the kernel's original working directory. No server configuration is required either way.
+
 ## Paclet-Backed Servers
 
 Third-party paclets can contribute MCP servers via the `"AgentTools"` paclet extension. These servers are referenced using paclet-qualified names:
