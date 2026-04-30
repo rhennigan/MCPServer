@@ -30,6 +30,9 @@ icon[id_, args__] := Dynamic[RawBoxes @ FEPrivate`FrontEndResource["AgentToolsEx
 ldsGray[n_] := LightDarkSwitched[GrayLevel[n]]
 
 
+$allowDirectoryOperations = False;
+
+
 (* ::Section::Closed:: *)
 (*docsLink*)
 
@@ -283,7 +286,7 @@ clientControls[client_] :=
 										{
 											Style[tr["prefsSpecificDirectories"], Smaller, FontColor -> ldsGray[0.5], Bold],
 											SpanFromLeft,
-											SpanFromLeft
+											If[$allowDirectoryOperations, SpanFromLeft, Nothing]
 										},
 										Splice @ Table[
 											dirSettingsRow[Dynamic[dirsettings], i, dirsettings[[i]]],
@@ -399,20 +402,23 @@ dirSettingsRow[Dynamic[dirsettings_], i_, {obj_, server_, scope_, active_}] :=
 			FontColor -> If[active, Inherited, ldsGray[0.5], Inherited],
 			FontVariations -> If[active, {}, {"StrikeThrough" -> True}]
 		],
-		Button[
-			Mouseover[
-				icon["prefsRemoveIcon", ldsGray[0.2], 10],
-				icon["prefsRemoveIcon", StandardRed, 10]
+		If[$allowDirectoryOperations,
+			Button[
+				Mouseover[
+					icon["prefsRemoveIcon", ldsGray[0.2], 10],
+					icon["prefsRemoveIcon", StandardRed, 10]
+				],
+				DeleteObject[obj];
+				dirsettings[[i, 4]] = False,
+				Appearance -> None,
+				DefaultBaseStyle -> {},
+				BaseStyle -> {
+					FontColor -> Dynamic[If[CurrentValue["MouseOver"], StandardBlue, ldsGray[0.5]]],
+					ShowContents -> active
+				},
+				Tooltip -> ToBoxes @ tr["prefsUninstallTool"]
 			],
-			DeleteObject[obj];
-			dirsettings[[i, 4]] = False,
-			Appearance -> None,
-			DefaultBaseStyle -> {},
-			BaseStyle -> {
-				FontColor -> Dynamic[If[CurrentValue["MouseOver"], StandardBlue, ldsGray[0.5]]],
-				ShowContents -> active
-			},
-			Tooltip -> ToBoxes @ tr["prefsUninstallTool"]
+			Nothing
 		]
 	}
 
