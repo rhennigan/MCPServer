@@ -51,6 +51,7 @@ See [building.md](docs/building.md) for detailed instructions.
   - `MCPServerObject.wl`: Defines the MCP server object format
   - `Messages.wl`: Definitions for error messages
   - `PacletExtension.wl`: Paclet discovery, name resolution, and definition loading for the [paclet extension](docs/paclet-extensions.md) system
+  - `PreferencesContent.wl`: Implementation of `CreatePreferencesContent`, which builds the toolset configuration UI for the system preferences dialog (see [preferences-content.md](docs/preferences-content.md))
   - `StartMCPServer.wl`: Implementation for starting MCP servers
   - `ValidateAgentToolsPacletExtension.wl`: Validation of `"AgentTools"` [paclet extensions](docs/paclet-extensions.md)
   - `UIResources.wl`: [MCP Apps](docs/mcp-apps.md) UI resource registry, client capability detection, and shared cloud notebook deployment helper
@@ -60,6 +61,8 @@ See [building.md](docs/building.md) for detailed instructions.
   - `Prompts/`: Contains files defining predefined [MCP prompts](docs/mcp-prompts.md) used by default servers
 - `Assets/`: Static assets bundled with the paclet
   - `Apps/`: HTML and JSON files for [MCP Apps](docs/mcp-apps.md) UI resources
+- `FrontEnd/`: FrontEnd extension resources loaded by the notebook front end
+  - `Assets/AgentTools.wl`: Localized strings (`AgentToolsStrings`) and graphics (`AgentToolsExpressions`) used by `CreatePreferencesContent` (see [preferences-content.md](docs/preferences-content.md))
 - `Scripts/`: Contains utility scripts for building, testing, and running the paclet
   - `BuildAgentSkills.wls`: Generates agent skill scripts from MCP tool definitions (see [agent-skills.md](docs/agent-skills.md))
   - `Resources/SkillScriptTemplate.wls`: Template used to generate `.wls` scripts for agent skills
@@ -90,6 +93,7 @@ See [building.md](docs/building.md) for detailed instructions.
   - `agent-skills.md`: Agent skills system, build process, and how to add new skills
   - `deploy-agent-tools.md`: Deployment management for agent tools
   - `paclet-extensions.md`: Third-party paclet extension system for contributing tools, prompts, and servers
+  - `preferences-content.md`: System preferences UI for managing deployed Wolfram toolsets
 
 ### MCP Documentation
 
