@@ -106,6 +106,20 @@ BeginPackage[ "Wolfram`AgentTools`Common`" ];
 (* Logging utilities: *)
 `debugPrint;
 `writeError;
+`writeLog;
+
+(* MCP client requests / server-to-client traffic: *)
+`$mcpClientRequests;
+`handleClientResponse;
+`handleNotification;
+`onClientInitialized;
+`onRootsListChanged;
+`sendClientRequest;
+
+(* MCP roots: *)
+`$clientSupportsRoots;
+`$mcpRoot;
+`useEvaluatorKernel;
 
 (* MCP Apps / UI resources: *)
 `$clientSupportsUI;

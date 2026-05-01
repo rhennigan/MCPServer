@@ -2,7 +2,7 @@ PacletObject[ <|
     "Name"             -> "Wolfram/AgentTools",
     "Description"      -> "Provides tools and integrations for connecting Wolfram Language to AI agents and LLMs",
     "Creator"          -> "Richard Hennigan (Wolfram Research)",
-    "Version"          -> "2.1.4",
+    "Version"          -> "2.1.6",
     "WolframVersion"   -> "14.3+",
     "PublisherID"      -> "Wolfram",
     "License"          -> "MIT",
@@ -36,6 +36,7 @@ PacletObject[ <|
                 "Wolfram`AgentTools`AgentTools",
                 "Wolfram`AgentTools`CodeInspectorToolFunction",
                 "Wolfram`AgentTools`CreateMCPServer",
+                "Wolfram`AgentTools`CreatePreferencesContent",
                 "Wolfram`AgentTools`InstallMCPServer",
                 "Wolfram`AgentTools`MCPServerObject",
                 "Wolfram`AgentTools`MCPServerObjectQ",
@@ -45,6 +46,9 @@ PacletObject[ <|
                 "Wolfram`AgentTools`UninstallMCPServer",
                 "Wolfram`AgentTools`ValidateAgentToolsPacletExtension"
             }
+        },
+        { "FrontEnd",
+            "Root" -> "FrontEnd"
         },
         { "Documentation",
             "Root"     -> "Documentation",

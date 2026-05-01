@@ -48,9 +48,12 @@ See [building.md](docs/building.md) for detailed instructions.
   - `Files.wl`: Helper functions for file operations
   - `Formatting.wl`: Definitions for formatting in notebooks
   - `InstallMCPServer.wl`: Implementation for installing MCP servers for use in some common MCP client applications
+  - `MCPClientRequests.wl`: Server-to-client request infrastructure (request registry, response correlation, notification dispatch) used by [MCP roots](docs/mcp-roots.md) and other server-initiated requests
+  - `MCPRoots.wl`: [MCP roots](docs/mcp-roots.md) handshake — issues `roots/list`, normalizes `file://` URIs (including malformed Windows variants), and applies the selected directory to the kernel, evaluator, and `RunProcess` calls
   - `MCPServerObject.wl`: Defines the MCP server object format
   - `Messages.wl`: Definitions for error messages
   - `PacletExtension.wl`: Paclet discovery, name resolution, and definition loading for the [paclet extension](docs/paclet-extensions.md) system
+  - `PreferencesContent.wl`: Implementation of `CreatePreferencesContent`, which builds the toolset configuration UI for the system preferences dialog (see [preferences-content.md](docs/preferences-content.md))
   - `StartMCPServer.wl`: Implementation for starting MCP servers
   - `ValidateAgentToolsPacletExtension.wl`: Validation of `"AgentTools"` [paclet extensions](docs/paclet-extensions.md)
   - `UIResources.wl`: [MCP Apps](docs/mcp-apps.md) UI resource registry, client capability detection, and shared cloud notebook deployment helper
@@ -60,6 +63,8 @@ See [building.md](docs/building.md) for detailed instructions.
   - `Prompts/`: Contains files defining predefined [MCP prompts](docs/mcp-prompts.md) used by default servers
 - `Assets/`: Static assets bundled with the paclet
   - `Apps/`: HTML and JSON files for [MCP Apps](docs/mcp-apps.md) UI resources
+- `FrontEnd/`: FrontEnd extension resources loaded by the notebook front end
+  - `Assets/AgentTools.wl`: Localized strings (`AgentToolsStrings`) and graphics (`AgentToolsExpressions`) used by `CreatePreferencesContent` (see [preferences-content.md](docs/preferences-content.md))
 - `Scripts/`: Contains utility scripts for building, testing, and running the paclet
   - `BuildAgentSkills.wls`: Generates agent skill scripts from MCP tool definitions (see [agent-skills.md](docs/agent-skills.md))
   - `Resources/SkillScriptTemplate.wls`: Template used to generate `.wls` scripts for agent skills
@@ -89,7 +94,9 @@ See [building.md](docs/building.md) for detailed instructions.
   - `code-inspector-rules.md`: Adding custom CodeInspector rules
   - `agent-skills.md`: Agent skills system, build process, and how to add new skills
   - `deploy-agent-tools.md`: Deployment management for agent tools
+  - `mcp-roots.md`: MCP roots handshake, working-directory propagation, and guidance for tools that resolve relative paths
   - `paclet-extensions.md`: Third-party paclet extension system for contributing tools, prompts, and servers
+  - `preferences-content.md`: System preferences UI for managing deployed Wolfram toolsets
 
 ### MCP Documentation
 
