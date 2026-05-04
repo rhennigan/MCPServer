@@ -1,2 +1,34 @@
 .claude/settings.local.json
 .claude/worktrees/
+
+# Git merge-conflict artifacts (created by 3-way mergetools)
+*_BACKUP_*
+*_BASE_*
+*_LOCAL_*
+*_REMOTE_*
+*.orig
+*.rej
+
+# Build outputs
+build/
+*.mx
+paclet.zip
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor swap and backup files
+*.swp
+*.swo
+*~
+.#*
+\#*\#
+
+# Generic backup, temp, and log files
+*.bak
+*.tmp
+*.temp
+*.old
+*.log
