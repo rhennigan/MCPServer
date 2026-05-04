@@ -52,8 +52,7 @@ docsLink[] :=
 					ExpressionCell[Defer[DeployedAgentTools[]], "Input"],
 					ExpressionCell[DeployedAgentTools[], "Output"]
 				}],
-				(* FIXME: Where should this link go? *)
-				SystemOpen["https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/AgentTools/"]
+				SystemOpen["paclet:/Wolfram/AgentTools/tutorial/QuickStartforAICodingApplications"]
 			],
 			Appearance -> None,
 			BaseStyle -> {},
