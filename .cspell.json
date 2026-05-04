@@ -1,11 +1,8 @@
 {
     "words": [
         "Agentic",
-<<<<<<< HEAD
-        "AmazonQ",
-=======
         "alnum",
->>>>>>> main
+        "AmazonQ",
         "BUILDKIT",
         "buildx",
         "CICD",
