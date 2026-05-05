@@ -271,6 +271,13 @@ defaultToolsetForTarget[ file_? fileQ ] := Enclose[
 
 defaultToolsetForTarget[ _ ] := $defaultMCPServer;
 
+(* 2-arg form: an explicit ApplicationName takes precedence over target-based
+   resolution.  This lets callers like `InstallMCPServer[File[...], Automatic,
+   "ApplicationName" -> "Cline"]` pick up Cline's `DefaultToolset` even when the
+   file path doesn't reveal the client. *)
+defaultToolsetForTarget[ _, name_String ] := defaultToolsetForTarget @ name;
+defaultToolsetForTarget[ target_, _ ]     := defaultToolsetForTarget @ target;
+
 defaultToolsetForTarget // endDefinition;
 
 (* ::**************************************************************************************************************:: *)

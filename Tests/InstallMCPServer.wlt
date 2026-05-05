@@ -3683,6 +3683,49 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*defaultToolsetForTarget with explicit ApplicationName*)
+(* The 2-arg form lets callers override path-based resolution by passing an
+   explicit application name (the same string accepted by "ApplicationName"). *)
+VerificationTest[
+    defaultToolsetForTarget[ File[ "C:/this/path/is/not/a/known/client.json" ], "Cline" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-File-AppName-Cline@@Tests/InstallMCPServer.wlt:3689,1-3694,2"
+]
+
+VerificationTest[
+    defaultToolsetForTarget[ File[ "C:/this/path/is/not/a/known/client.json" ], "ClaudeDesktop" ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-File-AppName-ClaudeDesktop@@Tests/InstallMCPServer.wlt:3696,1-3701,2"
+]
+
+(* Aliases route through toInstallName, so an alias picks up the canonical client's default *)
+VerificationTest[
+    defaultToolsetForTarget[ File[ "C:/this/path/is/not/a/known/client.json" ], "VSCode" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-File-AppName-Alias@@Tests/InstallMCPServer.wlt:3704,1-3709,2"
+]
+
+(* Automatic in the 2-arg form falls back to the existing target-based resolution *)
+VerificationTest[
+    defaultToolsetForTarget[ File[ "C:/this/path/is/not/a/known/client.json" ], Automatic ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-File-AppName-Automatic@@Tests/InstallMCPServer.wlt:3712,1-3717,2"
+]
+
+(* String target is also overridden by an explicit ApplicationName *)
+VerificationTest[
+    defaultToolsetForTarget[ "ClaudeCode", "ClaudeDesktop" ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-StringTarget-AppName@@Tests/InstallMCPServer.wlt:3720,1-3725,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*InstallMCPServer with Automatic resolution*)
 VerificationTest[
     autoTestDir = CreateDirectory[ ];
@@ -3694,7 +3737,7 @@ VerificationTest[
     autoInstallResultAuto[[ 2 ]][ "MCPServerObject" ][ "Name" ],
     "WolframLanguage",
     SameTest -> Equal,
-    TestID   -> "InstallMCPServer-Automatic-ClaudeCode@@Tests/InstallMCPServer.wlt:3687,1-3698,2"
+    TestID   -> "InstallMCPServer-Automatic-ClaudeCode@@Tests/InstallMCPServer.wlt:3730,1-3741,2"
 ]
 
 (* 1-arg form should give the same result as Automatic *)
@@ -3708,7 +3751,41 @@ VerificationTest[
     autoInstallResult1Arg[[ 2 ]][ "MCPServerObject" ][ "Name" ],
     "WolframLanguage",
     SameTest -> Equal,
-    TestID   -> "InstallMCPServer-1Arg-ClaudeCode@@Tests/InstallMCPServer.wlt:3701,1-3712,2"
+    TestID   -> "InstallMCPServer-1Arg-ClaudeCode@@Tests/InstallMCPServer.wlt:3744,1-3755,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*InstallMCPServer Automatic with File target + ApplicationName*)
+(* For arbitrary File[...] targets whose path doesn't reveal the client, an
+   explicit "ApplicationName" must drive the Automatic toolset choice. *)
+VerificationTest[
+    autoCustomFile = testConfigFile[ ];
+    autoInstallResultFileApp = InstallMCPServer[
+        autoCustomFile,
+        Automatic,
+        "ApplicationName" -> "Cline",
+        "VerifyLLMKit"    -> False
+    ];
+    autoInstallResultFileApp[[ 2 ]][ "MCPServerObject" ][ "Name" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Automatic-File-AppName-Cline@@Tests/InstallMCPServer.wlt:3762,1-3774,2"
+]
+
+VerificationTest[
+    cleanupTestFiles @ autoCustomFile;
+    autoCustomFile = testConfigFile[ ];
+    autoInstallResultFileChat = InstallMCPServer[
+        autoCustomFile,
+        Automatic,
+        "ApplicationName" -> "ClaudeDesktop",
+        "VerifyLLMKit"    -> False
+    ];
+    autoInstallResultFileChat[[ 2 ]][ "MCPServerObject" ][ "Name" ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Automatic-File-AppName-ClaudeDesktop@@Tests/InstallMCPServer.wlt:3776,1-3789,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -3716,9 +3793,10 @@ VerificationTest[
 (*Cleanup*)
 VerificationTest[
     Quiet @ DeleteDirectory[ autoTestDir, DeleteContents -> True ];
+    cleanupTestFiles @ autoCustomFile;
     True,
     True,
-    TestID -> "Automatic-Cleanup@@Tests/InstallMCPServer.wlt:3717,1-3722,2"
+    TestID -> "Automatic-Cleanup@@Tests/InstallMCPServer.wlt:3794,1-3800,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

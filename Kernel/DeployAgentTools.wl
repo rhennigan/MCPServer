@@ -265,7 +265,18 @@ DeployAgentTools[ target_, opts: $$deployAgentToolsOptions ] :=
     catchMine @ DeployAgentTools[ target, Automatic, opts ];
 
 DeployAgentTools[ target_, Automatic, opts: $$deployAgentToolsOptions ] :=
-    catchMine @ DeployAgentTools[ target, defaultToolsetForTarget @ target, opts ];
+    catchMine @ DeployAgentTools[
+        target,
+        defaultToolsetForTarget[
+            target,
+            OptionValue[
+                InstallMCPServer,
+                FilterRules[ { opts }, Options @ InstallMCPServer ],
+                "ApplicationName"
+            ]
+        ],
+        opts
+    ];
 
 DeployAgentTools[ target_, server_, opts: $$deployAgentToolsOptions ] :=
     catchMine @ deployAgentTools[ target, ensureMCPServerExists @ MCPServerObject @ server, opts ];

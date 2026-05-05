@@ -1081,13 +1081,52 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*Cleanup*)
+(*DeployAgentTools Automatic with File target + ApplicationName*)
+(* For arbitrary File[...] targets, an explicit ApplicationName option must
+   drive the Automatic toolset choice instead of falling through to "Wolfram". *)
 VerificationTest[
     Quiet @ catchAlways @ DeleteObject @ autoDeploy1Arg;
     Quiet @ DeleteDirectory[ autoDeployDir, DeleteContents -> True ];
+    autoDeployDir = CreateDirectory[ ];
+    autoDeployFile = File @ FileNameJoin @ { autoDeployDir, "custom_config_" <> CreateUUID[ ] <> ".json" };
+    autoDeployFileApp = DeployAgentTools[
+        autoDeployFile,
+        Automatic,
+        "ApplicationName" -> "Cline",
+        "VerifyLLMKit"    -> False
+    ];
+    autoDeployFileApp[ "Toolset" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DeployAgentTools-Automatic-File-AppName-Cline@@Tests/DeployAgentTools.wlt:1087,1-1102,2"
+]
+
+VerificationTest[
+    Quiet @ catchAlways @ DeleteObject @ autoDeployFileApp;
+    Quiet @ DeleteDirectory[ autoDeployDir, DeleteContents -> True ];
+    autoDeployDir = CreateDirectory[ ];
+    autoDeployFile = File @ FileNameJoin @ { autoDeployDir, "custom_config_" <> CreateUUID[ ] <> ".json" };
+    autoDeployFileChat = DeployAgentTools[
+        autoDeployFile,
+        Automatic,
+        "ApplicationName" -> "ClaudeDesktop",
+        "VerifyLLMKit"    -> False
+    ];
+    autoDeployFileChat[ "Toolset" ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DeployAgentTools-Automatic-File-AppName-ClaudeDesktop@@Tests/DeployAgentTools.wlt:1104,1-1119,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Cleanup*)
+VerificationTest[
+    Quiet @ catchAlways @ DeleteObject @ autoDeployFileChat;
+    Quiet @ DeleteDirectory[ autoDeployDir, DeleteContents -> True ];
     True,
     True,
-    TestID -> "DeployAgentTools-Automatic-Cleanup@@Tests/DeployAgentTools.wlt:1085,1-1091,2"
+    TestID -> "DeployAgentTools-Automatic-Cleanup@@Tests/DeployAgentTools.wlt:1124,1-1130,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
