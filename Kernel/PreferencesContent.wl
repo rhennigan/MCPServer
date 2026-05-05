@@ -52,7 +52,7 @@ docsLink[] :=
 					ExpressionCell[Defer[DeployedAgentTools[]], "Input"],
 					ExpressionCell[DeployedAgentTools[], "Output"]
 				}],
-				SystemOpen["paclet:/Wolfram/AgentTools/tutorial/QuickStartforAICodingApplications"]
+				SystemOpen["paclet:Wolfram/AgentTools/tutorial/QuickStartforAICodingApplications"]
 			],
 			Appearance -> None,
 			BaseStyle -> {},
