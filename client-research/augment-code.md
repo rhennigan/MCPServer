@@ -95,9 +95,9 @@ Augment Code's MCP configuration is straightforward to implement because:
 | Config Format | JSON (standard `mcpServers`) |
 | Project Support | No |
 
-## VS Code Extension (`"AugmentCodeIDE"`)
+## IDE Extension (`"AugmentCodeIDE"`)
 
-The Augment Code VS Code extension (`augment.vscode-augment`) stores its MCP server list in a **separate file** from the CLI, with a **different JSON shape**.
+The Augment Code IDE extension (currently shipped as the VS Code extension `augment.vscode-augment`) stores its MCP server list in a **separate file** from the CLI, with a **different JSON shape**.
 
 ### Config File Location
 

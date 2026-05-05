@@ -86,7 +86,7 @@ $supportedMCPClients = <|
     |>,
     "AugmentCodeIDE" -> <|
         "DisplayName"     -> "Augment Code IDE",
-        "Aliases"         -> { "AugmentCodeIDE", "AugmentIDE", "AuggieIDE" },
+        "Aliases"         -> { "AugmentIDE", "AuggieIDE" },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { },
         "ServerConverter" -> convertToAugmentCodeIDEFormat,

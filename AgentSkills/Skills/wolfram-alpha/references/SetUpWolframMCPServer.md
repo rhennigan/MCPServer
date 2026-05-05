@@ -33,7 +33,7 @@ Replace `<ClientName>` with one of the supported clients:
 | Client | Name to use |
 | --- | --- |
 | Augment Code | `"AugmentCode"` |
-| Augment Code (VS Code) | `"AugmentCodeIDE"` |
+| Augment Code IDE | `"AugmentCodeIDE"` |
 | Claude Code | `"ClaudeCode"` |
 | Claude Desktop | `"ClaudeDesktop"` |
 | Cline | `"Cline"` |

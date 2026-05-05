@@ -16,7 +16,7 @@ The following clients have built-in support for automatic configuration via `Ins
 |--------|---------------|---------|---------------|-----------------|
 | Amazon Q Developer | `"AmazonQ"` | `"AmazonQDeveloper"`, `"Q"`, `"QDeveloper"` | JSON | Yes |
 | Augment Code | `"AugmentCode"` | `"Auggie"`, `"Augment"` | JSON | No |
-| Augment Code (VS Code) | `"AugmentCodeIDE"` | `"AugmentCodeVSCode"`, `"AugmentVSCode"`, `"AuggieVSCode"` | JSON (array) | No |
+| Augment Code IDE | `"AugmentCodeIDE"` | `"AugmentIDE"`, `"AuggieIDE"` | JSON (array) | No |
 | Claude Code | `"ClaudeCode"` | — | JSON | Yes |
 | Claude Desktop | `"ClaudeDesktop"` | `"Claude"` | JSON | No |
 | Cline | `"Cline"` | — | JSON | No |
@@ -214,7 +214,7 @@ Note: Augment Code uses a single config file at `~/.augment/settings.json` on al
 
 On Windows, `InstallMCPServer` automatically rewrites the `command` to its 8.3 short-path form (e.g. `C:\PROGRA~1\WOLFRA~1\Wolfram\15.0\wolfram.exe`) to work around a shell-invocation quirk where spaces in `C:\Program Files\...` cause cmd.exe to fail with `'C:\Program' is not recognized as an internal or external command`.
 
-### Augment Code (VS Code)
+### Augment Code IDE
 
 The Augment Code VS Code extension stores its MCP servers separately from the Auggie CLI. Use `"AugmentCodeIDE"` (not `"AugmentCode"`) to target the extension.
 

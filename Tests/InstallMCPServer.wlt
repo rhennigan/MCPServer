@@ -1811,29 +1811,22 @@ VerificationTest[
 ]
 
 VerificationTest[
-    Wolfram`AgentTools`Common`toInstallName[ "AugmentCodeVSCode" ],
+    Wolfram`AgentTools`Common`toInstallName[ "AugmentIDE" ],
     "AugmentCodeIDE",
     SameTest -> Equal,
-    TestID   -> "ToInstallName-AugmentCodeVSCode"
+    TestID   -> "ToInstallName-AugmentIDE"
 ]
 
 VerificationTest[
-    Wolfram`AgentTools`Common`toInstallName[ "AugmentVSCode" ],
+    Wolfram`AgentTools`Common`toInstallName[ "AuggieIDE" ],
     "AugmentCodeIDE",
     SameTest -> Equal,
-    TestID   -> "ToInstallName-AugmentVSCode"
-]
-
-VerificationTest[
-    Wolfram`AgentTools`Common`toInstallName[ "AuggieVSCode" ],
-    "AugmentCodeIDE",
-    SameTest -> Equal,
-    TestID   -> "ToInstallName-AuggieVSCode"
+    TestID   -> "ToInstallName-AuggieIDE"
 ]
 
 VerificationTest[
     Wolfram`AgentTools`InstallMCPServer`Private`installDisplayName[ "AugmentCodeIDE" ],
-    "Augment Code (VS Code)",
+    "Augment Code IDE",
     SameTest -> Equal,
     TestID   -> "InstallDisplayName-AugmentCodeIDE"
 ]
@@ -2125,14 +2118,14 @@ VerificationTest[
 (*$SupportedMCPClients metadata for AugmentCodeIDE*)
 VerificationTest[
     $SupportedMCPClients[ "AugmentCodeIDE", "DisplayName" ],
-    "Augment Code (VS Code)",
+    "Augment Code IDE",
     SameTest -> Equal,
     TestID   -> "SupportedMCPClients-AugmentCodeIDEDisplayName"
 ]
 
 VerificationTest[
     Sort @ $SupportedMCPClients[ "AugmentCodeIDE", "Aliases" ],
-    Sort @ { "AugmentCodeVSCode", "AugmentVSCode", "AuggieVSCode" },
+    Sort @ { "AugmentIDE", "AuggieIDE" },
     SameTest -> Equal,
     TestID   -> "SupportedMCPClients-AugmentCodeIDEAliases"
 ]
