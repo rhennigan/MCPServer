@@ -32,6 +32,9 @@ Replace `<ClientName>` with one of the supported clients:
 
 | Client | Name to use |
 | --- | --- |
+| Amazon Q Developer | `"AmazonQ"` |
+| Augment Code | `"AugmentCode"` |
+| Augment Code IDE | `"AugmentCodeIDE"` |
 | Claude Code | `"ClaudeCode"` |
 | Claude Desktop | `"ClaudeDesktop"` |
 | Cline | `"Cline"` |

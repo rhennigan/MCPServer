@@ -17,6 +17,42 @@ For Wolfram Language development, it's recommended to use the **WolframLanguage*
 
 All installation methods use the `InstallMCPServer` function. Open a Wolfram Language session and run the appropriate command for your application.
 
+### Amazon Q Developer
+
+Choose whether to install the server globally or project-level. Global installation is available in all projects, while project-level installation is available only in a specific project directory.
+
+Global installation:
+
+```wl
+InstallMCPServer["AmazonQ", "WolframLanguage"]
+```
+
+Project-level installation:
+
+```wl
+InstallMCPServer[{"AmazonQ", "/path/to/project"}, "WolframLanguage"]
+```
+
+### Augment Code
+
+Augment Code has two independent configurations — one for the Auggie CLI and one for the VS Code extension. Install into whichever you use.
+
+For the Auggie CLI:
+
+```wl
+InstallMCPServer["AugmentCode", "WolframLanguage"]
+```
+
+Verify with `auggie mcp list`.
+
+For the Augment Code VS Code extension:
+
+```wl
+InstallMCPServer["AugmentCodeIDE", "WolframLanguage"]
+```
+
+Then reload the VS Code window (`Ctrl+Shift+P` → "Reload Window"). The server will appear in the Augment Settings panel's MCP section.
+
 ### Claude Code
 
 Choose whether to install the server globally or project-level. Global installation is available in all projects, while project-level installation is available only in a specific project directory.

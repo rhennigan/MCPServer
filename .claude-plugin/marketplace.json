@@ -6,7 +6,7 @@
 	},
 	"metadata":{
 		"description":"A collection of Wolfram agent skills",
-		"version":"2.1.0"
+		"version":"2.1.6"
 	},
 	"plugins":[
 		{

@@ -75,6 +75,31 @@ $supportedMCPClients = <|
         "URL"             -> "https://antigravity.google",
         "InstallLocation" :> { $HomeDirectory, ".gemini", "antigravity", "mcp_config.json" }
     |>,
+    "AugmentCode" -> <|
+        "DisplayName"     -> "Augment Code",
+        "Aliases"         -> { "Auggie", "Augment" },
+        "ConfigFormat"    -> "JSON",
+        "ConfigKey"       -> { "mcpServers" },
+        "ServerConverter" -> convertToAugmentCodeFormat,
+        "URL"             -> "https://www.augmentcode.com",
+        "InstallLocation" :> { $HomeDirectory, ".augment", "settings.json" }
+    |>,
+    "AugmentCodeIDE" -> <|
+        "DisplayName"     -> "Augment Code IDE",
+        "Aliases"         -> { "AugmentIDE", "AuggieIDE" },
+        "ConfigFormat"    -> "JSON",
+        "ConfigKey"       -> { },
+        "ServerConverter" -> convertToAugmentCodeIDEFormat,
+        "URL"             -> "https://marketplace.visualstudio.com/items?itemName=augment.vscode-augment",
+        "InstallLocation" -> <|
+            "MacOSX"  :> { $HomeDirectory, "Library", "Application Support", "Code", "User", "globalStorage",
+                           "augment.vscode-augment", "augment-global-state", "mcpServers.json" },
+            "Windows" :> { $HomeDirectory, "AppData", "Roaming", "Code", "User", "globalStorage",
+                           "augment.vscode-augment", "augment-global-state", "mcpServers.json" },
+            "Unix"    :> { $HomeDirectory, ".config", "Code", "User", "globalStorage",
+                           "augment.vscode-augment", "augment-global-state", "mcpServers.json" }
+        |>
+    |>,
     "Codex" -> <|
         "DisplayName"     -> "Codex CLI",
         "Aliases"         -> { "OpenAICodex" },
@@ -133,6 +158,15 @@ $supportedMCPClients = <|
         "ConfigKey"       -> { "mcpServers" },
         "URL"             -> "https://codeium.com/windsurf",
         "InstallLocation" :> { $HomeDirectory, ".codeium", "windsurf", "mcp_config.json" }
+    |>,
+    "AmazonQ" -> <|
+        "DisplayName"     -> "Amazon Q Developer",
+        "Aliases"         -> { "AmazonQDeveloper", "Q", "QDeveloper" },
+        "ConfigFormat"    -> "JSON",
+        "ConfigKey"       -> { "mcpServers" },
+        "URL"             -> "https://aws.amazon.com/q/developer/",
+        "ProjectPath"     -> { ".amazonq", "mcp.json" },
+        "InstallLocation" :> { $HomeDirectory, ".aws", "amazonq", "mcp.json" }
     |>,
     "Cline" -> <|
         "DisplayName"     -> "Cline",
@@ -259,6 +293,129 @@ convertToClineFormat[ server_Association ] := Enclose[
 ];
 
 convertToClineFormat // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*convertToAugmentCodeFormat*)
+(* Augment Code's CLI shell-invokes the MCP command on Windows, which breaks when the
+   wolfram.exe path contains spaces (e.g. "C:\Program Files\..."). Coerce the command to
+   its 8.3 short-path form on Windows so the unquoted shell invocation resolves correctly. *)
+convertToAugmentCodeFormat // beginDefinition;
+
+convertToAugmentCodeFormat[ server_Association ] :=
+    convertToAugmentCodeFormat[ server, $OperatingSystem ];
+
+convertToAugmentCodeFormat[ server_Association, os_String ] := Enclose[
+    Module[ { result, command, shortCommand },
+        result = ConfirmBy[ server, AssociationQ, "Server" ];
+        If[ os === "Windows",
+            command = Lookup[ result, "command", Missing[ ] ];
+            If[ StringQ @ command && StringContainsQ[ command, " " ],
+                shortCommand = toWindowsShortPath @ command;
+                If[ StringQ @ shortCommand && shortCommand =!= command,
+                    result[ "command" ] = shortCommand
+                ]
+            ]
+        ];
+        result
+    ],
+    throwInternalFailure
+];
+
+convertToAugmentCodeFormat // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*convertToAugmentCodeIDEFormat*)
+(* The Augment Code VS Code extension stores MCP servers as a flat JSON array at the
+   root of its settings file (mcpServers.json), not as a keyed dict under "mcpServers".
+   Each entry carries a "type" field and its own "name". This converter maps the
+   standard mcpServers entry shape to the array-entry shape; the caller is responsible
+   for prepending the "name" field after conversion (the converter does not know the
+   configName). Applies the same Windows short-path coercion as the CLI variant, because
+   the extension shell-invokes commands too. *)
+convertToAugmentCodeIDEFormat // beginDefinition;
+
+convertToAugmentCodeIDEFormat[ server_Association ] :=
+    convertToAugmentCodeIDEFormat[ server, $OperatingSystem ];
+
+convertToAugmentCodeIDEFormat[ server_Association, os_String ] := Enclose[
+    Module[ { command, args, env, result },
+        result = <| "type" -> "stdio" |>;
+
+        command = Lookup[ server, "command", Missing[ ] ];
+        If[ StringQ @ command,
+            If[ os === "Windows" && StringContainsQ[ command, " " ],
+                result[ "command" ] = toWindowsShortPath @ command,
+                result[ "command" ] = command
+            ]
+        ];
+
+        args = Lookup[ server, "args", { } ];
+        If[ ListQ @ args && Length @ args > 0,
+            result[ "args" ] = args
+        ];
+
+        env = Lookup[ server, "env", <| |> ];
+        If[ AssociationQ @ env && Length @ env > 0,
+            result[ "env" ] = env
+        ];
+
+        result
+    ],
+    throwInternalFailure
+];
+
+convertToAugmentCodeIDEFormat // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*toWindowsShortPath*)
+(* Resolve a Windows path to its 8.3 short form. *)
+toWindowsShortPath // beginDefinition;
+
+toWindowsShortPath[ path_String ] := Enclose[
+    Catch @ Module[ { short, escaped, out },
+        If[ ! FileExistsQ @ path, Throw @ path ];
+
+        (* Get the 8.3 short path from the file information *)
+        short = Quiet @ Information[ File @ path, "AbsoluteShortFileName" ];
+        If[ StringQ @ short && FileExistsQ @ short && StringFreeQ[ short, " " ], Throw @ short ];
+
+        (* If that fails, try using the PowerShell COM interface to get the short path *)
+        escaped = StringReplace[ path, "'" -> "''" ];
+        out = Quiet @ RunProcess[
+            {
+                $powerShell,
+                "-NoProfile",
+                "-Command",
+                "(New-Object -ComObject Scripting.FileSystemObject).GetFile('" <> escaped <> "').ShortPath"
+            },
+            "StandardOutput"
+        ];
+        If[ ! StringQ @ out, Throw @ path ];
+
+        short = StringTrim @ out;
+
+        If[ StringQ @ short && FileExistsQ @ short && StringFreeQ[ short, " " ],
+            short,
+            path
+        ]
+    ],
+    throwInternalFailure
+];
+
+toWindowsShortPath // endDefinition;
+
+
+$powerShell := $powerShell = Quiet @ SelectFirst[
+    {
+        FileNameJoin @ { Environment[ "SystemRoot" ], "System32", "WindowsPowerShell", "v1.0", "powershell.exe" },
+        "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    },
+    FileExistsQ,
+    "powershell.exe" (* Note: for some reason "powershell" isn't found by RunProcess, but "powershell.exe" is. *)
+];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

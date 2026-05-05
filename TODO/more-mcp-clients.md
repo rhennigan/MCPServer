@@ -49,6 +49,12 @@ Cherry Studio stores MCP configurations in Redux state with localStorage persist
 - [x] Research how MCP servers are added to Goose and write a detailed report in [goose.md](../client-research/goose.md)
 - [x] Implement support for `InstallMCPServer["Goose", ...]`
 
+### [Augment Code](https://www.augmentcode.com/)
+
+- [x] Research how MCP servers are added to Augment Code (CLI and VS Code extension) and write a detailed report in [augment-code.md](../client-research/augment-code.md)
+- [x] Implement support for `InstallMCPServer["AugmentCode", ...]` (Auggie CLI)
+- [x] Implement support for `InstallMCPServer["AugmentCodeIDE", ...]` (VS Code extension — array-rooted JSON)
+
 ## On Hold
 
 ### [Continue](https://www.continue.dev/)

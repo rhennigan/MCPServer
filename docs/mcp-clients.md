@@ -14,6 +14,9 @@ The following clients have built-in support for automatic configuration via `Ins
 
 | Client | Canonical Name | Aliases | Config Format | Project Support |
 |--------|---------------|---------|---------------|-----------------|
+| Amazon Q Developer | `"AmazonQ"` | `"AmazonQDeveloper"`, `"Q"`, `"QDeveloper"` | JSON | Yes |
+| Augment Code | `"AugmentCode"` | `"Auggie"`, `"Augment"` | JSON | No |
+| Augment Code IDE | `"AugmentCodeIDE"` | `"AugmentIDE"`, `"AuggieIDE"` | JSON (array) | No |
 | Claude Code | `"ClaudeCode"` | — | JSON | Yes |
 | Claude Desktop | `"ClaudeDesktop"` | `"Claude"` | JSON | No |
 | Cline | `"Cline"` | — | JSON | No |
@@ -74,6 +77,28 @@ UninstallMCPServer[myServerObject]               (* Remove from all locations *)
 ```
 
 ## Client Configuration Details
+
+### Amazon Q Developer
+
+| Scope | Config Location |
+|-------|----------------|
+| Global | `~/.aws/amazonq/mcp.json` |
+| Project | `.amazonq/mcp.json` (in project root) |
+
+**Format:**
+```json
+{
+    "mcpServers": {
+        "ServerName": {
+            "command": "...",
+            "args": ["..."],
+            "env": { ... }
+        }
+    }
+}
+```
+
+Amazon Q Developer supports an optional `timeout` field (milliseconds, default 120000) per server entry. `InstallMCPServer` does not emit `timeout`; Amazon Q uses its default when absent. Runtime fields like `disabled` and per-tool auto-approve are managed through the Amazon Q IDE UI, not in `mcp.json`.
 
 ### Claude Desktop
 
@@ -176,6 +201,49 @@ Note: Copilot CLI requires the `tools` field to specify which tools to enable. `
 | Global | `~/.gemini/antigravity/mcp_config.json` |
 
 **Format:** Same as Claude Desktop (`mcpServers` key).
+
+### Augment Code
+
+| Scope | Config Location |
+|-------|----------------|
+| Global | `~/.augment/settings.json` |
+
+**Format:** Same as Claude Desktop (`mcpServers` key).
+
+Note: Augment Code uses a single config file at `~/.augment/settings.json` on all platforms (macOS, Windows, Linux). It supports stdio, HTTP, and SSE transports; `InstallMCPServer` writes the standard stdio form. Augment Code has no project-level MCP configuration — server entries can also be managed from the Auggie CLI via `auggie mcp add` / `auggie mcp list` / `auggie mcp remove`.
+
+On Windows, `InstallMCPServer` automatically rewrites the `command` to its 8.3 short-path form (e.g. `C:\PROGRA~1\WOLFRA~1\Wolfram\15.0\wolfram.exe`) to work around a shell-invocation quirk where spaces in `C:\Program Files\...` cause cmd.exe to fail with `'C:\Program' is not recognized as an internal or external command`.
+
+### Augment Code IDE
+
+The Augment Code VS Code extension stores its MCP servers separately from the Auggie CLI. Use `"AugmentCodeIDE"` (not `"AugmentCode"`) to target the extension.
+
+| OS | Config Location |
+|----|----------------|
+| macOS | `~/Library/Application Support/Code/User/globalStorage/augment.vscode-augment/augment-global-state/mcpServers.json` |
+| Windows | `%APPDATA%\Code\User\globalStorage\augment.vscode-augment\augment-global-state\mcpServers.json` |
+| Linux | `~/.config/Code/User/globalStorage/augment.vscode-augment/augment-global-state/mcpServers.json` |
+
+**Format (JSON array at root, not `mcpServers` object):**
+```json
+[
+    {
+        "type": "stdio",
+        "name": "ServerName",
+        "command": "...",
+        "args": ["..."],
+        "env": { ... }
+    }
+]
+```
+
+Notes:
+- This is the only supported client whose config file is a **JSON array at the root** rather than an object with an `mcpServers`/`servers`/`context_servers` key. `InstallMCPServer` upserts by the `name` field inside each array entry.
+- The Windows 8.3 short-path coercion applied to the CLI variant (`"AugmentCode"`) applies here too — the VS Code extension also shell-invokes the command on Windows.
+- No project-level MCP configuration — the VS Code extension reads a single global file.
+- After `InstallMCPServer` writes the file, VS Code may need to be reloaded (`Ctrl+Shift+P` → "Reload Window") for the extension to pick up the change.
+
+If you primarily use the Auggie CLI instead of the VS Code extension, use `"AugmentCode"` — the two configurations are independent.
 
 ### Goose
 
