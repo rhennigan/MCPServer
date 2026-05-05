@@ -12,25 +12,27 @@ For convenience, `InstallMCPServer` and `UninstallMCPServer` functions are provi
 
 The following clients have built-in support for automatic configuration via `InstallMCPServer`:
 
-| Client | Canonical Name | Aliases | Config Format | Project Support |
-|--------|---------------|---------|---------------|-----------------|
-| Amazon Q Developer | `"AmazonQ"` | `"AmazonQDeveloper"`, `"Q"`, `"QDeveloper"` | JSON | Yes |
-| Augment Code | `"AugmentCode"` | `"Auggie"`, `"Augment"` | JSON | No |
-| Augment Code IDE | `"AugmentCodeIDE"` | `"AugmentIDE"`, `"AuggieIDE"` | JSON (array) | No |
-| Claude Code | `"ClaudeCode"` | — | JSON | Yes |
-| Claude Desktop | `"ClaudeDesktop"` | `"Claude"` | JSON | No |
-| Cline | `"Cline"` | — | JSON | No |
-| Copilot CLI | `"CopilotCLI"` | `"Copilot"` | JSON | No |
-| Cursor | `"Cursor"` | — | JSON | No |
-| Gemini CLI | `"GeminiCLI"` | `"Gemini"` | JSON | No |
-| Goose | `"Goose"` | — | YAML | No |
-| Antigravity | `"Antigravity"` | `"GoogleAntigravity"` | JSON | No |
-| Kiro | `"Kiro"` | — | JSON | Yes |
-| Codex CLI | `"Codex"` | `"OpenAICodex"` | TOML | Yes |
-| OpenCode | `"OpenCode"` | — | JSON | Yes |
-| Visual Studio Code | `"VisualStudioCode"` | `"VSCode"` | JSON | Yes |
-| Windsurf | `"Windsurf"` | `"Codeium"` | JSON | No |
-| Zed | `"Zed"` | — | JSON | Yes |
+| Client | Canonical Name | Aliases | Config Format | Project Support | Default Toolset |
+|--------|---------------|---------|---------------|-----------------|-----------------|
+| Amazon Q Developer | `"AmazonQ"` | `"AmazonQDeveloper"`, `"Q"`, `"QDeveloper"` | JSON | Yes | `"WolframLanguage"` |
+| Augment Code | `"AugmentCode"` | `"Auggie"`, `"Augment"` | JSON | No | `"WolframLanguage"` |
+| Augment Code IDE | `"AugmentCodeIDE"` | `"AugmentIDE"`, `"AuggieIDE"` | JSON (array) | No | `"WolframLanguage"` |
+| Claude Code | `"ClaudeCode"` | — | JSON | Yes | `"WolframLanguage"` |
+| Claude Desktop | `"ClaudeDesktop"` | `"Claude"` | JSON | No | `"Wolfram"` |
+| Cline | `"Cline"` | — | JSON | No | `"WolframLanguage"` |
+| Copilot CLI | `"CopilotCLI"` | `"Copilot"` | JSON | No | `"WolframLanguage"` |
+| Cursor | `"Cursor"` | — | JSON | No | `"WolframLanguage"` |
+| Gemini CLI | `"GeminiCLI"` | `"Gemini"` | JSON | No | `"WolframLanguage"` |
+| Goose | `"Goose"` | — | YAML | No | `"Wolfram"` |
+| Antigravity | `"Antigravity"` | `"GoogleAntigravity"` | JSON | No | `"WolframLanguage"` |
+| Kiro | `"Kiro"` | — | JSON | Yes | `"WolframLanguage"` |
+| Codex CLI | `"Codex"` | `"OpenAICodex"` | TOML | Yes | `"WolframLanguage"` |
+| OpenCode | `"OpenCode"` | — | JSON | Yes | `"WolframLanguage"` |
+| Visual Studio Code | `"VisualStudioCode"` | `"VSCode"` | JSON | Yes | `"WolframLanguage"` |
+| Windsurf | `"Windsurf"` | `"Codeium"` | JSON | No | `"WolframLanguage"` |
+| Zed | `"Zed"` | — | JSON | Yes | `"WolframLanguage"` |
+
+The **Default Toolset** is the [predefined server](servers.md) used when `InstallMCPServer`/`DeployAgentTools` is called without an explicit server (or with `Automatic`). Coding clients default to `"WolframLanguage"`; chat clients (Claude Desktop, Goose) default to `"Wolfram"`.
 
 ## Usage
 
@@ -42,7 +44,7 @@ Install an MCP server into a client application:
 InstallMCPServer["ClaudeDesktop"]
 ```
 
-This installs the default MCP server into Claude Desktop's configuration file.
+This installs the client's default toolset into Claude Desktop's configuration file. Each client has its own default — Claude Desktop and Goose default to `"Wolfram"`; coding clients (Claude Code, Cursor, VS Code, etc.) default to `"WolframLanguage"`. Pass `Automatic` explicitly for the same behavior, or pass a server name to override (see the table above for each client's default).
 
 ### Installing a Specific Server
 
@@ -576,6 +578,7 @@ Each entry is keyed by the canonical client name and contains an association wit
 | `"ConfigKey"` | Yes | Key path to the servers section (e.g. `{"mcpServers"}` or `{"servers"}`) |
 | `"URL"` | Yes | Client's website or download page |
 | `"InstallLocation"` | Yes | Config file path(s) per OS (see below) |
+| `"DefaultToolset"` | No | Predefined server name to use when `InstallMCPServer`/`DeployAgentTools` is called with `Automatic`. Falls back to `"Wolfram"` if omitted. Use `"WolframLanguage"` for coding-oriented clients and `"Wolfram"` for general-purpose chat clients. |
 | `"ProjectPath"` | No | Relative path components for project-level config |
 | `"ServerConverter"` | No | Function to transform the standard server entry into a client-specific format |
 
@@ -584,6 +587,7 @@ Each entry is keyed by the canonical client name and contains an association wit
 ```wl
 "NewClient" -> <|
     "DisplayName"     -> "New Client",
+    "DefaultToolset"  -> "WolframLanguage",
     "Aliases"         -> { "NC" },
     "ConfigFormat"    -> "JSON",
     "ConfigKey"       -> { "mcpServers" },

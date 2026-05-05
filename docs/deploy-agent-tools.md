@@ -31,7 +31,7 @@ DeployAgentTools[target, server, opts]
 | Argument | Type | Description |
 |----------|------|-------------|
 | `target` | `String`, `File[...]`, or `{String, dir}` | The client to deploy to (same target formats as `InstallMCPServer`) |
-| `server` | `MCPServerObject`, `String`, or `Automatic` | The MCP server to deploy (defaults to `Automatic`, which resolves to the default `"Wolfram"` server) |
+| `server` | `MCPServerObject`, `String`, or `Automatic` | The MCP server to deploy. Defaults to `Automatic`, which resolves to the target client's default toolset (see [mcp-clients.md](mcp-clients.md#clients-with-installmcpserver-support)) — `"WolframLanguage"` for coding clients and `"Wolfram"` for chat clients. |
 
 ### Options
 
