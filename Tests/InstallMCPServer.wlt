@@ -3591,4 +3591,134 @@ VerificationTest[
     TestID   -> "MCPServerName-Cleanup@@Tests/InstallMCPServer.wlt:3583,1-3592,2"
 ]
 
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Automatic toolset resolution (per-client DefaultToolset)*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*defaultToolsetForTarget helper*)
+VerificationTest[
+    defaultToolsetForTarget = Wolfram`AgentTools`Common`defaultToolsetForTarget;
+    defaultToolsetForTarget[ "ClaudeCode" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-ClaudeCode@@Tests/InstallMCPServer.wlt:3601,1-3607,2"
+]
+
+VerificationTest[
+    defaultToolsetForTarget[ "ClaudeDesktop" ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-ClaudeDesktop@@Tests/InstallMCPServer.wlt:3609,1-3614,2"
+]
+
+VerificationTest[
+    defaultToolsetForTarget[ "Goose" ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-Goose@@Tests/InstallMCPServer.wlt:3616,1-3621,2"
+]
+
+VerificationTest[
+    defaultToolsetForTarget[ "Cursor" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-Cursor@@Tests/InstallMCPServer.wlt:3623,1-3628,2"
+]
+
+(* Aliases resolve to their canonical client's default *)
+VerificationTest[
+    defaultToolsetForTarget[ "Claude" ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-Alias-Claude@@Tests/InstallMCPServer.wlt:3631,1-3636,2"
+]
+
+VerificationTest[
+    defaultToolsetForTarget[ "VSCode" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-Alias-VSCode@@Tests/InstallMCPServer.wlt:3638,1-3643,2"
+]
+
+(* Unknown client falls back to $defaultMCPServer *)
+VerificationTest[
+    defaultToolsetForTarget[ "TotallyMadeUpClient" ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-Unknown@@Tests/InstallMCPServer.wlt:3646,1-3651,2"
+]
+
+(* {name, dir} project-install form dispatches on the name *)
+VerificationTest[
+    defaultToolsetForTarget[ { "ClaudeCode", "/some/dir" } ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-NameDir-ClaudeCode@@Tests/InstallMCPServer.wlt:3654,1-3659,2"
+]
+
+VerificationTest[
+    defaultToolsetForTarget[ { "ClaudeDesktop", "/some/dir" } ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-NameDir-ClaudeDesktop@@Tests/InstallMCPServer.wlt:3661,1-3666,2"
+]
+
+(* File target with no client match falls back *)
+VerificationTest[
+    defaultToolsetForTarget[ File[ "C:/this/path/is/not/a/known/client.json" ] ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-File-Unknown@@Tests/InstallMCPServer.wlt:3669,1-3674,2"
+]
+
+(* Non-target argument falls back *)
+VerificationTest[
+    defaultToolsetForTarget[ 42 ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-NonTarget@@Tests/InstallMCPServer.wlt:3677,1-3682,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*InstallMCPServer with Automatic resolution*)
+VerificationTest[
+    autoTestDir = CreateDirectory[ ];
+    autoInstallResultAuto = InstallMCPServer[
+        { "ClaudeCode", autoTestDir },
+        Automatic,
+        "VerifyLLMKit" -> False
+    ];
+    autoInstallResultAuto[[ 2 ]][ "MCPServerObject" ][ "Name" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Automatic-ClaudeCode@@Tests/InstallMCPServer.wlt:3687,1-3698,2"
+]
+
+(* 1-arg form should give the same result as Automatic *)
+VerificationTest[
+    Quiet @ DeleteDirectory[ autoTestDir, DeleteContents -> True ];
+    autoTestDir = CreateDirectory[ ];
+    autoInstallResult1Arg = InstallMCPServer[
+        { "ClaudeCode", autoTestDir },
+        "VerifyLLMKit" -> False
+    ];
+    autoInstallResult1Arg[[ 2 ]][ "MCPServerObject" ][ "Name" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-1Arg-ClaudeCode@@Tests/InstallMCPServer.wlt:3701,1-3712,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Cleanup*)
+VerificationTest[
+    Quiet @ DeleteDirectory[ autoTestDir, DeleteContents -> True ];
+    True,
+    True,
+    TestID -> "Automatic-Cleanup@@Tests/InstallMCPServer.wlt:3717,1-3722,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)

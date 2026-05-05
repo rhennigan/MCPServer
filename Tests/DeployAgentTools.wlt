@@ -1044,4 +1044,50 @@ VerificationTest[
     TestID -> "DeployAgentTools-Cleanup@@Tests/DeployAgentTools.wlt:1035,1-1045,2"
 ]
 
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Automatic toolset resolution (per-client DefaultToolset)*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*DeployAgentTools with Automatic resolution*)
+VerificationTest[
+    autoDeployDir = CreateDirectory[ ];
+    autoDeployAuto = DeployAgentTools[
+        { "ClaudeCode", autoDeployDir },
+        Automatic,
+        "VerifyLLMKit" -> False
+    ];
+    autoDeployAuto[ "Toolset" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DeployAgentTools-Automatic-ClaudeCode@@Tests/DeployAgentTools.wlt:1054,1-1065,2"
+]
+
+VerificationTest[
+    autoDeployAutoUUID = autoDeployAuto[ "UUID" ];
+    Quiet @ catchAlways @ DeleteObject @ autoDeployAuto;
+    Quiet @ DeleteDirectory[ autoDeployDir, DeleteContents -> True ];
+    autoDeployDir = CreateDirectory[ ];
+    autoDeploy1Arg = DeployAgentTools[
+        { "ClaudeCode", autoDeployDir },
+        "VerifyLLMKit" -> False
+    ];
+    autoDeploy1Arg[ "Toolset" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DeployAgentTools-1Arg-ClaudeCode@@Tests/DeployAgentTools.wlt:1067,1-1080,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Cleanup*)
+VerificationTest[
+    Quiet @ catchAlways @ DeleteObject @ autoDeploy1Arg;
+    Quiet @ DeleteDirectory[ autoDeployDir, DeleteContents -> True ];
+    True,
+    True,
+    TestID -> "DeployAgentTools-Automatic-Cleanup@@Tests/DeployAgentTools.wlt:1085,1-1091,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)

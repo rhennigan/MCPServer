@@ -38,7 +38,7 @@ InstallMCPServer[ target_, opts: OptionsPattern[ ] ] :=
     catchMine @ InstallMCPServer[ target, Automatic, opts ];
 
 InstallMCPServer[ target_, Automatic, opts: OptionsPattern[ ] ] :=
-    catchMine @ InstallMCPServer[ target, $defaultMCPServer, opts ];
+    catchMine @ InstallMCPServer[ target, defaultToolsetForTarget @ target, opts ];
 
 InstallMCPServer[ target_File? fileQ, server0_String? pacletQualifiedNameQ, opts: OptionsPattern[ ] ] :=
     catchMine @ (

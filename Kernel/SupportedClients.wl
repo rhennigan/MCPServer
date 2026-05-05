@@ -21,6 +21,7 @@ $SupportedMCPClients := WithCleanup[
 $supportedMCPClients = <|
     "ClaudeDesktop" -> <|
         "DisplayName"     -> "Claude Desktop",
+        "DefaultToolset"  -> "Wolfram",
         "Aliases"         -> { "Claude" },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "mcpServers" },
@@ -32,6 +33,7 @@ $supportedMCPClients = <|
     |>,
     "ClaudeCode" -> <|
         "DisplayName"     -> "Claude Code",
+        "DefaultToolset"  -> "WolframLanguage",
         "Aliases"         -> { },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "mcpServers" },
@@ -41,6 +43,7 @@ $supportedMCPClients = <|
     |>,
     "Cursor" -> <|
         "DisplayName"     -> "Cursor",
+        "DefaultToolset"  -> "WolframLanguage",
         "Aliases"         -> { },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "mcpServers" },
@@ -49,6 +52,7 @@ $supportedMCPClients = <|
     |>,
     "GeminiCLI" -> <|
         "DisplayName"     -> "Gemini CLI",
+        "DefaultToolset"  -> "WolframLanguage",
         "Aliases"         -> { "Gemini" },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "mcpServers" },
@@ -57,6 +61,7 @@ $supportedMCPClients = <|
     |>,
     "Goose" -> <|
         "DisplayName"     -> "Goose",
+        "DefaultToolset"  -> "Wolfram",
         "Aliases"         -> { },
         "ConfigFormat"    -> "YAML",
         "ConfigKey"       -> { "extensions" },
@@ -69,6 +74,7 @@ $supportedMCPClients = <|
     |>,
     "Antigravity" -> <|
         "DisplayName"     -> "Antigravity",
+        "DefaultToolset"  -> "WolframLanguage",
         "Aliases"         -> { "GoogleAntigravity" },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "mcpServers" },
@@ -77,6 +83,7 @@ $supportedMCPClients = <|
     |>,
     "AugmentCode" -> <|
         "DisplayName"     -> "Augment Code",
+        "DefaultToolset"  -> "WolframLanguage",
         "Aliases"         -> { "Auggie", "Augment" },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "mcpServers" },
@@ -86,6 +93,7 @@ $supportedMCPClients = <|
     |>,
     "AugmentCodeIDE" -> <|
         "DisplayName"     -> "Augment Code IDE",
+        "DefaultToolset"  -> "WolframLanguage",
         "Aliases"         -> { "AugmentIDE", "AuggieIDE" },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { },
@@ -102,6 +110,7 @@ $supportedMCPClients = <|
     |>,
     "Codex" -> <|
         "DisplayName"     -> "Codex CLI",
+        "DefaultToolset"  -> "WolframLanguage",
         "Aliases"         -> { "OpenAICodex" },
         "ConfigFormat"    -> "TOML",
         "ConfigKey"       -> { "mcp_servers" },
@@ -111,6 +120,7 @@ $supportedMCPClients = <|
     |>,
     "CopilotCLI" -> <|
         "DisplayName"     -> "Copilot CLI",
+        "DefaultToolset"  -> "WolframLanguage",
         "Aliases"         -> { "Copilot" },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "mcpServers" },
@@ -120,6 +130,7 @@ $supportedMCPClients = <|
     |>,
     "Kiro" -> <|
         "DisplayName"     -> "Kiro",
+        "DefaultToolset"  -> "WolframLanguage",
         "Aliases"         -> { },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "mcpServers" },
@@ -130,6 +141,7 @@ $supportedMCPClients = <|
     |>,
     "OpenCode" -> <|
         "DisplayName"     -> "OpenCode",
+        "DefaultToolset"  -> "WolframLanguage",
         "Aliases"         -> { },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "mcp" },
@@ -140,6 +152,7 @@ $supportedMCPClients = <|
     |>,
     "VisualStudioCode" -> <|
         "DisplayName"     -> "Visual Studio Code",
+        "DefaultToolset"  -> "WolframLanguage",
         "Aliases"         -> { "VSCode" },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "servers" },
@@ -153,6 +166,7 @@ $supportedMCPClients = <|
     |>,
     "Windsurf" -> <|
         "DisplayName"     -> "Windsurf",
+        "DefaultToolset"  -> "WolframLanguage",
         "Aliases"         -> { "Codeium" },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "mcpServers" },
@@ -161,6 +175,7 @@ $supportedMCPClients = <|
     |>,
     "AmazonQ" -> <|
         "DisplayName"     -> "Amazon Q Developer",
+        "DefaultToolset"  -> "WolframLanguage",
         "Aliases"         -> { "AmazonQDeveloper", "Q", "QDeveloper" },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "mcpServers" },
@@ -170,6 +185,7 @@ $supportedMCPClients = <|
     |>,
     "Cline" -> <|
         "DisplayName"     -> "Cline",
+        "DefaultToolset"  -> "WolframLanguage",
         "Aliases"         -> { },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "mcpServers" },
@@ -186,6 +202,7 @@ $supportedMCPClients = <|
     |>,
     "Zed" -> <|
         "DisplayName"     -> "Zed",
+        "DefaultToolset"  -> "WolframLanguage",
         "Aliases"         -> { },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "context_servers" },
@@ -228,6 +245,33 @@ $aliasToCanonicalName := $aliasToCanonicalName = Association @ Flatten @ KeyValu
     Function[ { name, meta }, Thread[ meta[ "Aliases" ] -> name ] ],
     $supportedMCPClients
 ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*defaultToolsetForTarget*)
+defaultToolsetForTarget // beginDefinition;
+
+defaultToolsetForTarget[ name_String ] :=
+    Replace[
+        Lookup[
+            Lookup[ $supportedMCPClients, toInstallName @ name, <| |> ],
+            "DefaultToolset",
+            $defaultMCPServer
+        ],
+        Except[ _String ] :> $defaultMCPServer
+    ];
+
+defaultToolsetForTarget[ { name_String, _ } ] :=
+    defaultToolsetForTarget @ name;
+
+defaultToolsetForTarget[ file_? fileQ ] := Enclose[
+    defaultToolsetForTarget @ ConfirmBy[ guessClientName @ file, StringQ, "Guess" ],
+    $defaultMCPServer &
+];
+
+defaultToolsetForTarget[ _ ] := $defaultMCPServer;
+
+defaultToolsetForTarget // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
