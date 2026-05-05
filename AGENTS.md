@@ -55,6 +55,7 @@ See [building.md](docs/building.md) for detailed instructions.
   - `PacletExtension.wl`: Paclet discovery, name resolution, and definition loading for the [paclet extension](docs/paclet-extensions.md) system
   - `PreferencesContent.wl`: Implementation of `CreatePreferencesContent`, which builds the toolset configuration UI for the system preferences dialog (see [preferences-content.md](docs/preferences-content.md))
   - `StartMCPServer.wl`: Implementation for starting MCP servers
+  - `SupportedClients.wl`: Registry of supported MCP clients (`$SupportedMCPClients`) and relevant utility functions
   - `ValidateAgentToolsPacletExtension.wl`: Validation of `"AgentTools"` [paclet extensions](docs/paclet-extensions.md)
   - `UIResources.wl`: [MCP Apps](docs/mcp-apps.md) UI resource registry, client capability detection, and shared cloud notebook deployment helper
   - `Utilities.wl`: General-purpose helpers — LLMKit subscription checks, Chatbook version verification, and `toJSRegex` for converting ICU/PCRE patterns to ECMA 262 (used when sanitizing tool schema `"pattern"` fields)
