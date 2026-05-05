@@ -371,27 +371,34 @@ convertToAugmentCodeIDEFormat // endDefinition;
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*toWindowsShortPath*)
-(* Resolve a Windows path to its 8.3 short form by shelling out to PowerShell's
-   Scripting.FileSystemObject COM interface. Returns the original path on any failure. *)
+(* Resolve a Windows path to its 8.3 short form. *)
 toWindowsShortPath // beginDefinition;
 
 toWindowsShortPath[ path_String ] := Enclose[
-    Module[ { escaped, out, trimmed },
-        If[ ! FileExistsQ @ path, Return[ path, Module ] ];
+    Catch @ Module[ { short, escaped, out },
+        If[ ! FileExistsQ @ path, Throw @ path ];
+
+        (* Get the 8.3 short path from the file information *)
+        short = Quiet @ Information[ File @ path, "AbsoluteShortFileName" ];
+        If[ StringQ @ short && FileExistsQ @ short && StringFreeQ[ short, " " ], Throw @ short ];
+
+        (* If that fails, try using the PowerShell COM interface to get the short path *)
         escaped = StringReplace[ path, "'" -> "''" ];
         out = Quiet @ RunProcess[
             {
-                "powershell",
+                $powerShell,
                 "-NoProfile",
                 "-Command",
                 "(New-Object -ComObject Scripting.FileSystemObject).GetFile('" <> escaped <> "').ShortPath"
             },
             "StandardOutput"
         ];
-        If[ ! StringQ @ out, Return[ path, Module ] ];
-        trimmed = StringTrim @ out;
-        If[ StringLength @ trimmed > 0 && ! StringContainsQ[ trimmed, " " ],
-            trimmed,
+        If[ ! StringQ @ out, Throw @ path ];
+
+        short = StringTrim @ out;
+
+        If[ StringQ @ short && FileExistsQ @ short && StringFreeQ[ short, " " ],
+            short,
             path
         ]
     ],
@@ -399,6 +406,16 @@ toWindowsShortPath[ path_String ] := Enclose[
 ];
 
 toWindowsShortPath // endDefinition;
+
+
+$powerShell := $powerShell = Quiet @ SelectFirst[
+    {
+        FileNameJoin @ { Environment[ "SystemRoot" ], "System32", "WindowsPowerShell", "v1.0", "powershell.exe" },
+        "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    },
+    FileExistsQ,
+    "powershell.exe" (* Note: for some reason "powershell" isn't found by RunProcess, but "powershell.exe" is. *)
+];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
