@@ -1,5 +1,6 @@
 .claude/settings.local.json
 .claude/worktrees/
+.mcp.json
 
 # Git merge-conflict artifacts (created by 3-way mergetools)
 *_BACKUP_*
