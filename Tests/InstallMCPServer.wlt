@@ -1783,8 +1783,8 @@ VerificationTest[
 
 (* Install locations for AugmentCode (CLI) and AugmentCodeIDE must differ *)
 VerificationTest[
-    Wolfram`AgentTools`Common`installLocation[ "AugmentCode", $OperatingSystem ]
-        =!= Wolfram`AgentTools`Common`installLocation[ "AugmentCodeIDE", $OperatingSystem ],
+    Wolfram`AgentTools`Common`installLocation[ "AugmentCode", $OperatingSystem ] =!=
+        Wolfram`AgentTools`Common`installLocation[ "AugmentCodeIDE", $OperatingSystem ],
     True,
     SameTest -> Equal,
     TestID   -> "InstallLocation-AugmentCode-vs-AugmentCodeIDE-Distinct@@Tests/InstallMCPServer.wlt:1785,1-1791,2"
@@ -2151,8 +2151,8 @@ VerificationTest[
 
 (* AugmentCode (CLI) and AugmentCodeIDE (VS Code) must be distinct entries with distinct display names *)
 VerificationTest[
-    $SupportedMCPClients[ "AugmentCode", "DisplayName" ]
-        =!= $SupportedMCPClients[ "AugmentCodeIDE", "DisplayName" ],
+    $SupportedMCPClients[ "AugmentCode", "DisplayName" ] =!=
+        $SupportedMCPClients[ "AugmentCodeIDE", "DisplayName" ],
     True,
     SameTest -> Equal,
     TestID   -> "SupportedMCPClients-AugmentCode-vs-AugmentCodeIDE-Distinct@@Tests/InstallMCPServer.wlt:2153,1-2159,2"
