@@ -578,7 +578,7 @@ Each entry is keyed by the canonical client name and contains an association wit
 | `"ConfigKey"` | Yes | Key path to the servers section (e.g. `{"mcpServers"}` or `{"servers"}`) |
 | `"URL"` | Yes | Client's website or download page |
 | `"InstallLocation"` | Yes | Config file path(s) per OS (see below) |
-| `"DefaultToolset"` | No | Predefined server name to use when `InstallMCPServer`/`DeployAgentTools` is called with `Automatic`. Falls back to `"Wolfram"` if omitted. Use `"WolframLanguage"` for coding-oriented clients and `"Wolfram"` for general-purpose chat clients. |
+| `"DefaultToolset"` | Yes | Predefined server name to use when `InstallMCPServer`/`DeployAgentTools` is called with `Automatic`. Use `"WolframLanguage"` for coding-oriented clients and `"Wolfram"` for general-purpose chat clients. |
 | `"ProjectPath"` | No | Relative path components for project-level config |
 | `"ServerConverter"` | No | Function to transform the standard server entry into a client-specific format |
 
