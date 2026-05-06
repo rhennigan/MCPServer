@@ -329,11 +329,19 @@ deployAgentToolsQuietly[ target_, server_, opts: $$deployAgentToolsOptions ] :=
         Replace[
             catchAlways @ DeployAgentTools[ target, server, opts ],
             {
-                Failure[ "DeployAgentTools::DeploymentExists", _ ] :> Missing[ "DeploymentExists", target ],
+                (* Used to issue a single warning about OverwriteTarget: *)
+                Failure[ "DeployAgentTools::DeploymentExists", _ ] :>
+                    Missing[ "DeploymentExists", target ],
+
+                (* Some clients aren't supported on all operating systems: *)
+                Failure[ "DeployAgentTools::UnknownInstallLocation", _ ] :>
+                    Missing[ "Unsupported", { target, $OperatingSystem } ],
+
+                (* Other failures are propagated to the top level: *)
                 other_Failure :> throwTop @ other
             }
         ],
-        { DeployAgentTools::DeploymentExists }
+        { DeployAgentTools::DeploymentExists, DeployAgentTools::UnknownInstallLocation }
     ];
 
 deployAgentToolsQuietly // endDefinition;
