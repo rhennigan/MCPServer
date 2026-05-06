@@ -3812,4 +3812,303 @@ VerificationTest[
     TestID   -> "MCPServerName-Cleanup@@Tests/InstallMCPServer.wlt:3583,1-3592,2"
 ]
 
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Automatic toolset resolution (per-client DefaultToolset)*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*defaultToolsetForTarget helper*)
+VerificationTest[
+    defaultToolsetForTarget = Wolfram`AgentTools`Common`defaultToolsetForTarget;
+    defaultToolsetForTarget[ "ClaudeCode" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-ClaudeCode@@Tests/InstallMCPServer.wlt:3601,1-3607,2"
+]
+
+VerificationTest[
+    defaultToolsetForTarget[ "ClaudeDesktop" ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-ClaudeDesktop@@Tests/InstallMCPServer.wlt:3609,1-3614,2"
+]
+
+VerificationTest[
+    defaultToolsetForTarget[ "Goose" ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-Goose@@Tests/InstallMCPServer.wlt:3616,1-3621,2"
+]
+
+VerificationTest[
+    defaultToolsetForTarget[ "Cursor" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-Cursor@@Tests/InstallMCPServer.wlt:3623,1-3628,2"
+]
+
+(* Aliases resolve to their canonical client's default *)
+VerificationTest[
+    defaultToolsetForTarget[ "Claude" ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-Alias-Claude@@Tests/InstallMCPServer.wlt:3631,1-3636,2"
+]
+
+VerificationTest[
+    defaultToolsetForTarget[ "VSCode" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-Alias-VSCode@@Tests/InstallMCPServer.wlt:3638,1-3643,2"
+]
+
+(* Unknown client falls back to $defaultMCPServer *)
+VerificationTest[
+    defaultToolsetForTarget[ "TotallyMadeUpClient" ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-Unknown@@Tests/InstallMCPServer.wlt:3646,1-3651,2"
+]
+
+(* {name, dir} project-install form dispatches on the name *)
+VerificationTest[
+    defaultToolsetForTarget[ { "ClaudeCode", "/some/dir" } ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-NameDir-ClaudeCode@@Tests/InstallMCPServer.wlt:3654,1-3659,2"
+]
+
+VerificationTest[
+    defaultToolsetForTarget[ { "ClaudeDesktop", "/some/dir" } ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-NameDir-ClaudeDesktop@@Tests/InstallMCPServer.wlt:3661,1-3666,2"
+]
+
+(* File target with no client match falls back *)
+VerificationTest[
+    defaultToolsetForTarget[ File[ "C:/this/path/is/not/a/known/client.json" ] ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-File-Unknown@@Tests/InstallMCPServer.wlt:3669,1-3674,2"
+]
+
+(* Recognizable File[...] targets resolve via path-based client detection
+   (no ApplicationName needed). These guard against regressions where
+   defaultToolsetForTarget would silently fall back to "Wolfram" for files
+   that guessClientName already identifies. *)
+
+(* .mcp.json -> ClaudeCode (coding client, "WolframLanguage") *)
+VerificationTest[
+    defaultToolsetForTarget[ File[ "/some/project/.mcp.json" ] ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-File-ClaudeCodeProject@@Tests/InstallMCPServer.wlt:3682,1-3687,2"
+]
+
+(* .vscode/mcp.json -> VisualStudioCode (coding client, "WolframLanguage") *)
+VerificationTest[
+    defaultToolsetForTarget[ File[ "/some/project/.vscode/mcp.json" ] ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-File-VSCodeProject@@Tests/InstallMCPServer.wlt:3690,1-3695,2"
+]
+
+(* opencode.json -> OpenCode (coding client, "WolframLanguage") *)
+VerificationTest[
+    defaultToolsetForTarget[ File[ "/some/project/opencode.json" ] ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-File-OpenCodeProject@@Tests/InstallMCPServer.wlt:3698,1-3703,2"
+]
+
+(* Non-target argument falls back *)
+VerificationTest[
+    defaultToolsetForTarget[ 42 ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-NonTarget@@Tests/InstallMCPServer.wlt:3706,1-3711,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*defaultToolsetForTarget with explicit ApplicationName*)
+(* The 2-arg form lets callers override path-based resolution by passing an
+   explicit application name (the same string accepted by "ApplicationName"). *)
+VerificationTest[
+    defaultToolsetForTarget[ File[ "C:/this/path/is/not/a/known/client.json" ], "Cline" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-File-AppName-Cline@@Tests/InstallMCPServer.wlt:3718,1-3723,2"
+]
+
+VerificationTest[
+    defaultToolsetForTarget[ File[ "C:/this/path/is/not/a/known/client.json" ], "ClaudeDesktop" ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-File-AppName-ClaudeDesktop@@Tests/InstallMCPServer.wlt:3725,1-3730,2"
+]
+
+(* Aliases route through toInstallName, so an alias picks up the canonical client's default *)
+VerificationTest[
+    defaultToolsetForTarget[ File[ "C:/this/path/is/not/a/known/client.json" ], "VSCode" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-File-AppName-Alias@@Tests/InstallMCPServer.wlt:3733,1-3738,2"
+]
+
+(* Automatic in the 2-arg form falls back to the existing target-based resolution *)
+VerificationTest[
+    defaultToolsetForTarget[ File[ "C:/this/path/is/not/a/known/client.json" ], Automatic ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-File-AppName-Automatic@@Tests/InstallMCPServer.wlt:3741,1-3746,2"
+]
+
+(* String target is also overridden by an explicit ApplicationName *)
+VerificationTest[
+    defaultToolsetForTarget[ "ClaudeCode", "ClaudeDesktop" ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-StringTarget-AppName@@Tests/InstallMCPServer.wlt:3749,1-3754,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*InstallMCPServer with Automatic resolution*)
+VerificationTest[
+    autoTestDir = CreateDirectory[ ];
+    autoInstallResultAuto = InstallMCPServer[
+        { "ClaudeCode", autoTestDir },
+        Automatic,
+        "VerifyLLMKit" -> False
+    ];
+    autoInstallResultAuto[[ 2 ]][ "MCPServerObject" ][ "Name" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Automatic-ClaudeCode@@Tests/InstallMCPServer.wlt:3759,1-3770,2"
+]
+
+(* 1-arg form should give the same result as Automatic *)
+VerificationTest[
+    Quiet @ DeleteDirectory[ autoTestDir, DeleteContents -> True ];
+    autoTestDir = CreateDirectory[ ];
+    autoInstallResult1Arg = InstallMCPServer[
+        { "ClaudeCode", autoTestDir },
+        "VerifyLLMKit" -> False
+    ];
+    autoInstallResult1Arg[[ 2 ]][ "MCPServerObject" ][ "Name" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-1Arg-ClaudeCode@@Tests/InstallMCPServer.wlt:3773,1-3784,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*InstallMCPServer Automatic with File target + ApplicationName*)
+(* For arbitrary File[...] targets whose path doesn't reveal the client, an
+   explicit "ApplicationName" must drive the Automatic toolset choice. *)
+VerificationTest[
+    autoCustomFile = testConfigFile[ ];
+    autoInstallResultFileApp = InstallMCPServer[
+        autoCustomFile,
+        Automatic,
+        "ApplicationName" -> "Cline",
+        "VerifyLLMKit"    -> False
+    ];
+    autoInstallResultFileApp[[ 2 ]][ "MCPServerObject" ][ "Name" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Automatic-File-AppName-Cline@@Tests/InstallMCPServer.wlt:3791,1-3803,2"
+]
+
+VerificationTest[
+    cleanupTestFiles @ autoCustomFile;
+    autoCustomFile = testConfigFile[ ];
+    autoInstallResultFileChat = InstallMCPServer[
+        autoCustomFile,
+        Automatic,
+        "ApplicationName" -> "ClaudeDesktop",
+        "VerifyLLMKit"    -> False
+    ];
+    autoInstallResultFileChat[[ 2 ]][ "MCPServerObject" ][ "Name" ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Automatic-File-AppName-ClaudeDesktop@@Tests/InstallMCPServer.wlt:3805,1-3818,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*InstallMCPServer Automatic with recognizable File targets (no ApplicationName)*)
+(* When the File[...] path itself identifies a known client, Automatic must
+   resolve to that client's DefaultToolset without any "ApplicationName"
+   override.  These guard against regressions where path-based detection
+   silently drops back to the global default. *)
+
+(* .mcp.json -> ClaudeCode -> "WolframLanguage" *)
+VerificationTest[
+    autoRecognizableDir = CreateDirectory[ ];
+    autoRecognizableFile = File @ FileNameJoin @ { autoRecognizableDir, ".mcp.json" };
+    autoInstallResultFileClaudeCode = InstallMCPServer[
+        autoRecognizableFile,
+        Automatic,
+        "VerifyLLMKit" -> False
+    ];
+    autoInstallResultFileClaudeCode[[ 2 ]][ "MCPServerObject" ][ "Name" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Automatic-File-ClaudeCodeProject@@Tests/InstallMCPServer.wlt:3829,1-3841,2"
+]
+
+(* .vscode/mcp.json -> VisualStudioCode -> "WolframLanguage" *)
+VerificationTest[
+    Quiet @ DeleteDirectory[ autoRecognizableDir, DeleteContents -> True ];
+    autoRecognizableDir = CreateDirectory[ ];
+    CreateDirectory @ FileNameJoin @ { autoRecognizableDir, ".vscode" };
+    autoRecognizableFile = File @ FileNameJoin @ { autoRecognizableDir, ".vscode", "mcp.json" };
+    autoInstallResultFileVSCode = InstallMCPServer[
+        autoRecognizableFile,
+        Automatic,
+        "VerifyLLMKit" -> False
+    ];
+    autoInstallResultFileVSCode[[ 2 ]][ "MCPServerObject" ][ "Name" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Automatic-File-VSCodeProject@@Tests/InstallMCPServer.wlt:3844,1-3858,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*$SupportedMCPClients DefaultToolset coverage*)
+(* Every $SupportedMCPClients entry must expose a string DefaultToolset that
+   names a real predefined server.  This catches typos or missing metadata in
+   any client whose toolset isn't covered by an individual VerificationTest. *)
+VerificationTest[
+    Module[ { knownServers, validQ },
+        knownServers = Keys @ $DefaultMCPServers;
+        validQ = Function[ meta,
+            With[ { toolset = Lookup[ meta, "DefaultToolset" ] },
+                StringQ @ toolset && MemberQ[ knownServers, toolset ]
+            ]
+        ];
+        Keys @ Select[ $SupportedMCPClients, ! validQ[ # ] & ]
+    ],
+    { },
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-DefaultToolset-Coverage@@Tests/InstallMCPServer.wlt:3866,1-3879,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Cleanup*)
+VerificationTest[
+    Quiet @ DeleteDirectory[ autoTestDir, DeleteContents -> True ];
+    Quiet @ DeleteDirectory[ autoRecognizableDir, DeleteContents -> True ];
+    cleanupTestFiles @ autoCustomFile;
+    True,
+    True,
+    TestID -> "Automatic-Cleanup@@Tests/InstallMCPServer.wlt:3884,1-3891,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)

@@ -262,11 +262,14 @@ relatedWolframAlphaResults[ context_String ] := Enclose[
         includeWLResults = Replace[ $waIncludeWLResults, Except[ True|False ] :> Automatic ];
 
         prompt = ConfirmBy[
-            cb`RelatedWolframAlphaResults[
-                context,
-                "Prompt",
-                "MaxItems"         -> maxItems,
-                "IncludeWLResults" -> includeWLResults
+            Quiet[
+                cb`RelatedWolframAlphaResults[
+                    context,
+                    "Prompt",
+                    "MaxItems"         -> maxItems,
+                    "IncludeWLResults" -> includeWLResults
+                ],
+                { WolframAlpha::kbserr }
             ],
             StringQ,
             "Prompt"
