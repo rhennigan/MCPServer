@@ -2617,6 +2617,14 @@ VerificationTest[
     TestID   -> "SupportedMCPClients-JunieURL"
 ]
 
+(* Junie is a coding agent — default toolset is WolframLanguage (matches Cursor, ClaudeCode, etc.) *)
+VerificationTest[
+    $SupportedMCPClients[ "Junie", "DefaultToolset" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-JunieDefaultToolset"
+]
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Kiro Support*)
@@ -3846,6 +3854,30 @@ VerificationTest[
     "WolframLanguage",
     SameTest -> Equal,
     TestID   -> "DefaultToolsetForTarget-Cursor@@Tests/InstallMCPServer.wlt:3623,1-3628,2"
+]
+
+(* Junie is a coding agent (covers JetBrains IDE plugin and Junie CLI), so it defaults to WolframLanguage *)
+VerificationTest[
+    defaultToolsetForTarget[ "Junie" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-Junie"
+]
+
+(* Junie alias resolves to the canonical client's default *)
+VerificationTest[
+    defaultToolsetForTarget[ "JetBrainsJunie" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-Alias-JetBrainsJunie"
+]
+
+(* {Junie, dir} project-install form *)
+VerificationTest[
+    defaultToolsetForTarget[ { "Junie", "/some/dir" } ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DefaultToolsetForTarget-NameDir-Junie"
 ]
 
 (* Aliases resolve to their canonical client's default *)

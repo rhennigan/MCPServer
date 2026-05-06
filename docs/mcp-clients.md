@@ -12,28 +12,6 @@ For convenience, `InstallMCPServer` and `UninstallMCPServer` functions are provi
 
 The following clients have built-in support for automatic configuration via `InstallMCPServer`:
 
-<<<<<<< HEAD
-| Client | Canonical Name | Aliases | Config Format | Project Support |
-|--------|---------------|---------|---------------|-----------------|
-| Amazon Q Developer | `"AmazonQ"` | `"AmazonQDeveloper"`, `"Q"`, `"QDeveloper"` | JSON | Yes |
-| Augment Code | `"AugmentCode"` | `"Auggie"`, `"Augment"` | JSON | No |
-| Augment Code IDE | `"AugmentCodeIDE"` | `"AugmentIDE"`, `"AuggieIDE"` | JSON (array) | No |
-| Claude Code | `"ClaudeCode"` | — | JSON | Yes |
-| Claude Desktop | `"ClaudeDesktop"` | `"Claude"` | JSON | No |
-| Cline | `"Cline"` | — | JSON | No |
-| Copilot CLI | `"CopilotCLI"` | `"Copilot"` | JSON | No |
-| Cursor | `"Cursor"` | — | JSON | No |
-| Gemini CLI | `"GeminiCLI"` | `"Gemini"` | JSON | No |
-| Goose | `"Goose"` | — | YAML | No |
-| Antigravity | `"Antigravity"` | `"GoogleAntigravity"` | JSON | No |
-| Junie | `"Junie"` | `"JetBrainsJunie"` | JSON | Yes |
-| Kiro | `"Kiro"` | — | JSON | Yes |
-| Codex CLI | `"Codex"` | `"OpenAICodex"` | TOML | Yes |
-| OpenCode | `"OpenCode"` | — | JSON | Yes |
-| Visual Studio Code | `"VisualStudioCode"` | `"VSCode"` | JSON | Yes |
-| Windsurf | `"Windsurf"` | `"Codeium"` | JSON | No |
-| Zed | `"Zed"` | — | JSON | Yes |
-=======
 | Client | Canonical Name | Aliases | Config Format | Project Support | Default Toolset |
 |--------|---------------|---------|---------------|-----------------|-----------------|
 | Amazon Q Developer | `"AmazonQ"` | `"AmazonQDeveloper"`, `"Q"`, `"QDeveloper"` | JSON | Yes | `"WolframLanguage"` |
@@ -47,6 +25,7 @@ The following clients have built-in support for automatic configuration via `Ins
 | Gemini CLI | `"GeminiCLI"` | `"Gemini"` | JSON | No | `"WolframLanguage"` |
 | Goose | `"Goose"` | — | YAML | No | `"Wolfram"` |
 | Antigravity | `"Antigravity"` | `"GoogleAntigravity"` | JSON | No | `"WolframLanguage"` |
+| Junie (IDE + CLI) | `"Junie"` | `"JetBrainsJunie"` | JSON | Yes | `"WolframLanguage"` |
 | Kiro | `"Kiro"` | — | JSON | Yes | `"WolframLanguage"` |
 | Codex CLI | `"Codex"` | `"OpenAICodex"` | TOML | Yes | `"WolframLanguage"` |
 | OpenCode | `"OpenCode"` | — | JSON | Yes | `"WolframLanguage"` |
@@ -55,7 +34,6 @@ The following clients have built-in support for automatic configuration via `Ins
 | Zed | `"Zed"` | — | JSON | Yes | `"WolframLanguage"` |
 
 The **Default Toolset** is the [predefined server](servers.md) used when `InstallMCPServer`/`DeployAgentTools` is called without an explicit server (or with `Automatic`). Coding clients default to `"WolframLanguage"`; chat clients (Claude Desktop, Goose) default to `"Wolfram"`.
->>>>>>> main
 
 ## Usage
 
@@ -294,7 +272,7 @@ extensions:
 
 Note: Goose uses YAML with an `extensions` key (not `mcpServers`) and renames several fields: `command` → `cmd`, `env` → `envs`. `InstallMCPServer` automatically adds the required `name`, `enabled: true`, `type: stdio`, and `timeout: 300` fields. Goose has no project-level configuration.
 
-### Junie
+### Junie (JetBrains IDE plugin + Junie CLI)
 
 | Scope | Config Location |
 |-------|----------------|
@@ -303,7 +281,11 @@ Note: Goose uses YAML with an `extensions` key (not `mcpServers`) and renames se
 
 **Format:** Same as Claude Desktop (`mcpServers` key).
 
-Note: Junie is JetBrains' AI coding agent. The user-scope file at `~/.junie/mcp/mcp.json` is shared across all JetBrains IDEs (IntelliJ IDEA, PyCharm, WebStorm, GoLand, PhpStorm, RubyMine, RustRover, Rider, etc.) and the standalone Junie CLI — there's no per-IDE config split. Project-scope config at `.junie/mcp/mcp.json` is designed to be checked into version control. Junie auto-reloads `mcp.json` changes, so no IDE restart is needed after running `InstallMCPServer`.
+Junie is JetBrains' AI coding agent. **A single `InstallMCPServer["Junie", ...]` call covers both the JetBrains IDE plugin and the standalone Junie CLI** — they read the same files. Specifically:
+
+- The user-scope file at `~/.junie/mcp/mcp.json` is shared across every JetBrains IDE that hosts the Junie plugin (IntelliJ IDEA, PyCharm, WebStorm, GoLand, PhpStorm, RubyMine, RustRover, Rider, etc.) **and** the standalone `junie` CLI. There is no per-IDE config split.
+- The project-scope file at `.junie/mcp/mcp.json` (in the project root) is designed to be checked into version control and is read by the same plugin and CLI.
+- Junie auto-reloads `mcp.json` changes, so no IDE restart is needed after running `InstallMCPServer`.
 
 ### Kiro
 

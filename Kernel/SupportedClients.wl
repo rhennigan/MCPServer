@@ -130,6 +130,7 @@ $supportedMCPClients = <|
     |>,
     "Junie" -> <|
         "DisplayName"     -> "Junie",
+        "DefaultToolset"  -> "WolframLanguage",
         "Aliases"         -> { "JetBrainsJunie" },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "mcpServers" },
