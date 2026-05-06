@@ -128,6 +128,16 @@ $supportedMCPClients = <|
         "URL"             -> "https://github.com/features/copilot/cli",
         "InstallLocation" :> { $HomeDirectory, ".copilot", "mcp-config.json" }
     |>,
+    "Junie" -> <|
+        "DisplayName"     -> "Junie",
+        "DefaultToolset"  -> "WolframLanguage",
+        "Aliases"         -> { "JetBrainsJunie" },
+        "ConfigFormat"    -> "JSON",
+        "ConfigKey"       -> { "mcpServers" },
+        "URL"             -> "https://www.jetbrains.com/junie/",
+        "ProjectPath"     -> { ".junie", "mcp", "mcp.json" },
+        "InstallLocation" :> { $HomeDirectory, ".junie", "mcp", "mcp.json" }
+    |>,
     "Kiro" -> <|
         "DisplayName"     -> "Kiro",
         "DefaultToolset"  -> "WolframLanguage",

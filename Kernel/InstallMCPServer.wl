@@ -544,6 +544,7 @@ guessClientName[ file_? fileQ ] := Enclose[
             { __, ".zed", "settings.json" }, Throw[ "Zed" ],
             { __, ".amazonq", "mcp.json" }, Throw[ "AmazonQ" ],
             { __, ".aws", "amazonq", "mcp.json" }, Throw[ "AmazonQ" ],
+            { __, ".junie", "mcp", "mcp.json" }, Throw[ "Junie" ],
             { __, "augment.vscode-augment", "augment-global-state", "mcpservers.json" }, Throw[ "AugmentCodeIDE" ]
         ];
 
