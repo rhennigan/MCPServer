@@ -59,11 +59,13 @@ $defaultMCPTools[ "WolframAlpha" ] := LLMTool @ <|
 (*wolframAlphaToolEvaluate*)
 wolframAlphaToolEvaluate // beginDefinition;
 
-wolframAlphaToolEvaluate[ as_ ] :=
+wolframAlphaToolEvaluate[ as_ ] := Quiet[
     If[ TrueQ @ $clientSupportsUI && TrueQ @ $deployCloudNotebooks,
         wolframAlphaToolEvaluateUI @ as,
         wolframAlphaToolEvaluate[ as, cb`$DefaultTools[ "WolframAlpha" ][ as ] ]
-    ];
+    ],
+    { WolframAlpha::kbserr }
+];
 
 wolframAlphaToolEvaluate[ as_, result_String ] := extractWolframAlphaImages @ result;
 wolframAlphaToolEvaluate[ as_, KeyValuePattern[ "String" -> result_String ] ] := extractWolframAlphaImages @ result;
