@@ -1366,6 +1366,80 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*Unsupported Clients Return Missing["Unsupported", ...]*)
+(* Clients without an InstallLocation entry for the current operating system
+   should be reported as Missing["Unsupported", {client, $OperatingSystem}]
+   rather than failing the entire DeployAgentTools[All, ...] call. *)
+
+(* Synthetic client whose InstallLocation never matches any real OS *)
+$alwaysUnsupportedEntry = <|
+    "Aliases"         -> { },
+    "ConfigFormat"    -> "JSON",
+    "ConfigKey"       -> { "mcpServers" },
+    "DefaultToolset"  -> "WolframLanguage",
+    "DisplayName"     -> "Always Unsupported Test Client",
+    "InstallLocation" -> <| "DefinitelyNotARealOS" :> { "/never/used" } |>,
+    "Name"            -> "AlwaysUnsupported",
+    "ProjectSupport"  -> False,
+    "ServerConverter" -> Identity,
+    "URL"             -> "https://example.com"
+|>;
+
+VerificationTest[
+    $allDepUnsupported = Block[
+        {
+            Wolfram`AgentTools`$SupportedMCPClients    = <|
+                KeyTake[ Wolfram`AgentTools`$SupportedMCPClients, { "Cursor" } ],
+                "AlwaysUnsupported" -> $alwaysUnsupportedEntry
+            |>,
+            $HomeDirectory                             = $allTestTmpHome,
+            Wolfram`AgentTools`Common`$deploymentsPath =
+                FileNameJoin @ { $allTestTmpHome, ".deployments_unsupported" }
+        },
+        DeployAgentTools[ All, "VerifyLLMKit" -> False ]
+    ],
+    _List? (Length @ # === 2 &),
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-All-UnsupportedClientShape"
+]
+
+VerificationTest[
+    Cases[ $allDepUnsupported, _Missing ],
+    { Missing[ "Unsupported", { "AlwaysUnsupported", $OperatingSystem } ] },
+    TestID -> "DeployAgentTools-All-UnsupportedClientPayload"
+]
+
+VerificationTest[
+    Length @ Cases[ $allDepUnsupported, _AgentToolsDeployment ],
+    1,
+    TestID -> "DeployAgentTools-All-UnsupportedClientStillDeploysSupported"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*DeploymentsExistWarning Only Fires for DeploymentExists*)
+(* When only unsupported clients are skipped (no DeploymentExists entries),
+   AgentTools::DeploymentsExistWarning must NOT be issued. *)
+VerificationTest[
+    Block[
+        {
+            Wolfram`AgentTools`$SupportedMCPClients    = <|
+                "AlwaysUnsupported" -> $alwaysUnsupportedEntry
+            |>,
+            $HomeDirectory                             = $allTestTmpHome,
+            Wolfram`AgentTools`Common`$deploymentsPath =
+                FileNameJoin @ { $allTestTmpHome, ".deployments_unsupported_only" }
+        },
+        DeployAgentTools[ All, "VerifyLLMKit" -> False ]
+    ],
+    { Missing[ "Unsupported", { "AlwaysUnsupported", $OperatingSystem } ] },
+    { },
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-All-NoWarningForUnsupportedOnly"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*Cleanup*)
 VerificationTest[
     Quiet @ DeleteDirectory[ $allTestTmpHome, DeleteContents -> True ];

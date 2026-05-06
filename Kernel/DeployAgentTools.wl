@@ -306,11 +306,13 @@ deployAllAgentTools[ server0_, opts: $$deployAgentToolsOptions ] := Enclose[
 
         results = ConfirmMatch[
             Map[ deployAgentToolsQuietly[ #, server, opts ] &, clients ],
-            { (_AgentToolsDeployment | Missing[ "DeploymentExists", _ ]).. },
+            { (_AgentToolsDeployment | Missing[ "DeploymentExists", _ ] | Missing[ "Unsupported", _ ]).. },
             "Results"
         ];
 
-        If[ AnyTrue[ results, MissingQ ], messagePrint[ "DeploymentsExistWarning" ] ];
+        If[ MemberQ[ results, Missing[ "DeploymentExists", _ ] ],
+            messagePrint[ "DeploymentsExistWarning" ]
+        ];
 
         results
     ],

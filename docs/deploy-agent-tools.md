@@ -98,8 +98,9 @@ The return value is a list with one entry per client:
 
 - `AgentToolsDeployment[...]` for each newly created deployment
 - `Missing["DeploymentExists", target]` for any client that already had a deployment and was skipped (only when `OverwriteTarget -> False`)
+- `Missing["Unsupported", {target, $OperatingSystem}]` for any client that has no install location on the current operating system (e.g. clients with platform-specific config paths)
 
-When at least one client is skipped, `AgentTools::DeploymentsExistWarning` is issued. Use `OverwriteTarget -> True` to replace existing deployments instead of skipping them.
+When at least one client is skipped because of an existing deployment, `AgentTools::DeploymentsExistWarning` is issued. Use `OverwriteTarget -> True` to replace existing deployments instead of skipping them. The warning is not issued for unsupported clients — those entries simply appear in the result list so callers can see which clients were skipped.
 
 ## AgentToolsDeployment
 
