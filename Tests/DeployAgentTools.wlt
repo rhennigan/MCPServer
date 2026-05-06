@@ -1172,4 +1172,206 @@ VerificationTest[
     TestID -> "DeployAgentTools-Automatic-Cleanup@@Tests/DeployAgentTools.wlt:1167,1-1173,2"
 ]
 
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*DeployAgentTools[All, ...]*)
+(* These tests redirect $HomeDirectory and $deploymentsPath so that real client
+   config files on the test machine are not touched, and pin
+   $SupportedMCPClients to a small set of clients that have valid install
+   locations on the current operating system. *)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Setup*)
+VerificationTest[
+    $allTestTmpHome    = CreateDirectory[ ];
+    $allTestDeployPath = FileNameJoin @ { $allTestTmpHome, ".deployments" };
+    $allTestClients    = KeyTake[
+        Wolfram`AgentTools`$SupportedMCPClients,
+        { "Cursor", "ClaudeCode" }
+    ];
+    Length @ $allTestClients,
+    2,
+    TestID -> "DeployAgentTools-All-Setup"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Basic Result Shape*)
+VerificationTest[
+    $allDep1 = Block[
+        {
+            Wolfram`AgentTools`$SupportedMCPClients = $allTestClients,
+            $HomeDirectory                          = $allTestTmpHome,
+            Wolfram`AgentTools`Common`$deploymentsPath = $allTestDeployPath
+        },
+        DeployAgentTools[ All, "VerifyLLMKit" -> False ]
+    ],
+    { _AgentToolsDeployment, _AgentToolsDeployment },
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-All-BasicResultShape"
+]
+
+VerificationTest[
+    Length @ $allDep1,
+    Length @ $allTestClients,
+    TestID -> "DeployAgentTools-All-LengthMatchesClients"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Per-Client DefaultToolset (Automatic Server)*)
+(* With server = Automatic (the default), each deployment should pick up its
+   client's "DefaultToolset" from $SupportedMCPClients.  Both Cursor and
+   ClaudeCode are coding clients -> "WolframLanguage". *)
+VerificationTest[
+    Sort @ Map[ #[ "Toolset" ] &, $allDep1 ],
+    { "WolframLanguage", "WolframLanguage" },
+    TestID -> "DeployAgentTools-All-AutomaticToolsetPerClient"
+]
+
+VerificationTest[
+    Sort @ Map[ #[ "ClientName" ] &, $allDep1 ],
+    Sort @ Keys @ $allTestClients,
+    TestID -> "DeployAgentTools-All-CoversEveryClient"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Re-Deploy Without Overwrite Returns Missing Entries*)
+VerificationTest[
+    $allDep2 = Block[
+        {
+            Wolfram`AgentTools`$SupportedMCPClients = $allTestClients,
+            $HomeDirectory                          = $allTestTmpHome,
+            Wolfram`AgentTools`Common`$deploymentsPath = $allTestDeployPath
+        },
+        Quiet[
+            DeployAgentTools[ All, "VerifyLLMKit" -> False ],
+            { DeployAgentTools::DeploymentsExistWarning }
+        ]
+    ],
+    { Missing[ "DeploymentExists", _ ], Missing[ "DeploymentExists", _ ] },
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-All-MissingDeploymentExistsEntries"
+]
+
+VerificationTest[
+    Sort @ Map[ #[[ 2 ]] &, $allDep2 ],
+    Sort @ Keys @ $allTestClients,
+    TestID -> "DeployAgentTools-All-MissingTargetsAreClientNames"
+]
+
+(* The DeploymentsExistWarning message should be issued when at least one
+   client is skipped due to an existing deployment. *)
+VerificationTest[
+    Block[
+        {
+            Wolfram`AgentTools`$SupportedMCPClients = $allTestClients,
+            $HomeDirectory                          = $allTestTmpHome,
+            Wolfram`AgentTools`Common`$deploymentsPath = $allTestDeployPath
+        },
+        DeployAgentTools[ All, "VerifyLLMKit" -> False ]
+    ],
+    _List,
+    { DeployAgentTools::DeploymentsExistWarning },
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-All-WarningMessageIssued"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*OverwriteTarget -> True Replaces Every Deployment*)
+VerificationTest[
+    $allDep1UUIDs = Sort @ Map[ #[ "UUID" ] &, $allDep1 ];
+    $allDep3 = Block[
+        {
+            Wolfram`AgentTools`$SupportedMCPClients = $allTestClients,
+            $HomeDirectory                          = $allTestTmpHome,
+            Wolfram`AgentTools`Common`$deploymentsPath = $allTestDeployPath
+        },
+        DeployAgentTools[ All, OverwriteTarget -> True, "VerifyLLMKit" -> False ]
+    ],
+    { _AgentToolsDeployment, _AgentToolsDeployment },
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-All-OverwriteShape"
+]
+
+VerificationTest[
+    (* All UUIDs in the new result should be different from the originals *)
+    Intersection[ Sort @ Map[ #[ "UUID" ] &, $allDep3 ], $allDep1UUIDs ],
+    { },
+    TestID -> "DeployAgentTools-All-OverwriteNewUUIDs"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Explicit Server Argument*)
+(* DeployAgentTools[All, server, ...] should use the given server for every
+   client instead of falling back to per-client DefaultToolset. *)
+VerificationTest[
+    $allDep4 = Block[
+        {
+            Wolfram`AgentTools`$SupportedMCPClients = $allTestClients,
+            $HomeDirectory                          = $allTestTmpHome,
+            Wolfram`AgentTools`Common`$deploymentsPath = $allTestDeployPath
+        },
+        DeployAgentTools[
+            All,
+            "Wolfram",
+            OverwriteTarget -> True,
+            "VerifyLLMKit"  -> False
+        ]
+    ],
+    { _AgentToolsDeployment, _AgentToolsDeployment },
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-All-ExplicitServerShape"
+]
+
+VerificationTest[
+    Sort @ DeleteDuplicates @ Map[ #[ "Toolset" ] &, $allDep4 ],
+    { "Wolfram" },
+    TestID -> "DeployAgentTools-All-ExplicitServerOverridesDefault"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*1-Argument Form Defaults to Automatic*)
+(* DeployAgentTools[All] (no server argument) should be equivalent to
+   DeployAgentTools[All, Automatic, ...].  Use a fresh deployments path so
+   nothing already exists. *)
+VerificationTest[
+    $allDep5Path = FileNameJoin @ { $allTestTmpHome, ".deployments_1arg" };
+    $allDep5 = Block[
+        {
+            Wolfram`AgentTools`$SupportedMCPClients = $allTestClients,
+            $HomeDirectory                          = $allTestTmpHome,
+            Wolfram`AgentTools`Common`$deploymentsPath = $allDep5Path
+        },
+        (* Use OverwriteTarget so we don't conflict with the configs already
+           written under $allTestTmpHome by earlier tests. *)
+        DeployAgentTools[ All, OverwriteTarget -> True, "VerifyLLMKit" -> False ]
+    ],
+    { _AgentToolsDeployment, _AgentToolsDeployment },
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-All-1ArgForm"
+]
+
+VerificationTest[
+    (* 1-arg form falls through to per-client DefaultToolset, like Automatic *)
+    Sort @ DeleteDuplicates @ Map[ #[ "Toolset" ] &, $allDep5 ],
+    { "WolframLanguage" },
+    TestID -> "DeployAgentTools-All-1ArgFormUsesDefaultToolset"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Cleanup*)
+VerificationTest[
+    Quiet @ DeleteDirectory[ $allTestTmpHome, DeleteContents -> True ];
+    True,
+    True,
+    TestID -> "DeployAgentTools-All-Cleanup"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)
