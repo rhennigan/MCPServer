@@ -15,7 +15,7 @@ AgentTools provides four predefined server configurations, each tailored for dif
 
 ## Choosing a Server
 
-### Wolfram (Default)
+### Wolfram
 
 **Best for:** General-purpose use combining computational power with natural language understanding.
 
@@ -23,7 +23,7 @@ AgentTools provides four predefined server configurations, each tailored for dif
 InstallMCPServer["ClaudeDesktop", "Wolfram"]
 ```
 
-This is the default server when no server name is specified. It provides:
+This is the default server for chat clients (`ClaudeDesktop`, `Goose`) when no server name is specified. Coding clients default to `"WolframLanguage"` instead — see [mcp-clients.md](mcp-clients.md#clients-with-installmcpserver-support) for each client's default. It provides:
 
 | Component | Name | Description |
 |-----------|------|-------------|

@@ -79,6 +79,7 @@ BeginPackage[ "Wolfram`AgentTools`Common`" ];
 `exportMarkdownString;
 
 (* Shared symbols with DeployAgentTools: *)
+`defaultToolsetForTarget;
 `guessClientName;
 `installLocation;
 `projectInstallLocation;

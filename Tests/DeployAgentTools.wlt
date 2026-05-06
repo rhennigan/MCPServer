@@ -1044,4 +1044,132 @@ VerificationTest[
     TestID -> "DeployAgentTools-Cleanup@@Tests/DeployAgentTools.wlt:1035,1-1045,2"
 ]
 
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Automatic toolset resolution (per-client DefaultToolset)*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*DeployAgentTools with Automatic resolution*)
+VerificationTest[
+    autoDeployDir = CreateDirectory[ ];
+    autoDeployAuto = DeployAgentTools[
+        { "ClaudeCode", autoDeployDir },
+        Automatic,
+        "VerifyLLMKit" -> False
+    ];
+    autoDeployAuto[ "Toolset" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DeployAgentTools-Automatic-ClaudeCode@@Tests/DeployAgentTools.wlt:1054,1-1065,2"
+]
+
+VerificationTest[
+    autoDeployAutoUUID = autoDeployAuto[ "UUID" ];
+    Quiet @ catchAlways @ DeleteObject @ autoDeployAuto;
+    Quiet @ DeleteDirectory[ autoDeployDir, DeleteContents -> True ];
+    autoDeployDir = CreateDirectory[ ];
+    autoDeploy1Arg = DeployAgentTools[
+        { "ClaudeCode", autoDeployDir },
+        "VerifyLLMKit" -> False
+    ];
+    autoDeploy1Arg[ "Toolset" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DeployAgentTools-1Arg-ClaudeCode@@Tests/DeployAgentTools.wlt:1067,1-1080,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*DeployAgentTools Automatic with File target + ApplicationName*)
+(* For arbitrary File[...] targets, an explicit ApplicationName option must
+   drive the Automatic toolset choice instead of falling through to "Wolfram". *)
+VerificationTest[
+    Quiet @ catchAlways @ DeleteObject @ autoDeploy1Arg;
+    Quiet @ DeleteDirectory[ autoDeployDir, DeleteContents -> True ];
+    autoDeployDir = CreateDirectory[ ];
+    autoDeployFile = File @ FileNameJoin @ { autoDeployDir, "custom_config_" <> CreateUUID[ ] <> ".json" };
+    autoDeployFileApp = DeployAgentTools[
+        autoDeployFile,
+        Automatic,
+        "ApplicationName" -> "Cline",
+        "VerifyLLMKit"    -> False
+    ];
+    autoDeployFileApp[ "Toolset" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DeployAgentTools-Automatic-File-AppName-Cline@@Tests/DeployAgentTools.wlt:1087,1-1102,2"
+]
+
+VerificationTest[
+    Quiet @ catchAlways @ DeleteObject @ autoDeployFileApp;
+    Quiet @ DeleteDirectory[ autoDeployDir, DeleteContents -> True ];
+    autoDeployDir = CreateDirectory[ ];
+    autoDeployFile = File @ FileNameJoin @ { autoDeployDir, "custom_config_" <> CreateUUID[ ] <> ".json" };
+    autoDeployFileChat = DeployAgentTools[
+        autoDeployFile,
+        Automatic,
+        "ApplicationName" -> "ClaudeDesktop",
+        "VerifyLLMKit"    -> False
+    ];
+    autoDeployFileChat[ "Toolset" ],
+    "Wolfram",
+    SameTest -> Equal,
+    TestID   -> "DeployAgentTools-Automatic-File-AppName-ClaudeDesktop@@Tests/DeployAgentTools.wlt:1104,1-1119,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*DeployAgentTools Automatic with recognizable File target (no ApplicationName)*)
+(* When the File[...] path itself identifies a known client, Automatic must
+   pick up that client's DefaultToolset without needing an explicit
+   "ApplicationName" option.  These guard against regressions where
+   path-based detection silently drops back to "Wolfram". *)
+
+(* .mcp.json -> ClaudeCode -> "WolframLanguage" *)
+VerificationTest[
+    Quiet @ catchAlways @ DeleteObject @ autoDeployFileChat;
+    Quiet @ DeleteDirectory[ autoDeployDir, DeleteContents -> True ];
+    autoDeployDir = CreateDirectory[ ];
+    autoDeployFile = File @ FileNameJoin @ { autoDeployDir, ".mcp.json" };
+    autoDeployFilePath = DeployAgentTools[
+        autoDeployFile,
+        Automatic,
+        "VerifyLLMKit" -> False
+    ];
+    autoDeployFilePath[ "Toolset" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DeployAgentTools-Automatic-File-ClaudeCodeProject@@Tests/DeployAgentTools.wlt:1130,1-1144,2"
+]
+
+(* .vscode/mcp.json -> VisualStudioCode -> "WolframLanguage" *)
+VerificationTest[
+    Quiet @ catchAlways @ DeleteObject @ autoDeployFilePath;
+    Quiet @ DeleteDirectory[ autoDeployDir, DeleteContents -> True ];
+    autoDeployDir = CreateDirectory[ ];
+    CreateDirectory @ FileNameJoin @ { autoDeployDir, ".vscode" };
+    autoDeployFile = File @ FileNameJoin @ { autoDeployDir, ".vscode", "mcp.json" };
+    autoDeployFileVSCode = DeployAgentTools[
+        autoDeployFile,
+        Automatic,
+        "VerifyLLMKit" -> False
+    ];
+    autoDeployFileVSCode[ "Toolset" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DeployAgentTools-Automatic-File-VSCodeProject@@Tests/DeployAgentTools.wlt:1147,1-1162,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Cleanup*)
+VerificationTest[
+    Quiet @ catchAlways @ DeleteObject @ autoDeployFileVSCode;
+    Quiet @ DeleteDirectory[ autoDeployDir, DeleteContents -> True ];
+    True,
+    True,
+    TestID -> "DeployAgentTools-Automatic-Cleanup@@Tests/DeployAgentTools.wlt:1167,1-1173,2"
+]
+
 (* :!CodeAnalysis::EndBlock:: *)
