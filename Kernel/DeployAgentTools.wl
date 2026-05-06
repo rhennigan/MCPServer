@@ -261,9 +261,15 @@ $$deployAgentToolsOptions = OptionsPattern @ { DeployAgentTools, InstallMCPServe
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Main Definition*)
+(* Default server is `Automatic` *)
 DeployAgentTools[ target_, opts: $$deployAgentToolsOptions ] :=
     catchMine @ DeployAgentTools[ target, Automatic, opts ];
 
+(* Deploy for all clients *)
+DeployAgentTools[ All, server_, opts: $$deployAgentToolsOptions ] :=
+    catchMine @ deployAllAgentTools[ server, opts ];
+
+(* Resolve automatic server *)
 DeployAgentTools[ target_, Automatic, opts: $$deployAgentToolsOptions ] :=
     catchMine @ DeployAgentTools[
         target,
@@ -278,10 +284,57 @@ DeployAgentTools[ target_, Automatic, opts: $$deployAgentToolsOptions ] :=
         opts
     ];
 
+(* Proceed with deployment *)
 DeployAgentTools[ target_, server_, opts: $$deployAgentToolsOptions ] :=
     catchMine @ deployAgentTools[ target, ensureMCPServerExists @ MCPServerObject @ server, opts ];
 
 DeployAgentTools // endExportedDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*deployAllAgentTools*)
+deployAllAgentTools // beginDefinition;
+
+deployAllAgentTools[ server0_, opts: $$deployAgentToolsOptions ] := Enclose[
+    Module[ { clients, server, results },
+        clients = ConfirmMatch[ Keys @ $SupportedMCPClients, { __String }, "Clients" ];
+
+        server = If[ server0 === Automatic,
+                     Automatic,
+                     ConfirmBy[ ensureMCPServerExists @ MCPServerObject @ server0, MCPServerObjectQ, "Server" ]
+                 ];
+
+        results = ConfirmMatch[
+            Map[ deployAgentToolsQuietly[ #, server, opts ] &, clients ],
+            { (_AgentToolsDeployment | Missing[ "DeploymentExists", _ ]).. },
+            "Results"
+        ];
+
+        If[ AnyTrue[ results, MissingQ ], messagePrint[ "DeploymentsExistWarning" ] ];
+
+        results
+    ],
+    throwInternalFailure
+];
+
+deployAllAgentTools // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*deployAgentToolsQuietly*)
+deployAgentToolsQuietly // beginDefinition;
+
+deployAgentToolsQuietly[ target_, server_, opts: $$deployAgentToolsOptions ] :=
+    Quiet[
+        Replace[
+            catchAlways @ DeployAgentTools[ target, server, opts ],
+            Failure[ "DeployAgentTools::DeploymentExists", _ ] :>
+                Missing[ "DeploymentExists", target ]
+        ],
+        { DeployAgentTools::DeploymentExists }
+    ];
+
+deployAgentToolsQuietly // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
