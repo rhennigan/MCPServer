@@ -328,8 +328,10 @@ deployAgentToolsQuietly[ target_, server_, opts: $$deployAgentToolsOptions ] :=
     Quiet[
         Replace[
             catchAlways @ DeployAgentTools[ target, server, opts ],
-            Failure[ "DeployAgentTools::DeploymentExists", _ ] :>
-                Missing[ "DeploymentExists", target ]
+            {
+                Failure[ "DeployAgentTools::DeploymentExists", _ ] :> Missing[ "DeploymentExists", target ],
+                other_Failure :> throwTop @ other
+            }
         ],
         { DeployAgentTools::DeploymentExists }
     ];
