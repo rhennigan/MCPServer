@@ -25,6 +25,7 @@ The following clients have built-in support for automatic configuration via `Ins
 | Gemini CLI | `"GeminiCLI"` | `"Gemini"` | JSON | No | `"WolframLanguage"` |
 | Goose | `"Goose"` | — | YAML | No | `"Wolfram"` |
 | Antigravity | `"Antigravity"` | `"GoogleAntigravity"` | JSON | No | `"WolframLanguage"` |
+| Junie (IDE + CLI) | `"Junie"` | `"JetBrainsJunie"` | JSON | Yes | `"WolframLanguage"` |
 | Kiro | `"Kiro"` | — | JSON | Yes | `"WolframLanguage"` |
 | Codex CLI | `"Codex"` | `"OpenAICodex"` | TOML | Yes | `"WolframLanguage"` |
 | OpenCode | `"OpenCode"` | — | JSON | Yes | `"WolframLanguage"` |
@@ -270,6 +271,21 @@ extensions:
 ```
 
 Note: Goose uses YAML with an `extensions` key (not `mcpServers`) and renames several fields: `command` → `cmd`, `env` → `envs`. `InstallMCPServer` automatically adds the required `name`, `enabled: true`, `type: stdio`, and `timeout: 300` fields. Goose has no project-level configuration.
+
+### Junie (JetBrains IDE plugin + Junie CLI)
+
+| Scope | Config Location |
+|-------|----------------|
+| Global | `~/.junie/mcp/mcp.json` |
+| Project | `.junie/mcp/mcp.json` (in project root) |
+
+**Format:** Same as Claude Desktop (`mcpServers` key).
+
+Junie is JetBrains' AI coding agent. **A single `InstallMCPServer["Junie", ...]` call covers both the JetBrains IDE plugin and the standalone Junie CLI** — they read the same files. Specifically:
+
+- The user-scope file at `~/.junie/mcp/mcp.json` is shared across every JetBrains IDE that hosts the Junie plugin (IntelliJ IDEA, PyCharm, WebStorm, GoLand, PhpStorm, RubyMine, RustRover, Rider, etc.) **and** the standalone `junie` CLI. There is no per-IDE config split.
+- The project-scope file at `.junie/mcp/mcp.json` (in the project root) is designed to be checked into version control and is read by the same plugin and CLI.
+- Junie auto-reloads `mcp.json` changes, so no IDE restart is needed after running `InstallMCPServer`.
 
 ### Kiro
 
