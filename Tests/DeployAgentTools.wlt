@@ -1366,6 +1366,68 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*resolveServerForClient Helper*)
+(* Unit tests for the per-client server resolver used by deployAllAgentTools.
+   When server is Automatic, each client's own DefaultToolset is used; an
+   explicit server passes through. *)
+VerificationTest[
+    resolveServerForClient = Wolfram`AgentTools`DeployAgentTools`Private`resolveServerForClient;
+    resolveServerForClient[ "Cursor", Automatic ],
+    "WolframLanguage",
+    TestID -> "DeployAgentTools-All-resolveServerForClient-CursorAutomatic"
+]
+
+VerificationTest[
+    resolveServerForClient[ "ClaudeDesktop", Automatic ],
+    "Wolfram",
+    TestID -> "DeployAgentTools-All-resolveServerForClient-ClaudeDesktopAutomatic"
+]
+
+VerificationTest[
+    resolveServerForClient[ "Cursor", "Wolfram" ],
+    "Wolfram",
+    TestID -> "DeployAgentTools-All-resolveServerForClient-ExplicitPassthrough"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*ApplicationName Doesn't Override Per-Client Default*)
+(* When server is Automatic, an explicit "ApplicationName" option must not
+   override each client's own DefaultToolset.  Without the resolveServerForClient
+   indirection, DeployAgentTools[target, Automatic, opts] gives ApplicationName
+   precedence over target-based resolution, which would silently rewrite every
+   client's toolset to whatever ApplicationName resolves to. *)
+VerificationTest[
+    $allDepAppName = Block[
+        {
+            Wolfram`AgentTools`$SupportedMCPClients    = $allTestClients,
+            $HomeDirectory                             = $allTestTmpHome,
+            Wolfram`AgentTools`Common`$deploymentsPath =
+                FileNameJoin @ { $allTestTmpHome, ".deployments_appname" }
+        },
+        DeployAgentTools[
+            All,
+            "VerifyLLMKit"    -> False,
+            "ApplicationName" -> "ClaudeDesktop"
+        ]
+    ],
+    { _AgentToolsDeployment, _AgentToolsDeployment },
+    SameTest -> MatchQ,
+    TestID   -> "DeployAgentTools-All-ApplicationName-Setup"
+]
+
+VerificationTest[
+    (* ClaudeDesktop's DefaultToolset is "Wolfram"; if ApplicationName were
+       being honored as the default-toolset selector, both deployments would
+       come back as "Wolfram".  Both Cursor and ClaudeCode are coding clients,
+       so the correct result is "WolframLanguage" for both. *)
+    Sort @ DeleteDuplicates @ Map[ #[ "Toolset" ] &, $allDepAppName ],
+    { "WolframLanguage" },
+    TestID -> "DeployAgentTools-All-ApplicationName-PerClientDefault"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*Unsupported Clients Return Missing["Unsupported", ...]*)
 (* Clients without an InstallLocation entry for the current operating system
    should be reported as Missing["Unsupported", {client, $OperatingSystem}]

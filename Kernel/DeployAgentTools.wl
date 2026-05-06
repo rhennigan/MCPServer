@@ -305,7 +305,7 @@ deployAllAgentTools[ server0_, opts: $$deployAgentToolsOptions ] := Enclose[
                  ];
 
         results = ConfirmMatch[
-            Map[ deployAgentToolsQuietly[ #, server, opts ] &, clients ],
+            Map[ deployAgentToolsQuietly[ #, resolveServerForClient[ #, server ], opts ] &, clients ],
             { (_AgentToolsDeployment | Missing[ "DeploymentExists", _ ] | Missing[ "Unsupported", _ ]).. },
             "Results"
         ];
@@ -320,6 +320,19 @@ deployAllAgentTools[ server0_, opts: $$deployAgentToolsOptions ] := Enclose[
 ];
 
 deployAllAgentTools // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*resolveServerForClient*)
+(* When `server === Automatic`, resolve each client's `DefaultToolset` directly
+   from the client name.  Going through the 2-arg `defaultToolsetForTarget`
+   inside `DeployAgentTools[target, Automatic, opts]` would let an explicit
+   `"ApplicationName" -> name` option override the per-client default, which
+   defeats the point of `All`. *)
+resolveServerForClient // beginDefinition;
+resolveServerForClient[ client_String, Automatic ] := defaultToolsetForTarget @ client;
+resolveServerForClient[ _, server_ ] := server;
+resolveServerForClient // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
