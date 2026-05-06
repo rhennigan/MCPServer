@@ -71,7 +71,7 @@ InstallMCPServer["ClaudeDesktop"]
 (* Out: Success["InstallMCPServer", <|...|>] *)
 ```
 
-When no server is specified, each client gets a sensible default — chat clients (Claude Desktop, Goose) get the general-purpose `"Wolfram"` server, while coding clients (Claude Code, Cursor, VS Code, etc.) get `"WolframLanguage"`. Pass an explicit server name as the second argument to override.
+When no server is specified, each named client gets a sensible default — chat clients (Claude Desktop, Goose) get the general-purpose `"Wolfram"` server, while coding clients (Claude Code, Cursor, VS Code, etc.) get `"WolframLanguage"`. For `File[...]` targets, the same per-client default applies when the path or content identifies a known client (or `"ApplicationName"` is supplied); otherwise it falls back to `"Wolfram"`. Pass an explicit server name as the second argument to override.
 
 After restarting Claude Desktop, it will have access to Wolfram knowledge and tools:
 
