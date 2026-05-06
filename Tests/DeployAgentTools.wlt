@@ -1120,13 +1120,56 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*Cleanup*)
+(*DeployAgentTools Automatic with recognizable File target (no ApplicationName)*)
+(* When the File[...] path itself identifies a known client, Automatic must
+   pick up that client's DefaultToolset without needing an explicit
+   "ApplicationName" option.  These guard against regressions where
+   path-based detection silently drops back to "Wolfram". *)
+
+(* .mcp.json -> ClaudeCode -> "WolframLanguage" *)
 VerificationTest[
     Quiet @ catchAlways @ DeleteObject @ autoDeployFileChat;
     Quiet @ DeleteDirectory[ autoDeployDir, DeleteContents -> True ];
+    autoDeployDir = CreateDirectory[ ];
+    autoDeployFile = File @ FileNameJoin @ { autoDeployDir, ".mcp.json" };
+    autoDeployFilePath = DeployAgentTools[
+        autoDeployFile,
+        Automatic,
+        "VerifyLLMKit" -> False
+    ];
+    autoDeployFilePath[ "Toolset" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DeployAgentTools-Automatic-File-ClaudeCodeProject@@Tests/DeployAgentTools.wlt:1130,1-1144,2"
+]
+
+(* .vscode/mcp.json -> VisualStudioCode -> "WolframLanguage" *)
+VerificationTest[
+    Quiet @ catchAlways @ DeleteObject @ autoDeployFilePath;
+    Quiet @ DeleteDirectory[ autoDeployDir, DeleteContents -> True ];
+    autoDeployDir = CreateDirectory[ ];
+    CreateDirectory @ FileNameJoin @ { autoDeployDir, ".vscode" };
+    autoDeployFile = File @ FileNameJoin @ { autoDeployDir, ".vscode", "mcp.json" };
+    autoDeployFileVSCode = DeployAgentTools[
+        autoDeployFile,
+        Automatic,
+        "VerifyLLMKit" -> False
+    ];
+    autoDeployFileVSCode[ "Toolset" ],
+    "WolframLanguage",
+    SameTest -> Equal,
+    TestID   -> "DeployAgentTools-Automatic-File-VSCodeProject@@Tests/DeployAgentTools.wlt:1147,1-1162,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Cleanup*)
+VerificationTest[
+    Quiet @ catchAlways @ DeleteObject @ autoDeployFileVSCode;
+    Quiet @ DeleteDirectory[ autoDeployDir, DeleteContents -> True ];
     True,
     True,
-    TestID -> "DeployAgentTools-Automatic-Cleanup@@Tests/DeployAgentTools.wlt:1124,1-1130,2"
+    TestID -> "DeployAgentTools-Automatic-Cleanup@@Tests/DeployAgentTools.wlt:1167,1-1173,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)
