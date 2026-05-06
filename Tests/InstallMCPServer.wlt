@@ -2398,6 +2398,227 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Junie Support*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Install Location for Junie*)
+VerificationTest[
+    Wolfram`AgentTools`Common`installLocation[ "Junie", "Windows" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-Junie-Windows"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`installLocation[ "Junie", "MacOSX" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-Junie-MacOSX"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`installLocation[ "Junie", "Unix" ],
+    _File,
+    SameTest -> MatchQ,
+    TestID   -> "InstallLocation-Junie-Unix"
+]
+
+(* Junie's user-scope path is .junie/mcp/mcp.json under $HomeDirectory on every OS *)
+VerificationTest[
+    Module[ { file, split },
+        file = Wolfram`AgentTools`Common`installLocation[ "Junie", $OperatingSystem ];
+        split = FileNameSplit @ First @ file;
+        Take[ split, -3 ]
+    ],
+    { ".junie", "mcp", "mcp.json" },
+    SameTest -> Equal,
+    TestID   -> "InstallLocation-Junie-PathShape"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Name Normalization*)
+VerificationTest[
+    Wolfram`AgentTools`Common`toInstallName[ "Junie" ],
+    "Junie",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-Junie"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`Common`toInstallName[ "JetBrainsJunie" ],
+    "Junie",
+    SameTest -> Equal,
+    TestID   -> "ToInstallName-JetBrainsJunie"
+]
+
+VerificationTest[
+    Wolfram`AgentTools`InstallMCPServer`Private`installDisplayName[ "Junie" ],
+    "Junie",
+    SameTest -> Equal,
+    TestID   -> "InstallDisplayName-Junie"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Junie Install and Uninstall*)
+VerificationTest[
+    junieConfigFile = testConfigFile[];
+    installResult = InstallMCPServer[ junieConfigFile, "WolframLanguage", "VerifyLLMKit" -> False, "ApplicationName" -> "Junie" ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-Junie-Basic"
+]
+
+VerificationTest[
+    FileExistsQ[ junieConfigFile ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Junie-FileExists"
+]
+
+VerificationTest[
+    Module[ { content },
+        content = Import[ junieConfigFile, "RawJSON" ];
+        KeyExistsQ[ content, "mcpServers" ] && KeyExistsQ[ content[ "mcpServers" ], "Wolfram" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Junie-VerifyContent"
+]
+
+(* Junie uses the standard mcpServers format: no Cline-style disabled/autoApprove fields,
+   no Copilot-style tools field, no OpenCode-style top-level "mcp" key *)
+VerificationTest[
+    Module[ { content, server },
+        content = Import[ junieConfigFile, "RawJSON" ];
+        server = content[ "mcpServers", "Wolfram" ];
+        AssociationQ @ server &&
+        KeyExistsQ[ server, "command" ] &&
+        ! KeyExistsQ[ server, "disabled" ] &&
+        ! KeyExistsQ[ server, "autoApprove" ] &&
+        ! KeyExistsQ[ server, "tools" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Junie-StandardFormat"
+]
+
+VerificationTest[
+    uninstallResult = UninstallMCPServer[ junieConfigFile, "WolframLanguage", "ApplicationName" -> "Junie" ],
+    _Success,
+    SameTest -> MatchQ,
+    TestID   -> "UninstallMCPServer-Junie-Basic"
+]
+
+VerificationTest[
+    Module[ { content },
+        content = Import[ junieConfigFile, "RawJSON" ];
+        KeyExistsQ[ content, "mcpServers" ] && ! KeyExistsQ[ content[ "mcpServers" ], "Wolfram" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "UninstallMCPServer-Junie-VerifyRemoval"
+]
+
+VerificationTest[
+    cleanupTestFiles[ junieConfigFile ],
+    { Null },
+    SameTest -> MatchQ,
+    TestID   -> "InstallMCPServer-Junie-Cleanup"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Junie Project-Level Install*)
+VerificationTest[
+    Module[ { dir, projectFile, result },
+        dir = FileNameJoin @ { $TemporaryDirectory, "junie_proj_" <> CreateUUID[] };
+        CreateDirectory @ dir;
+        WithCleanup[
+            result = InstallMCPServer[ { "Junie", dir }, "WolframLanguage", "VerifyLLMKit" -> False ];
+            projectFile = FileNameJoin @ { dir, ".junie", "mcp", "mcp.json" };
+            { MatchQ[ result, _Success ], FileExistsQ @ projectFile },
+            Quiet @ DeleteDirectory[ dir, DeleteContents -> True ]
+        ]
+    ],
+    { True, True },
+    SameTest -> Equal,
+    TestID   -> "InstallMCPServer-Junie-ProjectLevel"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Auto-Detection from Path*)
+
+(* File at .junie/mcp/mcp.json under any directory should be detected as Junie when
+   installing without an explicit ApplicationName. *)
+VerificationTest[
+    Module[ { dir, file, result },
+        dir = FileNameJoin @ { $TemporaryDirectory, "junie_guess_" <> CreateUUID[], ".junie", "mcp" };
+        CreateDirectory[ dir, CreateIntermediateDirectories -> True ];
+        file = FileNameJoin @ { dir, "mcp.json" };
+        WithCleanup[
+            InstallMCPServer[ File @ file, "WolframLanguage", "VerifyLLMKit" -> False ];
+            result = Import[ file, "RawJSON" ],
+            Quiet @ DeleteDirectory[ dir, DeleteContents -> True ];
+            Quiet @ DeleteDirectory[ DirectoryName[ dir, 2 ], DeleteContents -> True ]
+        ];
+        AssociationQ @ result && KeyExistsQ[ result, "mcpServers" ]
+    ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "GuessClientName-Junie-PathMatch"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*$SupportedMCPClients metadata for Junie*)
+VerificationTest[
+    $SupportedMCPClients[ "Junie", "DisplayName" ],
+    "Junie",
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-JunieDisplayName"
+]
+
+VerificationTest[
+    $SupportedMCPClients[ "Junie", "Aliases" ],
+    { "JetBrainsJunie" },
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-JunieAliases"
+]
+
+VerificationTest[
+    $SupportedMCPClients[ "Junie", "ConfigFormat" ],
+    "JSON",
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-JunieConfigFormat"
+]
+
+VerificationTest[
+    $SupportedMCPClients[ "Junie", "ConfigKey" ],
+    { "mcpServers" },
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-JunieConfigKey"
+]
+
+VerificationTest[
+    $SupportedMCPClients[ "Junie", "ProjectSupport" ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-JunieProjectSupport"
+]
+
+VerificationTest[
+    StringStartsQ[ $SupportedMCPClients[ "Junie", "URL" ], "https://" ],
+    True,
+    SameTest -> Equal,
+    TestID   -> "SupportedMCPClients-JunieURL"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Kiro Support*)
 
 (* ::**************************************************************************************************************:: *)
@@ -2761,14 +2982,14 @@ VerificationTest[
 
 VerificationTest[
     Length @ $SupportedMCPClients,
-    17,
+    18,
     SameTest -> Equal,
-    TestID   -> "SupportedMCPClients-Has17Clients@@Tests/InstallMCPServer.wlt:2762,1-2767,2"
+    TestID   -> "SupportedMCPClients-Has18Clients@@Tests/InstallMCPServer.wlt:2762,1-2767,2"
 ]
 
 VerificationTest[
     Keys @ $SupportedMCPClients,
-    { "AmazonQ", "Antigravity", "AugmentCode", "AugmentCodeIDE", "ClaudeCode", "ClaudeDesktop", "Cline", "Codex", "CopilotCLI", "Cursor", "GeminiCLI", "Goose", "Kiro", "OpenCode", "VisualStudioCode", "Windsurf", "Zed" },
+    { "AmazonQ", "Antigravity", "AugmentCode", "AugmentCodeIDE", "ClaudeCode", "ClaudeDesktop", "Cline", "Codex", "CopilotCLI", "Cursor", "GeminiCLI", "Goose", "Junie", "Kiro", "OpenCode", "VisualStudioCode", "Windsurf", "Zed" },
     SameTest -> Equal,
     TestID   -> "SupportedMCPClients-KeysSorted@@Tests/InstallMCPServer.wlt:2769,1-2774,2"
 ]

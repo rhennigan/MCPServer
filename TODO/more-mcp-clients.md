@@ -55,6 +55,11 @@ Cherry Studio stores MCP configurations in Redux state with localStorage persist
 - [x] Implement support for `InstallMCPServer["AugmentCode", ...]` (Auggie CLI)
 - [x] Implement support for `InstallMCPServer["AugmentCodeIDE", ...]` (VS Code extension — array-rooted JSON)
 
+### [Junie](https://www.jetbrains.com/junie/)
+
+- [x] Research how MCP servers are added to Junie and write a detailed report in [junie.md](../client-research/junie.md)
+- [x] Implement support for `InstallMCPServer["Junie", ...]` (covers both the JetBrains IDE plugin and the Junie CLI — they share `~/.junie/mcp/mcp.json`)
+
 ## On Hold
 
 ### [Continue](https://www.continue.dev/)
