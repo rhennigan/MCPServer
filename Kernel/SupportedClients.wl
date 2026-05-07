@@ -21,7 +21,7 @@ $SupportedMCPClients := WithCleanup[
 DetectedMCPClients // beginDefinition;
 
 DetectedMCPClients[ ] :=
-    catchMine @ Keys @ KeySelect[
+    catchMine @ KeySelect[
         $SupportedMCPClients,
         Quiet @ FileExistsQ @ catchAlways @ installLocation[ # ] &
     ];

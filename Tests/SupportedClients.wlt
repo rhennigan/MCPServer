@@ -21,10 +21,10 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*Returns a list of supported client names*)
+(*Returns an association of supported client metadata keyed by canonical name*)
 VerificationTest[
     DetectedMCPClients[ ],
-    { ___String },
+    KeyValuePattern[ { } ]?AssociationQ,
     SameTest -> MatchQ,
     TestID   -> "DetectedMCPClients-ReturnShape@@Tests/SupportedClients.wlt:25,1-30,2"
 ]
@@ -33,18 +33,20 @@ VerificationTest[
 (* ::Subsection::Closed:: *)
 (*All detected names are valid supported clients*)
 VerificationTest[
-    SubsetQ[ Keys @ $SupportedMCPClients, DetectedMCPClients[ ] ],
+    SubsetQ[ Keys @ $SupportedMCPClients, Keys @ DetectedMCPClients[ ] ],
     True,
     TestID -> "DetectedMCPClients-Subset@@Tests/SupportedClients.wlt:36,1-40,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
-(*Result is sorted (since KeySelect preserves $SupportedMCPClients ordering)*)
+(*Result preserves the ordering of $SupportedMCPClients*)
 VerificationTest[
-    With[ { detected = DetectedMCPClients[ ] }, detected === Sort @ detected ],
+    With[ { detected = DetectedMCPClients[ ] },
+        Keys[ detected ] === Select[ Keys @ $SupportedMCPClients, KeyExistsQ[ detected, # ] & ]
+    ],
     True,
-    TestID -> "DetectedMCPClients-Sorted@@Tests/SupportedClients.wlt:46,1-50,2"
+    TestID -> "DetectedMCPClients-Ordering@@Tests/SupportedClients.wlt:46,1-50,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
