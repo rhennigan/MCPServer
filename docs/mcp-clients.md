@@ -578,6 +578,22 @@ $SupportedMCPClients["ClaudeDesktop"]
 (* <|"Aliases" -> {"Claude"}, "ConfigFormat" -> "JSON", "ConfigKey" -> {"mcpServers"}, ...|> *)
 ```
 
+### Detecting Installed Clients
+
+`DetectedMCPClients[]` returns the subset of `$SupportedMCPClients` whose user-scope config file exists on the current machine — a quick way to discover which supported clients are actually installed before calling `InstallMCPServer`.
+
+```wl
+(* Names of clients that appear to be installed locally *)
+Keys @ DetectedMCPClients[ ]
+(* {"ClaudeCode", "Cursor", "VisualStudioCode", ...} *)
+
+(* Full metadata for detected clients *)
+DetectedMCPClients[ ]
+(* <|"ClaudeCode" -> <|...|>, "Cursor" -> <|...|>, ...|> *)
+```
+
+The result is keyed by canonical client name and preserves the ordering of `$SupportedMCPClients`. Detection is based purely on the existence of each client's `"InstallLocation"` config file for the current `$OperatingSystem`; project-scope config files (`"ProjectPath"`) are not checked.
+
 ## Adding Support for New Clients
 
 All client configuration is centralized in `$supportedMCPClients` in `Kernel/SupportedClients.wl`. To add support for a new MCP client, add an entry to this association.

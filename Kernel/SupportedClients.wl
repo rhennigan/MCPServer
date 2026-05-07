@@ -16,6 +16,19 @@ $SupportedMCPClients := WithCleanup[
 ];
 
 (* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*DetectedMCPClients*)
+DetectedMCPClients // beginDefinition;
+
+DetectedMCPClients[ ] :=
+    catchMine @ KeySelect[
+        $SupportedMCPClients,
+        Quiet @ FileExistsQ @ catchAlways @ installLocation[ # ] &
+    ];
+
+DetectedMCPClients // endExportedDefinition;
+
+(* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*$supportedMCPClients*)
 $supportedMCPClients = <|

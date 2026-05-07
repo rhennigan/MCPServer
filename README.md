@@ -273,6 +273,7 @@ CreateMCPServer["My MCP Server", <|
 | `InstallMCPServer[client, server]` | Install a specific server for a client |
 | `UninstallMCPServer[client]` | Remove all servers from a client |
 | `UninstallMCPServer[client, name]` | Remove a specific server from a client |
+| `DetectedMCPClients[]` | Subset of `$SupportedMCPClients` whose config file exists on this machine |
 | `DeployAgentTools[target]` | Deploy tools to a client with tracked deployment management |
 | `DeployAgentTools[All]` | Deploy tools to every client in `$SupportedMCPClients` (see [docs/deploy-agent-tools.md](docs/deploy-agent-tools.md#deploying-to-all-clients)) |
 | `ValidateAgentToolsPacletExtension[paclet]` | Validate an `"AgentTools"` paclet extension |
