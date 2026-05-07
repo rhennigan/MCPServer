@@ -475,29 +475,6 @@ CreatePreferencesContent // endExportedDefinition;
 
 
 (* ::Section::Closed:: *)
-(*DetectedMCPClients*)
-
-
-DetectedMCPClients // beginDefinition;
-
-
-DetectedMCPClients[ ] :=
-	Select[
-		$SupportedMCPClients, 
-		FileExistsQ @ FileNameJoin @ Replace[
-			Lookup[#, "InstallLocation", {}], 
-			{
-				a_Association :> Lookup[a, $OperatingSystem, {}],
-				Except[_List] :> {}
-			}
-		]&
-	]
-
-
-DetectedMCPClients // endExportedDefinition;
-
-
-(* ::Section::Closed:: *)
 (*Package Footer*)
 
 
