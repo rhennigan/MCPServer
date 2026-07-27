@@ -17,7 +17,7 @@ For Wolfram Language development, it's recommended to use the **WolframLanguage*
 
 All installation methods use the `InstallMCPServer` function. Open a Wolfram Language session and run the appropriate command for your application.
 
-> **Note:** Regardless of which server you install (e.g. `"WolframLanguage"`), built-in servers are registered in the client's configuration under the name **Wolfram** by default, so that is the server name shown by client UIs and CLI commands. To register under a different name, pass the `"MCPServerName"` option to `InstallMCPServer` (see [MCPServerName](mcp-clients.md#mcpservername)).
+> **Note:** All built-in servers (e.g. "WolframLanguage") are registered in the client's configuration under the name **Wolfram** by default, so that is the server name shown by client UIs and CLI commands. To register under a different name, pass the "MCPServerName" option to `InstallMCPServer` (see [MCPServerName](mcp-clients.md#mcpservername)).
 
 ### Amazon Q Developer
 
