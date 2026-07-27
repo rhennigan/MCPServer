@@ -162,7 +162,7 @@ To verify the installation from the command line:
 kimi mcp list
 ```
 
-The output should indicate that the "WolframLanguage" server is configured. You can also run `kimi mcp test WolframLanguage` to confirm connectivity and list the available tools.
+The output should indicate that the "Wolfram" server is configured. You can also run `kimi mcp test Wolfram` to confirm connectivity and list the available tools.
 
 ### OpenAI Codex
 

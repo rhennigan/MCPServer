@@ -408,7 +408,7 @@ Junie is JetBrains' AI coding agent. **A single `InstallMCPServer["Junie", ...]`
 
 **Format:** Same as Claude Desktop (`mcpServers` key).
 
-Kimi Code (also known as Kimi CLI) is Moonshot AI's terminal coding agent. It reads MCP servers from the `mcpServers` key of `~/.kimi/mcp.json` using the standard stdio entry shape (`command`, `args`, `env`). Only global installation is supported; there is no documented project-scope config file, so `InstallMCPServer["KimiCode", ...]` writes the user-level file. Verify the installation with `kimi mcp list` (or `kimi mcp test WolframLanguage`).
+Kimi Code (also known as Kimi CLI) is Moonshot AI's terminal coding agent. It reads MCP servers from the `mcpServers` key of `~/.kimi/mcp.json` using the standard stdio entry shape (`command`, `args`, `env`). Only global installation is supported; there is no documented project-scope config file, so `InstallMCPServer["KimiCode", ...]` writes the user-level file. Verify the installation with `kimi mcp list` (or `kimi mcp test Wolfram`, since built-in servers are installed under the `"Wolfram"` config key by default).
 
 ### Kiro
 
