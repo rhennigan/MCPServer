@@ -382,7 +382,7 @@ Notebook[
                CellID -> 223231909
               ],
               Cell[
-               "claude mcp get WolframLanguage",
+               "claude mcp get Wolfram",
                "ExternalLanguage",
                CellEvaluationLanguage -> "Shell",
                CellID -> 40285647
@@ -392,7 +392,7 @@ Notebook[
             ]
            ],
            Cell[
-            "\:51fa\:529b\:306b\:306f\:300cWolframLanguage\:300d\:30b5\:30fc\:30d0\:306b\:63a5\:7d9a\:3055\:308c\:3066\:3044\:308b\:3053\:3068\:304c\:793a\:3055\:308c\:3066\:3044\:306a\:3051\:308c\:3070\:306a\:3089\:306a\:3044\:ff0e",
+            "\:51fa\:529b\:306b\:306f\:300cWolfram\:300d\:30b5\:30fc\:30d0\:306b\:63a5\:7d9a\:3055\:308c\:3066\:3044\:308b\:3053\:3068\:304c\:793a\:3055\:308c\:3066\:3044\:306a\:3051\:308c\:3070\:306a\:3089\:306a\:3044\:ff0e",
             "Text",
             CellID -> 58055741
            ]
@@ -459,7 +459,7 @@ Notebook[
             ]
            ],
            Cell[
-            "\:51fa\:529b\:306b\:306f\:300cWolframLanguage\:300d\:30b5\:30fc\:30d0\:304c\:8a2d\:5b9a\:3055\:308c\:3066\:3044\:308b\:3053\:3068\:304c\:793a\:3055\:308c\:3066\:3044\:306a\:3051\:308c\:3070\:306a\:3089\:306a\:3044\:ff0e",
+            "\:51fa\:529b\:306b\:306f\:300cWolfram\:300d\:30b5\:30fc\:30d0\:304c\:8a2d\:5b9a\:3055\:308c\:3066\:3044\:308b\:3053\:3068\:304c\:793a\:3055\:308c\:3066\:3044\:306a\:3051\:308c\:3070\:306a\:3089\:306a\:3044\:ff0e",
             "Text",
             CellID -> 243159260
            ]
@@ -531,7 +531,7 @@ Notebook[
             CellID -> 495461010
            ],
            Cell[
-            "\:300cWolframLanguage\:300d\:304c\:300cInstalled MCP Servers\:300d\:306e\:4e0b\:306b\:4e00\:89a7\:8868\:793a\:3055\:308c\:3066\:3044\:308b\:3053\:3068\:3092\:78ba\:8a8d\:3059\:308b",
+            "\:300cWolfram\:300d\:304c\:300cInstalled MCP Servers\:300d\:306e\:4e0b\:306b\:4e00\:89a7\:8868\:793a\:3055\:308c\:3066\:3044\:308b\:3053\:3068\:3092\:78ba\:8a8d\:3059\:308b",
             "Item",
             TaggingRules -> <|
              "OrignialExpressionUUID" -> "43a9c2c9-14fe-3942-8354-bc82d081de4a",
@@ -540,7 +540,7 @@ Notebook[
              "Date" -> {2026, 5, 20, 18, 5, 16.2102},
              "Model" -> <|"Service" -> "OpenAI", "Name" -> "gpt-5.4"|>,
              "Temperature" -> 1,
-             "OriginalCellString" -> "Cell[\"Verify that \\\"WolframLanguage\\\" is listed under \\\"Installed MCP Servers\\\"\", \"Item\", CellID -> 106649718]"
+             "OriginalCellString" -> "Cell[\"Verify that \\\"Wolfram\\\" is listed under \\\"Installed MCP Servers\\\"\", \"Item\", CellID -> 106649718]"
             |>,
             CellTags -> "Translated",
             CellID -> 106649718
@@ -586,7 +586,7 @@ Notebook[
             ]
            ],
            Cell[
-            "\:51fa\:529b\:306b\:306f\:ff0c\:300cWolframLanguage\:300d\:30b5\:30fc\:30d0\:304c\:8a2d\:5b9a\:3055\:308c\:3066\:3044\:308b\:3053\:3068\:304c\:793a\:3055\:308c\:3066\:3044\:306a\:3051\:308c\:3070\:306a\:3089\:306a\:3044\:ff0e",
+            "\:51fa\:529b\:306b\:306f\:ff0c\:300cWolfram\:300d\:30b5\:30fc\:30d0\:304c\:8a2d\:5b9a\:3055\:308c\:3066\:3044\:308b\:3053\:3068\:304c\:793a\:3055\:308c\:3066\:3044\:306a\:3051\:308c\:3070\:306a\:3089\:306a\:3044\:ff0e",
             "Text",
             TaggingRules -> <|
              "OrignialExpressionUUID" -> "82e48231-b856-4a4e-aefc-cdf39703e62c",
@@ -595,7 +595,7 @@ Notebook[
              "Date" -> {2026, 5, 20, 18, 9, 57.9453},
              "Model" -> <|"Service" -> "OpenAI", "Name" -> "gpt-5.4"|>,
              "Temperature" -> 1,
-             "OriginalCellString" -> "Cell[\"The output should indicate that the \\\"WolframLanguage\\\" server is configured.\", \"Text\", CellID -> 238422330]"
+             "OriginalCellString" -> "Cell[\"The output should indicate that the \\\"Wolfram\\\" server is configured.\", \"Text\", CellID -> 238422330]"
             |>,
             CellTags -> "Translated",
             CellID -> 238422330
@@ -687,7 +687,7 @@ Notebook[
             CellID -> 453151772
            ],
            Cell[
-            "\:300cWolframLanguage\:300d\:304c\:300cInstalled MCP Servers\:300d\:306e\:4e0b\:306b\:4e00\:89a7\:8868\:793a\:3055\:308c\:3066\:3044\:308b\:3053\:3068\:3092\:78ba\:8a8d\:3059\:308b",
+            "\:300cWolfram\:300d\:304c\:300cInstalled MCP Servers\:300d\:306e\:4e0b\:306b\:4e00\:89a7\:8868\:793a\:3055\:308c\:3066\:3044\:308b\:3053\:3068\:3092\:78ba\:8a8d\:3059\:308b",
             "Item",
             TaggingRules -> <|
              "OrignialExpressionUUID" -> "a4517b58-9085-3c43-b817-f150feb58489",
@@ -696,7 +696,7 @@ Notebook[
              "Date" -> {2026, 5, 20, 18, 10, 46.8188},
              "Model" -> <|"Service" -> "OpenAI", "Name" -> "gpt-5.4"|>,
              "Temperature" -> 1,
-             "OriginalCellString" -> "Cell[\"Verify that \\\"WolframLanguage\\\" is listed under \\\"Installed MCP Servers\\\"\", \"Item\", CellID -> 395951229]"
+             "OriginalCellString" -> "Cell[\"Verify that \\\"Wolfram\\\" is listed under \\\"Installed MCP Servers\\\"\", \"Item\", CellID -> 395951229]"
             |>,
             CellTags -> "Translated",
             CellID -> 395951229
@@ -859,7 +859,7 @@ Notebook[
                CellID -> 306930245
               ],
               Cell[
-               "codex mcp get WolframLanguage",
+               "codex mcp get Wolfram",
                "ExternalLanguage",
                CellEvaluationLanguage -> "Shell",
                CellID -> 446582763
@@ -869,7 +869,7 @@ Notebook[
             ]
            ],
            Cell[
-            "\:51fa\:529b\:306b\:306f\:300cWolframLanguage\:300d\:30b5\:30fc\:30d0\:304c\:6709\:52b9\:3068\:306a\:3063\:3066\:3044\:308b\:3053\:3068\:304c\:793a\:3055\:308c\:3066\:3044\:306a\:3051\:308c\:3070\:306a\:3089\:306a\:3044\:ff0e",
+            "\:51fa\:529b\:306b\:306f\:300cWolfram\:300d\:30b5\:30fc\:30d0\:304c\:6709\:52b9\:3068\:306a\:3063\:3066\:3044\:308b\:3053\:3068\:304c\:793a\:3055\:308c\:3066\:3044\:306a\:3051\:308c\:3070\:306a\:3089\:306a\:3044\:ff0e",
             "Text",
             CellID -> 725136532
            ]
@@ -979,7 +979,7 @@ Notebook[
             ]
            ],
            Cell[
-            "\:51fa\:529b\:306b\:306f\:300cWolframLanguage\:300d\:30b5\:30fc\:30d0\:306b\:63a5\:7d9a\:3055\:308c\:3066\:3044\:308b\:3053\:3068\:304c\:793a\:3055\:308c\:3066\:3044\:306a\:3051\:308c\:3070\:306a\:3089\:306a\:3044\:ff0e",
+            "\:51fa\:529b\:306b\:306f\:300cWolfram\:300d\:30b5\:30fc\:30d0\:306b\:63a5\:7d9a\:3055\:308c\:3066\:3044\:308b\:3053\:3068\:304c\:793a\:3055\:308c\:3066\:3044\:306a\:3051\:308c\:3070\:306a\:3089\:306a\:3044\:ff0e",
             "Text",
             CellID -> 145828150
            ]
