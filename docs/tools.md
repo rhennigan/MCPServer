@@ -505,6 +505,8 @@ $myOption := toolOptionValue[ "YourTool", "OptionName" ];
 | `"WolframLanguageMaxItems"` | Integer | `10` | Max documentation results (independent of `WolframLanguageContext` options). |
 | `"WolframAlphaMaxItems"` | Integer or `Automatic` | `Automatic` | Max Wolfram\|Alpha results (independent of `WolframAlphaContext` options). |
 
+Because the combined tool provides documentation results alongside the Wolfram\|Alpha results, it also passes `"DocumentationProvided" -> True` to `RelatedWolframAlphaResults` so that queries better answered by documentation are skipped. The option only exists in newer Chatbook versions (2.7.2+), so it is passed only when the loaded Chatbook actually supports it (detected via `documentationProvidedAvailableQ` in `Kernel/Tools/Context.wl`).
+
 ### User-Facing Usage
 
 Users customize tool options when installing an MCP server:
