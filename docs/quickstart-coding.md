@@ -17,6 +17,8 @@ For Wolfram Language development, it's recommended to use the **WolframLanguage*
 
 All installation methods use the `InstallMCPServer` function. Open a Wolfram Language session and run the appropriate command for your application.
 
+> **Note:** Regardless of which server you install (e.g. `"WolframLanguage"`), built-in servers are registered in the client's configuration under the name **Wolfram** by default, so that is the server name shown by client UIs and CLI commands. To register under a different name, pass the `"MCPServerName"` option to `InstallMCPServer` (see [MCPServerName](mcp-clients.md#mcpservername)).
+
 ### Amazon Q Developer
 
 Choose whether to install the server globally or project-level. Global installation is available in all projects, while project-level installation is available only in a specific project directory.
@@ -72,10 +74,10 @@ InstallMCPServer[{"ClaudeCode", "/path/to/project"}, "WolframLanguage"]
 Verify the installation from the command line:
 
 ```shell
-claude mcp get WolframLanguage
+claude mcp get Wolfram
 ```
 
-The output should indicate that the "WolframLanguage" server is connected.
+The output should indicate that the "Wolfram" server is connected.
 
 ### Cline
 
@@ -95,7 +97,7 @@ To verify the installation from the command line:
 copilot -i "/mcp show"
 ```
 
-The output should indicate that the "WolframLanguage" server is configured.
+The output should indicate that the "Wolfram" server is configured.
 
 ### Cursor
 
@@ -107,7 +109,7 @@ To verify the installation:
 
 - Navigate to Cursor settings
 - Select the "Tools & MCP" tab
-- Verify that "WolframLanguage" is listed under "Installed MCP Servers"
+- Verify that "Wolfram" is listed under "Installed MCP Servers"
 
 ### Gemini CLI
 
@@ -121,7 +123,7 @@ To verify the installation from the command line:
 gemini -i "/mcp"
 ```
 
-The output should indicate that the "WolframLanguage" server is configured.
+The output should indicate that the "Wolfram" server is configured.
 
 ### Google Antigravity
 
@@ -134,7 +136,7 @@ To verify the installation:
 - In the editor view, click the "..." menu at the top right of the "Agent" panel
 - Select "MCP Servers"
 - Click "Manage MCP Servers" at the top right of the panel
-- Verify that "WolframLanguage" is listed under "Installed MCP Servers"
+- Verify that "Wolfram" is listed under "Installed MCP Servers"
 
 ### Goose
 
@@ -183,10 +185,10 @@ InstallMCPServer[{"Codex", "/path/to/project"}, "WolframLanguage"]
 To verify the installation from the command line:
 
 ```shell
-codex mcp get WolframLanguage
+codex mcp get Wolfram
 ```
 
-If you installed the server project-level, run the command from that project directory. The output should indicate that the "WolframLanguage" server is enabled.
+If you installed the server project-level, run the command from that project directory. The output should indicate that the "Wolfram" server is enabled.
 
 ### OpenCode
 
@@ -210,7 +212,7 @@ To verify the installation from the command line:
 opencode mcp list
 ```
 
-The output should indicate that the "WolframLanguage" server is connected.
+The output should indicate that the "Wolfram" server is connected.
 
 ### Qwen Code
 
@@ -234,7 +236,7 @@ To verify the installation from the command line:
 qwen mcp list
 ```
 
-The output should indicate that the "WolframLanguage" server is configured.
+The output should indicate that the "Wolfram" server is configured.
 
 ### Visual Studio Code
 
