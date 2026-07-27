@@ -710,6 +710,168 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*DocumentationProvided Option*)
+
+(* Chatbook 2.7.2+ supports a "DocumentationProvided" option for RelatedWolframAlphaResults indicating that
+   RelatedDocumentation results are provided separately. AgentTools only requires Chatbook 2.3.0, so the
+   option must only be passed when the loaded Chatbook actually supports it, and only from the combined
+   WolframContext tool, where documentation results actually accompany the Wolfram|Alpha results. *)
+
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*documentationProvidedAvailableQ*)
+
+(* The probe reports support when the option is present in the function's Options: *)
+VerificationTest[
+    Options[ mockRelatedWAResultsNew ] = { "DocumentationProvided" -> False, "MaxItems" -> Automatic };
+    Wolfram`AgentTools`Common`documentationProvidedAvailableQ @ mockRelatedWAResultsNew,
+    True,
+    SameTest -> SameQ,
+    TestID   -> "DocumentationProvidedAvailableQ-Supported@@Tests/Tools.wlt:728,1-734,2"
+]
+
+(* An older Chatbook without the option is reported as unsupported: *)
+VerificationTest[
+    Options[ mockRelatedWAResultsOld ] = { "MaxItems" -> Automatic };
+    Wolfram`AgentTools`Common`documentationProvidedAvailableQ @ mockRelatedWAResultsOld,
+    False,
+    SameTest -> SameQ,
+    TestID   -> "DocumentationProvidedAvailableQ-Unsupported@@Tests/Tools.wlt:737,1-743,2"
+]
+
+(* A Block-mocked RelatedWolframAlphaResults (as used elsewhere in this file) evaluates to a Function;
+   the probe must safely report it as unsupported rather than leaking messages or errors: *)
+VerificationTest[
+    Wolfram`AgentTools`Common`documentationProvidedAvailableQ[ "mocked" & ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "DocumentationProvidedAvailableQ-NonSymbol@@Tests/Tools.wlt:747,1-752,2"
+]
+
+(* The zero-argument form probes the Chatbook in use and returns a definite boolean: *)
+VerificationTest[
+    BooleanQ @ Wolfram`AgentTools`Common`documentationProvidedAvailableQ[ ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "DocumentationProvidedAvailableQ-Boolean@@Tests/Tools.wlt:755,1-760,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*documentationProvidedOptions*)
+
+(* Outside the combined WolframContext tool, no option is passed regardless of Chatbook support: *)
+VerificationTest[
+    Block[ { Wolfram`AgentTools`Common`documentationProvidedAvailableQ = ( True & ) },
+        Wolfram`AgentTools`Common`documentationProvidedOptions[ False ]
+    ],
+    { },
+    SameTest -> SameQ,
+    TestID   -> "DocumentationProvidedOptions-NotProvided@@Tests/Tools.wlt:767,1-774,2"
+]
+
+(* From the combined tool with a supporting Chatbook, the option is included: *)
+VerificationTest[
+    Block[ { Wolfram`AgentTools`Common`documentationProvidedAvailableQ = ( True & ) },
+        Wolfram`AgentTools`Common`documentationProvidedOptions[ True ]
+    ],
+    { "DocumentationProvided" -> True },
+    SameTest -> SameQ,
+    TestID   -> "DocumentationProvidedOptions-Supported@@Tests/Tools.wlt:777,1-784,2"
+]
+
+(* From the combined tool with an older Chatbook, the option is omitted: *)
+VerificationTest[
+    Block[ { Wolfram`AgentTools`Common`documentationProvidedAvailableQ = ( False & ) },
+        Wolfram`AgentTools`Common`documentationProvidedOptions[ True ]
+    ],
+    { },
+    SameTest -> SameQ,
+    TestID   -> "DocumentationProvidedOptions-Unsupported@@Tests/Tools.wlt:787,1-794,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*Option Passing*)
+
+(* The standalone WolframAlphaContext path provides no documentation, so even a supporting Chatbook
+   must not receive the option there: *)
+VerificationTest[
+    $capturedWAArguments = Missing[ "NotCalled" ];
+    Block[
+        {
+            Wolfram`AgentTools`Common`chatbookVersionCheck            = ( True & ),
+            Wolfram`AgentTools`Common`documentationProvidedAvailableQ = ( True & ),
+            Wolfram`Chatbook`RelatedWolframAlphaResults               =
+                Function[ $capturedWAArguments = { ## }; "Some Wolfram|Alpha context." ]
+        },
+        Wolfram`AgentTools`Common`relatedWolframAlphaResults[ "population of France", "Error" ]
+    ],
+    "Some Wolfram|Alpha context.",
+    SameTest -> SameQ,
+    TestID   -> "DocumentationProvided-StandaloneResultUnchanged@@Tests/Tools.wlt:802,1-816,2"
+]
+
+VerificationTest[
+    MemberQ[ $capturedWAArguments, "DocumentationProvided" -> _ ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "DocumentationProvided-NotPassedStandalone@@Tests/Tools.wlt:818,1-823,2"
+]
+
+(* The combined WolframContext tool passes the option when the loaded Chatbook supports it: *)
+VerificationTest[
+    $capturedWAArguments = Missing[ "NotCalled" ];
+    Block[
+        {
+            Wolfram`AgentTools`Common`chatbookVersionCheck            = ( True & ),
+            Wolfram`AgentTools`Common`llmKitSubscribedQ               = ( True & ),
+            Wolfram`AgentTools`Common`documentationProvidedAvailableQ = ( True & ),
+            Wolfram`Chatbook`RelatedDocumentation                     = ( "Some documentation." & ),
+            Wolfram`Chatbook`RelatedWolframAlphaResults               =
+                Function[ $capturedWAArguments = { ## }; "Some Wolfram|Alpha context." ]
+        },
+        Wolfram`AgentTools`Common`relatedWolframContext[ "population of France" ]
+    ],
+    _String? (StringContainsQ[ "Some Wolfram|Alpha context." ]),
+    SameTest -> MatchQ,
+    TestID   -> "DocumentationProvided-CombinedResult@@Tests/Tools.wlt:826,1-842,2"
+]
+
+VerificationTest[
+    MemberQ[ $capturedWAArguments, "DocumentationProvided" -> True ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "DocumentationProvided-PassedFromCombined@@Tests/Tools.wlt:844,1-849,2"
+]
+
+(* The combined tool must not pass the option to an older Chatbook that does not support it: *)
+VerificationTest[
+    $capturedWAArguments = Missing[ "NotCalled" ];
+    Block[
+        {
+            Wolfram`AgentTools`Common`chatbookVersionCheck            = ( True & ),
+            Wolfram`AgentTools`Common`llmKitSubscribedQ               = ( True & ),
+            Wolfram`AgentTools`Common`documentationProvidedAvailableQ = ( False & ),
+            Wolfram`Chatbook`RelatedDocumentation                     = ( "Some documentation." & ),
+            Wolfram`Chatbook`RelatedWolframAlphaResults               =
+                Function[ $capturedWAArguments = { ## }; "Some Wolfram|Alpha context." ]
+        },
+        Wolfram`AgentTools`Common`relatedWolframContext[ "population of France" ]
+    ];
+    MemberQ[ $capturedWAArguments, "DocumentationProvided" -> _ ],
+    False,
+    SameTest -> SameQ,
+    TestID   -> "DocumentationProvided-NotPassedUnsupported@@Tests/Tools.wlt:852,1-869,2"
+]
+
+(* :!CodeAnalysis::EndBlock:: *)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*TestReport*)
 
 $allowExternal = ! StringQ @ Environment[ "GITHUB_ACTIONS" ];
@@ -721,14 +883,14 @@ VerificationTest[
     $testReportTool = $DefaultMCPTools[ "TestReport" ],
     _LLMTool,
     SameTest -> MatchQ,
-    TestID   -> "TestReport-GetTool@@Tests/Tools.wlt:720,1-725,2"
+    TestID   -> "TestReport-GetTool@@Tests/Tools.wlt:882,1-887,2"
 ]
 
 VerificationTest[
     $testResourceDirectory = FileNameJoin @ { DirectoryName[ $TestFileName, 2 ], "TestResources" },
     _String? DirectoryQ,
     SameTest -> MatchQ,
-    TestID   -> "TestReport-TestResourceDirectory@@Tests/Tools.wlt:727,1-732,2"
+    TestID   -> "TestReport-TestResourceDirectory@@Tests/Tools.wlt:889,1-894,2"
 ]
 
 VerificationTest[
@@ -738,7 +900,7 @@ VerificationTest[
     |>,
     _String? (StringContainsQ[ "# Test Results Summary"~~__~~"TestFile1.wlt" ]),
     SameTest -> MatchQ,
-    TestID   -> "TestReport-SingleFile@@Tests/Tools.wlt:734,1-742,2"
+    TestID   -> "TestReport-SingleFile@@Tests/Tools.wlt:896,1-904,2"
 ]
 
 VerificationTest[
@@ -752,7 +914,7 @@ VerificationTest[
     |>,
     _String? (StringContainsQ[ "# Test Results Summary"~~__~~"TestFile1.wlt"~~__~~"TestFile2.wlt" ]),
     SameTest -> MatchQ,
-    TestID   -> "TestReport-MultipleFiles@@Tests/Tools.wlt:744,1-756,2"
+    TestID   -> "TestReport-MultipleFiles@@Tests/Tools.wlt:906,1-918,2"
 ]
 
 VerificationTest[
@@ -762,7 +924,7 @@ VerificationTest[
     |>,
     _String? (StringContainsQ[ "# Test Results Summary"~~__~~"TestFile1.wlt"~~__~~"TestFile2.wlt" ]),
     SameTest -> MatchQ,
-    TestID   -> "TestReport-Directory@@Tests/Tools.wlt:758,1-766,2"
+    TestID   -> "TestReport-Directory@@Tests/Tools.wlt:920,1-928,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -798,7 +960,7 @@ skipIfGitHubActions @ VerificationTest[
     ],
     True,
     SameTest -> MatchQ,
-    TestID   -> "TestReport-McpRootRelativePath@@Tests/Tools.wlt:775,23-802,2"
+    TestID   -> "TestReport-McpRootRelativePath@@Tests/Tools.wlt:937,23-964,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -811,7 +973,7 @@ VerificationTest[
     Failure[ "AgentTools::TestFileNotFound", _Association ],
     { AgentTools::TestFileNotFound },
     SameTest -> MatchQ,
-    TestID   -> "TestReport-NonexistentFile-GH#65@@Tests/Tools.wlt:809,1-815,2"
+    TestID   -> "TestReport-NonexistentFile-GH#65@@Tests/Tools.wlt:971,1-977,2"
 ]
 
 VerificationTest[
@@ -819,7 +981,7 @@ VerificationTest[
     _? (FreeQ[ "AgentTools::Internal" ]),
     { AgentTools::TestFileNotFound },
     SameTest -> MatchQ,
-    TestID   -> "TestReport-NoInternalFailure-GH#65@@Tests/Tools.wlt:817,1-823,2"
+    TestID   -> "TestReport-NoInternalFailure-GH#65@@Tests/Tools.wlt:979,1-985,2"
 ]
 
 VerificationTest[
@@ -832,7 +994,7 @@ VerificationTest[
     _? (FreeQ[ "AgentTools::Internal" ]),
     { AgentTools::TestFileNotFound },
     SameTest -> MatchQ,
-    TestID   -> "TestReport-MixedValidInvalidPaths-GH#65@@Tests/Tools.wlt:825,1-836,2"
+    TestID   -> "TestReport-MixedValidInvalidPaths-GH#65@@Tests/Tools.wlt:987,1-998,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -849,7 +1011,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveNames@@Tests/Tools.wlt:845,1-853,2"
+    TestID   -> "ToolProperties-AllHaveNames@@Tests/Tools.wlt:1007,1-1015,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -862,7 +1024,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveDescriptions@@Tests/Tools.wlt:858,1-866,2"
+    TestID   -> "ToolProperties-AllHaveDescriptions@@Tests/Tools.wlt:1020,1-1028,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -875,5 +1037,5 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "ToolProperties-AllHaveParameters@@Tests/Tools.wlt:871,1-879,2"
+    TestID   -> "ToolProperties-AllHaveParameters@@Tests/Tools.wlt:1033,1-1041,2"
 ]

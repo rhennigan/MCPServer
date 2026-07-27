@@ -31,6 +31,8 @@ BeginPackage[ "Wolfram`AgentTools`Common`" ];
 `delayedDisplay;
 `deployCloudNotebookForMCPApp;
 `directoryQ;
+`documentationProvidedAvailableQ;
+`documentationProvidedOptions;
 `endDefinition;
 `endExportedDefinition;
 `ensureDirectory;
