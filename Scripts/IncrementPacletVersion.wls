@@ -64,7 +64,8 @@ versionReleasedQ[ _, _, url_String ] :=
         status = Quiet @ URLRead[
             HTTPRequest[ url, <| "Method" -> "HEAD" |> ],
             "StatusCode",
-            TimeConstraint -> $releaseCheckTimeout
+            FollowRedirects -> True, (* Avoids a 302 response *)
+            TimeConstraint  -> $releaseCheckTimeout
         ];
         Which[
             status === 200,
