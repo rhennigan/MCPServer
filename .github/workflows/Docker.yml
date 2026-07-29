@@ -22,6 +22,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: wolframresearch/mcpserver
   WOLFRAMSCRIPT_ENTITLEMENTID: ${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
+  PUSH_IMAGE: ${{ github.event_name == 'workflow_run' || (github.event_name == 'workflow_dispatch' && inputs.push) }}
 
 jobs:
 
@@ -84,7 +85,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: .
-        push: ${{ github.event_name == 'workflow_run' || (github.event_name == 'workflow_dispatch' && inputs.push) }}
+        push: ${{ env.PUSH_IMAGE == 'true' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
@@ -93,6 +94,9 @@ jobs:
           WOLFRAMSCRIPT_ENTITLEMENTID=${{ secrets.WOLFRAMSCRIPT_ENTITLEMENTID }}
 
     - name: Test Docker image
+      # The test pulls the image from the registry, so there is nothing to
+      # test when the build was not pushed.
+      if: env.PUSH_IMAGE == 'true'
       run: |
         echo "Testing Docker image from registry..."
         IMAGE_TAG="$(echo "${{ steps.meta.outputs.tags }}" | head -n 1)"
