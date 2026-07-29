@@ -74,9 +74,12 @@ jobs:
       uses: docker/metadata-action@v5
       with:
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        # The version tag is limited to release builds and trusted branches so
+        # that an ad-hoc dispatch from another branch cannot overwrite the
+        # version tag of an existing release.
         tags: |
           type=raw,value=latest,enable=${{ github.event_name == 'workflow_run' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release/paclet' }}
-          type=raw,value=${{ steps.version.outputs.version }}
+          type=raw,value=${{ steps.version.outputs.version }},enable=${{ github.event_name == 'workflow_run' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release/paclet' }}
           type=raw,value=${{ steps.commit.outputs.sha }}
           type=ref,event=branch,enable=${{ github.event_name != 'workflow_run' }}
           type=raw,value=release-paclet,enable=${{ github.event_name == 'workflow_run' }}
