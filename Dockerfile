@@ -16,7 +16,7 @@
 #     -e MCP_SERVER_NAME=Wolfram \
 #     ghcr.io/wolframresearch/mcpserver:latest
 
-FROM wolframresearch/wolframengine:14.3
+FROM wolframresearch/wolframengine:15.0
 
 LABEL org.opencontainers.image.title="Wolfram MCP Server"
 LABEL org.opencontainers.image.description="Model Context Protocol server for Wolfram Language"
