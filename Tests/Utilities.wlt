@@ -593,7 +593,7 @@ VerificationTest[
     },
     { "set", $Failed },
     SameTest -> SameQ,
-    TestID   -> "EnvironmentBlock-SetsAndRestores@@Tests/Utilities.wlt:474,1-482,2"
+    TestID   -> "EnvironmentBlock-SetsAndRestores@@Tests/Utilities.wlt:589,1-597,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -605,7 +605,7 @@ VerificationTest[
     environmentBlock[ "LLMKIT_ENABLED" -> None, Wolfram`AgentTools`Common`llmKitEnabledQ[ ] ],
     True,
     SameTest -> Equal,
-    TestID   -> "LLMKitEnabledQ-NotSet@@Tests/Utilities.wlt:489,1-494,2"
+    TestID   -> "LLMKitEnabledQ-NotSet@@Tests/Utilities.wlt:604,1-609,2"
 ]
 
 (* Disabled when the variable is "false" *)
@@ -613,7 +613,7 @@ VerificationTest[
     environmentBlock[ "LLMKIT_ENABLED" -> "false", Wolfram`AgentTools`Common`llmKitEnabledQ[ ] ],
     False,
     SameTest -> Equal,
-    TestID   -> "LLMKitEnabledQ-FalseLowercase@@Tests/Utilities.wlt:497,1-502,2"
+    TestID   -> "LLMKitEnabledQ-FalseLowercase@@Tests/Utilities.wlt:612,1-617,2"
 ]
 
 (* The check is case-insensitive *)
@@ -621,14 +621,14 @@ VerificationTest[
     environmentBlock[ "LLMKIT_ENABLED" -> "False", Wolfram`AgentTools`Common`llmKitEnabledQ[ ] ],
     False,
     SameTest -> Equal,
-    TestID   -> "LLMKitEnabledQ-FalseMixedCase@@Tests/Utilities.wlt:505,1-510,2"
+    TestID   -> "LLMKitEnabledQ-FalseMixedCase@@Tests/Utilities.wlt:620,1-625,2"
 ]
 
 VerificationTest[
     environmentBlock[ "LLMKIT_ENABLED" -> "FALSE", Wolfram`AgentTools`Common`llmKitEnabledQ[ ] ],
     False,
     SameTest -> Equal,
-    TestID   -> "LLMKitEnabledQ-FalseUppercase@@Tests/Utilities.wlt:512,1-517,2"
+    TestID   -> "LLMKitEnabledQ-FalseUppercase@@Tests/Utilities.wlt:627,1-632,2"
 ]
 
 (* Any other value leaves LLMKit enabled *)
@@ -636,14 +636,14 @@ VerificationTest[
     environmentBlock[ "LLMKIT_ENABLED" -> "true", Wolfram`AgentTools`Common`llmKitEnabledQ[ ] ],
     True,
     SameTest -> Equal,
-    TestID   -> "LLMKitEnabledQ-TrueString@@Tests/Utilities.wlt:520,1-525,2"
+    TestID   -> "LLMKitEnabledQ-TrueString@@Tests/Utilities.wlt:635,1-640,2"
 ]
 
 VerificationTest[
     environmentBlock[ "LLMKIT_ENABLED" -> "1", Wolfram`AgentTools`Common`llmKitEnabledQ[ ] ],
     True,
     SameTest -> Equal,
-    TestID   -> "LLMKitEnabledQ-OneString@@Tests/Utilities.wlt:527,1-532,2"
+    TestID   -> "LLMKitEnabledQ-OneString@@Tests/Utilities.wlt:642,1-647,2"
 ]
 
 (* A value that reads as boolean False also disables LLMKit *)
@@ -651,14 +651,14 @@ VerificationTest[
     environmentBlock[ "LLMKIT_ENABLED" -> "0", Wolfram`AgentTools`Common`llmKitEnabledQ[ ] ],
     False,
     SameTest -> Equal,
-    TestID   -> "LLMKitEnabledQ-ZeroDisables@@Tests/Utilities.wlt:535,1-540,2"
+    TestID   -> "LLMKitEnabledQ-ZeroDisables@@Tests/Utilities.wlt:650,1-655,2"
 ]
 
 VerificationTest[
     environmentBlock[ "LLMKIT_ENABLED" -> "no", Wolfram`AgentTools`Common`llmKitEnabledQ[ ] ],
     False,
     SameTest -> Equal,
-    TestID   -> "LLMKitEnabledQ-NoDisables@@Tests/Utilities.wlt:542,1-547,2"
+    TestID   -> "LLMKitEnabledQ-NoDisables@@Tests/Utilities.wlt:657,1-662,2"
 ]
 
 (* A value that does not interpret as a Boolean leaves LLMKit enabled *)
@@ -666,7 +666,7 @@ VerificationTest[
     environmentBlock[ "LLMKIT_ENABLED" -> "maybe", Wolfram`AgentTools`Common`llmKitEnabledQ[ ] ],
     True,
     SameTest -> Equal,
-    TestID   -> "LLMKitEnabledQ-NonBooleanEnabled@@Tests/Utilities.wlt:550,1-555,2"
+    TestID   -> "LLMKitEnabledQ-NonBooleanEnabled@@Tests/Utilities.wlt:665,1-670,2"
 ]
 
 (* ::**************************************************************************************************************:: *)
@@ -692,5 +692,30 @@ VerificationTest[
     ],
     { False, False },
     SameTest -> SameQ,
-    TestID   -> "LLMKitSubscribedQ-DisabledShortCircuits@@Tests/Utilities.wlt:565,1-581,2"
+    TestID   -> "LLMKitSubscribedQ-DisabledShortCircuits@@Tests/Utilities.wlt:680,1-696,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Dependencies*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*chatbookVersionCheck*)
+
+(* Ensures the available Chatbook satisfies $minimumChatbookVersion (installing or updating if necessary): *)
+VerificationTest[
+    Wolfram`AgentTools`Common`chatbookVersionCheck[ ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "ChatbookVersionCheck@@Tests/Utilities.wlt:707,1-712,2"
+]
+
+(* The minimum Chatbook version must support the "PropagateMessages" option that the
+   WolframLanguageEvaluator tool passes to WolframLanguageToolEvaluate (added in Chatbook 2.7.0): *)
+VerificationTest[
+    Quiet @ Options[ Wolfram`Chatbook`WolframLanguageToolEvaluate, "PropagateMessages" ],
+    { _Rule | _RuleDelayed },
+    SameTest -> MatchQ,
+    TestID   -> "ChatbookVersionCheck-PropagateMessagesSupported@@Tests/Utilities.wlt:716,1-721,2"
 ]

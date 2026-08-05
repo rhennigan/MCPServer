@@ -321,10 +321,10 @@ relatedWolframAlphaResults // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*documentationProvidedOptions*)
 
-(* Chatbook 2.7.2+ (targeting 15.0) supports a "DocumentationProvided" option for RelatedWolframAlphaResults,
+(* Chatbook 2.7.2+ supports a "DocumentationProvided" option for RelatedWolframAlphaResults,
    which indicates that RelatedDocumentation results are being provided separately so that it can skip
-   Wolfram|Alpha queries that are better answered by documentation. AgentTools only requires Chatbook 2.3.0
-   (14.3), so the option is only passed when it's both relevant (the combined WolframContext tool, which
+   Wolfram|Alpha queries that are better answered by documentation. AgentTools only requires Chatbook 2.7.0,
+   so the option is only passed when it's both relevant (the combined WolframContext tool, which
    provides documentation alongside the Wolfram|Alpha results) and supported by the loaded Chatbook version. *)
 documentationProvidedOptions // beginDefinition;
 

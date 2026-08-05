@@ -151,10 +151,11 @@ evaluateWolframLanguage0[ code_String, timeConstraint_Integer ] :=
             code,
             "String",
             "Line"                  -> $line++,
-            "MaxCharacterCount"     -> $maxCharacterCount,
             "AppendRetryNotice"     -> False,
             "AppendURIInstructions" -> False,
+            "MaxCharacterCount"     -> $maxCharacterCount,
             "Method"                -> getEvaluatorMethod[ ],
+            "PropagateMessages"     -> True,
             "TimeConstraint"        -> timeConstraint
         ]
     ];
@@ -273,8 +274,11 @@ evaluateWolframLanguageUI // beginDefinition;
 evaluateWolframLanguageUI[ code_String, _Missing ] :=
     evaluateWolframLanguageUI[ code, toolOptionValue[ "WolframLanguageEvaluator", "TimeConstraint" ] ];
 
-evaluateWolframLanguageUI[ code_String, timeConstraint_Integer ] :=
+evaluateWolframLanguageUI[ code_String, timeConstraint_Integer ] := Enclose[
     Module[ { savedLine, result, uiResult },
+        (* Same guard as the non-UI path: WolframLanguageToolEvaluate options like "PropagateMessages"
+           require the minimum Chatbook version, and older versions silently ignore unknown options. *)
+        ConfirmMatch[ chatbookVersionCheck[ ], True, "ChatbookVersionCheck" ];
         savedLine = $line;
         result = evaluateWolframLanguageForUI[ code, timeConstraint ];
         uiResult = Quiet @ UsingFrontEnd @ makeEvaluatorUIResult[ code, result ];
@@ -288,7 +292,9 @@ evaluateWolframLanguageUI[ code_String, timeConstraint_Integer ] :=
                 evaluateWolframLanguage[ code, timeConstraint ]
             ]
         ]
-    ];
+    ],
+    throwInternalFailure
+];
 
 evaluateWolframLanguageUI // endDefinition;
 
@@ -304,10 +310,11 @@ evaluateWolframLanguageForUI[ code_String, timeConstraint_Integer ] :=
             code,
             { "String", "Result" },
             "Line"                  -> $line++,
-            "MaxCharacterCount"     -> $maxCharacterCount,
             "AppendRetryNotice"     -> False,
             "AppendURIInstructions" -> False,
+            "MaxCharacterCount"     -> $maxCharacterCount,
             "Method"                -> getEvaluatorMethod[ ],
+            "PropagateMessages"     -> True,
             "TimeConstraint"        -> timeConstraint
         ]
     ];
