@@ -151,10 +151,11 @@ evaluateWolframLanguage0[ code_String, timeConstraint_Integer ] :=
             code,
             "String",
             "Line"                  -> $line++,
-            "MaxCharacterCount"     -> $maxCharacterCount,
             "AppendRetryNotice"     -> False,
             "AppendURIInstructions" -> False,
+            "MaxCharacterCount"     -> $maxCharacterCount,
             "Method"                -> getEvaluatorMethod[ ],
+            "PropagateMessages"     -> True,
             "TimeConstraint"        -> timeConstraint
         ]
     ];
@@ -304,10 +305,11 @@ evaluateWolframLanguageForUI[ code_String, timeConstraint_Integer ] :=
             code,
             { "String", "Result" },
             "Line"                  -> $line++,
-            "MaxCharacterCount"     -> $maxCharacterCount,
             "AppendRetryNotice"     -> False,
             "AppendURIInstructions" -> False,
+            "MaxCharacterCount"     -> $maxCharacterCount,
             "Method"                -> getEvaluatorMethod[ ],
+            "PropagateMessages"     -> True,
             "TimeConstraint"        -> timeConstraint
         ]
     ];
