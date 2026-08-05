@@ -274,8 +274,11 @@ evaluateWolframLanguageUI // beginDefinition;
 evaluateWolframLanguageUI[ code_String, _Missing ] :=
     evaluateWolframLanguageUI[ code, toolOptionValue[ "WolframLanguageEvaluator", "TimeConstraint" ] ];
 
-evaluateWolframLanguageUI[ code_String, timeConstraint_Integer ] :=
+evaluateWolframLanguageUI[ code_String, timeConstraint_Integer ] := Enclose[
     Module[ { savedLine, result, uiResult },
+        (* Same guard as the non-UI path: WolframLanguageToolEvaluate options like "PropagateMessages"
+           require the minimum Chatbook version, and older versions silently ignore unknown options. *)
+        ConfirmMatch[ chatbookVersionCheck[ ], True, "ChatbookVersionCheck" ];
         savedLine = $line;
         result = evaluateWolframLanguageForUI[ code, timeConstraint ];
         uiResult = Quiet @ UsingFrontEnd @ makeEvaluatorUIResult[ code, result ];
@@ -289,7 +292,9 @@ evaluateWolframLanguageUI[ code_String, timeConstraint_Integer ] :=
                 evaluateWolframLanguage[ code, timeConstraint ]
             ]
         ]
-    ];
+    ],
+    throwInternalFailure
+];
 
 evaluateWolframLanguageUI // endDefinition;
 
