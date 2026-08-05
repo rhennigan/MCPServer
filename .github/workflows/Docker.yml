@@ -66,7 +66,7 @@ jobs:
       with:
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
         tags: |
-          type=raw,value=latest,enable=${{ github.ref == 'refs/heads/release/paclet' }}
+          type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release/paclet' }}
           type=raw,value=${{ steps.version.outputs.version }}
           type=sha,prefix=
           type=ref,event=branch

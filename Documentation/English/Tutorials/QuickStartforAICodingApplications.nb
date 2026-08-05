@@ -211,7 +211,7 @@ Notebook[
                CellID -> 223231909
               ],
               Cell[
-               "claude mcp get WolframLanguage",
+               "claude mcp get Wolfram",
                "ExternalLanguage",
                CellEvaluationLanguage -> "Shell",
                CellID -> 40285647
@@ -221,7 +221,7 @@ Notebook[
             ]
            ],
            Cell[
-            "The output should indicate that the \"WolframLanguage\" server is connected.",
+            "The output should indicate that the \"Wolfram\" server is connected.",
             "Text",
             CellID -> 58055741
            ]
@@ -288,7 +288,7 @@ Notebook[
             ]
            ],
            Cell[
-            "The output should indicate that the \"WolframLanguage\" server is configured.",
+            "The output should indicate that the \"Wolfram\" server is configured.",
             "Text",
             CellID -> 243159260
            ]
@@ -330,7 +330,7 @@ Notebook[
             CellID -> 495461010
            ],
            Cell[
-            "Verify that \"WolframLanguage\" is listed under \"Installed MCP Servers\"",
+            "Verify that \"Wolfram\" is listed under \"Installed MCP Servers\"",
             "Item",
             CellID -> 106649718
            ]
@@ -375,7 +375,7 @@ Notebook[
             ]
            ],
            Cell[
-            "The output should indicate that the \"WolframLanguage\" server is configured.",
+            "The output should indicate that the \"Wolfram\" server is configured.",
             "Text",
             CellID -> 238422330
            ]
@@ -422,7 +422,7 @@ Notebook[
             CellID -> 453151772
            ],
            Cell[
-            "Verify that \"WolframLanguage\" is listed under \"Installed MCP Servers\"",
+            "Verify that \"Wolfram\" is listed under \"Installed MCP Servers\"",
             "Item",
             CellID -> 395951229
            ]
@@ -554,7 +554,7 @@ Notebook[
                CellID -> 306930245
               ],
               Cell[
-               "codex mcp get WolframLanguage",
+               "codex mcp get Wolfram",
                "ExternalLanguage",
                CellEvaluationLanguage -> "Shell",
                CellID -> 446582763
@@ -564,7 +564,7 @@ Notebook[
             ]
            ],
            Cell[
-            "The output should indicate that the \"WolframLanguage\" server is enabled.",
+            "The output should indicate that the \"Wolfram\" server is enabled.",
             "Text",
             CellID -> 725136532
            ]
@@ -664,7 +664,7 @@ Notebook[
             ]
            ],
            Cell[
-            "The output should indicate that the \"WolframLanguage\" server is connected. ",
+            "The output should indicate that the \"Wolfram\" server is connected. ",
             "Text",
             CellID -> 145828150
            ]
