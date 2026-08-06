@@ -15,6 +15,7 @@ $check   = getBooleanArgument[ { "c", "check"    }, True  ];
 $install = getBooleanArgument[ { "i", "install"  }, False ];
 $mx      = getBooleanArgument[ { "m", "mx"       }, True  ];
 $keepMX  = getBooleanArgument[ { "k", "keep-mx"  }, StringQ @ Environment[ "GITHUB_ACTIONS" ] ];
+$debug   = getBooleanArgument[ { "d", "debug"    }, StringQ @ Environment[ "GITHUB_ACTIONS" ] ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -26,6 +27,8 @@ If[ $check, Get @ cFile @ FileNameJoin @ { $scriptDir, "Resources", "CodeInspect
 (* ::Subsection::Closed:: *)
 (*Other*)
 Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
+Needs[ "PacletTools`"        -> None ];
+Needs[ "DocumentationBuild`" -> None ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -40,21 +43,35 @@ debugDocBuild // Attributes = { HoldFirst };
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
 (* :!CodeAnalysis::Disable::GlobalSymbol:: *)
-debugDocBuild[ eval_ ] := (
-    Needs[ "PacletTools`"        -> None ];
-    Needs[ "DocumentationBuild`" -> None ];
-    Block[ { DocumentationBuild`Utils`SafeNotebookExport, Global`AntLog },
-        (* SafeNotebookExport tries to use parallel kernels for exporting, which we can't use in GitHub actions,
-           so we redefine it to be a simple Export instead: *)
-        DocumentationBuild`Utils`SafeNotebookExport[ file_, expr_, ___ ] := Export[ file, expr, "NB" ];
-
+debugDocBuild[ eval_ ] /; $debug := (
+    Block[ { Global`AntLog },
         (* Documentation build uses this symbol throughout for debug logging, which is normally undefined: *)
         Global`AntLog[ args___ ] := Print[ "[DocumentationBuild] ", args ];
+
+        overrideNotebookExport @ eval
+    ]
+);
+(* :!CodeAnalysis::EndBlock:: *)
+
+debugDocBuild[ eval_ ] := overrideNotebookExport @ eval;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*overrideNotebookExport*)
+overrideNotebookExport // ClearAll;
+overrideNotebookExport // Attributes = { HoldFirst };
+
+overrideNotebookExport[ eval_ ] /; StringQ @ Environment[ "GITHUB_ACTIONS" ] := (
+    Block[ { DocumentationBuild`Utils`SafeNotebookExport },
+        (* SafeNotebookExport tries to use parallel kernels for exporting, which we can't use in GitHub actions,
+            so we redefine it to be a simple Export instead: *)
+        DocumentationBuild`Utils`SafeNotebookExport[ file_, expr_, ___ ] := Export[ file, expr, "NB" ];
 
         eval
     ]
 );
-(* :!CodeAnalysis::EndBlock:: *)
+
+overrideNotebookExport[ eval_ ] := eval;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
