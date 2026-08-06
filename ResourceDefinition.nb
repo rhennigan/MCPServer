@@ -16675,7 +16675,7 @@ Notebook[
                },
                CellID -> 389299396
               ],
-              Cell["14.3+", "Text", CellID -> 450354368]
+              Cell["15.0+", "Text", CellID -> 450354368]
              },
              Open
             ]

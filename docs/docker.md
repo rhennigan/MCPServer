@@ -280,9 +280,9 @@ All available tags can be found [here](https://github.com/WolframResearch/AgentT
 
 ## Architecture
 
-The Docker image is built on `wolframresearch/wolframengine:14.3` and includes:
+The Docker image is built on `wolframresearch/wolframengine:15.0` and includes:
 
-- Wolfram Engine 14.3
+- Wolfram Engine 15.0
 - AgentTools paclet (Kernel/, Scripts/)
 - Pre-built MX files for faster startup
 - Pre-installed dependencies (Chatbook, LLMFunctions, SemanticSearch paclets)
