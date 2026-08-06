@@ -15,6 +15,7 @@ $check   = getBooleanArgument[ { "c", "check"    }, True  ];
 $install = getBooleanArgument[ { "i", "install"  }, False ];
 $mx      = getBooleanArgument[ { "m", "mx"       }, True  ];
 $keepMX  = getBooleanArgument[ { "k", "keep-mx"  }, StringQ @ Environment[ "GITHUB_ACTIONS" ] ];
+$debug   = getBooleanArgument[ { "d", "debug"    }, StringQ @ Environment[ "GITHUB_ACTIONS" ] ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -26,6 +27,51 @@ If[ $check, Get @ cFile @ FileNameJoin @ { $scriptDir, "Resources", "CodeInspect
 (* ::Subsection::Closed:: *)
 (*Other*)
 Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
+Needs[ "PacletTools`"        -> None ];
+Needs[ "DocumentationBuild`" -> None ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Definitions*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*debugDocBuild*)
+debugDocBuild // ClearAll;
+debugDocBuild // Attributes = { HoldFirst };
+
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
+(* :!CodeAnalysis::Disable::GlobalSymbol:: *)
+debugDocBuild[ eval_ ] /; $debug := (
+    Block[ { Global`AntLog },
+        (* Documentation build uses this symbol throughout for debug logging, which is normally undefined: *)
+        Global`AntLog[ args___ ] := Print[ "[DocumentationBuild] ", args ];
+
+        overrideNotebookExport @ eval
+    ]
+);
+(* :!CodeAnalysis::EndBlock:: *)
+
+debugDocBuild[ eval_ ] := overrideNotebookExport @ eval;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*overrideNotebookExport*)
+overrideNotebookExport // ClearAll;
+overrideNotebookExport // Attributes = { HoldFirst };
+
+overrideNotebookExport[ eval_ ] /; StringQ @ Environment[ "GITHUB_ACTIONS" ] := (
+    Block[ { DocumentationBuild`Utils`SafeNotebookExport },
+        (* SafeNotebookExport tries to use parallel kernels for exporting, which we can't use in GitHub actions,
+            so we redefine it to be a simple Export instead: *)
+        DocumentationBuild`Utils`SafeNotebookExport[ file_, expr_, ___ ] := Export[ file, expr, "NB" ];
+
+        eval
+    ]
+);
+
+overrideNotebookExport[ eval_ ] := eval;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -35,7 +81,7 @@ Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
 (* ::Subsection::Closed:: *)
 (*Build*)
 result = Quiet[
-    checkResult @ cicd`BuildPaclet[
+    debugDocBuild @ checkResult @ cicd`BuildPaclet[
         $defNB,
         "Check"      -> $check,
         "ExitOnFail" -> True,
@@ -46,8 +92,7 @@ result = Quiet[
         (* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
         CloudObject`Private`webLoginDialogInput::ninit,
         DocumentationSearch`Skeletonizer`Private`convertToString::unke,
-        DocumentationSearch`Skeletonizer`Private`skeletonizeFiles::msgs,
-        WaitAll::nopar
+        DocumentationSearch`Skeletonizer`Private`skeletonizeFiles::msgs
         (* :!CodeAnalysis::EndBlock:: *)
     }
 ];
