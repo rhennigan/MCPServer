@@ -233,7 +233,7 @@ llmKitUsageLimitMessage // endDefinition;
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Dependencies*)
-$minimumChatbookVersion = "2.3.0";
+$minimumChatbookVersion = "2.7.0"; (* requires WL 15.0+; available in cloud and on public paclet server *)
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)

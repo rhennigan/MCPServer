@@ -19,6 +19,11 @@ $wlMaxItems         := toolOptionValue[ "WolframLanguageContext", "MaxItems" ];
 $wcMaxItemsWL       := toolOptionValue[ "WolframContext", "WolframLanguageMaxItems" ];
 $wcMaxItemsWA       := toolOptionValue[ "WolframContext", "WolframAlphaMaxItems" ];
 
+(* Set to True by relatedWolframContext, where RelatedDocumentation results accompany the
+   Wolfram|Alpha results, so RelatedWolframAlphaResults can skip queries that are better
+   answered by documentation: *)
+$waDocumentationProvided = False;
+
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*Argument Patterns*)
@@ -193,7 +198,7 @@ relatedWolframContext[ context_String ] := Enclose[
         waMaxItems = ConfirmMatch[ toMaxItems @ $wcMaxItemsWA, $$maxItemsSpec, "WolframAlphaMaxItems" ];
 
         waPrompt = ConfirmBy[
-            Block[ { $waMaxItems = waMaxItems, $waIncludeWLResults = True },
+            Block[ { $waMaxItems = waMaxItems, $waIncludeWLResults = True, $waDocumentationProvided = True },
                 relatedWolframAlphaPrompt[ context, "Warning", llmKitSubscribedQ[ ] ]
             ],
             StringQ,
@@ -273,19 +278,21 @@ relatedWolframAlphaResults[ context_String ] :=
     relatedWolframAlphaResults[ context, "Error" ];
 
 relatedWolframAlphaResults[ context_String, level_String ] := Enclose[
-    Module[ { maxItems, includeWLResults, result },
+    Module[ { maxItems, includeWLResults, docOptions, result },
 
         ConfirmMatch[ chatbookVersionCheck[ ], True, "ChatbookVersionCheck" ];
 
         maxItems = ConfirmMatch[ toMaxItems @ $waMaxItems, $$maxItemsSpec, "WolframAlphaMaxItems" ];
         includeWLResults = Replace[ $waIncludeWLResults, Except[ True|False ] :> Automatic ];
+        docOptions = ConfirmMatch[ documentationProvidedOptions[ ], { ___Rule }, "DocumentationProvidedOptions" ];
 
         result = Quiet[
             cb`RelatedWolframAlphaResults[
                 context,
                 "Prompt",
                 "MaxItems"         -> maxItems,
-                "IncludeWLResults" -> includeWLResults
+                "IncludeWLResults" -> includeWLResults,
+                Sequence @@ docOptions
             ],
             { WolframAlpha::kbserr }
         ];
@@ -309,6 +316,46 @@ relatedWolframAlphaResults[ context_String, level_String ] := Enclose[
 ];
 
 relatedWolframAlphaResults // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*documentationProvidedOptions*)
+
+(* Chatbook 2.7.2+ supports a "DocumentationProvided" option for RelatedWolframAlphaResults,
+   which indicates that RelatedDocumentation results are being provided separately so that it can skip
+   Wolfram|Alpha queries that are better answered by documentation. AgentTools only requires Chatbook 2.7.0,
+   so the option is only passed when it's both relevant (the combined WolframContext tool, which
+   provides documentation alongside the Wolfram|Alpha results) and supported by the loaded Chatbook version. *)
+documentationProvidedOptions // beginDefinition;
+
+documentationProvidedOptions[ ] := documentationProvidedOptions @ TrueQ @ $waDocumentationProvided;
+
+documentationProvidedOptions[ False ] := { };
+
+documentationProvidedOptions[ True ] :=
+    If[ documentationProvidedAvailableQ[ ],
+        { "DocumentationProvided" -> True },
+        { }
+    ];
+
+documentationProvidedOptions // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*documentationProvidedAvailableQ*)
+documentationProvidedAvailableQ // beginDefinition;
+
+(* Cached for the session; first evaluated after chatbookVersionCheck has ensured Chatbook is loaded
+   (and up to date), so the probe sees the version that will actually receive the option: *)
+documentationProvidedAvailableQ[ ] := documentationProvidedAvailableQ[ ] =
+    documentationProvidedAvailableQ @ cb`RelatedWolframAlphaResults;
+
+(* A Block-mocked RelatedWolframAlphaResults evaluates to something other than a symbol (e.g. a Function),
+   for which Options simply returns { }, so this safely reports the option as unsupported: *)
+documentationProvidedAvailableQ[ f_ ] :=
+    MatchQ[ Quiet @ Options[ f, "DocumentationProvided" ], { _ } ];
+
+documentationProvidedAvailableQ // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
