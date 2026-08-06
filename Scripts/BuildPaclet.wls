@@ -29,13 +29,42 @@ Needs[ "Wolfram`PacletCICD`" -> "cicd`" ];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Definitions*)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*debugDocBuild*)
+debugDocBuild // ClearAll;
+debugDocBuild // Attributes = { HoldFirst };
+
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
+(* :!CodeAnalysis::Disable::GlobalSymbol:: *)
+debugDocBuild[ eval_ ] := (
+    Needs[ "PacletTools`"        -> None ];
+    Needs[ "DocumentationBuild`" -> None ];
+    Block[ { DocumentationBuild`Utils`SafeNotebookExport, Global`AntLog },
+        (* SafeNotebookExport tries to use parallel kernels for exporting, which we can't use in GitHub actions,
+           so we redefine it to be a simple Export instead: *)
+        DocumentationBuild`Utils`SafeNotebookExport[ file_, expr_, ___ ] := Export[ file, expr, "NB" ];
+
+        (* Documentation build uses this symbol throughout for debug logging, which is normally undefined: *)
+        Global`AntLog[ args___ ] := Print[ "[DocumentationBuild] ", args ];
+
+        eval
+    ]
+);
+(* :!CodeAnalysis::EndBlock:: *)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Run*)
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*Build*)
 result = Quiet[
-    checkResult @ cicd`BuildPaclet[
+    debugDocBuild @ checkResult @ cicd`BuildPaclet[
         $defNB,
         "Check"      -> $check,
         "ExitOnFail" -> True,
@@ -46,8 +75,7 @@ result = Quiet[
         (* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
         CloudObject`Private`webLoginDialogInput::ninit,
         DocumentationSearch`Skeletonizer`Private`convertToString::unke,
-        DocumentationSearch`Skeletonizer`Private`skeletonizeFiles::msgs,
-        WaitAll::nopar
+        DocumentationSearch`Skeletonizer`Private`skeletonizeFiles::msgs
         (* :!CodeAnalysis::EndBlock:: *)
     }
 ];
