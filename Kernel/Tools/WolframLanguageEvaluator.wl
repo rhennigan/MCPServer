@@ -394,6 +394,9 @@ toOutputBoxes[ (HoldForm|HoldCompleteForm)[ expr_ ] ] :=
         delayedDisplay @ cb`CachedBoxes @ OutputSizeLimit`PrePrint @ expr
     ];
 
+toOutputBoxes[ fail_Failure ] :=
+    ToBoxes @ fail;
+
 toOutputBoxes // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
