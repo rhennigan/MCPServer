@@ -446,7 +446,8 @@
                     allowInteract: allowInteract !== false,
                     showRenderProgress: true,
                     width: null,
-                    maxHeight: typeof maxHeight === "number" && maxHeight > 0 ? maxHeight : Infinity
+                    maxHeight: typeof maxHeight === "number" && maxHeight > 0 ? maxHeight : Infinity,
+                    useShadowDOM: true
                 };
 
                 log("embedNotebook: calling WolframNotebookEmbedder.embed()");
