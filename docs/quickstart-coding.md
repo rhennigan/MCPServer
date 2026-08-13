@@ -173,13 +173,13 @@ Choose whether to install the server globally or project-level. Global installat
 Global installation:
 
 ```wl
-InstallMCPServer["MimoCode", "WolframLanguage"]
+InstallMCPServer["MiMoCode", "WolframLanguage"]
 ```
 
 Project-level installation:
 
 ```wl
-InstallMCPServer[{"MimoCode", "/path/to/project"}, "WolframLanguage"]
+InstallMCPServer[{"MiMoCode", "/path/to/project"}, "WolframLanguage"]
 ```
 
 To verify the installation from the command line:

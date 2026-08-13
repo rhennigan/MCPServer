@@ -210,10 +210,10 @@ $supportedMCPClients = <|
         "URL"             -> "https://lmstudio.ai",
         "InstallLocation" :> { $HomeDirectory, ".lmstudio", "mcp.json" }
     |>,
-    "MimoCode" -> <|
+    "MiMoCode" -> <|
         "DisplayName"     -> "MiMo Code",
         "DefaultToolset"  -> "WolframLanguage",
-        "Aliases"         -> { "Mimo", "MiMo", "MiMoCode" },
+        "Aliases"         -> { "Mimo", "MiMo", "MimoCode" },
         "ConfigFormat"    -> "JSON",
         "ConfigKey"       -> { "mcp" },
         "ServerConverter" -> convertToOpenCodeFormat,
