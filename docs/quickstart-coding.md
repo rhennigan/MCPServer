@@ -160,7 +160,7 @@ InstallMCPServer["KimiCode", "WolframLanguage"]
 
 To verify the installation from the command line:
 
-```
+```shell
 kimi mcp list
 ```
 
