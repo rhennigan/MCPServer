@@ -365,7 +365,8 @@ makeEvaluatorUIResult[
         nb = Notebook[
             { Cell @ CellGroupData[ { inputCell, outputCell }, Open ] },
             CellLabelAutoDelete    -> False,
-            ScreenStyleEnvironment -> "Elegant"
+            ScreenStyleEnvironment -> "Elegant",
+            StyleHints             -> <| "CodeFont" -> "Source Sans Pro" |>
         ];
 
         deployed = ConfirmMatch[

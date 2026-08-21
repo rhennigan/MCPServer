@@ -34,6 +34,8 @@
             line-height: 1.5;
         }
         #container {
+            /* Set default color for notebook text explicitly to avoid css color override: bugs:477936 */
+            color: black;
             width: 100%;
             min-height: 100px;
         }
@@ -103,10 +105,6 @@
             height: 3px;
             border-radius: 3px;
             background: rgba(127, 127, 127, 0.75);
-        }
-        /* Set default color for notebook text explicitly to avoid css color override: bugs:477936*/
-        .notebook {
-            color: black;
         }
     </style>
 </head>
