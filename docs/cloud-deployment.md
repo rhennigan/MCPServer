@@ -310,9 +310,18 @@ The consequences, accepted for v1:
   the **deploying** account (required outright for `WolframAlphaContext`; see the
   [LLMKit table](servers.md#llmkit-requirements)). Servers built around code execution and
   Wolfram|Alpha (`WolframLanguageEvaluator`, `WolframAlpha`) are the most practical to deploy.
-- **No cross-request state or sessions.** Any client capability that must survive across requests
+- **No cross-request kernel state.** Any client capability that must survive across requests
   travels in a self-describing session ID (see [MCP Apps Support](#mcp-apps-support)), not in server
   memory.
+- **Evaluator sessions persist through files, not kernels.** The `WolframLanguageEvaluator` tool's
+  optional `session` parameter still works: session files are written to the deploying account's
+  persistent cloud user files (`$UserBaseDirectory/ApplicationData/Wolfram/AgentTools/Sessions/`).
+  Because every cloud evaluation runs in a fresh kernel, only a session's global definitions carry
+  over — Chatbook 2.7.11+ returns them after each call as an MX byte array
+  (`Wolfram`Chatbook`$CloudSessionMX`) that the server stores in the session file and hands back
+  before the next call. Loaded packages, In/Out history, and other kernel state are lost between
+  calls, and each result tells the model so (see [Sessions](tools.md#sessions)). With an older
+  Chatbook installed in the cloud account, nothing persists and the result says that instead.
 
 Caching / persistent kernels are future work.
 

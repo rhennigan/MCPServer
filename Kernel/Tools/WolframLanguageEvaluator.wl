@@ -21,6 +21,9 @@ $cloudImagePermissions := If[ $imageExportMethod === "CloudPublic", "Public", "P
 $line                   = 1;
 $outputSizeLimit        = 100000;
 
+(* Chatbook version that introduced cb`$CloudSessionMX (see the Cloud Sessions section) *)
+$cloudSessionMXChatbookVersion = "2.7.11";
+
 (* Evaluator session state (plain load-time assignments, so they reset on every (re)load; see the Sessions section) *)
 $currentSessionID = None;
 $sessionStatus    = None;
@@ -142,25 +145,41 @@ evaluateWolframLanguage // endDefinition;
 
 
 evaluateWolframLanguage0 // beginDefinition;
+evaluateWolframLanguage0[ code_String, timeConstraint_Integer ] := chatbookToolEvaluate[ code, "String", timeConstraint ];
+evaluateWolframLanguage0 // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*chatbookToolEvaluate*)
+(* Shared Chatbook call behind the plain and UI evaluation paths. The session's line counter is consumed
+   here: it becomes the "Line" option (which drives the In/Out label under the in-process methods) and also
+   seeds Chatbook's own per-kernel cloud line counter, because under the "Cloud" method the option never
+   reaches the cloud evaluator kernel that produces the label (see Cloud Sessions). *)
+chatbookToolEvaluate // beginDefinition;
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
-evaluateWolframLanguage0[ code_String, timeConstraint_Integer ] :=
-    Block[ (* FIXME: Expose this as an option in WolframLanguageToolEvaluate *)
-        { Wolfram`Chatbook`Sandbox`Private`$includeDefinitions = False },
+chatbookToolEvaluate[ code_String, property_, timeConstraint_Integer ] :=
+    With[ { line = $line++ },
+        Block[
+            { (* FIXME: Expose these as options in WolframLanguageToolEvaluate *)
+                Wolfram`Chatbook`Sandbox`Private`$includeDefinitions = False,
+                Wolfram`Chatbook`Sandbox`Private`$cloudLineNumber    = line
+            },
             catchAlways @ cb`WolframLanguageToolEvaluate[
-            code,
-            "String",
-            "Line"                  -> $line++,
-            "AppendRetryNotice"     -> False,
-            "AppendURIInstructions" -> False,
-            "MaxCharacterCount"     -> $maxCharacterCount,
-            "Method"                -> getEvaluatorMethod[ ],
-            "PropagateMessages"     -> True,
-            "TimeConstraint"        -> timeConstraint
+                code,
+                property,
+                "Line"                  -> line,
+                "AppendRetryNotice"     -> False,
+                "AppendURIInstructions" -> False,
+                "MaxCharacterCount"     -> $maxCharacterCount,
+                "Method"                -> getEvaluatorMethod[ ],
+                "PropagateMessages"     -> True,
+                "TimeConstraint"        -> timeConstraint
+            ]
         ]
     ];
 (* :!CodeAnalysis::EndBlock:: *)
-evaluateWolframLanguage0 // endDefinition;
+chatbookToolEvaluate // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
@@ -302,23 +321,8 @@ evaluateWolframLanguageUI // endDefinition;
 (* ::Subsection::Closed:: *)
 (*evaluateWolframLanguageForUI*)
 evaluateWolframLanguageForUI // beginDefinition;
-(* :!CodeAnalysis::BeginBlock:: *)
-(* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
 evaluateWolframLanguageForUI[ code_String, timeConstraint_Integer ] :=
-    Block[ { Wolfram`Chatbook`Sandbox`Private`$includeDefinitions = False },
-        catchAlways @ cb`WolframLanguageToolEvaluate[
-            code,
-            { "String", "Result" },
-            "Line"                  -> $line++,
-            "AppendRetryNotice"     -> False,
-            "AppendURIInstructions" -> False,
-            "MaxCharacterCount"     -> $maxCharacterCount,
-            "Method"                -> getEvaluatorMethod[ ],
-            "PropagateMessages"     -> True,
-            "TimeConstraint"        -> timeConstraint
-        ]
-    ];
-(* :!CodeAnalysis::EndBlock:: *)
+    chatbookToolEvaluate[ code, { "String", "Result" }, timeConstraint ];
 evaluateWolframLanguageForUI // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
@@ -560,7 +564,11 @@ initializePacletInLocalKernel // endDefinition;
    the session payload and passed as the "Line" option. Under the in-process "Session" method that option
    drives the In/Out label directly. Under "Local" the user's code runs in a persistent subkernel whose own
    $Line produces the label and the option does not reach it, so syncEvalKernelLine pushes $line into that
-   subkernel's $Line at each session boundary, after which the two advance in lockstep. *)
+   subkernel's $Line at each session boundary, after which the two advance in lockstep.
+
+   Under the "Cloud" method the user's code runs in a fresh, non-persistent cloud kernel on every call, so a
+   session's definitions travel in Chatbook's session byte array instead of living in any kernel, and the
+   session parses into Global` rather than an isolating context; see the Cloud Sessions subsection. *)
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -606,6 +614,121 @@ sessionFile // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
+(*Cloud Sessions*)
+(* Under the "Cloud" method (the default when the server itself runs in the Wolfram Cloud) every evaluation
+   runs in a fresh cloud evaluator kernel that is discarded afterward, so no kernel holds a session's state
+   between calls. Chatbook 2.7.11+ bridges this with a session byte array: after each cloud evaluation it
+   stores the evaluator kernel's Global` definitions as an MX byte array in cb`$CloudSessionMX, and before
+   each one it loads whatever cb`$CloudSessionMX holds into the evaluator kernel. A cloud session therefore
+   keeps its definitions in that byte array, persisted as the "SessionMX" entry of its saved $sessionInfo and
+   pushed back into cb`$CloudSessionMX whenever the session is started, continued, or resumed (withSession
+   scopes the symbol to a single call so nothing leaks between sessions or outlives the call).
+
+   Two things differ from the in-kernel methods:
+   - Session code is parsed into Global` instead of Sessions`<id>`, because the cloud evaluator saves Global`
+     definitions only. Isolation between sessions is inherent: the evaluator kernel starts empty and loads
+     only that session's byte array.
+   - Only definitions persist. In/Out history, loaded packages, and any other kernel state are gone after
+     every call, which sessionInfoStatusText tells the AI on each call. Without a new enough Chatbook nothing
+     persists at all, and the status text says so instead. *)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*cloudSessionQ*)
+cloudSessionQ // beginDefinition;
+cloudSessionQ[ ] := getEvaluatorMethod[ ] === "Cloud";
+cloudSessionQ // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*cloudSessionMXAvailableQ*)
+(* Whether the loaded Chatbook supports cb`$CloudSessionMX. Only a positive answer is cached: session setup
+   runs before chatbookVersionCheck gets a chance to install and load an up-to-date Chatbook, and a negative
+   answer must not outlive that upgrade. *)
+cloudSessionMXAvailableQ // beginDefinition;
+
+cloudSessionMXAvailableQ[ ] :=
+    With[ { available = cloudSessionMXAvailableQ @ Quiet @ PacletObject[ "Wolfram/Chatbook" ][ "Version" ] },
+        If[ available, cloudSessionMXAvailableQ[ ] = True ];
+        available
+    ];
+
+cloudSessionMXAvailableQ[ $cloudSessionMXChatbookVersion ] := True;
+cloudSessionMXAvailableQ[ version_String ] := TrueQ @ PacletNewerQ[ version, $cloudSessionMXChatbookVersion ];
+cloudSessionMXAvailableQ[ _ ] := False;
+
+cloudSessionMXAvailableQ // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*setCloudSessionMX*)
+(* Give the cloud evaluator the session's saved definitions (None: start from an empty kernel). No-op unless
+   this is a cloud session and Chatbook is new enough to honor the symbol. *)
+setCloudSessionMX // beginDefinition;
+
+setCloudSessionMX[ mx_ ] /; cloudSessionQ[ ] && cloudSessionMXAvailableQ[ ] :=
+    cb`$CloudSessionMX = Replace[ mx, Except[ _ByteArray ] -> None ];
+
+setCloudSessionMX[ _ ] := Null;
+
+setCloudSessionMX // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*getCloudSessionMX*)
+(* The session's definitions as left by the last cloud evaluation, or None when there are none to keep. *)
+getCloudSessionMX // beginDefinition;
+getCloudSessionMX[ ] := getCloudSessionMX[ cloudSessionQ[ ] && cloudSessionMXAvailableQ[ ] ];
+getCloudSessionMX[ True ] := Replace[ cb`$CloudSessionMX, Except[ _ByteArray ] -> None ];
+getCloudSessionMX[ False ] := None;
+getCloudSessionMX // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*sessionContext*)
+(* The context session code is parsed into: an isolating per-session context under the in-kernel methods,
+   Global` for a cloud session (see above). *)
+$cloudSessionContext = "Global`";
+
+sessionContext // beginDefinition;
+sessionContext[ _String ] /; cloudSessionQ[ ] := $cloudSessionContext;
+sessionContext[ id_String ] := "Sessions`" <> id <> "`";
+sessionContext // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*applySessionContext*)
+applySessionContext // beginDefinition;
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
+applySessionContext[ ctx_String ] := (
+    $Context        = ctx;
+    $ContextPath    = { ctx, "System`" };
+    $ContextAliases = <| |>;
+);
+(* :!CodeAnalysis::EndBlock:: *)
+applySessionContext // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*restoreCloudSessionState*)
+(* Re-establish a cloud session's kernel-side state from its saved info when continuing or resuming it. Any
+   context changes made by the session's own evaluations happened in a discarded evaluator kernel, so a
+   cloud session always parses into Global`, whatever its info recorded (e.g. a file written under another
+   "Method"). No-op for the in-kernel methods. *)
+restoreCloudSessionState // beginDefinition;
+
+restoreCloudSessionState[ info_Association ] /; cloudSessionQ[ ] := (
+    applySessionContext @ $cloudSessionContext;
+    setCloudSessionMX @ Lookup[ info, "SessionMX", None ];
+);
+
+restoreCloudSessionState[ _ ] := Null;
+
+restoreCloudSessionState // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
 (*Starting, Saving, and Resuming Sessions*)
 (* The *InKernel companions set up the eval-kernel-side session state ($Context, In/Out history, $Line)
    via useEvaluatorKernel and return the line seed; the outer functions update the MCP-side
@@ -640,9 +763,8 @@ startSessionInKernel // beginDefinition;
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
 startSessionInKernel[ id_String ] := (
-    $Context        = "Sessions`" <> id <> "`";
-    $ContextPath    = { $Context, "System`" };
-    $ContextAliases = <| |>;
+    applySessionContext @ sessionContext @ id;
+    setCloudSessionMX @ None; (* a new cloud session starts from an empty evaluator kernel *)
     Unprotect[ In, InString, Out, MessageList ];
     DownValues[ In ]          = { };
     DownValues[ InString ]    = { };
@@ -672,7 +794,8 @@ startSessionInKernel // endDefinition;
    file-scoped $line counter persist between calls. $Context/$ContextPath/$ContextAliases are restored
    from the state captured by the last save ($sessionInfo) rather than reset to defaults, so context
    changes made by the session's own evaluations (e.g. Get prepending a package context to the path)
-   survive across calls. Returns $Failed without throwing when the kernel-side state is missing or
+   survive across calls. A cloud session additionally gets its definitions byte array back from the same
+   state (see Cloud Sessions). Returns $Failed without throwing when the kernel-side state is missing or
    belongs to a different session (e.g. the eval kernel restarted between calls); the caller then falls
    back to resuming from the session file. *)
 enterSessionContext // beginDefinition;
@@ -698,6 +821,7 @@ enterSessionContextInKernel[ id_String ] :=
             $Context        = info[ "$Context" ];
             $ContextPath    = info[ "$ContextPath" ];
             $ContextAliases = info[ "$ContextAliases" ];
+            restoreCloudSessionState @ info;
             Null,
             $Failed
         ]
@@ -767,9 +891,10 @@ saveSession[ id_String ] := Enclose[
             True | _Association,
             "Saved"
         ];
-        (* The eval kernel could not write the file itself (e.g. the "Local" sandbox kernel blocks
-           file writes) and returned its session info instead: persist it from this kernel. Such a
-           file carries no session-context definitions, only the state needed to resume metadata,
+        (* The eval kernel returned its session info instead of writing the file itself, either because
+           it could not (e.g. the "Local" sandbox kernel blocks file writes) or because this is a cloud
+           session, whose definitions travel inside that info (see Cloud Sessions): persist it from this
+           kernel. Such a file carries no session-context definitions, only the state needed to resume,
            which is all the eval kernel could capture anyway. *)
         If[ AssociationQ @ saved,
             ConfirmMatch[ writeSessionInfoFile[ First @ file, saved ], True, "SavedFallback" ]
@@ -788,21 +913,53 @@ saveSession // endDefinition;
 saveSessionInKernel // beginDefinition;
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
-saveSessionInKernel[ id_String, path_String, line_Integer ] :=
+saveSessionInKernel[ id_String, path_String, line_Integer ] := (
+    $sessionInfo = makeSessionInfo[ id, line ];
+    If[ cloudSessionQ[ ],
+        (* A cloud session has no session context to dump (its definitions travel in the "SessionMX" entry
+           of the info), so its file holds only the info: hand it back for saveSession to write. *)
+        $sessionInfo,
+        dumpSessionContext @ path
+    ]
+);
+(* :!CodeAnalysis::EndBlock:: *)
+saveSessionInKernel // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*makeSessionInfo*)
+makeSessionInfo // beginDefinition;
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
+makeSessionInfo[ id_String, line_Integer ] := <|
+    "SessionID"       -> id, (* lets a continuing call verify $sessionInfo is its own; see enterSessionContextInKernel *)
+    "KernelSessionID" -> $kernelSessionID, (* identifies the saving kernel process; see resumeSessionInKernel *)
+    "$Context"        -> $Context,
+    "$ContextPath"    -> $ContextPath,
+    "$ContextAliases" -> $ContextAliases,
+    "$Line"           -> $Line, (* eval kernel's $Line, kept for reference / back-compat *)
+    "$line"           -> line,  (* authoritative per-session counter that drives resume (injected by saveSession) *)
+    "In"              -> DownValues[ In ],
+    "InString"        -> DownValues[ InString ],
+    "Out"             -> DownValues[ Out ],
+    "MessageList"     -> DownValues[ MessageList ],
+    (* A cloud session's definitions live in Chatbook's session byte array rather than in any kernel (see Cloud Sessions) *)
+    If[ cloudSessionQ[ ], "SessionMX" -> getCloudSessionMX[ ], Nothing ]
+|>;
+(* :!CodeAnalysis::EndBlock:: *)
+makeSessionInfo // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*dumpSessionContext*)
+(* DumpSave the session $Context (all user symbols) plus the held $sessionInfo symbol to path. Returns True
+   on success, or the session info when the write failed so saveSession can persist that from the
+   controlling kernel. *)
+dumpSessionContext // beginDefinition;
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
+dumpSessionContext[ path_String ] :=
     Module[ { tmp, written },
-        $sessionInfo = <|
-            "SessionID"       -> id, (* lets a continuing call verify $sessionInfo is its own; see enterSessionContextInKernel *)
-            "KernelSessionID" -> $kernelSessionID, (* identifies the saving kernel process; see resumeSessionInKernel *)
-            "$Context"        -> $Context,
-            "$ContextPath"    -> $ContextPath,
-            "$ContextAliases" -> $ContextAliases,
-            "$Line"           -> $Line, (* eval kernel's $Line, kept for reference / back-compat *)
-            "$line"           -> line,  (* authoritative per-session counter that drives resume (injected by saveSession) *)
-            "In"              -> DownValues[ In ],
-            "InString"        -> DownValues[ InString ],
-            "Out"             -> DownValues[ Out ],
-            "MessageList"     -> DownValues[ MessageList ]
-        |>;
         tmp = path <> "." <> CreateUUID[ ] <> ".tmp"; (* unique per attempt, so its existence proves THIS write happened *)
         (* DumpSave the session $Context (all user symbols) plus the held $sessionInfo symbol; the With
            injects the evaluated context string while DumpSave's HoldRest keeps $sessionInfo a symbol.
@@ -827,14 +984,15 @@ saveSessionInKernel[ id_String, path_String, line_Integer ] :=
         ]
     ];
 (* :!CodeAnalysis::EndBlock:: *)
-saveSessionInKernel // endDefinition;
+dumpSessionContext // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
 (*writeSessionInfoFile*)
-(* Fallback writer for when the eval kernel cannot write files itself: persist the session info it
-   returned as the same DumpSave format resumeSessionInKernel reads (the Block gives the held
-   $sessionInfo symbol the eval kernel's value for the duration of the write). *)
+(* Writer for info-only session files (no session-context definitions): used when the eval kernel cannot
+   write files itself, and for cloud sessions, whose definitions travel inside the info (see Cloud
+   Sessions). Persists the session info as the same DumpSave format resumeSessionInKernel reads (the Block
+   gives the held $sessionInfo symbol the eval kernel's value for the duration of the write). *)
 writeSessionInfoFile // beginDefinition;
 
 writeSessionInfoFile[ path_String, info_Association ] :=
@@ -922,6 +1080,7 @@ resumeSessionInKernel[ path_String ] :=
             DownValues[ Out ]         = info[ "Out" ];
             DownValues[ MessageList ] = info[ "MessageList" ];
             Protect[ In, InString, Out, MessageList ];
+            restoreCloudSessionState @ info;
             (* The second element reports whether the file was saved by this same kernel process;
                files saved before KernelSessionID existed conservatively count as a different kernel. *)
             { line, info[ "KernelSessionID" ] === $kernelSessionID },
@@ -1105,21 +1264,25 @@ saveSessionSafe // endDefinition;
    evaluation and the save, then restored to the kernel's neutral baseline afterward. Symbols created
    during the block (the user's definitions) persist in their session context, as do the session's
    In/Out/$Line (which are not in the block), so isolation and history survive across calls while the
-   kernel is never left in a session context between calls. *)
+   kernel is never left in a session context between calls. Chatbook's cloud session byte array is scoped
+   the same way: a cloud session's definitions are pushed into it by applySession and read back by the
+   save, and never leak into another session or outlive the call (see Cloud Sessions). *)
 withSession // beginDefinition;
 withSession // Attributes = { HoldRest };
 
 withSession[ session_, eval_ ] :=
     Internal`InheritedBlock[ { $Context, $ContextPath, $ContextAliases },
-        Module[ { id, result },
-            id = applySession @ session;
-            (* applySession has set $line and the session $Context. For the "Local" method also push $line
-               into the eval subkernel's $Line at a boundary (a continued session already tracks it in
-               lockstep); no-op for in-process methods. *)
-            If[ $sessionStatus =!= "continued", syncEvalKernelLineSafe @ $line ];
-            result = eval;
-            saveSessionSafe @ id;
-            appendSessionInfo[ result, id ]
+        Block[ { cb`$CloudSessionMX = None },
+            Module[ { id, result },
+                id = applySession @ session;
+                (* applySession has set $line and the session $Context. For the "Local" method also push
+                   $line into the eval subkernel's $Line at a boundary (a continued session already tracks
+                   it in lockstep); no-op for in-process methods. *)
+                If[ $sessionStatus =!= "continued", syncEvalKernelLineSafe @ $line ];
+                result = eval;
+                saveSessionSafe @ id;
+                appendSessionInfo[ result, id ]
+            ]
         ]
     ];
 
@@ -1171,17 +1334,47 @@ sessionInfoText // endDefinition;
 (*sessionInfoStatusText*)
 sessionInfoStatusText // beginDefinition;
 
-sessionInfoStatusText[ "reused" ] := "\
-No saved state was found for the requested session ID, so a new empty session was started. ";
+sessionInfoStatusText[ status_ ] := sessionInfoStatusText[ status, cloudSessionQ[ ] ];
 
-sessionInfoStatusText[ "resumedNewKernel" ] := "\
+sessionInfoStatusText[ "reused", cloud_ ] := "\
+No saved state was found for the requested session ID, so a new empty session was started. " <>
+    sessionInfoStatusText[ "new", cloud ];
+
+sessionInfoStatusText[ "resumedNewKernel", False ] := "\
 The kernel process for this session has changed (e.g. the server restarted), so the session \
 was restored from its last saved state. Session definitions and history were restored, but other \
 kernel state (e.g. packages loaded with Get or Needs) may be missing and might need to be reloaded. ";
 
-sessionInfoStatusText[ _ ] := "";
+(* A cloud session runs in a fresh cloud kernel on every call (see Cloud Sessions), so the AI is reminded on
+   each call of what does and does not persist. *)
+sessionInfoStatusText[ status_String, True ] := cloudSessionStatusText[ status, cloudSessionMXAvailableQ[ ] ];
+
+sessionInfoStatusText[ _, _ ] := "";
 
 sessionInfoStatusText // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*cloudSessionStatusText*)
+cloudSessionStatusText // beginDefinition;
+
+(* Chatbook too old for the session byte array: nothing persists at all. *)
+cloudSessionStatusText[ _, False ] := "\
+This session runs in a non-persistent cloud kernel and cannot restore definitions from previous calls \
+(that requires Wolfram/Chatbook " <> $cloudSessionMXChatbookVersion <> " or later on the server), so each \
+call starts from an empty kernel and must include everything it needs. ";
+
+cloudSessionStatusText[ "new", True ] := "\
+This session runs in a non-persistent cloud kernel: its global definitions (variables and functions) are \
+saved after each call and restored before the next, but all other kernel state (loaded packages, In/Out \
+history, %, etc.) is lost between calls. ";
+
+cloudSessionStatusText[ _, True ] := "\
+This session runs in a non-persistent cloud kernel: its saved global definitions were restored, but all \
+other kernel state (loaded packages, In/Out history, %, etc.) does not persist between calls and must be \
+re-established in each call that needs it. ";
+
+cloudSessionStatusText // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

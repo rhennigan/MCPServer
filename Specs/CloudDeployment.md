@@ -88,7 +88,10 @@ Explicitly out of scope for the initial implementation (see [Future Work](#futur
   object, including code-execution tools such as `WolframLanguageEvaluator`. Access control is the
   owner's responsibility, mediated entirely by API keys.
 - **Caching / persistent kernels.** Each request is a fresh, stateless evaluation
-  (see [Evaluation Model](#evaluation-model)).
+  (see [Evaluation Model](#evaluation-model)). Evaluator *sessions* nevertheless work across requests:
+  their files persist in the account's cloud user files and their definitions round-trip through
+  Chatbook's `$CloudSessionMX` (see
+  [Stateless Evaluation Model](../docs/cloud-deployment.md#stateless-evaluation-model)).
 - **Local consumption.** Making the deployed remote endpoint installable into local MCP clients
   (a URL-based `InstallMCPServer`) is a separate future effort.
 
