@@ -481,9 +481,26 @@ $myOption := toolOptionValue[ "YourTool", "OptionName" ];
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `"Method"` | String | `"Session"` | Evaluation method. `"Session"` uses the server kernel; `"Local"` spawns a separate kernel. |
+| `"Method"` | String | `Automatic` | Evaluation method. `"Session"` uses the server kernel; `"Local"` spawns a separate sandboxed kernel; `"Cloud"` runs each evaluation in a fresh Wolfram Cloud kernel. `Automatic` means `"Cloud"` when the server itself runs in the cloud (see [cloud-deployment.md](cloud-deployment.md)) and `"Session"` otherwise. |
 | `"ImageExportMethod"` | String | `None` | How to export graphics. `None`, `"Local"`, `"Cloud"`, or `"CloudPublic"`. |
 | `"TimeConstraint"` | Integer | `60` | Default time limit (seconds) when the LLM doesn't specify `timeConstraint`. The LLM can still override this per-call. |
+| `"MaxSessionCount"` | Integer | `100` | Maximum number of saved evaluator sessions to keep (oldest pruned first; the current session is always kept). |
+| `"MaxSessionBytes"` | Integer | `1073741824` | Total byte budget for saved evaluator sessions. |
+| `"MaxSessionAge"` | Quantity | `Quantity[1, "Months"]` | Saved evaluator sessions older than this are pruned. |
+
+##### Sessions
+
+The evaluator's optional `session` parameter gives each conversation an isolated, resumable session
+(its definitions, line numbers, and In/Out history). Sessions are saved under
+`$UserBaseDirectory/ApplicationData/Wolfram/AgentTools/Sessions/` after every call, so they survive
+server restarts, and every result ends with a reminder of the session ID to pass on subsequent calls.
+
+Under the `"Cloud"` method each call runs in a fresh, non-persistent cloud kernel, so only a session's
+**global definitions** persist: Chatbook 2.7.11+ returns the evaluator kernel's `` Global` `` definitions
+after each call as an MX byte array (`Wolfram`Chatbook`$CloudSessionMX`), which AgentTools stores in
+the session file and hands back before the next call. Loaded packages, In/Out history, `%`, and any
+other kernel state are lost between calls, and each result's session reminder says so (with an older
+Chatbook on the server it says that definitions cannot be restored at all).
 
 #### WolframLanguageContext
 
