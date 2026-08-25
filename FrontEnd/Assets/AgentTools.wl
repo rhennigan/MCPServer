@@ -165,7 +165,12 @@
 		"Japanese"           -> "\:30c7\:30d5\:30a9\:30eb\:30c8\:306eMCP\:30b5\:30fc\:30d0\:306e\:30ea\:30b9\:30c8\:306f\:5229\:7528\:3067\:304d\:307e\:305b\:3093\:ff0e",
 		"Korean"             -> "\:ae30\:bcf8 MCP \:c11c\:bc84 \:baa9\:b85d\:c744 \:c0ac\:c6a9\:d560 \:c218 \:c5c6\:c2b5\:b2c8\:b2e4.",
 		"Spanish"            -> "La lista de servidores MCP predeterminados no est\[AAcute] disponible."
-	|>]
+	|>],
+
+	(* TODO: localize (English only until the localization pass) *)
+	"prefsSubmitUsageData" -> "Share anonymous usage data with Wolfram to help improve these tools",
+
+	"prefsSubmitUsageDataDescription" -> "When enabled, the Wolfram tools report which AI environment is used, which tools and prompts are called, and whether each call succeeded. No content is ever sent: no code, queries, arguments, or results."
 
 },
 

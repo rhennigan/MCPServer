@@ -576,6 +576,7 @@ Include these environment variables for proper operation:
 | `WOLFRAM_CLOUDBASE` | Set to a cloud base URL (e.g. `"https://www.test.wolframcloud.com"`) to override `$CloudBase` for the server session; cloud URLs in [MCP Apps](mcp-apps.md) assets are rewritten to match (optional, primarily for internal purposes) |
 | `LLMKIT_ENABLED` | Set to `"false"` to make the context tools (`WolframContext`, etc.) behave as if the user has no LLMKit subscription, without emitting subscription warnings (optional) |
 | `MCP_TOOL_OPTIONS` | JSON string of tool option overrides, set automatically by `"ToolOptions"` (optional) |
+| `SUBMIT_USAGE_DATA` | Set to `"false"` to opt out of [anonymous usage data](usage-data.md) collection (or `"true"` to opt a custom server in); set automatically by `"SubmitUsageData"` (optional) |
 
 ### Getting the Configuration
 
@@ -676,6 +677,22 @@ This option works with both `InstallMCPServer` and `UninstallMCPServer`. When un
 (* Uninstall the "WolframDev" entry that was installed with a custom name *)
 UninstallMCPServer["ClaudeDesktop", "WolframLanguage", "MCPServerName" -> "WolframDev"]
 ```
+
+### SubmitUsageData
+
+Controls whether the installed server collects and submits [anonymous usage data](usage-data.md) — which MCP client is used, which tools and prompts are called, and whether each call succeeded, never any content:
+
+| Value | Behavior |
+|-------|----------|
+| `Automatic` (default) | Nothing is added to the configuration; the server's `"EnableUsageData"` property decides, so built-in servers collect usage data and custom servers do not |
+| `False` | Opts out; sets `SUBMIT_USAGE_DATA=false` in the server environment |
+| `True` | Opts in even for a custom server; sets `SUBMIT_USAGE_DATA=true` |
+
+```wl
+InstallMCPServer["ClaudeCode", "WolframLanguage", "SubmitUsageData" -> False]
+```
+
+Users who configure toolsets from the system preferences panel can opt out with its checkbox instead (see [preferences-content.md](preferences-content.md)).
 
 ### ToolOptions
 

@@ -49,6 +49,15 @@ Each client row contains:
 - An info icon that, when hovered, shows the on-disk install location for the deployed toolset
 - A per-directory settings list (when applicable) showing project-level deployments
 
+### Usage Data Checkbox
+
+Below the client list, a checkbox labeled *Share anonymous usage data with Wolfram to help improve these tools* (checked by default, with a tooltip describing what is collected) controls the `"SubmitUsageData"` option of the deployments made from the panel. The state is stored in `CurrentValue[$FrontEnd, {PrivateFrontEndOptions, "InterfaceSettings", "ServicesForAIs", "SubmitUsageData"}]`; only an explicit `False` opts out.
+
+- Checked: deployments are made without the option, so the server's default applies (the built-in toolsets collect usage data).
+- Unchecked: deployments are made with `"SubmitUsageData" -> False`, which writes `SUBMIT_USAGE_DATA=false` into the client configuration.
+
+Toggling the checkbox re-deploys every existing deployment of a built-in toolset (global and per-directory), preserving the other options each deployment was made with, so the change takes effect immediately. The re-deployment is submitted as a session task (`SessionSubmit`) rather than run inside the checkbox's preemptive evaluation. See [usage-data.md](usage-data.md) for what is collected and how.
+
 ### Per-Directory Settings
 
 When a client has project-level deployments (e.g., from `DeployAgentTools[{"ClaudeCode", "/path/to/project"}, ...]`), each path is listed under "Settings for specific directories:" along with the toolset that was deployed there. Clicking a path opens its directory in the OS file browser.
@@ -59,7 +68,7 @@ The optional file-scoped flag `$allowDirectoryOperations` (default `False` in `K
 
 Strings and graphics used by the panel are loaded from `FrontEnd/Assets/AgentTools.wl` via `FEPrivate`FrontEndResource`:
 
-- `"AgentToolsStrings"` — `LanguageSwitched` translations for every label and tooltip in the panel (English plus Chinese Simplified, Chinese Traditional, French, Japanese, Korean, and Spanish)
+- `"AgentToolsStrings"` — `LanguageSwitched` translations for every label and tooltip in the panel (English plus Chinese Simplified, Chinese Traditional, French, Japanese, Korean, and Spanish). The usage data strings (`prefsSubmitUsageData`, `prefsSubmitUsageDataDescription`) are currently English only, pending localization
 - `"AgentToolsExpressions"` — `GraphicsBox` definitions for the down-pointer, remove ("x"), and info icons
 
 These resources are made available to the front end through the paclet's `"FrontEnd"` extension declared in `PacletInfo.wl`:
@@ -74,7 +83,7 @@ To add new strings or icons, edit `FrontEnd/Assets/AgentTools.wl` and reference 
 
 ## Related Files
 
-- `Kernel/PreferencesContent.wl` — Implementation of `CreatePreferencesContent` and its helpers (`clientInterfaces`, `clientRow`, `clientControls`, `dirSettingsRow`, `infoLink`, `docsLink`)
+- `Kernel/PreferencesContent.wl` — Implementation of `CreatePreferencesContent` and its helpers (`clientInterfaces`, `clientRow`, `clientControls`, `dirSettingsRow`, `infoLink`, `docsLink`, `usageDataCheckbox`)
 - `FrontEnd/Assets/AgentTools.wl` — Localized strings and graphics resources
 - `Kernel/DeployAgentTools.wl` — Deployment system used by the panel (see [deploy-agent-tools.md](deploy-agent-tools.md))
 - `Kernel/SupportedClients.wl` — Source of `$SupportedMCPClients` data shown for each client row
@@ -84,3 +93,4 @@ To add new strings or icons, edit `FrontEnd/Assets/AgentTools.wl` and reference 
 - [deploy-agent-tools.md](deploy-agent-tools.md) — Underlying deployment management used by the panel
 - [mcp-clients.md](mcp-clients.md) — Supported MCP clients listed in the panel
 - [servers.md](servers.md) — `Wolfram` and `WolframLanguage` predefined servers exposed by the panel
+- [usage-data.md](usage-data.md) — The anonymous usage data controlled by the panel's checkbox

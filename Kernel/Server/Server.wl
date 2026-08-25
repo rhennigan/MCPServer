@@ -15,6 +15,14 @@ BeginPackage[ "Wolfram`AgentTools`Server`" ];
 `$toolList;
 `$warmupTask;
 
+(* Usage data (UsageData.wl): per-session tracking state and the hooks called by the local transport. *)
+`$mcpClientInformation;
+`$mcpSessionID;
+`$usageDataEnabled;
+`$usageEvents;
+`initializeUsageData;
+`recordUsageData;
+
 (* Shared catch wrapper: defined in Local.wl but also used by evaluateTool in Shared.wl,
    so it is declared here where both subcontexts can bind it. *)
 `stealthCatchTop;
@@ -56,6 +64,9 @@ $currentMCPServer = None;
 $subcontexts = {
     (* Transport-agnostic core: dispatch, tool/prompt resolution, result formatting, init *)
     "Wolfram`AgentTools`Server`Shared`",
+
+    (* Usage data: session ID, anonymous usage tracking for local servers, and submission of finished sessions *)
+    "Wolfram`AgentTools`Server`UsageData`",
 
     (* Local stdio transport: StartMCPServer, the read loop, warmup, superQuiet *)
     "Wolfram`AgentTools`Server`Local`",
