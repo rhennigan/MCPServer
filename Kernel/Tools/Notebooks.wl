@@ -26,7 +26,7 @@ $defaultMCPTools[ "ReadNotebook" ] := LLMTool @ <|
     "Parameters"  -> {
         "notebook" -> <|
             "Interpreter" -> "String",
-            "Help"        -> "The Wolfram notebook to read, specified as a file path or a NotebookObject[...]",
+            "Help"        -> "The Wolfram notebook to read, specified as a file path, URL, or a NotebookObject[...]",
             "Required"    -> True
         |>
     }
@@ -50,6 +50,35 @@ $defaultMCPTools[ "WriteNotebook" ] := LLMTool @ <|
         "overwrite" -> <|
             "Interpreter" -> "Boolean",
             "Help"        -> "Whether to overwrite an existing file (default is False).",
+            "Required"    -> False
+        |>,
+        "markdown" -> <|
+            "Interpreter" -> "String",
+            "Help"        -> "The markdown text to write to a notebook.",
+            "Required"    -> True
+        |>
+    },
+    "Overrides" :> If[ $MCPEvaluationEnvironment === "Cloud", $writeNotebookCloudOverrides, <| |> ]
+|>;
+
+
+$writeNotebookCloudOverrides = <|
+    "Description" -> "Converts markdown text to a Wolfram notebook and deploys it to a cloud object.",
+    "Function"    -> writeCloudNotebook,
+    "Parameters"  -> {
+        "path" -> <|
+            "Interpreter" -> "String",
+            "Help"        -> "The path to write the notebook to. Uses a new anonymous cloud object if unspecified.",
+            "Required"    -> False
+        |>,
+        "permissions" -> <|
+            "Interpreter" -> "String",
+            "Help"        -> "The permissions to set for the cloud object e.g., \"Public\" or \"Private\" (default is \"Private\").",
+            "Required"    -> False
+        |>,
+        "overwrite" -> <|
+            "Interpreter" -> "Boolean",
+            "Help"        -> "Whether to overwrite an existing cloud object (default is False).",
             "Required"    -> False
         |>,
         "markdown" -> <|
@@ -85,17 +114,21 @@ readNotebook // beginDefinition;
 readNotebook[ KeyValuePattern[ "notebook" -> notebook_ ] ] :=
     readNotebook @ notebook;
 
-readNotebook[ file_String ] /; FileExistsQ @ file := Enclose[
+(* Read from a URL: *)
+readNotebook[ url_String ] /; StringStartsQ[ url, "http://"|"https://" ] := Enclose[
     Catch @ Module[ { nb },
-        nb = Import[ file, "NB" ];
-        If[ ! MatchQ[ nb, _Notebook ], Throw[ "File is not a valid Wolfram notebook: " <> file ] ];
+        (* Try importing as a cloud object first, so we don't try to interpret HTML as a notebook *)
+        nb = Quiet @ Import[ CloudObject @ url, "NB" ];
+        If[ ! MatchQ[ nb, _Notebook ], nb = Quiet @ Import[ url, "NB" ] ];
+        If[ ! MatchQ[ nb, _Notebook ], Throw[ "URL does not point to a valid Wolfram notebook: " <> url ] ];
         ConfirmMatch[ chatbookVersionCheck[ ], True, "ChatbookVersionCheck" ];
         ConfirmBy[ exportMarkdownString @ nb, StringQ, "Result" ]
     ],
     throwInternalFailure
 ];
 
-readNotebook[ nbo0_String ] := Enclose[
+(* Read from a NotebookObject[...] specification: *)
+readNotebook[ nbo0_String ] /; StringContainsQ[ nbo0, "NotebookObject["~~__~~"]" ] := Enclose[
     Catch @ Module[ { held, nbo },
         held = Quiet @ ToExpression[ nbo0, InputForm, HoldComplete ];
         If[ ! MatchQ[ held, HoldComplete[ NotebookObject[ __String ] ] ],
@@ -104,6 +137,18 @@ readNotebook[ nbo0_String ] := Enclose[
         nbo = ConfirmMatch[ ReleaseHold @ held, NotebookObject[ __String ], "NotebookObject" ];
         ConfirmMatch[ chatbookVersionCheck[ ], True, "ChatbookVersionCheck" ];
         ConfirmBy[ exportMarkdownString @ nbo, StringQ, "Result" ]
+    ],
+    throwInternalFailure
+];
+
+(* Read from a local file: *)
+readNotebook[ file_String ] := Enclose[
+    Catch @ Module[ { nb },
+        If[ ! FileExistsQ @ file, Throw[ "File does not exist: " <> file ] ];
+        nb = Import[ file, "NB" ];
+        If[ ! MatchQ[ nb, _Notebook ], Throw[ "File is not a valid Wolfram notebook: " <> file ] ];
+        ConfirmMatch[ chatbookVersionCheck[ ], True, "ChatbookVersionCheck" ];
+        ConfirmBy[ exportMarkdownString @ nb, StringQ, "Result" ]
     ],
     throwInternalFailure
 ];
@@ -141,6 +186,47 @@ writeNotebook[ markdown_String, file_String, overwrite: True|False ] := Enclose[
 ];
 
 writeNotebook // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*writeCloudNotebook*)
+writeCloudNotebook // beginDefinition;
+
+writeCloudNotebook[ KeyValuePattern @ {
+    "markdown"    -> markdown_,
+    "permissions" -> permissions_,
+    "path"        -> path_,
+    "overwrite"   -> overwrite_
+} ] := writeCloudNotebook[ markdown, permissions, path, TrueQ @ overwrite ];
+
+writeCloudNotebook[ markdown_String, permissions0_, path_, overwrite: True|False ] := Enclose[
+    Catch @ Module[ { permissions, target, targetString, nb, exported },
+        permissions = If[ MatchQ[ permissions0, "Private"|"Public" ], permissions0, "Private" ];
+
+        target = If[ StringQ @ path && path =!= "",
+                     CloudObject[ path, Permissions -> permissions ],
+                     CloudObject[ Permissions -> permissions ]
+                 ];
+
+        targetString = First @ ConfirmMatch[ target, CloudObject[ _String, ___ ], "TargetCloudObject" ];
+
+        If[ FileExistsQ @ target && ! overwrite, Throw[ "File already exists: " <> targetString ] ];
+
+        ConfirmMatch[ chatbookVersionCheck[ ], True, "ChatbookVersionCheck" ];
+        nb = ConfirmMatch[ importMarkdownString[ markdown, "Notebook" ], _Notebook, "Notebook" ];
+
+        exported = Quiet @ Export[ target, nb, "NB" ];
+
+        If[ ! MatchQ[ exported, CloudObject[ _String, ___ ] ],
+            Throw[ "Unable to write the notebook to the cloud object: " <> targetString ]
+        ];
+
+        First @ exported
+    ],
+    throwInternalFailure
+];
+
+writeCloudNotebook // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)

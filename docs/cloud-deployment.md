@@ -325,6 +325,17 @@ The consequences, accepted for v1:
 
 Caching / persistent kernels are future work.
 
+### Environment-specific tool behavior
+
+While handling a request, `RunCloudMCPServer` binds `$MCPEvaluationEnvironment` to `"Cloud"` and
+`$MCPTransport` to `"StreamableHTTP"` (the stdio server binds `"Local"` / `"StandardInputOutput"`; both are
+`None` outside a server session). Tools can use these — through the `"Overrides"` tool property, see
+[Environment-Specific Overrides](tools.md#environment-specific-overrides) — to present a different
+description, parameter set, or implementation in the cloud. `WriteNotebook`, for instance, writes a
+cloud object (with `path` / `permissions` parameters) instead of a local file. The landing page's
+`/api/info` tool list is generated with the same bindings, so it matches what the endpoint's
+`tools/list` returns.
+
 ## MCP Apps Support
 
 [MCP Apps](mcp-apps.md) interactive UI is **supported** in the cloud despite statelessness. Because

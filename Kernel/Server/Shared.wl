@@ -91,7 +91,7 @@ initializeServerState[ obj0_MCPServerObject ] := Enclose[
         (* Run server-level initialization for custom and paclet-backed servers *)
         runServerInitialization @ obj;
 
-        llmTools = disambiguateToolNames @ ConfirmMatch[ obj[ "Tools" ], { ___LLMTool }, "Tools" ];
+        llmTools = disambiguateToolNames @ applyToolOverrides @ ConfirmMatch[ obj[ "Tools" ], { ___LLMTool }, "Tools" ];
 
         (* Run tool initialization for all tools at startup *)
         runToolInitialization @ Values @ llmTools;
@@ -226,6 +226,35 @@ runToolInitialization // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
+(*applyToolOverrides*)
+(* Merge a tool's environment-specific "Overrides" into its data. The value is typically a delayed rule
+   that inspects $MCPEvaluationEnvironment / $MCPTransport (bound by each transport before the server
+   state is built) and yields an association of tool properties to replace -- or an empty association /
+   None for no change. Whole properties are replaced (e.g. the entire "Parameters" list), the "Overrides"
+   key itself is kept, and applying twice is a no-op. The LLMTool pattern must be held: an unheld
+   LLMTool[ as_Association, opts___ ] evaluates (LLMTool::argrx) while the definition is being made. *)
+applyToolOverrides // beginDefinition;
+
+applyToolOverrides[ { } ] := { };
+
+applyToolOverrides[ tools: { __LLMTool } ] := applyToolOverrides /@ tools;
+
+applyToolOverrides[ HoldPattern @ LLMTool[ as_Association, opts___ ] ] := Enclose[
+    Module[ { overrides },
+        overrides = ConfirmBy[
+            Replace[ Lookup[ as, "Overrides", <| |> ], None -> <| |> ],
+            AssociationQ,
+            "Overrides"
+        ];
+        LLMTool[ <| as, overrides |>, opts ]
+    ],
+    throwInternalFailure
+];
+
+applyToolOverrides // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
 (*disambiguateToolNames*)
 disambiguateToolNames // beginDefinition;
 
@@ -292,13 +321,15 @@ createMCPToolData // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*serverToolListData*)
 (* The tool-list data for a server object, in the same shape tools/list returns (the $toolList that
-   initializeServerState builds): each tool disambiguated, then passed through createMCPToolData. Unlike
-   initializeServerState this runs no paclet install / server or tool initialization / UI setup -- it only
-   reads tool metadata -- so it is safe to call purely to describe a server, e.g. for the cloud /api/info
-   landing-page endpoint. Declared in the Server` context (Server.wl) so the cloud transport can reach it. *)
+   initializeServerState builds): each tool has its environment overrides applied (applyToolOverrides, so
+   the caller's $MCPEvaluationEnvironment / $MCPTransport bindings are honored), is disambiguated, then
+   passed through createMCPToolData. Unlike initializeServerState this runs no paclet install / server or
+   tool initialization / UI setup -- it only reads tool metadata -- so it is safe to call purely to
+   describe a server, e.g. for the cloud /api/info landing-page endpoint. Declared in the Server` context
+   (Server.wl) so the cloud transport can reach it. *)
 serverToolListData // beginDefinition;
 serverToolListData[ obj_MCPServerObject ] := serverToolListData @ obj[ "Tools" ];
-serverToolListData[ tools: { ___LLMTool } ] := KeyValueMap[ createMCPToolData, disambiguateToolNames @ tools ];
+serverToolListData[ tools: { ___LLMTool } ] := KeyValueMap[ createMCPToolData, disambiguateToolNames @ applyToolOverrides @ tools ];
 serverToolListData[ _ ] := { };
 serverToolListData // endDefinition;
 

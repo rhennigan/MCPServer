@@ -15,7 +15,7 @@ $helpText = StringJoin[
     "Usage: ", $usage, "\n\n",
     "Reads the contents of a Wolfram notebook (.nb) as markdown text.\n\n",
     "Arguments:\n",
-    "  notebook (required): The Wolfram notebook to read, specified as a file path or a NotebookObject[...]\n"
+    "  notebook (required): The Wolfram notebook to read, specified as a file path, URL, or a NotebookObject[...]\n"
 ];
 
 (* Check for --usage flag *)

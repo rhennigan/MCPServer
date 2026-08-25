@@ -39,7 +39,13 @@ startMCPServer[ obj_ ] /; $Notebooks :=
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::SuspiciousSessionSymbol:: *)
 startMCPServer[ obj0_MCPServerObject ] := Enclose[
-    Block[ { $currentMCPServer = obj0, $mcpEvaluation = True },
+    Block[
+        {
+            $MCPTransport             = "StandardInputOutput",
+            $MCPEvaluationEnvironment = "Local",
+            $currentMCPServer         = obj0,
+            $mcpEvaluation            = True
+        },
         superQuiet @ Module[ { logFile, state, response, output },
 
         SetOptions[ First @ Streams[ "stdout" ], CharacterEncoding -> "UTF-8" ];
