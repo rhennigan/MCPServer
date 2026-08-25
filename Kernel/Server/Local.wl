@@ -73,6 +73,9 @@ startMCPServer[ obj0_MCPServerObject ] := Enclose[
                 $logFile      = logFile,
                 $toolOptions  = state[ "ToolOptions" ]
             },
+            (* Assign the session ID and, when enabled for this server, start usage tracking (see UsageData.wl) *)
+            initializeUsageData @ $currentMCPServer;
+
             While[ True,
                 If[
                     And[
@@ -202,6 +205,7 @@ processRequest[ ] :=
 
         req = <| "jsonrpc" -> "2.0", "id" -> id |>;
         response = catchAlways @ handleMethod[ method, message, req ];
+        recordUsageData[ method, message, response ];
         If[ method === "tools/list", $warmupTools = True ];
         writeLog[ "Response" -> response ];
         If[ FailureQ @ response,

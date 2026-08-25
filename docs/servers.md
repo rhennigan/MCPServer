@@ -195,7 +195,12 @@ server["Name"]           (* "WolframLanguage" *)
 server["Tools"]          (* List of LLMTool objects *)
 server["MCPPrompts"]     (* List of prompt definitions *)
 server["JSONConfiguration"]  (* JSON config for manual setup *)
+server["EnableUsageData"]    (* True: the built-in servers collect anonymous usage data *)
 ```
+
+### Usage Data
+
+The predefined servers have `"EnableUsageData" -> True`, so their local sessions record which MCP client is used and which tools and prompts are called (never any content) and submit that data to Wolfram. Installations can opt out with `InstallMCPServer`'s `"SubmitUsageData" -> False` option or the preferences panel's checkbox. Custom servers do not have the property and are not tracked unless installed with `"SubmitUsageData" -> True`. See [usage-data.md](usage-data.md).
 
 ## Creating Custom Servers
 

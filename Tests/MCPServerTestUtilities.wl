@@ -76,7 +76,8 @@ GetMCPEnvironment[ serverName_String ] := Module[ { env, keys, usable },
 
     usable = KeyTake[ env, keys ];
 
-    <| usable, "MCP_SERVER_NAME" -> serverName |>
+    (* Test servers must never record or submit usage data (see docs/usage-data.md) *)
+    <| usable, "MCP_SERVER_NAME" -> serverName, "SUBMIT_USAGE_DATA" -> "false" |>
 ];
 
 (* ::**************************************************************************************************************:: *)
@@ -85,7 +86,8 @@ GetMCPEnvironment[ serverName_String ] := Module[ { env, keys, usable },
 StartMCPTestServer // ClearAll;
 StartMCPTestServer // Options = {
     "ServerName" -> "WolframLanguage",
-    "DevelopmentMode" -> True
+    "DevelopmentMode" -> True,
+    "Environment" -> <| |> (* extra or overriding environment variables for the server process *)
 };
 
 StartMCPTestServer[ opts: OptionsPattern[ ] ] := Catch @ Module[
@@ -96,7 +98,7 @@ StartMCPTestServer[ opts: OptionsPattern[ ] ] := Catch @ Module[
 
     serverName = OptionValue[ "ServerName" ];
     devMode = OptionValue[ "DevelopmentMode" ];
-    env = GetMCPEnvironment @ serverName;
+    env = <| GetMCPEnvironment @ serverName, Replace[ OptionValue[ "Environment" ], Except[ _Association ] -> <| |> ] |>;
 
     cmd = If[ TrueQ @ devMode,
         getDevelopmentModeCommand[ ],

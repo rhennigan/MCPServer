@@ -254,7 +254,7 @@ configureAllButton[detectedClients_, Dynamic[refresh_]] :=
 					DeployAgentTools[
 						client,
 						CurrentValue[$FrontEnd, {PrivateFrontEndOptions, "InterfaceSettings", "ServicesForAIs", "SelectedToolset", client}],
-						OverwriteTarget -> True
+						OverwriteTarget -> True, Sequence @@ usageDataDeployOptions[]
 					],
 					{client, detectedClients}
 				],
@@ -384,7 +384,7 @@ clientMenu[category_, client_, Dynamic[refresh_]] :=
 			CurrentValue[$FrontEnd, {PrivateFrontEndOptions, "InterfaceSettings", "ServicesForAIs", "SelectedToolset", client}],
 			(
 				CurrentValue[$FrontEnd, {PrivateFrontEndOptions, "InterfaceSettings", "ServicesForAIs", "SelectedToolset", client}] = #;
-				If[category === "Configured", refresh @ DeployAgentTools[client, #, OverwriteTarget -> True]]
+				If[category === "Configured", refresh @ DeployAgentTools[client, #, OverwriteTarget -> True, Sequence @@ usageDataDeployOptions[]]]
 			)&
 		]
 		,
@@ -488,7 +488,7 @@ clientButton[category_, client_, Dynamic[refresh_]] :=
 		refresh @ DeployAgentTools[
 			client,
 			CurrentValue[$FrontEnd, {PrivateFrontEndOptions, "InterfaceSettings", "ServicesForAIs", "SelectedToolset", client}],
-			OverwriteTarget -> True
+			OverwriteTarget -> True, Sequence @@ usageDataDeployOptions[]
 		]
 	]
 
@@ -658,6 +658,80 @@ dirSettingsRow[Dynamic[dirSettings_], i_, {obj_, server_, scope_, active_}] :=
 
 
 (* ::Section::Closed:: *)
+(*usageDataCheckbox*)
+
+
+(*
+	Anonymous usage data (see docs/usage-data.md) is shared by default. The opt-out made here is stored in the front
+	end's private settings next to the per-client "SelectedToolset" choices; only an explicit False opts out.
+*)
+$usageDataSettingPath = {PrivateFrontEndOptions, "InterfaceSettings", "ServicesForAIs", "SubmitUsageData"};
+
+
+usageDataOptOutQ[] := Quiet[CurrentValue[$FrontEnd, $usageDataSettingPath]] === False
+
+
+(*
+	Extra InstallMCPServer options for deployments made from this panel: an opt-out is written into the client's
+	configuration as "SubmitUsageData" -> False (the SUBMIT_USAGE_DATA environment variable); otherwise nothing is
+	added and the server's own default applies.
+*)
+usageDataDeployOptions[] := If[usageDataOptOutQ[], {"SubmitUsageData" -> False}, {}]
+
+
+(*
+	Re-deploys every existing deployment of a built-in toolset so that the new setting is reflected in the clients'
+	configurations right away, preserving the other options each deployment was made with.
+*)
+applyUsageDataSetting[] :=
+	Scan[
+		redeployForUsageData,
+		Select[
+			Replace[Quiet @ DeployedAgentTools[], Except[_List] -> {}],
+			KeyExistsQ[Wolfram`AgentTools`$DefaultMCPServers, #["Toolset"]]&
+		]
+	]
+
+
+redeployForUsageData[dep_AgentToolsDeployment] :=
+	Module[{options},
+		options = DeleteCases[
+			Replace[Normal @ dep["MCP", "Options"], Except[{___Rule}] -> {}],
+			"SubmitUsageData" -> _
+		];
+		Quiet @ catchAlways @ DeployAgentTools[
+			dep["Target"],
+			dep["Toolset"],
+			OverwriteTarget -> True,
+			Sequence @@ Join[options, usageDataDeployOptions[]]
+		]
+	]
+
+
+usageDataCheckbox[] :=
+	Grid[
+		{{
+			Checkbox[
+				Dynamic[
+					CurrentValue[$FrontEnd, $usageDataSettingPath] =!= False,
+					(
+						CurrentValue[$FrontEnd, $usageDataSettingPath] = TrueQ[#];
+						(* Re-deploying can take a while, so it is queued rather than run in this preemptive evaluation *)
+						SessionSubmit @ applyUsageDataSetting[]
+					)&
+				]
+			],
+			Tooltip[
+				tr["prefsSubmitUsageData"],
+				tr["prefsSubmitUsageDataDescription"]
+			]
+		}},
+		Alignment -> {Left, Baseline},
+		Spacings -> {0.5, 0}
+	]
+
+
+(* ::Section::Closed:: *)
 (*CreatePreferencesContent*)
 
 
@@ -716,6 +790,12 @@ Deploy[
 					clientInterfaces[],
 					Alignment -> Left,
 					ImageMargins -> {{15,5},{0,0}}
+				],
+
+				Pane[
+					usageDataCheckbox[],
+					Alignment -> Left,
+					ImageMargins -> {{15,5},{0,10}}
 				]
 			},
 			ItemSize -> Scaled[1],

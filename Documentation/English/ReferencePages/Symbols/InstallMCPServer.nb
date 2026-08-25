@@ -578,6 +578,15 @@ Notebook[
          },
          {
           Cell["      ", "ModInfo"],
+          "SubmitUsageData",
+          ButtonBox["Automatic", BaseStyle -> "Link"],
+          Cell[
+           "whether to share anonymous usage data with Wolfram",
+           "TableText"
+          ]
+         },
+         {
+          Cell["      ", "ModInfo"],
           "ToolOptions",
           RowBox[{"\[LeftAssociation]", "\[RightAssociation]"}],
           Cell[
@@ -621,6 +630,19 @@ Notebook[
       ],
       "Notes",
       CellID -> 373152932
+     ],
+     Cell[
+      TextData[
+       {
+        "By default, the predefined MCP servers report anonymous usage data (which application is used, which tools and prompts are called, and whether each call succeeded) to help improve them. No content, such as code, queries, arguments, or results, is ever sent. Set ",
+        Cell[BoxData["SubmitUsageData"], "InlineFormula"],
+        " to ",
+        Cell[BoxData["False"], "InlineFormula"],
+        " to opt out."
+       }
+      ],
+      "Notes",
+      CellID -> 261984873
      ]
     },
     Open

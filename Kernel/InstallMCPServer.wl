@@ -14,6 +14,7 @@ $enableMCPApps        = True;
 $enableLLMKit         = Automatic;
 $installToolOptions   = <| |>;
 $installMCPServerName = Automatic;
+$submitUsageData      = Automatic;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
@@ -24,7 +25,13 @@ InstallMCPServer // beginDefinition;
    - False (default): Uses the installed paclet via PacletSymbol for server startup
    - True: Uses the Scripts/StartMCPServer.wls from $thisPaclet's location (requires unbuilt paclet)
    - path_String: Uses Scripts/StartMCPServer.wls from the specified directory
-   This allows testing local changes without reinstalling the paclet. *)
+   This allows testing local changes without reinstalling the paclet.
+
+   "SubmitUsageData" option:
+   - Automatic (default): Nothing is added to the configuration; the server tracks anonymous usage data only if its
+     "EnableUsageData" property is True (as it is for the built-in servers)
+   - True/False: Sets SUBMIT_USAGE_DATA in the server's environment, which takes precedence over the property
+   See docs/usage-data.md. *)
 InstallMCPServer // Options = {
     "ApplicationName"    -> Automatic,
     "DevelopmentMode"    -> False,
@@ -32,6 +39,7 @@ InstallMCPServer // Options = {
     "EnableMCPApps"      -> True,
     "MCPServerName"      -> Automatic,
     "ProcessEnvironment" -> Automatic,
+    "SubmitUsageData"    -> Automatic,
     "ToolOptions"        -> <| |>,
     "VerifyLLMKit"       -> True
 };
@@ -56,7 +64,8 @@ InstallMCPServer[ target_File? fileQ, server0_String? pacletQualifiedNameQ, opts
                     $enableMCPApps        = OptionValue[ "EnableMCPApps" ],
                     $enableLLMKit         = OptionValue[ "EnableLLMKit" ],
                     $installToolOptions   = validateToolOptions[ OptionValue[ "ToolOptions" ], server ],
-                    $installMCPServerName = OptionValue[ "MCPServerName" ]
+                    $installMCPServerName = OptionValue[ "MCPServerName" ],
+                    $submitUsageData      = validateSubmitUsageData @ OptionValue[ "SubmitUsageData" ]
                 },
                 installMCPServer[
                     target,
@@ -77,7 +86,8 @@ InstallMCPServer[ target_File? fileQ, server0_, opts: OptionsPattern[ ] ] :=
                 $enableMCPApps        = OptionValue[ "EnableMCPApps" ],
                 $enableLLMKit         = OptionValue[ "EnableLLMKit" ],
                 $installToolOptions   = validateToolOptions[ OptionValue[ "ToolOptions" ], server ],
-                $installMCPServerName = OptionValue[ "MCPServerName" ]
+                $installMCPServerName = OptionValue[ "MCPServerName" ],
+                $submitUsageData      = validateSubmitUsageData @ OptionValue[ "SubmitUsageData" ]
             },
             installMCPServer[
                 target,
@@ -109,6 +119,14 @@ validateInstallClientName[ Automatic, file_? fileQ ] := guessClientName @ file;
 validateInstallClientName[ name_String, _ ] := toInstallName @ name;
 validateInstallClientName[ other_, _ ] := throwFailure[ "InvalidApplicationName", other ];
 validateInstallClientName // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*validateSubmitUsageData*)
+validateSubmitUsageData // beginDefinition;
+validateSubmitUsageData[ value: Automatic|True|False ] := value;
+validateSubmitUsageData[ other_ ] := throwFailure[ "InvalidSubmitUsageData", other ];
+validateSubmitUsageData // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
@@ -803,6 +821,11 @@ addEnvironmentVariables[ server0_Association, extraEnv0_Association ] := Enclose
 
         If[ $enableLLMKit === False,
             extraEnv = <| extraEnv, "LLMKIT_ENABLED" -> "false" |>
+        ];
+
+        (* An explicit "SubmitUsageData" -> True/False overrides the server's "EnableUsageData" property at startup *)
+        If[ BooleanQ @ $submitUsageData,
+            extraEnv = <| extraEnv, "SUBMIT_USAGE_DATA" -> If[ $submitUsageData, "true", "false" ] |>
         ];
 
         If[ AssociationQ @ $installToolOptions && $installToolOptions =!= <| |>,

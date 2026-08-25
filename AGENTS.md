@@ -57,7 +57,8 @@ See [building.md](docs/building.md) for detailed instructions.
   - `Server/`: MCP server implementation, split by transport so the local (stdio) and cloud (HTTP) servers share a common core
     - `Server.wl`: Aggregator that declares the server-session state shared across the subcontexts, defines the exported `$MCPEvaluationEnvironment`/`$MCPTransport` host descriptors (bound per session/request by each transport), and loads the children below
     - `Shared.wl`: Transport-agnostic core — method dispatch (`handleMethod`), tool/prompt resolution, tool evaluation and result formatting, capability negotiation (`initResponse`), server-state build (`initializeServerState`), environment-specific tool overrides (`applyToolOverrides`, driven by the `"Overrides"` tool property), and logging helpers
-    - `Local.wl`: Local stdio transport — `StartMCPServer`, the read loop (`processRequest`), tool warmup, and stdout-protecting output suppression (`superQuiet`)
+    - `Local.wl`: Local stdio transport — `StartMCPServer`, the read loop (`processRequest`), tool warmup, and stdout-protecting output suppression (`superQuiet`); calls the usage-data hooks (`initializeUsageData`, `recordUsageData`)
+    - `UsageData.wl`: [Anonymous usage data](docs/usage-data.md) for local servers — per-session state (`$mcpSessionID`, `$mcpClientInformation`, `$usageEvents`), the enabling logic (`SUBMIT_USAGE_DATA` environment variable vs. the servers' `"EnableUsageData"` property), the session file under `$rootPath/UsageData`, the hourly keep-alive task, and the locked submission of finished sessions to the usage endpoint
     - `Cloud.wl`: Cloud HTTP transport — `RunCloudMCPServer` (stateless Streamable HTTP handler), `CloudDeployMCPServer`, the full-directory-bundle deploy implementation (`cloudDeployDirectory`) behind both the `CloudDeploy` UpValue on `MCPServerObject` (the UpValue itself is defined in `MCPServerObject.wl`) and the exported `CloudDeployMCPServerBundle` that deploys `/mcp`, the landing page, `/api/info`, and the forced-`Private` admin page/API, the self-describing session-ID capability codec, server-embedding deploy helpers (including the cloud-paclet detection — `$cloudSupportPacletVersion`/`cloudAgentToolsAvailableQ` — that swaps the heavy definition-bundling payloads for light paclet-loading ones when the connected cloud account has a new-enough Wolfram/AgentTools installed), the landing-page `/api/info` metadata generator, and the owner-only `/api/admin` key-management handler (`runCloudAdminAPI`: list/create/revoke `PermissionsKey`s) (see [Cloud Deployment spec](Specs/CloudDeployment.md))
   - `SupportedClients.wl`: Registry of supported MCP clients (`$SupportedMCPClients`) and relevant utility functions
   - `ValidateAgentToolsPacletExtension.wl`: Validation of `"AgentTools"` [paclet extensions](docs/paclet-extensions.md)
@@ -104,6 +105,7 @@ See [building.md](docs/building.md) for detailed instructions.
   - `mcp-roots.md`: MCP roots handshake, working-directory propagation, and guidance for tools that resolve relative paths
   - `paclet-extensions.md`: Third-party paclet extension system for contributing tools, prompts, and servers
   - `preferences-content.md`: System preferences UI for managing deployed Wolfram toolsets
+  - `usage-data.md`: Anonymous usage data collected by the built-in local servers (`"SubmitUsageData"` option, `SUBMIT_USAGE_DATA`, storage and submission)
 
 ### MCP Documentation
 
