@@ -33,6 +33,7 @@ The tools system provides:
 | `"Options"` | List | No | Tool options |
 | `"LLMKit"` | String | No | Dependency: `"Suggested"`, `"Required"`, or `Automatic` |
 | `"Initialization"` | Delayed | No | Optional initialization code run before first use |
+| `"Overrides"` | Association or Delayed | No | Environment-specific property overrides merged in when the server state is built (see [Environment-Specific Overrides](#environment-specific-overrides)) |
 
 ## $DefaultMCPTools
 
@@ -372,6 +373,35 @@ $defaultMCPTools[ "MyTool" ] := LLMTool @ <|
     "Initialization" :> initializeResources[ ]
 |>
 ```
+
+### Environment-Specific Overrides
+
+A tool can behave differently depending on where the MCP server is running. Two exported symbols describe the host and are bound by each transport before the server's tool tables are built (both are `None` outside a server session):
+
+| Symbol | Values |
+|--------|--------|
+| `$MCPEvaluationEnvironment` | `"Local"` for the stdio server started by `StartMCPServer`; `"Cloud"` for a [cloud-deployed server](cloud-deployment.md) |
+| `$MCPTransport` | `"StandardInputOutput"` for the stdio transport; `"StreamableHTTP"` for the cloud (Streamable HTTP) transport |
+
+The `"Overrides"` property is a (typically delayed) association of tool properties that is merged into the tool definition at that point, so one tool name can present a different description, parameter set, and implementation per environment:
+
+```wl
+$defaultMCPTools[ "WriteNotebook" ] := LLMTool @ <|
+    "Name"        -> "WriteNotebook",
+    "Description" -> "Converts markdown text to a Wolfram notebook and saves it to a file.",
+    "Function"    -> writeNotebook,
+    "Parameters"  -> { (* file, overwrite, markdown *) },
+    "Overrides"   :> If[ $MCPEvaluationEnvironment === "Cloud", $writeNotebookCloudOverrides, <| |> ]
+|>;
+
+$writeNotebookCloudOverrides = <|
+    "Description" -> "Converts markdown text to a Wolfram notebook and deploys it to a cloud object.",
+    "Function"    -> writeCloudNotebook,
+    "Parameters"  -> { (* path, permissions, overwrite, markdown *) }
+|>;
+```
+
+Overrides replace whole properties (e.g. the entire `"Parameters"` list); `<| |>` or `None` leaves the tool unchanged. They are applied by `initializeServerState` (both transports) and by `serverToolListData` (the cloud landing page's `/api/info`), not when a tool is evaluated directly, so `$DefaultMCPTools["WriteNotebook"]` always holds the local definition.
 
 ## Tool Output Format
 

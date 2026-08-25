@@ -17,7 +17,7 @@ wolframscript -f scripts/ReadNotebook.wls <notebook>
 
 | Argument | Required | Description |
 | --- | --- | --- |
-| `notebook` | Yes | The Wolfram notebook to read, specified as a file path or a NotebookObject[...] |
+| `notebook` | Yes | The Wolfram notebook to read, specified as a file path, URL, or a NotebookObject[...] |
 
 ---
 
