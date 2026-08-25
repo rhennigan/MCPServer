@@ -78,7 +78,7 @@ $writeNotebookCloudOverrides = <|
         |>,
         "overwrite" -> <|
             "Interpreter" -> "Boolean",
-            "Help"        -> "Whether to overwrite an existing file (default is False).",
+            "Help"        -> "Whether to overwrite an existing cloud object (default is False).",
             "Required"    -> False
         |>,
         "markdown" -> <|
