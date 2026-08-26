@@ -31,7 +31,12 @@ InstallMCPServer // beginDefinition;
    - Automatic (default): Nothing is added to the configuration; the server tracks anonymous usage data only if its
      "EnableUsageData" property is True (as it is for the built-in servers)
    - True/False: Sets SUBMIT_USAGE_DATA in the server's environment, which takes precedence over the property
-   See docs/usage-data.md. *)
+   See docs/usage-data.md.
+
+   "WolframCommand" option:
+   - Automatic (default): The command is resolved from $InstallationDirectory for the current operating system
+   - command_String: Written verbatim as the "command" field of the client configuration, so a
+     standalone executable can be launched instead of the local Wolfram kernel *)
 InstallMCPServer // Options = {
     "ApplicationName"    -> Automatic,
     "DevelopmentMode"    -> False,
@@ -41,7 +46,8 @@ InstallMCPServer // Options = {
     "ProcessEnvironment" -> Automatic,
     "SubmitUsageData"    -> Automatic,
     "ToolOptions"        -> <| |>,
-    "VerifyLLMKit"       -> True
+    "VerifyLLMKit"       -> True,
+    "WolframCommand"     -> Automatic
 };
 
 InstallMCPServer[ target_, opts: OptionsPattern[ ] ] :=
@@ -65,7 +71,8 @@ InstallMCPServer[ target_File? fileQ, server0_String? pacletQualifiedNameQ, opts
                     $enableLLMKit         = OptionValue[ "EnableLLMKit" ],
                     $installToolOptions   = validateToolOptions[ OptionValue[ "ToolOptions" ], server ],
                     $installMCPServerName = OptionValue[ "MCPServerName" ],
-                    $submitUsageData      = validateSubmitUsageData @ OptionValue[ "SubmitUsageData" ]
+                    $submitUsageData      = validateSubmitUsageData @ OptionValue[ "SubmitUsageData" ],
+                    $wolframCommand       = OptionValue[ "WolframCommand" ]
                 },
                 installMCPServer[
                     target,
@@ -87,7 +94,8 @@ InstallMCPServer[ target_File? fileQ, server0_, opts: OptionsPattern[ ] ] :=
                 $enableLLMKit         = OptionValue[ "EnableLLMKit" ],
                 $installToolOptions   = validateToolOptions[ OptionValue[ "ToolOptions" ], server ],
                 $installMCPServerName = OptionValue[ "MCPServerName" ],
-                $submitUsageData      = validateSubmitUsageData @ OptionValue[ "SubmitUsageData" ]
+                $submitUsageData      = validateSubmitUsageData @ OptionValue[ "SubmitUsageData" ],
+                $wolframCommand       = OptionValue[ "WolframCommand" ]
             },
             installMCPServer[
                 target,

@@ -19,6 +19,8 @@ $defaultCommandLineArguments = {
     "-noprompt"
 };
 
+$wolframCommand = Automatic;
+
 $$transport = "StandardInputOutput" | "HTTP" | "ServerSentEvents";
 
 $$metadata = KeyValuePattern @ {
@@ -664,7 +666,7 @@ makeJSONConfiguration // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*getWolframCommand*)
 getWolframCommand // beginDefinition;
-getWolframCommand[           ] := getWolframCommand @ $OperatingSystem;
+getWolframCommand[           ] := If[ $wolframCommand === Automatic, getWolframCommand @ $OperatingSystem, $wolframCommand ];
 getWolframCommand[ "Windows" ] := FileNameJoin @ { $InstallationDirectory, "wolfram.exe" };
 getWolframCommand[ "MacOSX"  ] := FileNameJoin @ { $InstallationDirectory, "MacOS", "wolfram" };
 getWolframCommand[ "Unix"    ] := FileNameJoin @ { $InstallationDirectory, "Executables", "wolfram" };
