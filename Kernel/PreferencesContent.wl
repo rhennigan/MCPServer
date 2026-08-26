@@ -254,7 +254,7 @@ configureAllButton[detectedClients_, Dynamic[refresh_]] :=
 					DeployAgentTools[
 						client,
 						CurrentValue[$FrontEnd, {PrivateFrontEndOptions, "InterfaceSettings", "ServicesForAIs", "SelectedToolset", client}],
-						OverwriteTarget -> True, Sequence @@ usageDataDeployOptions[]
+						OverwriteTarget -> True
 					],
 					{client, detectedClients}
 				],
@@ -384,7 +384,7 @@ clientMenu[category_, client_, Dynamic[refresh_]] :=
 			CurrentValue[$FrontEnd, {PrivateFrontEndOptions, "InterfaceSettings", "ServicesForAIs", "SelectedToolset", client}],
 			(
 				CurrentValue[$FrontEnd, {PrivateFrontEndOptions, "InterfaceSettings", "ServicesForAIs", "SelectedToolset", client}] = #;
-				If[category === "Configured", refresh @ DeployAgentTools[client, #, OverwriteTarget -> True, Sequence @@ usageDataDeployOptions[]]]
+				If[category === "Configured", refresh @ DeployAgentTools[client, #, OverwriteTarget -> True]]
 			)&
 		]
 		,
@@ -488,7 +488,7 @@ clientButton[category_, client_, Dynamic[refresh_]] :=
 		refresh @ DeployAgentTools[
 			client,
 			CurrentValue[$FrontEnd, {PrivateFrontEndOptions, "InterfaceSettings", "ServicesForAIs", "SelectedToolset", client}],
-			OverwriteTarget -> True, Sequence @@ usageDataDeployOptions[]
+			OverwriteTarget -> True
 		]
 	]
 
@@ -662,64 +662,19 @@ dirSettingsRow[Dynamic[dirSettings_], i_, {obj_, server_, scope_, active_}] :=
 
 
 (*
-	Anonymous usage data (see docs/usage-data.md) is shared by default. The opt-out made here is stored in the front
-	end's private settings next to the per-client "SelectedToolset" choices; only an explicit False opts out.
+	Anonymous usage data (see docs/usage-data.md) is shared by default. The opt-out made here is a single global
+	setting stored on disk (getGlobalUsageDataSetting and setGlobalUsageDataSetting in Kernel/Server/UsageData.wl),
+	which every server session consults when it starts, so changing it never requires re-deploying anything. The
+	stored value is read when the checkbox is displayed rather than when the panel is built, so it is always current;
+	writing it is quick enough to happen right in the checkbox's preemptive evaluation (catchAlways keeps a failed
+	write from surfacing as an uncaught Throw there).
 *)
-$usageDataSettingPath = {PrivateFrontEndOptions, "InterfaceSettings", "ServicesForAIs", "SubmitUsageData"};
-
-
-usageDataOptOutQ[] := Quiet[CurrentValue[$FrontEnd, $usageDataSettingPath]] === False
-
-
-(*
-	Extra InstallMCPServer options for deployments made from this panel: an opt-out is written into the client's
-	configuration as "SubmitUsageData" -> False (the SUBMIT_USAGE_DATA environment variable); otherwise nothing is
-	added and the server's own default applies.
-*)
-usageDataDeployOptions[] := If[usageDataOptOutQ[], {"SubmitUsageData" -> False}, {}]
-
-
-(*
-	Re-deploys every existing deployment of a built-in toolset so that the new setting is reflected in the clients'
-	configurations right away, preserving the other options each deployment was made with.
-*)
-applyUsageDataSetting[] :=
-	Scan[
-		redeployForUsageData,
-		Select[
-			Replace[Quiet @ DeployedAgentTools[], Except[_List] -> {}],
-			KeyExistsQ[Wolfram`AgentTools`$DefaultMCPServers, #["Toolset"]]&
-		]
-	]
-
-
-redeployForUsageData[dep_AgentToolsDeployment] :=
-	Module[{options},
-		options = DeleteCases[
-			Replace[Normal @ dep["MCP", "Options"], Except[{___Rule}] -> {}],
-			"SubmitUsageData" -> _
-		];
-		Quiet @ catchAlways @ DeployAgentTools[
-			dep["Target"],
-			dep["Toolset"],
-			OverwriteTarget -> True,
-			Sequence @@ Join[options, usageDataDeployOptions[]]
-		]
-	]
-
-
 usageDataCheckbox[] :=
 	Grid[
 		{{
-			Checkbox[
-				Dynamic[
-					CurrentValue[$FrontEnd, $usageDataSettingPath] =!= False,
-					(
-						CurrentValue[$FrontEnd, $usageDataSettingPath] = TrueQ[#];
-						(* Re-deploying can take a while, so it is queued rather than run in this preemptive evaluation *)
-						SessionSubmit @ applyUsageDataSetting[]
-					)&
-				]
+			DynamicModule[{submit = True},
+				Checkbox @ Dynamic[submit, catchAlways @ setGlobalUsageDataSetting[submit = TrueQ[#]]&],
+				Initialization :> (submit = getGlobalUsageDataSetting[])
 			],
 			Tooltip[
 				tr["prefsSubmitUsageData"],
@@ -738,8 +693,10 @@ usageDataCheckbox[] :=
 CreatePreferencesContent // beginDefinition;
 
 
+(* The subtitle is a StringTemplate built from an actual front end resource string (not a Dynamic), so a front end is
+   needed to evaluate this; UsingFrontEnd launches one when the kernel has none (e.g. in tests) and is otherwise a no-op. *)
 CreatePreferencesContent[] :=
-Deploy[
+UsingFrontEnd @ Deploy[
 	Pane[
 		Column[
 			{

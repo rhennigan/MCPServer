@@ -21,7 +21,9 @@ Needs[ "Wolfram`AgentTools`Server`" ];
     Tracking is enabled for a session when the SUBMIT_USAGE_DATA environment variable holds a boolean (written into
     the client's configuration by the "SubmitUsageData" option of InstallMCPServer), or -- when that variable is
     absent -- when the server's "EnableUsageData" property is explicitly True (the built-in servers set it; see
-    DefaultServers.wl). Nothing is tracked for cloud-deployed servers.
+    DefaultServers.wl) and the user has not opted out globally: the preferences panel's checkbox keeps its state in
+    $rootPath/GlobalSettings.wxf (see getGlobalUsageDataSetting), which every later session reads when it starts.
+    Nothing is tracked for cloud-deployed servers.
 
     The session's data lives in $rootPath/UsageData/<session id>.wxf. The file is rewritten whenever the data changes
     and touched hourly by a scheduled task, so its modification time tells whether the session is still alive even
@@ -80,11 +82,11 @@ usageDataQuietly // endDefinition;
 (*usageDataEnabledQ*)
 (* SUBMIT_USAGE_DATA takes precedence when it holds a boolean: an explicit true also tracks custom servers and an
    explicit false opts a built-in server out. Otherwise only servers whose "EnableUsageData" property is exactly
-   True are tracked. *)
+   True are tracked, and only if the user has not opted out globally (getGlobalUsageDataSetting). *)
 usageDataEnabledQ // beginDefinition;
 usageDataEnabledQ[ obj_ ] := usageDataEnabledQ[ obj, booleanEnvironment[ "SUBMIT_USAGE_DATA" ] ];
 usageDataEnabledQ[ _, enabled: True|False ] := enabled;
-usageDataEnabledQ[ obj_MCPServerObject, None ] := obj[ "EnableUsageData" ] === True;
+usageDataEnabledQ[ obj_MCPServerObject, None ] := obj[ "EnableUsageData" ] === True && getGlobalUsageDataSetting[ ];
 usageDataEnabledQ[ _, None ] := False;
 usageDataEnabledQ // endDefinition;
 
@@ -110,6 +112,28 @@ booleanString[ value_String ] :=
 booleanString[ _ ] := None;
 
 booleanString // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Global Setting*)
+(* The opt-out made with the preferences panel's checkbox (usageDataCheckbox in PreferencesContent.wl) is stored as
+   the "SubmitUsageData" entry of the global settings file (see Files.wl), where every later server session finds it,
+   so nothing has to be re-deployed when it changes. Only an explicit False opts out: a missing setting (or file), or
+   anything else, means the default, which is to share usage data. *)
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*getGlobalUsageDataSetting*)
+getGlobalUsageDataSetting // beginDefinition;
+getGlobalUsageDataSetting[ ] := getGlobalSetting[ "SubmitUsageData" ] =!= False;
+getGlobalUsageDataSetting // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*setGlobalUsageDataSetting*)
+setGlobalUsageDataSetting // beginDefinition;
+setGlobalUsageDataSetting[ setting: True|False ] := setGlobalSetting[ "SubmitUsageData", setting ];
+setGlobalUsageDataSetting // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
