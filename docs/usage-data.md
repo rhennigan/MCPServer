@@ -39,7 +39,7 @@ Everything else in a request — in particular the `arguments` — is never look
 Whether a session is tracked is decided once, when the server starts (`initializeUsageData` in `Kernel/Server/UsageData.wl`):
 
 1. If the `SUBMIT_USAGE_DATA` environment variable holds a boolean (`true`/`false`, case-insensitive; `yes`/`no`, `on`/`off`, and `1`/`0` are accepted too), that value wins.
-2. Otherwise the session is tracked only if the server's `"EnableUsageData"` property is exactly `True`. The built-in servers set it (see `Kernel/DefaultServers.wl`); servers created with `CreateMCPServer` or defined by paclets do not have the property, so they are not tracked unless the environment variable says otherwise.
+2. Otherwise the session is tracked only if the server's `"EnableUsageData"` property is exactly `True` and usage data has not been turned off globally (see [Opting Out](#opting-out-or-in) below). The built-in servers set the property (see `Kernel/DefaultServers.wl`); servers created with `CreateMCPServer` or defined by paclets do not have it, so they are not tracked unless the environment variable says otherwise.
 
 ```wl
 MCPServerObject["WolframLanguage"]["EnableUsageData"]  (* True *)
@@ -61,7 +61,11 @@ InstallMCPServer["ClaudeCode", "WolframLanguage", "SubmitUsageData" -> False]
 
 Any other value is rejected with `InstallMCPServer::InvalidSubmitUsageData`.
 
-The system preferences panel built by `CreatePreferencesContent` (see [preferences-content.md](preferences-content.md)) has a checkbox, *Share anonymous usage data with Wolfram to help improve these tools*, which is checked by default. Unchecking it re-deploys the currently configured toolsets with `"SubmitUsageData" -> False` (keeping their other options) and applies to toolsets configured from the panel afterward; checking it again re-deploys them without the option.
+The system preferences panel built by `CreatePreferencesContent` (see [preferences-content.md](preferences-content.md)) has a checkbox, *Share anonymous usage data with Wolfram to help improve these tools*, which is checked by default. Its state is a single global setting on this machine rather than anything in the clients' configurations: unchecking it stores `"SubmitUsageData" -> False` in the global settings file (see below), and checking it again stores `True`. Every built-in server session reads the setting when it starts, so the change applies to all existing installations at once without re-deploying anything. Only an explicit `False` opts out, and an explicit `SUBMIT_USAGE_DATA` in a client configuration (from the `"SubmitUsageData"` option) still takes precedence over the global setting, in both directions.
+
+#### The Global Settings File
+
+Settings that apply to everything on the machine live in `$rootPath/GlobalSettings.wxf`, i.e. `$UserBaseDirectory/ApplicationData/Wolfram/AgentTools/GlobalSettings.wxf`: a WXF-encoded association that currently holds only `"SubmitUsageData"` but is meant to take other global settings in the future. `readGlobalSettings`, `getGlobalSetting`, and `setGlobalSetting` in `Kernel/Files.wl` read and write it (a missing or unreadable file counts as no settings; writing merges the new value into the existing ones), and `getGlobalUsageDataSetting`/`setGlobalUsageDataSetting` in `Kernel/Server/UsageData.wl` wrap its `"SubmitUsageData"` entry for the checkbox and for `usageDataEnabledQ`.
 
 Servers started by the test suite never track anything: `GetMCPEnvironment` in `Tests/MCPServerTestUtilities.wl` sets `SUBMIT_USAGE_DATA=false` for every test server.
 
@@ -95,13 +99,14 @@ Usage tracking must never interfere with the server: every hook is wrapped in `u
 
 | File | Role |
 |------|------|
-| `Kernel/Server/UsageData.wl` | Session state, enabling logic, recording, the session file, the keep-alive task, and locked submission |
+| `Kernel/Server/UsageData.wl` | Session state, enabling logic (including the global setting: `getGlobalUsageDataSetting`, `setGlobalUsageDataSetting`), recording, the session file, the keep-alive task, and locked submission |
 | `Kernel/Server/Local.wl` | Calls `initializeUsageData` when the server starts and `recordUsageData` after each handled request |
 | `Kernel/Server/Server.wl` | Declares the session symbols and hooks shared with the local transport |
 | `Kernel/DefaultServers.wl` | `"EnableUsageData" -> True` for the built-in servers |
 | `Kernel/InstallMCPServer.wl` | The `"SubmitUsageData"` option and the `SUBMIT_USAGE_DATA` environment variable |
-| `Kernel/PreferencesContent.wl` | The opt-out checkbox and re-deployment of configured toolsets |
-| `Tests/UsageData.wlt` | Unit tests and server integration tests |
+| `Kernel/Files.wl` | The global settings file: `$globalSettingsFile`, `readGlobalSettings`, `getGlobalSetting`, `setGlobalSetting` |
+| `Kernel/PreferencesContent.wl` | The opt-out checkbox, which reads and writes the global setting |
+| `Tests/UsageData.wlt`, `Tests/Files.wlt`, `Tests/PreferencesContent.wlt` | Unit tests and server integration tests; tests of the global settings file; tests of the checkbox |
 
 Session state lives in the `` Wolfram`AgentTools`Server` `` context: `$mcpSessionID`, `$mcpClientInformation`, `$usageEvents` (an `` Internal`Bag ``), and `$usageDataEnabled`. Tunable settings (endpoint, timeouts, intervals, limits) are file-scoped variables at the top of `Kernel/Server/UsageData.wl`.
 

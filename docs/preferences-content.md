@@ -23,7 +23,7 @@ Selecting a toolset for a client calls `DeployAgentTools[client, server, Overwri
 CreatePreferencesContent[]
 ```
 
-Returns a `Deploy[Pane[...]]` expression suitable for embedding in a preferences panel.
+Returns a `Deploy[Pane[...]]` expression suitable for embedding in a preferences panel. Building it needs a front end (the subtitle is a `StringTemplate` assembled from a front-end string resource rather than a `Dynamic`), so the result is wrapped in `UsingFrontEnd`: a no-op in the preferences dialog's kernel, and a launch of a hidden front end for a headless kernel such as the test suite's.
 
 ## Panel Sections
 
@@ -51,12 +51,12 @@ Each client row contains:
 
 ### Usage Data Checkbox
 
-Below the client list, a checkbox labeled *Share anonymous usage data with Wolfram to help improve these tools* (checked by default, with a tooltip describing what is collected) controls the `"SubmitUsageData"` option of the deployments made from the panel. The state is stored in `CurrentValue[$FrontEnd, {PrivateFrontEndOptions, "InterfaceSettings", "ServicesForAIs", "SubmitUsageData"}]`; only an explicit `False` opts out.
+Below the client list, a checkbox labeled *Share anonymous usage data with Wolfram to help improve these tools* (checked by default, with a tooltip describing what is collected) controls whether the built-in toolsets collect usage data on this machine. Its state is a single global setting stored on disk — the `"SubmitUsageData"` entry of `$rootPath/GlobalSettings.wxf`, accessed through `getGlobalUsageDataSetting` and `setGlobalUsageDataSetting` (see [usage-data.md](usage-data.md)) — rather than anything in the clients' configurations; only an explicit `False` opts out.
 
-- Checked: deployments are made without the option, so the server's default applies (the built-in toolsets collect usage data).
-- Unchecked: deployments are made with `"SubmitUsageData" -> False`, which writes `SUBMIT_USAGE_DATA=false` into the client configuration.
+- Checked: `True` is stored (or nothing yet), so the server's default applies (the built-in toolsets collect usage data).
+- Unchecked: `False` is stored, and every built-in server session started afterward, from any installation, collects nothing.
 
-Toggling the checkbox re-deploys every existing deployment of a built-in toolset (global and per-directory), preserving the other options each deployment was made with, so the change takes effect immediately. The re-deployment is submitted as a session task (`SessionSubmit`) rather than run inside the checkbox's preemptive evaluation. See [usage-data.md](usage-data.md) for what is collected and how.
+Each server reads the setting when it starts, so toggling the checkbox takes effect for all installations without re-deploying any toolset, and deployments made from the panel never pass the `"SubmitUsageData"` option. The checkbox is a `DynamicModule` whose `Initialization` reads the stored value when the panel is displayed and whose `Dynamic` setter writes the new value. An installation that was made with an explicit `"SubmitUsageData"` value (`SUBMIT_USAGE_DATA` in its configuration) keeps that value regardless of the checkbox.
 
 ### Per-Directory Settings
 
@@ -84,6 +84,7 @@ To add new strings or icons, edit `FrontEnd/Assets/AgentTools.wl` and reference 
 ## Related Files
 
 - `Kernel/PreferencesContent.wl` — Implementation of `CreatePreferencesContent` and its helpers (`clientInterfaces`, `clientRow`, `clientControls`, `dirSettingsRow`, `infoLink`, `docsLink`, `usageDataCheckbox`)
+- `Kernel/Server/UsageData.wl` — `getGlobalUsageDataSetting` and `setGlobalUsageDataSetting`, the global setting behind `usageDataCheckbox` (stored in `GlobalSettings.wxf` by the helpers in `Kernel/Files.wl`)
 - `FrontEnd/Assets/AgentTools.wl` — Localized strings and graphics resources
 - `Kernel/DeployAgentTools.wl` — Deployment system used by the panel (see [deploy-agent-tools.md](deploy-agent-tools.md))
 - `Kernel/SupportedClients.wl` — Source of `$SupportedMCPClients` data shown for each client row

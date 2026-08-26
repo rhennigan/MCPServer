@@ -684,7 +684,7 @@ Controls whether the installed server collects and submits [anonymous usage data
 
 | Value | Behavior |
 |-------|----------|
-| `Automatic` (default) | Nothing is added to the configuration; the server's `"EnableUsageData"` property decides, so built-in servers collect usage data and custom servers do not |
+| `Automatic` (default) | Nothing is added to the configuration; the server's `"EnableUsageData"` property decides, so built-in servers collect usage data (unless it has been turned off globally with the preferences panel's checkbox) and custom servers do not |
 | `False` | Opts out; sets `SUBMIT_USAGE_DATA=false` in the server environment |
 | `True` | Opts in even for a custom server; sets `SUBMIT_USAGE_DATA=true` |
 
@@ -692,7 +692,7 @@ Controls whether the installed server collects and submits [anonymous usage data
 InstallMCPServer["ClaudeCode", "WolframLanguage", "SubmitUsageData" -> False]
 ```
 
-Users who configure toolsets from the system preferences panel can opt out with its checkbox instead (see [preferences-content.md](preferences-content.md)).
+The system preferences panel's checkbox turns usage data off for every built-in server installation on the machine at once — a global setting that each server reads when it starts, so nothing needs to be re-installed — while an explicit `"SubmitUsageData"` value still takes precedence (see [preferences-content.md](preferences-content.md)).
 
 ### ToolOptions
 

@@ -42,69 +42,66 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
-(*Usage Data Opt-Out*)
+(*Usage Data Checkbox*)
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
 
-(* Without a front end there is no stored setting, which means the default: usage data is shared and deployments
-   made from the panel get no extra options. *)
+(* The checkbox is a DynamicModule that reads the global setting when it is displayed and writes it when toggled;
+   nothing is re-deployed and no InstallMCPServer option is involved. *)
 VerificationTest[
-    Wolfram`AgentTools`PreferencesContent`Private`usageDataOptOutQ[ ],
-    False,
-    SameTest -> SameQ,
-    TestID   -> "PreferencesContent-UsageDataOptOutQ-Default@@Tests/PreferencesContent.wlt:51,1-56,2"
-]
-
-VerificationTest[
-    Wolfram`AgentTools`PreferencesContent`Private`usageDataDeployOptions[ ],
-    { },
-    SameTest -> SameQ,
-    TestID   -> "PreferencesContent-UsageDataDeployOptions-Default@@Tests/PreferencesContent.wlt:58,1-63,2"
-]
-
-VerificationTest[
-    Block[ { Wolfram`AgentTools`PreferencesContent`Private`usageDataOptOutQ = True & },
-        Wolfram`AgentTools`PreferencesContent`Private`usageDataDeployOptions[ ]
+    Wolfram`AgentTools`PreferencesContent`Private`usageDataCheckbox[ ],
+    Grid[
+        { {
+            (* Verbatim heads keep the pattern from being evaluated (or linted) as an actual DynamicModule *)
+            Verbatim[ DynamicModule ][
+                { Verbatim[ Set ][ _Symbol, True ] },
+                Checkbox @ Dynamic[ _Symbol, _Function ],
+                Initialization :> Verbatim[ Set ][ _Symbol, Wolfram`AgentTools`Common`getGlobalUsageDataSetting[ ] ],
+                ___ (* the kernel appends DynamicModuleValues :> { } when it evaluates a DynamicModule *)
+            ],
+            _Tooltip
+        } },
+        ___
     ],
-    { "SubmitUsageData" -> False },
-    SameTest -> SameQ,
-    TestID   -> "PreferencesContent-UsageDataDeployOptions-OptedOut@@Tests/PreferencesContent.wlt:65,1-72,2"
+    SameTest -> MatchQ,
+    TestID   -> "PreferencesContent-UsageDataCheckbox-Structure@@Tests/PreferencesContent.wlt:51,1-68,2"
 ]
 
-(* Re-deploying an existing deployment applies the current setting and keeps the deployment's other options *)
+(* Toggling the checkbox writes the global setting (the Dynamic's setter is applied by hand, since there is no
+   front end to display the DynamicModule) *)
 VerificationTest[
-    Module[ { configFile, dep, optedOut, env1, options, optedIn, env2 },
-        configFile = File @ FileNameJoin @ { $TemporaryDirectory, StringJoin[ "usage_prefs_", CreateUUID[], ".json" ] };
-        dep = DeployAgentTools[ configFile, "Wolfram", "ApplicationName" -> "ClaudeCode", "EnableMCPApps" -> False, "VerifyLLMKit" -> False ];
-
-        optedOut = Block[ { Wolfram`AgentTools`PreferencesContent`Private`usageDataOptOutQ = True & },
-            Wolfram`AgentTools`PreferencesContent`Private`redeployForUsageData @ dep
+    withTemporaryRoot @ Module[ { setter },
+        setter = First @ Cases[
+            Wolfram`AgentTools`PreferencesContent`Private`usageDataCheckbox[ ],
+            Checkbox[ Dynamic[ _, f_ ] ] :> f,
+            Infinity
         ];
-        env1 = Developer`ReadRawJSONString[ ReadString @ First @ configFile ][ "mcpServers", "Wolfram", "env" ];
-        options = Normal @ optedOut[ "MCP", "Options" ];
-
-        optedIn = Block[ { Wolfram`AgentTools`PreferencesContent`Private`usageDataOptOutQ = False & },
-            Wolfram`AgentTools`PreferencesContent`Private`redeployForUsageData @ optedOut
-        ];
-        env2 = Developer`ReadRawJSONString[ ReadString @ First @ configFile ][ "mcpServers", "Wolfram", "env" ];
-
-        DeleteObject[ optedIn ];
-        Quiet @ DeleteFile @ First @ configFile;
-
-        {
-            Head @ optedOut,
-            Lookup[ env1, "SUBMIT_USAGE_DATA", Missing[ "Absent" ] ],
-            Lookup[ env1, "MCP_APPS_ENABLED", Missing[ "Absent" ] ],
-            MemberQ[ options, "EnableMCPApps" -> False ],
-            MemberQ[ options, "SubmitUsageData" -> False ],
-            Head @ optedIn,
-            Lookup[ env2, "SUBMIT_USAGE_DATA", Missing[ "Absent" ] ],
-            Lookup[ env2, "MCP_APPS_ENABLED", Missing[ "Absent" ] ]
-        }
+        Block[ { Wolfram`AgentTools`PreferencesContent`Private`submit },
+            {
+                Wolfram`AgentTools`Common`getGlobalUsageDataSetting[ ],
+                setter[ False ],
+                Wolfram`AgentTools`PreferencesContent`Private`submit,
+                Wolfram`AgentTools`Common`getGlobalUsageDataSetting[ ],
+                Developer`ReadWXFFile @ Wolfram`AgentTools`Common`$globalSettingsFile,
+                setter[ True ],
+                Wolfram`AgentTools`Common`getGlobalUsageDataSetting[ ]
+            }
+        ]
     ],
-    { AgentToolsDeployment, "false", "false", True, True, AgentToolsDeployment, Missing[ "Absent" ], "false" },
+    { True, False, False, False, <| "SubmitUsageData" -> False |>, True, True },
     SameTest -> SameQ,
-    TestID   -> "PreferencesContent-RedeployForUsageData@@Tests/PreferencesContent.wlt:75,1-108,2"
+    TestID   -> "PreferencesContent-UsageDataCheckbox-Setter@@Tests/PreferencesContent.wlt:72,1-94,2"
+]
+
+(* Toggling the checkbox only writes the setting: no deployment is touched, and nothing is queued *)
+VerificationTest[
+    FreeQ[
+        Wolfram`AgentTools`PreferencesContent`Private`usageDataCheckbox[ ],
+        DeployAgentTools | InstallMCPServer | DeployedAgentTools | SessionSubmit | "SubmitUsageData"
+    ],
+    True,
+    SameTest -> SameQ,
+    TestID   -> "PreferencesContent-UsageDataCheckbox-NoRedeploy@@Tests/PreferencesContent.wlt:97,1-105,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

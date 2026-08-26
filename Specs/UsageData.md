@@ -32,8 +32,8 @@ Events, for `tools/call` and `prompts/get` only:
 
 - `InstallMCPServer` gets a `"SubmitUsageData"` option (default `Automatic`). `True`/`False` write `SUBMIT_USAGE_DATA=true|false` into the server's environment in the MCP configuration; `Automatic` writes nothing. Other values fail with `InvalidSubmitUsageData`. `DeployAgentTools` forwards the option like every other `InstallMCPServer` option and records it with the deployment.
 - The built-in servers get `"EnableUsageData" -> True` in their metadata.
-- At server start: if `SUBMIT_USAGE_DATA` holds a boolean, it wins (an explicit `True` also tracks custom servers, an explicit `False` opts a built-in server out); otherwise the server's `"EnableUsageData"` property must be exactly `True`.
-- `CreatePreferencesContent` shows a checkbox (checked by default) whose state is stored in `CurrentValue[$FrontEnd, {PrivateFrontEndOptions, "InterfaceSettings", "ServicesForAIs", "SubmitUsageData"}]`. Checked adds nothing to deployments (`Automatic`); unchecked adds `"SubmitUsageData" -> False`. Toggling re-deploys every existing deployment of a built-in toolset, preserving its other options, so the change takes effect without re-configuring each client; the re-deployment runs as a session task rather than in the checkbox's preemptive evaluation.
+- At server start: if `SUBMIT_USAGE_DATA` holds a boolean, it wins (an explicit `True` also tracks custom servers, an explicit `False` opts a built-in server out); otherwise the server's `"EnableUsageData"` property must be exactly `True` and the global setting (next bullet) must not be `False`.
+- `CreatePreferencesContent` shows a checkbox (checked by default) whose state is a single global setting on disk: the `"SubmitUsageData"` entry of `$rootPath/GlobalSettings.wxf`, a WXF association meant to hold other machine-wide settings later (`readGlobalSettings`/`getGlobalSetting`/`setGlobalSetting` in `Kernel/Files.wl`, wrapped by `getGlobalUsageDataSetting`/`setGlobalUsageDataSetting` in `Kernel/Server/UsageData.wl`). Only an explicit `False` opts out. The checkbox is a `DynamicModule` whose `Initialization` reads the setting when the panel is displayed and whose `Dynamic` setter writes it. Since every server session reads the setting when it starts, nothing is re-deployed when it changes, and deployments made from the panel pass no `"SubmitUsageData"` option. (An earlier design kept the state in the front end and re-deployed every built-in toolset on each toggle, which was far too slow.)
 - Development-mode servers are tracked like any other built-in server. Test servers are not: `GetMCPEnvironment` sets `SUBMIT_USAGE_DATA=false`.
 
 ## How It Is Tracked
@@ -82,23 +82,25 @@ We cannot know when a session's last message has arrived, so sessions are submit
 
 | File | Change |
 |------|--------|
-| `Kernel/Server/UsageData.wl` | New: configuration, session state, `usageDataEnabledQ`, `initializeUsageData`, `recordUsageData`, session file, keep-alive task, locked submission |
+| `Kernel/Server/UsageData.wl` | New: configuration, session state, `usageDataEnabledQ`, `getGlobalUsageDataSetting`/`setGlobalUsageDataSetting`, `initializeUsageData`, `recordUsageData`, session file, keep-alive task, locked submission |
 | `Kernel/Server/Server.wl` | Declare the shared session symbols and hooks; load the new subcontext |
 | `Kernel/Server/Local.wl` | Call the hooks |
 | `Kernel/DefaultServers.wl` | `"EnableUsageData" -> True` on the four built-in servers |
 | `Kernel/InstallMCPServer.wl` | `"SubmitUsageData"` option, validation, `SUBMIT_USAGE_DATA` in `addEnvironmentVariables` |
 | `Kernel/Messages.wl` | `InvalidSubmitUsageData` |
-| `Kernel/PreferencesContent.wl` | Checkbox, setting helpers, re-deployment; deployments from the panel pass the opt-out |
+| `Kernel/Files.wl` | The global settings file: `$globalSettingsFile`, `readGlobalSettings`, `getGlobalSetting`, `setGlobalSetting` |
+| `Kernel/PreferencesContent.wl` | Checkbox reading and writing the global setting; deployments from the panel pass nothing |
 | `FrontEnd/Assets/AgentTools.wl` | `prefsSubmitUsageData` and `prefsSubmitUsageDataDescription` strings (English only until localized) |
 | `Tests/UsageData.wlt` | Unit tests (enabling logic, recording, payload/JSON, keep-alive, staleness, locked submission with a stubbed HTTP call) and server integration tests |
-| `Tests/InstallMCPServer.wlt`, `Tests/MCPServerObject.wlt`, `Tests/PreferencesContent.wlt` | Option, property, and panel tests |
+| `Tests/InstallMCPServer.wlt`, `Tests/MCPServerObject.wlt`, `Tests/PreferencesContent.wlt`, `Tests/Files.wlt` | Option, property, panel (checkbox structure and setter), and global-settings-file tests |
 | `Tests/MCPServerTestUtilities.wl` | `SUBMIT_USAGE_DATA=false` for test servers; `"Environment"` option of `StartMCPTestServer` |
 | `docs/usage-data.md` and related docs | Documentation |
 
 ## Testing
 
-- `usageDataEnabledQ`: property vs. environment precedence, non-boolean values ignored.
-- `initializeUsageData`: session ID always assigned; tasks only when enabled; never fails startup.
+- `usageDataEnabledQ`: property vs. environment precedence, non-boolean values ignored, global opt-out honored (and still overridden by the environment), opt-in restores the default.
+- Global settings file: missing/unreadable file counts as no settings, set/get round trip, merge preserves other keys; `getGlobalUsageDataSetting` treats only an explicit `False` as an opt-out; `setGlobalUsageDataSetting` rejects non-booleans; the checkbox's setter writes the file.
+- `initializeUsageData`: session ID always assigned; tasks only when enabled; the global opt-out is read at startup; never fails startup.
 - `recordUsageData`: client information, tool/prompt events, success/failure cases, unknown names recorded as `Null`, no arguments or results in the file, other methods ignored, disabled sessions record nothing, event cap, failure isolation.
 - Payload JSON round trip.
 - Keep-alive touch, stale-file detection (current session excluded).
