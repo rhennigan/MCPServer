@@ -18,6 +18,7 @@ BeginPackage[ "Wolfram`AgentTools`Common`" ];
 `$storagePath;
 `$supportedMCPClients;
 `$thisPaclet;
+`$commandLineArguments;
 `$wolframCommand;
 `addToMXInitialization;
 `beginDefinition;

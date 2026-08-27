@@ -19,6 +19,8 @@ $defaultCommandLineArguments = {
     "-noprompt"
 };
 
+$commandLineArguments = Automatic;
+
 $wolframCommand = Automatic;
 
 $$transport = "StandardInputOutput" | "HTTP" | "ServerSentEvents";
@@ -653,7 +655,7 @@ makeJSONConfiguration[ data_Association ] := Enclose[
         name = ConfirmBy[ data[ "Name" ], StringQ, "Name" ];
         env = <| "MCP_SERVER_NAME" -> name, ConfirmBy[ defaultEnvironment[ ], AssociationQ, "Environment" ] |>;
         cmd = ConfirmBy[ getWolframCommand[ ], StringQ, "WolframCommand" ];
-        config = <| "type" -> "stdio", "command" -> cmd, "args" -> $defaultCommandLineArguments, "env" -> env |>;
+        config = <| "type" -> "stdio", "command" -> cmd, "args" -> If[ $commandLineArguments === Automatic, $defaultCommandLineArguments, $commandLineArguments ], "env" -> env |>;
         full = <| "mcpServers" -> <| name -> config |> |>;
         ConfirmBy[ Developer`WriteRawJSONString @ full, StringQ, "JSONConfiguration" ]
     ],

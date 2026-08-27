@@ -43,7 +43,7 @@ DeployAgentTools[All, server]
 
 `DeployAgentTools` also accepts all `InstallMCPServer` options, which are passed through:
 
-- `"ApplicationName"`, `"DevelopmentMode"`, `"EnableLLMKit"`, `"EnableMCPApps"`, `"MCPServerName"`, `"ProcessEnvironment"`, `"SubmitUsageData"`, `"ToolOptions"`, `"VerifyLLMKit"`, `"WolframCommand"`
+- `"ApplicationName"`, `"CommandLineArguments"`, `"DevelopmentMode"`, `"EnableLLMKit"`, `"EnableMCPApps"`, `"MCPServerName"`, `"ProcessEnvironment"`, `"SubmitUsageData"`, `"ToolOptions"`, `"VerifyLLMKit"`, `"WolframCommand"`
 
 ### Examples
 

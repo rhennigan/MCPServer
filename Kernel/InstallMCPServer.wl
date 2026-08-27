@@ -39,6 +39,7 @@ InstallMCPServer // beginDefinition;
      standalone executable can be launched instead of the local Wolfram kernel *)
 InstallMCPServer // Options = {
     "ApplicationName"    -> Automatic,
+    "CommandLineArguments" -> Automatic,
     "DevelopmentMode"    -> False,
     "EnableLLMKit"       -> Automatic,
     "EnableMCPApps"      -> True,
@@ -72,7 +73,8 @@ InstallMCPServer[ target_File? fileQ, server0_String? pacletQualifiedNameQ, opts
                     $installToolOptions   = validateToolOptions[ OptionValue[ "ToolOptions" ], server ],
                     $installMCPServerName = OptionValue[ "MCPServerName" ],
                     $submitUsageData      = validateSubmitUsageData @ OptionValue[ "SubmitUsageData" ],
-                    $wolframCommand       = OptionValue[ "WolframCommand" ]
+                    $wolframCommand       = OptionValue[ "WolframCommand" ],
+                    $commandLineArguments = OptionValue[ "CommandLineArguments" ]
                 },
                 installMCPServer[
                     target,
@@ -95,7 +97,8 @@ InstallMCPServer[ target_File? fileQ, server0_, opts: OptionsPattern[ ] ] :=
                 $installToolOptions   = validateToolOptions[ OptionValue[ "ToolOptions" ], server ],
                 $installMCPServerName = OptionValue[ "MCPServerName" ],
                 $submitUsageData      = validateSubmitUsageData @ OptionValue[ "SubmitUsageData" ],
-                $wolframCommand       = OptionValue[ "WolframCommand" ]
+                $wolframCommand       = OptionValue[ "WolframCommand" ],
+                $commandLineArguments = OptionValue[ "CommandLineArguments" ]
             },
             installMCPServer[
                 target,
