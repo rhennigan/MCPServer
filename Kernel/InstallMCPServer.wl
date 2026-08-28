@@ -38,17 +38,17 @@ InstallMCPServer // beginDefinition;
    - command_String: Written verbatim as the "command" field of the client configuration, so a
      standalone executable can be launched instead of the local Wolfram kernel *)
 InstallMCPServer // Options = {
-    "ApplicationName"    -> Automatic,
+    "ApplicationName"      -> Automatic,
     "CommandLineArguments" -> Automatic,
-    "DevelopmentMode"    -> False,
-    "EnableLLMKit"       -> Automatic,
-    "EnableMCPApps"      -> True,
-    "MCPServerName"      -> Automatic,
-    "ProcessEnvironment" -> Automatic,
-    "SubmitUsageData"    -> Automatic,
-    "ToolOptions"        -> <| |>,
-    "VerifyLLMKit"       -> True,
-    "WolframCommand"     -> Automatic
+    "DevelopmentMode"      -> False,
+    "EnableLLMKit"         -> Automatic,
+    "EnableMCPApps"        -> True,
+    "MCPServerName"        -> Automatic,
+    "ProcessEnvironment"   -> Automatic,
+    "SubmitUsageData"      -> Automatic,
+    "ToolOptions"          -> <| |>,
+    "VerifyLLMKit"         -> True,
+    "WolframCommand"       -> Automatic
 };
 
 InstallMCPServer[ target_, opts: OptionsPattern[ ] ] :=
