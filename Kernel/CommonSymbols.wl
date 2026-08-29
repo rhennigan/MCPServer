@@ -115,6 +115,14 @@ BeginPackage[ "Wolfram`AgentTools`Common`" ];
 `outputLogFile;
 `cleanupOldOutputLogs;
 
+(* Global settings (Files.wl) and the usage-data setting kept there (Server/UsageData.wl): *)
+`$globalSettingsFile;
+`getGlobalSetting;
+`getGlobalUsageDataSetting;
+`readGlobalSettings;
+`setGlobalSetting;
+`setGlobalUsageDataSetting;
+
 (* Logging utilities: *)
 `debugPrint;
 `writeError;

@@ -34,6 +34,8 @@
             line-height: 1.5;
         }
         #container {
+            /* Set default color for notebook text explicitly to avoid css color override: bugs:477936 */
+            color: black;
             width: 100%;
             min-height: 100px;
         }
@@ -446,7 +448,8 @@
                     allowInteract: allowInteract !== false,
                     showRenderProgress: true,
                     width: null,
-                    maxHeight: typeof maxHeight === "number" && maxHeight > 0 ? maxHeight : Infinity
+                    maxHeight: typeof maxHeight === "number" && maxHeight > 0 ? maxHeight : Infinity,
+                    useShadowDOM: true
                 };
 
                 log("embedNotebook: calling WolframNotebookEmbedder.embed()");

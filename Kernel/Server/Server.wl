@@ -15,6 +15,14 @@ BeginPackage[ "Wolfram`AgentTools`Server`" ];
 `$toolList;
 `$warmupTask;
 
+(* Usage data (UsageData.wl): per-session tracking state and the hooks called by the local transport. *)
+`$mcpClientInformation;
+`$mcpSessionID;
+`$usageDataEnabled;
+`$usageEvents;
+`initializeUsageData;
+`recordUsageData;
+
 (* Shared catch wrapper: defined in Local.wl but also used by evaluateTool in Shared.wl,
    so it is declared here where both subcontexts can bind it. *)
 `stealthCatchTop;
@@ -28,6 +36,25 @@ Begin[ "`Private`" ];
 Needs[ "Wolfram`AgentTools`"        ];
 Needs[ "Wolfram`AgentTools`Common`" ];
 
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Current MCP Server Information*)
+
+(* Exported descriptors of where the current MCP server is running, for tools that adapt their behavior
+   to the host. Both are None outside a server session; each transport Blocks them for the duration of a
+   session (local) or request (cloud) before the server state is built:
+
+     $MCPEvaluationEnvironment  "Local" for the stdio server started by StartMCPServer, or "Cloud" for a
+                                cloud-deployed server handled by RunCloudMCPServer.
+     $MCPTransport              "StandardInputOutput" for the stdio transport, or "StreamableHTTP" for
+                                the cloud (Streamable HTTP) transport.
+
+   Tools consult these through the "Overrides" key of their LLMTool data (see applyToolOverrides in
+   Shared.wl): a delayed association of tool properties merged in when the server state is built, e.g.
+   WriteNotebook swaps in a cloud-object writer when $MCPEvaluationEnvironment === "Cloud". *)
+$MCPEvaluationEnvironment = None;
+$MCPTransport             = None;
+
 (* Default when not inside a request; each transport Blocks this per session/request. *)
 $currentMCPServer = None;
 
@@ -37,6 +64,9 @@ $currentMCPServer = None;
 $subcontexts = {
     (* Transport-agnostic core: dispatch, tool/prompt resolution, result formatting, init *)
     "Wolfram`AgentTools`Server`Shared`",
+
+    (* Usage data: session ID, anonymous usage tracking for local servers, and submission of finished sessions *)
+    "Wolfram`AgentTools`Server`UsageData`",
 
     (* Local stdio transport: StartMCPServer, the read loop, warmup, superQuiet *)
     "Wolfram`AgentTools`Server`Local`",

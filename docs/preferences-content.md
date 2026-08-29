@@ -23,7 +23,7 @@ Selecting a toolset for a client calls `DeployAgentTools[client, server, Overwri
 CreatePreferencesContent[]
 ```
 
-Returns a `Deploy[Pane[...]]` expression suitable for embedding in a preferences panel.
+Returns a `Deploy[Pane[...]]` expression suitable for embedding in a preferences panel. Building it needs a front end (the subtitle is a `StringTemplate` assembled from a front-end string resource rather than a `Dynamic`), so the result is wrapped in `UsingFrontEnd`: a no-op in the preferences dialog's kernel, and a launch of a hidden front end for a headless kernel such as the test suite's.
 
 ## Panel Sections
 
@@ -49,6 +49,15 @@ Each client row contains:
 - An info icon that, when hovered, shows the on-disk install location for the deployed toolset
 - A per-directory settings list (when applicable) showing project-level deployments
 
+### Usage Data Checkbox
+
+Below the client list, a checkbox labeled *Share anonymous usage data with Wolfram to help improve these tools* (checked by default, with a tooltip describing what is collected) controls whether the built-in toolsets collect usage data on this machine. Its state is a single global setting stored on disk — the `"SubmitUsageData"` entry of `$rootPath/GlobalSettings.wxf`, accessed through `getGlobalUsageDataSetting` and `setGlobalUsageDataSetting` (see [usage-data.md](usage-data.md)) — rather than anything in the clients' configurations; only an explicit `False` opts out.
+
+- Checked: `True` is stored (or nothing yet), so the server's default applies (the built-in toolsets collect usage data).
+- Unchecked: `False` is stored, and every built-in server session started afterward, from any installation, collects nothing.
+
+Each server reads the setting when it starts, so toggling the checkbox takes effect for all installations without re-deploying any toolset, and deployments made from the panel never pass the `"SubmitUsageData"` option. The checkbox is a `DynamicModule` whose `Initialization` reads the stored value when the panel is displayed and whose `Dynamic` setter writes the new value. An installation that was made with an explicit `"SubmitUsageData"` value (`SUBMIT_USAGE_DATA` in its configuration) keeps that value regardless of the checkbox.
+
 ### Per-Directory Settings
 
 When a client has project-level deployments (e.g., from `DeployAgentTools[{"ClaudeCode", "/path/to/project"}, ...]`), each path is listed under "Settings for specific directories:" along with the toolset that was deployed there. Clicking a path opens its directory in the OS file browser.
@@ -59,7 +68,7 @@ The optional file-scoped flag `$allowDirectoryOperations` (default `False` in `K
 
 Strings and graphics used by the panel are loaded from `FrontEnd/Assets/AgentTools.wl` via `FEPrivate`FrontEndResource`:
 
-- `"AgentToolsStrings"` — `LanguageSwitched` translations for every label and tooltip in the panel (English plus Chinese Simplified, Chinese Traditional, French, Japanese, Korean, and Spanish)
+- `"AgentToolsStrings"` — `LanguageSwitched` translations for every label and tooltip in the panel (English plus Chinese Simplified, Chinese Traditional, French, Japanese, Korean, and Spanish). The usage data strings (`prefsSubmitUsageData`, `prefsSubmitUsageDataDescription`) are currently English only, pending localization
 - `"AgentToolsExpressions"` — `GraphicsBox` definitions for the down-pointer, remove ("x"), and info icons
 
 These resources are made available to the front end through the paclet's `"FrontEnd"` extension declared in `PacletInfo.wl`:
@@ -74,7 +83,8 @@ To add new strings or icons, edit `FrontEnd/Assets/AgentTools.wl` and reference 
 
 ## Related Files
 
-- `Kernel/PreferencesContent.wl` — Implementation of `CreatePreferencesContent` and its helpers (`clientInterfaces`, `clientRow`, `clientControls`, `dirSettingsRow`, `infoLink`, `docsLink`)
+- `Kernel/PreferencesContent.wl` — Implementation of `CreatePreferencesContent` and its helpers (`clientInterfaces`, `clientRow`, `clientControls`, `dirSettingsRow`, `infoLink`, `docsLink`, `usageDataCheckbox`)
+- `Kernel/Server/UsageData.wl` — `getGlobalUsageDataSetting` and `setGlobalUsageDataSetting`, the global setting behind `usageDataCheckbox` (stored in `GlobalSettings.wxf` by the helpers in `Kernel/Files.wl`)
 - `FrontEnd/Assets/AgentTools.wl` — Localized strings and graphics resources
 - `Kernel/DeployAgentTools.wl` — Deployment system used by the panel (see [deploy-agent-tools.md](deploy-agent-tools.md))
 - `Kernel/SupportedClients.wl` — Source of `$SupportedMCPClients` data shown for each client row
@@ -84,3 +94,4 @@ To add new strings or icons, edit `FrontEnd/Assets/AgentTools.wl` and reference 
 - [deploy-agent-tools.md](deploy-agent-tools.md) — Underlying deployment management used by the panel
 - [mcp-clients.md](mcp-clients.md) — Supported MCP clients listed in the panel
 - [servers.md](servers.md) — `Wolfram` and `WolframLanguage` predefined servers exposed by the panel
+- [usage-data.md](usage-data.md) — The anonymous usage data controlled by the panel's checkbox

@@ -9,6 +9,7 @@ BeginPackage[ "Wolfram`AgentToolsTests`" ];
 `environmentBlock;
 `skipIfGitHubActions;
 `skipIfScript;
+`withTemporaryRoot;
 
 Begin[ "`Private`" ];
 
@@ -71,6 +72,23 @@ environmentBlock[ name_ -> value_, eval_ ] :=
     With[ { previous = Replace[ Environment @ name, $Failed -> None ] },
         SetEnvironment[ name -> value ];
         WithCleanup[ eval, SetEnvironment[ name -> previous ] ]
+    ];
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*withTemporaryRoot*)
+(* Evaluates eval with the paclet's data directory ($rootPath, which holds e.g. the global settings file and the
+   session files of usage data) pointed at a fresh temporary directory, which is removed afterward -- including
+   on abort/failure via WithCleanup. Usage: withTemporaryRoot @ someExpr. *)
+withTemporaryRoot // Attributes = { HoldFirst };
+
+withTemporaryRoot[ eval_ ] :=
+    Module[ { root },
+        root = FileNameJoin @ { $TemporaryDirectory, "AgentToolsTestRoot_" <> CreateUUID[ ] };
+        WithCleanup[
+            Block[ { Wolfram`AgentTools`Common`$rootPath = root }, eval ],
+            Quiet @ DeleteDirectory[ root, DeleteContents -> True ]
+        ]
     ];
 
 (* ::**************************************************************************************************************:: *)

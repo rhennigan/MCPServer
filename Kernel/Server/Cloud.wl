@@ -136,9 +136,11 @@ $cloudResponseTag = "Wolfram`AgentTools`Server`Cloud`Response";
 runCloudMCPServer // beginDefinition;
 
 runCloudMCPServer[ obj_MCPServerObject, request_ ] :=
-    Module[ { result },
-        result = catchAlways @ Catch[ runCloudMCPServer0[ obj, request ], $cloudResponseTag ];
-        ensureHTTPResponse @ result
+    Block[ { $MCPTransport = "StreamableHTTP", $MCPEvaluationEnvironment = "Cloud" },
+        Module[ { result },
+            result = catchAlways @ Catch[ runCloudMCPServer0[ obj, request ], $cloudResponseTag ];
+            ensureHTTPResponse @ result
+        ]
     ];
 
 runCloudMCPServer // endDefinition;
@@ -866,13 +868,18 @@ injectLightServerDefinitions // endDefinition;
 (*cloudMCPServerInfo*)
 cloudMCPServerInfo // beginDefinition;
 
+(* The tool list is built with the cloud environment bound, so tools that override their description or
+   parameters when $MCPEvaluationEnvironment === "Cloud" (see applyToolOverrides in Shared.wl) are described
+   here exactly as the deployed /mcp endpoint lists them. *)
 cloudMCPServerInfo[ obj_MCPServerObject, url_String ] := Enclose[
-    <|
-        "name"    -> ConfirmBy[ obj[ "Name" ], StringQ, "Name" ],
-        "version" -> ConfirmBy[ obj[ "ServerVersion" ], StringQ, "Version" ],
-        "url"     -> url,
-        "tools"   -> ConfirmMatch[ cloudInfoTool /@ serverToolListData @ obj, { ___Association }, "Tools" ]
-    |>,
+    Block[ { $MCPTransport = "StreamableHTTP", $MCPEvaluationEnvironment = "Cloud" },
+        <|
+            "name"    -> ConfirmBy[ obj[ "Name" ], StringQ, "Name" ],
+            "version" -> ConfirmBy[ obj[ "ServerVersion" ], StringQ, "Version" ],
+            "url"     -> url,
+            "tools"   -> ConfirmMatch[ cloudInfoTool /@ serverToolListData @ obj, { ___Association }, "Tools" ]
+        |>
+    ],
     throwInternalFailure
 ];
 

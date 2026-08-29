@@ -33,6 +33,7 @@ The tools system provides:
 | `"Options"` | List | No | Tool options |
 | `"LLMKit"` | String | No | Dependency: `"Suggested"`, `"Required"`, or `Automatic` |
 | `"Initialization"` | Delayed | No | Optional initialization code run before first use |
+| `"Overrides"` | Association or Delayed | No | Environment-specific property overrides merged in when the server state is built (see [Environment-Specific Overrides](#environment-specific-overrides)) |
 
 ## $DefaultMCPTools
 
@@ -373,6 +374,35 @@ $defaultMCPTools[ "MyTool" ] := LLMTool @ <|
 |>
 ```
 
+### Environment-Specific Overrides
+
+A tool can behave differently depending on where the MCP server is running. Two exported symbols describe the host and are bound by each transport before the server's tool tables are built (both are `None` outside a server session):
+
+| Symbol | Values |
+|--------|--------|
+| `$MCPEvaluationEnvironment` | `"Local"` for the stdio server started by `StartMCPServer`; `"Cloud"` for a [cloud-deployed server](cloud-deployment.md) |
+| `$MCPTransport` | `"StandardInputOutput"` for the stdio transport; `"StreamableHTTP"` for the cloud (Streamable HTTP) transport |
+
+The `"Overrides"` property is a (typically delayed) association of tool properties that is merged into the tool definition at that point, so one tool name can present a different description, parameter set, and implementation per environment:
+
+```wl
+$defaultMCPTools[ "WriteNotebook" ] := LLMTool @ <|
+    "Name"        -> "WriteNotebook",
+    "Description" -> "Converts markdown text to a Wolfram notebook and saves it to a file.",
+    "Function"    -> writeNotebook,
+    "Parameters"  -> { (* file, overwrite, markdown *) },
+    "Overrides"   :> If[ $MCPEvaluationEnvironment === "Cloud", $writeNotebookCloudOverrides, <| |> ]
+|>;
+
+$writeNotebookCloudOverrides = <|
+    "Description" -> "Converts markdown text to a Wolfram notebook and deploys it to a cloud object.",
+    "Function"    -> writeCloudNotebook,
+    "Parameters"  -> { (* path, permissions, overwrite, markdown *) }
+|>;
+```
+
+Overrides replace whole properties (e.g. the entire `"Parameters"` list); `<| |>` or `None` leaves the tool unchanged. They are applied by `initializeServerState` (both transports) and by `serverToolListData` (the cloud landing page's `/api/info`), not when a tool is evaluated directly, so `$DefaultMCPTools["WriteNotebook"]` always holds the local definition.
+
 ## Tool Output Format
 
 Tools must return strings. For structured output, use consistent formats:
@@ -481,9 +511,26 @@ $myOption := toolOptionValue[ "YourTool", "OptionName" ];
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `"Method"` | String | `"Session"` | Evaluation method. `"Session"` uses the server kernel; `"Local"` spawns a separate kernel. |
+| `"Method"` | String | `Automatic` | Evaluation method. `"Session"` uses the server kernel; `"Local"` spawns a separate sandboxed kernel; `"Cloud"` runs each evaluation in a fresh Wolfram Cloud kernel. `Automatic` means `"Cloud"` when the server itself runs in the cloud (see [cloud-deployment.md](cloud-deployment.md)) and `"Session"` otherwise. |
 | `"ImageExportMethod"` | String | `None` | How to export graphics. `None`, `"Local"`, `"Cloud"`, or `"CloudPublic"`. |
 | `"TimeConstraint"` | Integer | `60` | Default time limit (seconds) when the LLM doesn't specify `timeConstraint`. The LLM can still override this per-call. |
+| `"MaxSessionCount"` | Integer | `100` | Maximum number of saved evaluator sessions to keep (oldest pruned first; the current session is always kept). |
+| `"MaxSessionBytes"` | Integer | `1073741824` | Total byte budget for saved evaluator sessions. |
+| `"MaxSessionAge"` | Quantity | `Quantity[1, "Months"]` | Saved evaluator sessions older than this are pruned. |
+
+##### Sessions
+
+The evaluator's optional `session` parameter gives each conversation an isolated, resumable session
+(its definitions, line numbers, and In/Out history). Sessions are saved under
+`$UserBaseDirectory/ApplicationData/Wolfram/AgentTools/Sessions/` after every call, so they survive
+server restarts, and every result ends with a reminder of the session ID to pass on subsequent calls.
+
+Under the `"Cloud"` method each call runs in a fresh, non-persistent cloud kernel, so only a session's
+**global definitions** persist: Chatbook 2.7.11+ returns the evaluator kernel's `` Global` `` definitions
+after each call as an MX byte array (`Wolfram`Chatbook`$CloudSessionMX`), which AgentTools stores in
+the session file and hands back before the next call. Loaded packages, In/Out history, `%`, and any
+other kernel state are lost between calls, and each result's session reminder says so (with an older
+Chatbook on the server it says that definitions cannot be restored at all).
 
 #### WolframLanguageContext
 

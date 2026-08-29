@@ -133,6 +133,8 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
         #notebook-container {
+            /* Set default color for notebook text explicitly to avoid css color override: bugs:477936 */
+            color: black;
             width: 100%;
             min-height: 100px;
         }
@@ -580,7 +582,8 @@
                     allowInteract: true,
                     showRenderProgress: true,
                     width: null,
-                    maxHeight: Infinity
+                    maxHeight: Infinity,
+                    useShadowDOM: true
                 });
             }).then(function(nb) {
                 settled = true;

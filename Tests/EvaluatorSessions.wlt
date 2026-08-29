@@ -447,6 +447,304 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*Cloud Sessions*)
+(* Under the "Cloud" method a session's definitions travel in Chatbook's session byte array
+   (Wolfram`Chatbook`$CloudSessionMX, Chatbook 2.7.11+) and the session parses into Global`; see the
+   Cloud Sessions section of Kernel/Tools/WolframLanguageEvaluator.wl. These exercise the bookkeeping
+   without a cloud: the Method tool option selects the cloud path and the Chatbook version gate is mocked. *)
+$cloudMethodOptions = <| "WolframLanguageEvaluator" -> <| "Method" -> "Cloud" |> |>;
+
+VerificationTest[
+    Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`cloudSessionMXAvailableQ /@
+        { "2.7.10", "2.7.11", "2.7.12", "2.8.0", "3.0.0", $Failed, None },
+    { False, True, True, True, True, False, False },
+    SameTest -> MatchQ,
+    TestID   -> "CloudSessionMXAvailableQ-VersionGate@@Tests/EvaluatorSessions.wlt:457,1-463,2"
+]
+
+VerificationTest[
+    BooleanQ @ Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`cloudSessionMXAvailableQ[ ],
+    True,
+    TestID -> "CloudSessionMXAvailableQ-LoadedChatbook@@Tests/EvaluatorSessions.wlt:465,1-469,2"
+]
+
+VerificationTest[
+    {
+        Block[ { Wolfram`AgentTools`Common`$toolOptions = <| |> },
+            Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`cloudSessionQ[ ]
+        ],
+        Block[ { Wolfram`AgentTools`Common`$toolOptions = $cloudMethodOptions },
+            Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`cloudSessionQ[ ]
+        ]
+    },
+    { False, True },
+    SameTest -> MatchQ,
+    TestID   -> "CloudSessionQ-FollowsMethodOption@@Tests/EvaluatorSessions.wlt:471,1-483,2"
+]
+
+(* In-kernel methods isolate each session in its own context; a cloud session parses into Global`,
+   which is the only context the cloud evaluator's session byte array captures. *)
+VerificationTest[
+    {
+        Block[ { Wolfram`AgentTools`Common`$toolOptions = <| |> },
+            Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`sessionContext[ "Abc123" ]
+        ],
+        Block[ { Wolfram`AgentTools`Common`$toolOptions = $cloudMethodOptions },
+            Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`sessionContext[ "Abc123" ]
+        ]
+    },
+    { "Sessions`Abc123`", "Global`" },
+    SameTest -> MatchQ,
+    TestID   -> "SessionContext-CloudUsesGlobal@@Tests/EvaluatorSessions.wlt:487,1-499,2"
+]
+
+(* Starting a cloud session parses into Global` and clears the byte array so the evaluator starts empty. *)
+VerificationTest[
+    Internal`InheritedBlock[ { $Context, $ContextPath, $ContextAliases },
+        Block[
+            {
+                Wolfram`AgentTools`Common`$toolOptions = $cloudMethodOptions,
+                Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`cloudSessionMXAvailableQ = True &,
+                Wolfram`Chatbook`$CloudSessionMX = ByteArray[ { 1, 2, 3 } ],
+                Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`$sessionInfo = None
+            },
+            {
+                Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`startSessionInKernel[ "CloudStartSess" ],
+                $Context,
+                $ContextPath,
+                Wolfram`Chatbook`$CloudSessionMX,
+                Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`$sessionInfo[ "$Context" ]
+            }
+        ]
+    ],
+    { 1, "Global`", { "Global`", "System`" }, None, "Global`" },
+    SameTest -> MatchQ,
+    TestID   -> "StartSessionInKernel-CloudUsesGlobalAndClearsSessionMX@@Tests/EvaluatorSessions.wlt:502,1-523,2"
+]
+
+(* Saving a cloud session returns info-only state (nothing to dump from this kernel) that carries the
+   byte array left by the last cloud evaluation, so saveSession writes it from the controlling kernel. *)
+VerificationTest[
+    Module[ { dir, path, res },
+        dir  = FileNameJoin @ { $TemporaryDirectory, "AgentToolsCloudSave_" <> CreateUUID[ ] };
+        path = FileNameJoin @ { dir, "CloudSaveSess.mx" };
+        res  = Internal`InheritedBlock[ { $Context, $ContextPath, $ContextAliases },
+            Block[
+                {
+                    Wolfram`AgentTools`Common`$toolOptions = $cloudMethodOptions,
+                    Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`cloudSessionMXAvailableQ = True &,
+                    Wolfram`Chatbook`$CloudSessionMX = ByteArray[ { 4, 5, 6 } ],
+                    Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`$sessionInfo = None
+                },
+                Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`saveSessionInKernel[ "CloudSaveSess", path, 3 ]
+            ]
+        ];
+        { res, DirectoryQ @ dir }
+    ],
+    {
+        KeyValuePattern @ { "SessionID" -> "CloudSaveSess", "$line" -> 3, "SessionMX" -> ByteArray[ { 4, 5, 6 } ] },
+        False
+    },
+    SameTest -> MatchQ,
+    TestID   -> "SaveSessionInKernel-CloudReturnsInfoWithSessionMX@@Tests/EvaluatorSessions.wlt:527,1-550,2"
+]
+
+(* Without a new enough Chatbook there is no byte array to keep; in-kernel sessions never carry one. *)
+VerificationTest[
+    {
+        Block[
+            {
+                Wolfram`AgentTools`Common`$toolOptions = $cloudMethodOptions,
+                Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`cloudSessionMXAvailableQ = False &,
+                Wolfram`Chatbook`$CloudSessionMX = ByteArray[ { 4, 5, 6 } ]
+            },
+            Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`makeSessionInfo[ "CloudNoMXSess", 2 ][ "SessionMX" ]
+        ],
+        Block[ { Wolfram`AgentTools`Common`$toolOptions = <| |> },
+            KeyExistsQ[ Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`makeSessionInfo[ "InKernelSess", 2 ], "SessionMX" ]
+        ]
+    },
+    { None, False },
+    SameTest -> MatchQ,
+    TestID   -> "MakeSessionInfo-SessionMXOnlyForSupportedCloudSessions@@Tests/EvaluatorSessions.wlt:553,1-570,2"
+]
+
+(* An info-only cloud session file round-trips: resuming restores the byte array for the next cloud
+   evaluation and always parses into Global`, even if the file recorded another context (e.g. one
+   written under a different Method). *)
+VerificationTest[
+    Module[ { dir, path, info, res, mx, ctx },
+        dir  = CreateDirectory @ FileNameJoin @ { $TemporaryDirectory, "AgentToolsCloudRT_" <> CreateUUID[ ] };
+        path = FileNameJoin @ { dir, "CloudRoundTrip.mx" };
+        info = <|
+            "SessionID"       -> "CloudRoundTrip",
+            "KernelSessionID" -> -42,
+            "$Context"        -> "Sessions`CloudRoundTrip`",
+            "$ContextPath"    -> { "Sessions`CloudRoundTrip`", "System`" },
+            "$ContextAliases" -> <| |>,
+            "$Line"           -> 4,
+            "$line"           -> 4,
+            "In"              -> { },
+            "InString"        -> { },
+            "Out"             -> { },
+            "MessageList"     -> { },
+            "SessionMX"       -> ByteArray[ { 7, 8, 9 } ]
+        |>;
+        Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`writeSessionInfoFile[ path, info ];
+        { res, mx, ctx } = Internal`InheritedBlock[ { $Context, $ContextPath, $ContextAliases },
+            Block[
+                {
+                    Wolfram`AgentTools`Common`$toolOptions = $cloudMethodOptions,
+                    Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`cloudSessionMXAvailableQ = True &,
+                    Wolfram`Chatbook`$CloudSessionMX = None,
+                    Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`$sessionInfo = None
+                },
+                {
+                    Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`resumeSessionInKernel @ path,
+                    Wolfram`Chatbook`$CloudSessionMX,
+                    $Context
+                }
+            ]
+        ];
+        Quiet @ DeleteDirectory[ dir, DeleteContents -> True ];
+        { res, mx, ctx }
+    ],
+    { { 4, False }, ByteArray[ { 7, 8, 9 } ], "Global`" },
+    SameTest -> MatchQ,
+    TestID   -> "ResumeSessionInKernel-CloudRestoresSessionMXAndGlobalContext@@Tests/EvaluatorSessions.wlt:575,1-615,2"
+]
+
+(* Continuing a live cloud session gets its byte array back from the last save's $sessionInfo. *)
+VerificationTest[
+    Internal`InheritedBlock[ { $Context, $ContextPath, $ContextAliases },
+        Block[
+            {
+                Wolfram`AgentTools`Common`$toolOptions = $cloudMethodOptions,
+                Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`cloudSessionMXAvailableQ = True &,
+                Wolfram`Chatbook`$CloudSessionMX = None,
+                Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`$sessionInfo = <|
+                    "SessionID"       -> "CloudEnterSess",
+                    "KernelSessionID" -> 0,
+                    "$Context"        -> "Global`",
+                    "$ContextPath"    -> { "Global`", "System`" },
+                    "$ContextAliases" -> <| |>,
+                    "SessionMX"       -> ByteArray[ { 1, 1, 2 } ]
+                |>
+            },
+            {
+                Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`enterSessionContextInKernel[ "CloudEnterSess" ],
+                Wolfram`Chatbook`$CloudSessionMX,
+                $Context
+            }
+        ]
+    ],
+    { Null, ByteArray[ { 1, 1, 2 } ], "Global`" },
+    SameTest -> MatchQ,
+    TestID   -> "EnterSessionContextInKernel-CloudRestoresSessionMX@@Tests/EvaluatorSessions.wlt:618,1-644,2"
+]
+
+(* The "Line" option never reaches the cloud evaluator kernel, so the session's line counter is also
+   pushed into Chatbook's per-kernel cloud line counter for the duration of the call. *)
+VerificationTest[
+    Block[
+        {
+            Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`$line = 7,
+            Wolfram`Chatbook`WolframLanguageToolEvaluate =
+                { Wolfram`Chatbook`Sandbox`Private`$cloudLineNumber, Lookup[ { ##3 }, "Line" ] } &
+        },
+        {
+            Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`chatbookToolEvaluate[ "1", "String", 10 ],
+            Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`$line
+        }
+    ],
+    { { 7, 7 }, 8 },
+    SameTest -> MatchQ,
+    TestID   -> "ChatbookToolEvaluate-SyncsCloudLineCounterWithSessionLine@@Tests/EvaluatorSessions.wlt:648,1-663,2"
+]
+
+(* Cloud sessions remind the AI on every call that the kernel is non-persistent... *)
+VerificationTest[
+    Block[
+        {
+            Wolfram`AgentTools`Common`$toolOptions = $cloudMethodOptions,
+            Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`cloudSessionMXAvailableQ = True &
+        },
+        StringContainsQ[
+            Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`sessionInfoStatusText[ # ],
+            "non-persistent cloud kernel"
+        ] & /@ { "new", "continued", "resumed", "resumedNewKernel", "reused" }
+    ],
+    { True, True, True, True, True },
+    SameTest -> MatchQ,
+    TestID   -> "SessionInfoStatusText-CloudNoticeOnEveryStatus@@Tests/EvaluatorSessions.wlt:666,1-680,2"
+]
+
+(* ...replacing (not appending to) the in-kernel "kernel process has changed" wording... *)
+VerificationTest[
+    Block[
+        {
+            Wolfram`AgentTools`Common`$toolOptions = $cloudMethodOptions,
+            Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`cloudSessionMXAvailableQ = True &
+        },
+        With[ { text = Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`sessionInfoStatusText[ "resumedNewKernel" ] },
+            { StringContainsQ[ text, "kernel process for this session has changed" ], StringContainsQ[ text, "definitions were restored" ] }
+        ]
+    ],
+    { False, True },
+    SameTest -> MatchQ,
+    TestID   -> "SessionInfoStatusText-CloudReplacesKernelChangedNotice@@Tests/EvaluatorSessions.wlt:683,1-696,2"
+]
+
+(* ...while an unknown ID still gets the "No saved state" notice ahead of the cloud one. *)
+VerificationTest[
+    Block[
+        {
+            Wolfram`AgentTools`Common`$toolOptions = $cloudMethodOptions,
+            Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`cloudSessionMXAvailableQ = True &
+        },
+        With[ { text = Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`sessionInfoStatusText[ "reused" ] },
+            { StringContainsQ[ text, "No saved state" ], StringContainsQ[ text, "saved after each call" ] }
+        ]
+    ],
+    { True, True },
+    SameTest -> MatchQ,
+    TestID   -> "SessionInfoStatusText-CloudReusedKeepsNoSavedStateNotice@@Tests/EvaluatorSessions.wlt:699,1-712,2"
+]
+
+(* Without a new enough Chatbook the notice says definitions cannot be restored and names the version. *)
+VerificationTest[
+    Block[
+        {
+            Wolfram`AgentTools`Common`$toolOptions = $cloudMethodOptions,
+            Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`cloudSessionMXAvailableQ = False &
+        },
+        With[ { text = Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`sessionInfoStatusText[ "continued" ] },
+            {
+                StringContainsQ[ text, "cannot restore definitions" ],
+                StringContainsQ[ text, Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`$cloudSessionMXChatbookVersion ]
+            }
+        ]
+    ],
+    { True, True },
+    SameTest -> MatchQ,
+    TestID   -> "SessionInfoStatusText-CloudWithoutChatbookSupport@@Tests/EvaluatorSessions.wlt:715,1-731,2"
+]
+
+(* In-kernel methods are unaffected. *)
+VerificationTest[
+    Block[ { Wolfram`AgentTools`Common`$toolOptions = <| |> },
+        StringContainsQ[
+            Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`sessionInfoStatusText[ # ],
+            "cloud kernel"
+        ] & /@ { "new", "continued", "resumed", "resumedNewKernel", "reused" }
+    ],
+    { False, False, False, False, False },
+    SameTest -> MatchQ,
+    TestID   -> "SessionInfoStatusText-InKernelHasNoCloudNotice@@Tests/EvaluatorSessions.wlt:734,1-744,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Integration: end-to-end session behavior*)
 (* These invoke the real tool (non-UI path), redirecting session storage to a temporary root so the
    user's real Sessions directory is untouched. $currentSessionID is reset per test for determinism. *)
@@ -470,7 +768,7 @@ VerificationTest[
         StringContainsQ[ extractToolText @ r3, "42" ]
     ],
     True,
-    TestID -> "Integration-SessionIsolation@@Tests/EvaluatorSessions.wlt:455,1-474,2"
+    TestID -> "Integration-SessionIsolation@@Tests/EvaluatorSessions.wlt:753,1-772,2"
 ]
 
 (* Re-passing the same session ID continues it: definitions persist and line numbers advance. *)
@@ -492,7 +790,7 @@ VerificationTest[
         StringContainsQ[ text, "6" ] && StringContainsQ[ text, "Out[2]" ]
     ],
     True,
-    TestID -> "Integration-ContinueSamePersistsAndAdvancesLine@@Tests/EvaluatorSessions.wlt:477,1-496,2"
+    TestID -> "Integration-ContinueSamePersistsAndAdvancesLine@@Tests/EvaluatorSessions.wlt:775,1-794,2"
 ]
 
 (* A session resumes from disk after its in-kernel symbols are gone (simulated server restart). *)
@@ -516,7 +814,7 @@ VerificationTest[
         StringContainsQ[ extractToolText @ r2, "99" ]
     ],
     True,
-    TestID -> "Integration-RestartResumeFromDisk@@Tests/EvaluatorSessions.wlt:499,1-520,2"
+    TestID -> "Integration-RestartResumeFromDisk@@Tests/EvaluatorSessions.wlt:797,1-818,2"
 ]
 
 (* Every result echoes the session ID with resume instructions. *)
@@ -536,7 +834,7 @@ VerificationTest[
         StringContainsQ[ extractToolText @ r, "session=\"AppendSession\"" ]
     ],
     True,
-    TestID -> "Integration-AppendsSessionInfo@@Tests/EvaluatorSessions.wlt:523,1-540,2"
+    TestID -> "Integration-AppendsSessionInfo@@Tests/EvaluatorSessions.wlt:821,1-838,2"
 ]
 
 (* A fresh session's first evaluation is labeled Out[1]. *)
@@ -556,7 +854,7 @@ VerificationTest[
         StringContainsQ[ extractToolText @ r, "Out[1]" ]
     ],
     True,
-    TestID -> "Integration-FreshSessionStartsAtLineOne@@Tests/EvaluatorSessions.wlt:543,1-560,2"
+    TestID -> "Integration-FreshSessionStartsAtLineOne@@Tests/EvaluatorSessions.wlt:841,1-858,2"
 ]
 
 (* Resuming a session continues its line numbering rather than resetting it: A reaches Out[2], B
@@ -581,7 +879,7 @@ VerificationTest[
         StringContainsQ[ extractToolText @ r, "Out[3]" ]
     ],
     True,
-    TestID -> "Integration-ResumeContinuesLineNumbering@@Tests/EvaluatorSessions.wlt:565,1-585,2"
+    TestID -> "Integration-ResumeContinuesLineNumbering@@Tests/EvaluatorSessions.wlt:863,1-883,2"
 ]
 
 (* An unknown / expired session ID starts a fresh session reusing that ID and says so. *)
@@ -601,7 +899,7 @@ VerificationTest[
         StringContainsQ[ text, "NeverSavedXyz" ] && StringContainsQ[ text, "No saved state" ]
     ],
     True,
-    TestID -> "Integration-UnknownIdReusedFresh@@Tests/EvaluatorSessions.wlt:588,1-605,2"
+    TestID -> "Integration-UnknownIdReusedFresh@@Tests/EvaluatorSessions.wlt:886,1-903,2"
 ]
 
 (* Context-path changes made inside a session (e.g. by Get) survive continued calls: the continuing
@@ -625,7 +923,7 @@ VerificationTest[
         StringContainsQ[ extractToolText @ r2, "{101, True}" ]
     ],
     True,
-    TestID -> "Integration-ContinuePreservesContextPath@@Tests/EvaluatorSessions.wlt:610,1-629,2"
+    TestID -> "Integration-ContinuePreservesContextPath@@Tests/EvaluatorSessions.wlt:908,1-927,2"
 ]
 
 (* Resuming a session saved by a different kernel process restores the saved state and warns that
@@ -655,7 +953,7 @@ VerificationTest[
     ],
     { True, True },
     SameTest -> MatchQ,
-    TestID   -> "Integration-ResumeFromPreviousKernelWarns@@Tests/EvaluatorSessions.wlt:634,1-659,2"
+    TestID   -> "Integration-ResumeFromPreviousKernelWarns@@Tests/EvaluatorSessions.wlt:932,1-957,2"
 ]
 
 (* Switching back to an earlier session within the same kernel process resumes silently: no
@@ -680,7 +978,7 @@ VerificationTest[
     ],
     { True, False },
     SameTest -> MatchQ,
-    TestID   -> "Integration-SameKernelResumeHasNoWarning@@Tests/EvaluatorSessions.wlt:663,1-684,2"
+    TestID   -> "Integration-SameKernelResumeHasNoWarning@@Tests/EvaluatorSessions.wlt:961,1-982,2"
 ]
 
 (* If the eval kernel loses its in-memory session state while the session is still current (e.g. the
@@ -711,7 +1009,50 @@ VerificationTest[
     ],
     { True, True, False },
     SameTest -> MatchQ,
-    TestID   -> "Integration-ContinueFallsBackToFileWhenKernelStateLost@@Tests/EvaluatorSessions.wlt:689,1-715,2"
+    TestID   -> "Integration-ContinueFallsBackToFileWhenKernelStateLost@@Tests/EvaluatorSessions.wlt:987,1-1013,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
+(*Integration: cloud sessions*)
+(* A real cloud round trip under the "Cloud" method. Needs a cloud connection and a Chatbook new enough
+   to carry the session byte array (2.7.11+); skipped otherwise. Definitions made in one call must come
+   back after a simulated server restart (the live session pointer is dropped, so the session resumes
+   from its file with the saved byte array), while another session must not see them. *)
+$cloudSessionTest = conditionalTest[
+    TrueQ @ $CloudConnected &&
+        TrueQ @ Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`cloudSessionMXAvailableQ[ ]
+];
+
+$cloudSessionTest @ VerificationTest[
+    Module[ { root, tool, r1, r2, r3, t1, t2, t3 },
+        root = FileNameJoin @ { $TemporaryDirectory, "AgentToolsCloudSession_" <> CreateUUID[ ] };
+        tool = $DefaultMCPTools[ "WolframLanguageEvaluator" ];
+        Block[
+            {
+                Wolfram`AgentTools`Common`$rootPath         = root,
+                Wolfram`AgentTools`Common`$clientSupportsUI = False,
+                Wolfram`AgentTools`Common`$toolOptions      = $cloudMethodOptions,
+                Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`$currentSessionID = None
+            },
+            r1 = tool[ <| "code" -> "cloudSessX = 42; cloudSessF[n_] := n + cloudSessX; cloudSessX", "session" -> "CloudIntegA" |> ];
+            r2 = tool[ <| "code" -> "cloudSessF[1]", "session" -> "CloudIntegB" |> ];
+            (* Simulate a server restart: drop the live session pointer so A resumes from its file *)
+            Wolfram`AgentTools`Tools`WolframLanguageEvaluator`Private`$currentSessionID = None;
+            r3 = tool[ <| "code" -> "cloudSessF[1]", "session" -> "CloudIntegA" |> ]
+        ];
+        Quiet @ DeleteDirectory[ root, DeleteContents -> True ];
+        { t1, t2, t3 } = extractToolText /@ { r1, r2, r3 };
+        {
+            StringContainsQ[ t1, "Out[1]= 42" ],
+            StringContainsQ[ t2, "Out[1]= cloudSessF[1]" ], (* B never saw A's definitions *)
+            StringContainsQ[ t3, "Out[2]= 43" ],
+            StringContainsQ[ t3, "non-persistent cloud kernel" ]
+        }
+    ],
+    { True, True, True, True },
+    SameTest -> MatchQ,
+    TestID   -> "Integration-CloudSessionDefinitionsSurviveRestart@@Tests/EvaluatorSessions.wlt:1027,21-1056,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

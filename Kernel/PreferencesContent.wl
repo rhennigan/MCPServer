@@ -658,14 +658,45 @@ dirSettingsRow[Dynamic[dirSettings_], i_, {obj_, server_, scope_, active_}] :=
 
 
 (* ::Section::Closed:: *)
+(*usageDataCheckbox*)
+
+
+(*
+	Anonymous usage data (see docs/usage-data.md) is shared by default. The opt-out made here is a single global
+	setting stored on disk (getGlobalUsageDataSetting and setGlobalUsageDataSetting in Kernel/Server/UsageData.wl),
+	which every server session consults when it starts, so changing it never requires re-deploying anything. The
+	stored value is read when the checkbox is displayed rather than when the panel is built, so it is always current;
+	writing it is quick enough to happen right in the checkbox's preemptive evaluation (catchAlways keeps a failed
+	write from surfacing as an uncaught Throw there).
+*)
+usageDataCheckbox[] :=
+	Grid[
+		{{
+			DynamicModule[{submit = True},
+				Checkbox @ Dynamic[submit, catchAlways @ setGlobalUsageDataSetting[submit = TrueQ[#]]&],
+				Initialization :> (submit = getGlobalUsageDataSetting[])
+			],
+			Tooltip[
+				tr["prefsSubmitUsageData"],
+				tr["prefsSubmitUsageDataDescription"]
+			]
+		}},
+		Alignment -> {Left, Baseline},
+		Spacings -> {0.5, 0}
+	]
+
+
+(* ::Section::Closed:: *)
 (*CreatePreferencesContent*)
 
 
 CreatePreferencesContent // beginDefinition;
 
 
+(* The subtitle is a StringTemplate built from an actual front end resource string (not a Dynamic), so a front end is
+   needed to evaluate this; UsingFrontEnd launches one when the kernel has none (e.g. in tests) and is otherwise a no-op. *)
 CreatePreferencesContent[] :=
-Deploy[
+UsingFrontEnd @ Deploy[
 	Pane[
 		Column[
 			{
@@ -716,6 +747,12 @@ Deploy[
 					clientInterfaces[],
 					Alignment -> Left,
 					ImageMargins -> {{15,5},{0,0}}
+				],
+
+				Pane[
+					usageDataCheckbox[],
+					Alignment -> Left,
+					ImageMargins -> {{15,5},{0,10}}
 				]
 			},
 			ItemSize -> Scaled[1],
