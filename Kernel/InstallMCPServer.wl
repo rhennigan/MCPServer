@@ -31,17 +31,31 @@ InstallMCPServer // beginDefinition;
    - Automatic (default): Nothing is added to the configuration; the server tracks anonymous usage data only if its
      "EnableUsageData" property is True (as it is for the built-in servers)
    - True/False: Sets SUBMIT_USAGE_DATA in the server's environment, which takes precedence over the property
-   See docs/usage-data.md. *)
+   See docs/usage-data.md.
+
+   "WolframCommand" option:
+   - Automatic (default): The command is resolved from $InstallationDirectory for the current operating system
+   - command_String: Written verbatim as the "command" field of the client configuration, so a
+     standalone executable can be launched instead of the local Wolfram kernel
+
+   "CommandLineArguments" option:
+   - Automatic (default): The standard kernel arguments that start the server (-run PacletSymbol[...][], -noinit,
+     -noprompt); see $defaultCommandLineArguments in MCPServerObject.wl
+   - { args___String }: Written verbatim as the "args" field of the client configuration; an empty list is allowed,
+     but a single string is rejected since clients expect a JSON array
+   A non-False "DevelopmentMode" replaces the arguments with the development-mode ones and takes precedence. *)
 InstallMCPServer // Options = {
-    "ApplicationName"    -> Automatic,
-    "DevelopmentMode"    -> False,
-    "EnableLLMKit"       -> Automatic,
-    "EnableMCPApps"      -> True,
-    "MCPServerName"      -> Automatic,
-    "ProcessEnvironment" -> Automatic,
-    "SubmitUsageData"    -> Automatic,
-    "ToolOptions"        -> <| |>,
-    "VerifyLLMKit"       -> True
+    "ApplicationName"      -> Automatic,
+    "CommandLineArguments" -> Automatic,
+    "DevelopmentMode"      -> False,
+    "EnableLLMKit"         -> Automatic,
+    "EnableMCPApps"        -> True,
+    "MCPServerName"        -> Automatic,
+    "ProcessEnvironment"   -> Automatic,
+    "SubmitUsageData"      -> Automatic,
+    "ToolOptions"          -> <| |>,
+    "VerifyLLMKit"         -> True,
+    "WolframCommand"       -> Automatic
 };
 
 InstallMCPServer[ target_, opts: OptionsPattern[ ] ] :=
@@ -65,7 +79,9 @@ InstallMCPServer[ target_File? fileQ, server0_String? pacletQualifiedNameQ, opts
                     $enableLLMKit         = OptionValue[ "EnableLLMKit" ],
                     $installToolOptions   = validateToolOptions[ OptionValue[ "ToolOptions" ], server ],
                     $installMCPServerName = OptionValue[ "MCPServerName" ],
-                    $submitUsageData      = validateSubmitUsageData @ OptionValue[ "SubmitUsageData" ]
+                    $submitUsageData      = validateSubmitUsageData @ OptionValue[ "SubmitUsageData" ],
+                    $wolframCommand       = validateWolframCommand @ OptionValue[ "WolframCommand" ],
+                    $commandLineArguments = validateCommandLineArguments @ OptionValue[ "CommandLineArguments" ]
                 },
                 installMCPServer[
                     target,
@@ -87,7 +103,9 @@ InstallMCPServer[ target_File? fileQ, server0_, opts: OptionsPattern[ ] ] :=
                 $enableLLMKit         = OptionValue[ "EnableLLMKit" ],
                 $installToolOptions   = validateToolOptions[ OptionValue[ "ToolOptions" ], server ],
                 $installMCPServerName = OptionValue[ "MCPServerName" ],
-                $submitUsageData      = validateSubmitUsageData @ OptionValue[ "SubmitUsageData" ]
+                $submitUsageData      = validateSubmitUsageData @ OptionValue[ "SubmitUsageData" ],
+                $wolframCommand       = validateWolframCommand @ OptionValue[ "WolframCommand" ],
+                $commandLineArguments = validateCommandLineArguments @ OptionValue[ "CommandLineArguments" ]
             },
             installMCPServer[
                 target,
@@ -127,6 +145,22 @@ validateSubmitUsageData // beginDefinition;
 validateSubmitUsageData[ value: Automatic|True|False ] := value;
 validateSubmitUsageData[ other_ ] := throwFailure[ "InvalidSubmitUsageData", other ];
 validateSubmitUsageData // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*validateWolframCommand*)
+validateWolframCommand // beginDefinition;
+validateWolframCommand[ value: Automatic|_String ] := value;
+validateWolframCommand[ other_ ] := throwFailure[ "InvalidWolframCommand", other ];
+validateWolframCommand // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*validateCommandLineArguments*)
+validateCommandLineArguments // beginDefinition;
+validateCommandLineArguments[ value: Automatic|{ ___String } ] := value;
+validateCommandLineArguments[ other_ ] := throwFailure[ "InvalidCommandLineArguments", other ];
+validateCommandLineArguments // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)

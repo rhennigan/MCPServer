@@ -19,6 +19,10 @@ $defaultCommandLineArguments = {
     "-noprompt"
 };
 
+$commandLineArguments = Automatic;
+
+$wolframCommand = Automatic;
+
 $$transport = "StandardInputOutput" | "HTTP" | "ServerSentEvents";
 
 $$metadata = KeyValuePattern @ {
@@ -647,11 +651,12 @@ toLLMTools // endDefinition;
 makeJSONConfiguration // beginDefinition;
 
 makeJSONConfiguration[ data_Association ] := Enclose[
-    Module[ { name, env, cmd, config, full },
+    Module[ { name, env, cmd, args, config, full },
         name = ConfirmBy[ data[ "Name" ], StringQ, "Name" ];
         env = <| "MCP_SERVER_NAME" -> name, ConfirmBy[ defaultEnvironment[ ], AssociationQ, "Environment" ] |>;
         cmd = ConfirmBy[ getWolframCommand[ ], StringQ, "WolframCommand" ];
-        config = <| "type" -> "stdio", "command" -> cmd, "args" -> $defaultCommandLineArguments, "env" -> env |>;
+        args = ConfirmMatch[ getCommandLineArguments[ ], { ___String }, "CommandLineArguments" ];
+        config = <| "type" -> "stdio", "command" -> cmd, "args" -> args, "env" -> env |>;
         full = <| "mcpServers" -> <| name -> config |> |>;
         ConfirmBy[ Developer`WriteRawJSONString @ full, StringQ, "JSONConfiguration" ]
     ],
@@ -664,12 +669,19 @@ makeJSONConfiguration // endDefinition;
 (* ::Subsubsection::Closed:: *)
 (*getWolframCommand*)
 getWolframCommand // beginDefinition;
-getWolframCommand[           ] := getWolframCommand @ $OperatingSystem;
+getWolframCommand[           ] := If[ $wolframCommand === Automatic, getWolframCommand @ $OperatingSystem, $wolframCommand ];
 getWolframCommand[ "Windows" ] := FileNameJoin @ { $InstallationDirectory, "wolfram.exe" };
 getWolframCommand[ "MacOSX"  ] := FileNameJoin @ { $InstallationDirectory, "MacOS", "wolfram" };
 getWolframCommand[ "Unix"    ] := FileNameJoin @ { $InstallationDirectory, "Executables", "wolfram" };
 getWolframCommand[ os_String ] := throwFailure[ "UnsupportedOperatingSystem", os ];
 getWolframCommand // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsubsection::Closed:: *)
+(*getCommandLineArguments*)
+getCommandLineArguments // beginDefinition;
+getCommandLineArguments[ ] := If[ $commandLineArguments === Automatic, $defaultCommandLineArguments, $commandLineArguments ];
+getCommandLineArguments // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsubsection::Closed:: *)
