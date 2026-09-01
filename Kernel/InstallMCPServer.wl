@@ -73,8 +73,8 @@ InstallMCPServer[ target_File? fileQ, server0_String? pacletQualifiedNameQ, opts
                     $installToolOptions   = validateToolOptions[ OptionValue[ "ToolOptions" ], server ],
                     $installMCPServerName = OptionValue[ "MCPServerName" ],
                     $submitUsageData      = validateSubmitUsageData @ OptionValue[ "SubmitUsageData" ],
-                    $wolframCommand       = OptionValue[ "WolframCommand" ],
-                    $commandLineArguments = OptionValue[ "CommandLineArguments" ]
+                    $wolframCommand       = validateWolframCommand @ OptionValue[ "WolframCommand" ],
+                    $commandLineArguments = validateCommandLineArguments @ OptionValue[ "CommandLineArguments" ]
                 },
                 installMCPServer[
                     target,
@@ -97,8 +97,8 @@ InstallMCPServer[ target_File? fileQ, server0_, opts: OptionsPattern[ ] ] :=
                 $installToolOptions   = validateToolOptions[ OptionValue[ "ToolOptions" ], server ],
                 $installMCPServerName = OptionValue[ "MCPServerName" ],
                 $submitUsageData      = validateSubmitUsageData @ OptionValue[ "SubmitUsageData" ],
-                $wolframCommand       = OptionValue[ "WolframCommand" ],
-                $commandLineArguments = OptionValue[ "CommandLineArguments" ]
+                $wolframCommand       = validateWolframCommand @ OptionValue[ "WolframCommand" ],
+                $commandLineArguments = validateCommandLineArguments @ OptionValue[ "CommandLineArguments" ]
             },
             installMCPServer[
                 target,
@@ -138,6 +138,22 @@ validateSubmitUsageData // beginDefinition;
 validateSubmitUsageData[ value: Automatic|True|False ] := value;
 validateSubmitUsageData[ other_ ] := throwFailure[ "InvalidSubmitUsageData", other ];
 validateSubmitUsageData // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*validateWolframCommand*)
+validateWolframCommand // beginDefinition;
+validateWolframCommand[ value: Automatic|_String ] := value;
+validateWolframCommand[ other_ ] := throwFailure[ "InvalidWolframCommand", other ];
+validateWolframCommand // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*validateCommandLineArguments*)
+validateCommandLineArguments // beginDefinition;
+validateCommandLineArguments[ value: Automatic|{ ___String } ] := value;
+validateCommandLineArguments[ other_ ] := throwFailure[ "InvalidCommandLineArguments", other ];
+validateCommandLineArguments // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
