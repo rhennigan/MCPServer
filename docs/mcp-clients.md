@@ -610,6 +610,37 @@ This is useful for testing local changes without reinstalling the paclet:
 InstallMCPServer["ClaudeCode", "DevelopmentMode" -> True]
 ```
 
+### WolframCommand
+
+Overrides the executable written to the `command` field of the client configuration:
+
+| Value | Behavior |
+|-------|----------|
+| `Automatic` (default) | The `wolfram` executable inside `$InstallationDirectory` for the current operating system |
+| `"path/to/executable"` | Written verbatim as the `command` field |
+
+This lets a client launch a standalone executable or wrapper script instead of the local Wolfram kernel. Pair it with `"CommandLineArguments"` when that executable does not accept the default kernel arguments:
+
+```wl
+InstallMCPServer["ClaudeCode", "WolframLanguage",
+    "WolframCommand"       -> "/usr/local/bin/wolfram-mcp",
+    "CommandLineArguments" -> {}
+]
+```
+
+Any other value fails with `InstallMCPServer::InvalidWolframCommand`.
+
+### CommandLineArguments
+
+Overrides the argument list written to the `args` field of the client configuration:
+
+| Value | Behavior |
+|-------|----------|
+| `Automatic` (default) | The standard kernel arguments that start the server: `-run "PacletSymbol[...][]" -noinit -noprompt` |
+| `{"arg1", "arg2", ...}` | Written verbatim as the `args` field; an empty list is allowed |
+
+The value must be a list of strings — MCP clients expect `args` to be a JSON array, so a single string fails with `InstallMCPServer::InvalidCommandLineArguments`. A non-`False` `"DevelopmentMode"` replaces the arguments with its own, so it takes precedence over this option.
+
 ### ProcessEnvironment
 
 Specifies additional environment variables to include in the configuration:

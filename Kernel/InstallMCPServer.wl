@@ -36,7 +36,14 @@ InstallMCPServer // beginDefinition;
    "WolframCommand" option:
    - Automatic (default): The command is resolved from $InstallationDirectory for the current operating system
    - command_String: Written verbatim as the "command" field of the client configuration, so a
-     standalone executable can be launched instead of the local Wolfram kernel *)
+     standalone executable can be launched instead of the local Wolfram kernel
+
+   "CommandLineArguments" option:
+   - Automatic (default): The standard kernel arguments that start the server (-run PacletSymbol[...][], -noinit,
+     -noprompt); see $defaultCommandLineArguments in MCPServerObject.wl
+   - { args___String }: Written verbatim as the "args" field of the client configuration; an empty list is allowed,
+     but a single string is rejected since clients expect a JSON array
+   A non-False "DevelopmentMode" replaces the arguments with the development-mode ones and takes precedence. *)
 InstallMCPServer // Options = {
     "ApplicationName"      -> Automatic,
     "CommandLineArguments" -> Automatic,
