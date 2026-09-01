@@ -581,7 +581,7 @@ Notebook[
           "SubmitUsageData",
           ButtonBox["Automatic", BaseStyle -> "Link"],
           Cell[
-           "whether to share anonymous usage data with Wolfram",
+           "whether to share usage data with Wolfram",
            "TableText"
           ]
          },
@@ -634,7 +634,7 @@ Notebook[
      Cell[
       TextData[
        {
-        "By default, the predefined MCP servers report anonymous usage data (which application is used, which tools and prompts are called, and whether each call succeeded) to help improve them. No content, such as code, queries, arguments, or results, is ever sent. Set ",
+        "By default, the predefined MCP servers report usage data (which application is used, which tools and prompts are called, and whether each call succeeded, together with the same information about the Wolfram installation, such as its license, machine ID, product, and version, that is sent when installing paclets) to help improve them. No content, such as code, queries, arguments, or results, is ever sent. Set ",
         Cell[BoxData["SubmitUsageData"], "InlineFormula"],
         " to ",
         Cell[BoxData["False"], "InlineFormula"],

@@ -154,7 +154,7 @@ VerificationTest[
     TestID   -> "MCPServerObject-BuiltInServerLocation@@Tests/MCPServerObject.wlt:150,1-155,2"
 ]
 
-(* Built-in servers opt in to anonymous usage tracking via the "EnableUsageData" property (see docs/usage-data.md);
+(* Built-in servers opt in to usage tracking via the "EnableUsageData" property (see docs/usage-data.md);
    servers created with CreateMCPServer do not have the property. *)
 VerificationTest[
     builtInServer["EnableUsageData"],

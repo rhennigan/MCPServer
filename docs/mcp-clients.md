@@ -576,7 +576,7 @@ Include these environment variables for proper operation:
 | `WOLFRAM_CLOUDBASE` | Set to a cloud base URL (e.g. `"https://www.test.wolframcloud.com"`) to override `$CloudBase` for the server session; cloud URLs in [MCP Apps](mcp-apps.md) assets are rewritten to match (optional, primarily for internal purposes) |
 | `LLMKIT_ENABLED` | Set to `"false"` to make the context tools (`WolframContext`, etc.) behave as if the user has no LLMKit subscription, without emitting subscription warnings (optional) |
 | `MCP_TOOL_OPTIONS` | JSON string of tool option overrides, set automatically by `"ToolOptions"` (optional) |
-| `SUBMIT_USAGE_DATA` | Set to `"false"` to opt out of [anonymous usage data](usage-data.md) collection (or `"true"` to opt a custom server in); set automatically by `"SubmitUsageData"` (optional) |
+| `SUBMIT_USAGE_DATA` | Set to `"false"` to opt out of [usage data](usage-data.md) collection (or `"true"` to opt a custom server in); set automatically by `"SubmitUsageData"` (optional) |
 
 ### Getting the Configuration
 
@@ -711,7 +711,7 @@ UninstallMCPServer["ClaudeDesktop", "WolframLanguage", "MCPServerName" -> "Wolfr
 
 ### SubmitUsageData
 
-Controls whether the installed server collects and submits [anonymous usage data](usage-data.md) — which MCP client is used, which tools and prompts are called, and whether each call succeeded, never any content:
+Controls whether the installed server collects and submits [usage data](usage-data.md) — which MCP client is used, which tools and prompts are called, and whether each call succeeded, together with the product identity information of the Wolfram installation (license, machine ID, product, release, and so on), but never any content:
 
 | Value | Behavior |
 |-------|----------|

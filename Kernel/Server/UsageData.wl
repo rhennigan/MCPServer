@@ -11,11 +11,15 @@ Needs[ "Wolfram`AgentTools`Server`" ];
 (* ::Section::Closed:: *)
 (*Overview*)
 (*
-    Basic, anonymous usage tracking for the local (stdio) MCP servers. See docs/usage-data.md.
+    Basic usage tracking for the local (stdio) MCP servers. See docs/usage-data.md.
 
     What is recorded for a server session:
       * the client information from the "initialize" request (its "params": clientInfo, protocolVersion, capabilities)
       * one event per "tools/call" and "prompts/get" request: the tool/prompt name, whether it succeeded, and when
+      * the product identity information that the paclet manager sends with every request to the paclet server
+        (license, activation key, machine ID, product, release, system ID, language, license process counts, and the
+        cloud user UUID when connected; see $productIdentityInfo). This identifies the installation, so the data is
+        not anonymous.
     No tool arguments, prompt arguments, results, or any other content are ever recorded (see recordUsageData0).
 
     Tracking is enabled for a session when the SUBMIT_USAGE_DATA environment variable holds a boolean (written into
@@ -302,18 +306,53 @@ recordUsageEvent // endDefinition;
 (* The data stored in the session file, and later submitted as JSON. *)
 usageDataPayload // beginDefinition;
 
-usageDataPayload[ ] := <|
-    "MCPSessionID"      -> $mcpSessionID,
-    "ServerName"        -> $usageDataServerName,
-    "ClientInformation" -> $mcpClientInformation,
-    "Events"            -> Internal`BagPart[ $usageEvents, All ],
-    "PacletVersion"     -> $pacletVersion,
-    "WolframVersion"    -> $Version,
-    "SystemID"          -> $SystemID,
-    "LastUpdated"       -> AbsoluteTime[ TimeZone -> 0 ]
-|>;
+usageDataPayload[ ] := Enclose[
+    <|
+        "MCPSessionID"      -> $mcpSessionID,
+        "ServerName"        -> $usageDataServerName,
+        "ClientInformation" -> $mcpClientInformation,
+        "Events"            -> ConfirmBy[ Internal`BagPart[ $usageEvents, All ], ListQ, "Events" ],
+        "PacletVersion"     -> ConfirmBy[ $pacletVersion, StringQ, "PacletVersion" ],
+        "LastUpdated"       -> AbsoluteTime[ TimeZone -> 0 ],
+        ConfirmBy[ $productIdentityInfo, AssociationQ, "ProductIdentityInfo" ]
+    |>,
+    throwInternalFailure
+];
 
 usageDataPayload // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*$productIdentityInfo*)
+(* The product identity information that the paclet manager sends as HTTP headers with every request to the paclet
+   server (PacletManager`Package`$productIdentityHeaders, used by PacletManager`Package`downloadPaclet and the other
+   paclet server requests), so Wolfram already receives it from every installation that looks up or installs paclets.
+   It identifies the installation (and the cloud user, when the kernel is connected), which is why the usage data is
+   not anonymous.
+
+   Values that JSON cannot represent are stored as their InputForm strings, e.g. "Infinity" for an unlimited process
+   count and "None" for $CloudUserUUID without a cloud connection. The RuleCondition is essential: Replace at level 1
+   of an Association would otherwise leave the unevaluated ToString[...] in the value, which WriteRawJSONString
+   rejects. The values are read again on every write of the session file, so a kernel that connects to the cloud
+   later in the session picks up the CloudUserUUID. *)
+$productIdentityInfo := Replace[
+    <|
+        "ActivationKey"          -> $ActivationKey,
+        "CloudUserUUID"          -> $CloudUserUUID,
+        "Language"               -> $Language,
+        "LicenseID"              -> $LicenseID,
+        "LicenseProcesses"       -> $LicenseProcesses,
+        "LicenseSubprocesses"    -> $LicenseSubprocesses,
+        "MachineID"              -> $MachineID,
+        "MaxLicenseProcesses"    -> $MaxLicenseProcesses,
+        "MaxLicenseSubprocesses" -> $MaxLicenseSubprocesses,
+        "ProductIDName"          -> SystemInformation[ "Kernel", "ProductIDName" ],
+        "ReleaseID"              -> SystemInformation[ "Kernel", "ReleaseID" ],
+        "SystemID"               -> $SystemID
+    |>,
+    e: Except[ _Integer | _Real | _String | Null ] :> RuleCondition @ ToString[ e, InputForm ],
+    { 1 }
+];
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)

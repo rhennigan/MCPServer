@@ -51,7 +51,7 @@ Each client row contains:
 
 ### Usage Data Checkbox
 
-Below the client list, a checkbox labeled *Share anonymous usage data with Wolfram to help improve these tools* (checked by default, with a tooltip describing what is collected) controls whether the built-in toolsets collect usage data on this machine. Its state is a single global setting stored on disk — the `"SubmitUsageData"` entry of `$rootPath/GlobalSettings.wxf`, accessed through `getGlobalUsageDataSetting` and `setGlobalUsageDataSetting` (see [usage-data.md](usage-data.md)) — rather than anything in the clients' configurations; only an explicit `False` opts out.
+Below the client list, a checkbox labeled *Share usage data with Wolfram to help improve these tools* (checked by default, with a tooltip describing what is collected) controls whether the built-in toolsets collect usage data on this machine. Its state is a single global setting stored on disk — the `"SubmitUsageData"` entry of `$rootPath/GlobalSettings.wxf`, accessed through `getGlobalUsageDataSetting` and `setGlobalUsageDataSetting` (see [usage-data.md](usage-data.md)) — rather than anything in the clients' configurations; only an explicit `False` opts out.
 
 - Checked: `True` is stored (or nothing yet), so the server's default applies (the built-in toolsets collect usage data).
 - Unchecked: `False` is stored, and every built-in server session started afterward, from any installation, collects nothing.
@@ -94,4 +94,4 @@ To add new strings or icons, edit `FrontEnd/Assets/AgentTools.wl` and reference 
 - [deploy-agent-tools.md](deploy-agent-tools.md) — Underlying deployment management used by the panel
 - [mcp-clients.md](mcp-clients.md) — Supported MCP clients listed in the panel
 - [servers.md](servers.md) — `Wolfram` and `WolframLanguage` predefined servers exposed by the panel
-- [usage-data.md](usage-data.md) — The anonymous usage data controlled by the panel's checkbox
+- [usage-data.md](usage-data.md) — The usage data controlled by the panel's checkbox
