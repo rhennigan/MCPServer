@@ -168,9 +168,9 @@
 	|>],
 
 	(* TODO: localize (English only until the localization pass) *)
-	"prefsSubmitUsageData" -> "Share anonymous usage data with Wolfram to help improve these tools",
+	"prefsSubmitUsageData" -> "Share usage data with Wolfram to help improve these tools",
 
-	"prefsSubmitUsageDataDescription" -> "When enabled, the Wolfram tools report which AI environment is used, which tools and prompts are called, and whether each call succeeded. No content is ever sent: no code, queries, arguments, or results."
+	"prefsSubmitUsageDataDescription" -> "When enabled, the Wolfram tools report which AI environment is used, which tools and prompts are called, and whether each call succeeded, together with the same information about your Wolfram installation (such as its license, machine ID, product, and version) that is sent when installing paclets. No content is ever sent: no code, queries, arguments, or results."
 
 },
 

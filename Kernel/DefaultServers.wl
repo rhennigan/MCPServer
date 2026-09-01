@@ -17,7 +17,7 @@ $defaultMCPServer = "Wolfram";
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
 (*$DefaultMCPServers*)
-(* The built-in servers set "EnableUsageData" -> True, which enables anonymous usage tracking for their local
+(* The built-in servers set "EnableUsageData" -> True, which enables usage tracking for their local
    sessions unless an installation opts out via the "SubmitUsageData" option (see docs/usage-data.md). *)
 $DefaultMCPServers := WithCleanup[
     Unprotect @ $DefaultMCPServers,

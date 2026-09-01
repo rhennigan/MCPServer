@@ -1,10 +1,10 @@
 # Usage Data
 
-This document describes the anonymous usage data collected by the local MCP servers, how users control it, and how it is stored and submitted.
+This document describes the usage data collected by the local MCP servers, how users control it, and how it is stored and submitted.
 
 ## Overview
 
-To learn which AI environments (MCP clients) people use with the Wolfram tools and which tools and prompts get used, the built-in local MCP servers (`Wolfram`, `WolframAlpha`, `WolframLanguage`, and `WolframPacletDevelopment`) record basic usage data for each server session and submit it to Wolfram. The data is anonymous and never contains content: no tool arguments, prompt arguments, results, code, or queries.
+To learn which AI environments (MCP clients) people use with the Wolfram tools and which tools and prompts get used, the built-in local MCP servers (`Wolfram`, `WolframAlpha`, `WolframLanguage`, and `WolframPacletDevelopment`) record basic usage data for each server session and submit it to Wolfram. The data never contains content: no tool arguments, prompt arguments, results, code, or queries. It is not anonymous, though: every session carries the [product identity information](#product-identity-information) — license, activation key, machine ID, product, release, and so on — that the paclet manager sends with every request to the Wolfram paclet server, so sessions can be related to the Wolfram installation they came from (and to the cloud user, when the server kernel is connected to the Wolfram Cloud).
 
 Cloud-deployed servers (see [cloud-deployment.md](cloud-deployment.md)) do not collect usage data.
 
@@ -19,9 +19,8 @@ For each local server session (one server process, from start to exit):
 | `ClientInformation` | The `params` of the client's `initialize` request: `clientInfo` (name and version of the MCP client), `protocolVersion`, and `capabilities`. `null` until `initialize` has been received |
 | `Events` | One event per `tools/call` and `prompts/get` request (see below) |
 | `PacletVersion` | The version of Wolfram/AgentTools |
-| `WolframVersion` | `$Version` |
-| `SystemID` | `$SystemID` |
 | `LastUpdated` | `AbsoluteTime[TimeZone -> 0]` of the last change |
+| `ActivationKey`, `CloudUserUUID`, `Language`, `LicenseID`, `LicenseProcesses`, `LicenseSubprocesses`, `MachineID`, `MaxLicenseProcesses`, `MaxLicenseSubprocesses`, `ProductIDName`, `ReleaseID`, `SystemID` | The [product identity information](#product-identity-information) described below, at the top level of the same association |
 
 Each event has:
 
@@ -33,6 +32,24 @@ Each event has:
 | `Timestamp` | `AbsoluteTime[TimeZone -> 0]` of the request |
 
 Everything else in a request — in particular the `arguments` — is never looked at.
+
+### Product Identity Information
+
+Every session file, and therefore every submission, also carries the product identity information that the paclet manager sends as HTTP headers with each request to the paclet server (`` PacletManager`Package`$productIdentityHeaders ``, used by `` PacletManager`Package`downloadPaclet `` and the other paclet server requests). Wolfram already receives this information from every installation that looks up or installs paclets. It identifies the installation — and the cloud user, when the server kernel is connected to the Wolfram Cloud — which is why the usage data is not described as anonymous. `$productIdentityInfo` in `Kernel/Server/UsageData.wl` assembles it:
+
+| Field | Value | Paclet manager equivalent |
+|-------|-------|---------------------------|
+| `ActivationKey` | `$ActivationKey` | `Mathematica-activationKey` |
+| `CloudUserUUID` | `$CloudUserUUID`: the UUID of the cloud user while the server kernel is connected to the Wolfram Cloud, otherwise `"None"` | `Mathematica-wolframID` (which carries `$WolframID` rather than the UUID) |
+| `Language` | `$Language` | `Mathematica-language` |
+| `LicenseID` | `$LicenseID` | `Mathematica-license` |
+| `LicenseProcesses`, `LicenseSubprocesses`, `MaxLicenseProcesses`, `MaxLicenseSubprocesses` | `$LicenseProcesses`, `$LicenseSubprocesses`, `$MaxLicenseProcesses`, `$MaxLicenseSubprocesses` | `Mathematica-kernelStats` |
+| `MachineID` | `$MachineID` | `Mathematica-mathID` |
+| `ProductIDName` | `SystemInformation["Kernel", "ProductIDName"]`, e.g. `"Wolfram"` | `Mathematica-productID` |
+| `ReleaseID` | `SystemInformation["Kernel", "ReleaseID"]`, e.g. `"15.0.1.0 (13811065, 202607025984)"` | The version in the `User-Agent` header |
+| `SystemID` | `$SystemID` | `Mathematica-systemID` |
+
+Integers, reals, strings, and `Null` are stored as they are; any other value is stored as its `InputForm` string, so an unlimited process count is `"Infinity"` and a missing cloud connection gives `"None"` (`WriteRawJSONString` cannot encode `Infinity` or `None` themselves). The values are read again each time the session file is written, so a session whose server kernel connects to the cloud later on picks up the `CloudUserUUID`.
 
 ## When It Is Recorded
 
@@ -61,7 +78,7 @@ InstallMCPServer["ClaudeCode", "WolframLanguage", "SubmitUsageData" -> False]
 
 Any other value is rejected with `InstallMCPServer::InvalidSubmitUsageData`.
 
-The system preferences panel built by `CreatePreferencesContent` (see [preferences-content.md](preferences-content.md)) has a checkbox, *Share anonymous usage data with Wolfram to help improve these tools*, which is checked by default. Its state is a single global setting on this machine rather than anything in the clients' configurations: unchecking it stores `"SubmitUsageData" -> False` in the global settings file (see below), and checking it again stores `True`. Every built-in server session reads the setting when it starts, so the change applies to all existing installations at once without re-deploying anything. Only an explicit `False` opts out, and an explicit `SUBMIT_USAGE_DATA` in a client configuration (from the `"SubmitUsageData"` option) still takes precedence over the global setting, in both directions.
+The system preferences panel built by `CreatePreferencesContent` (see [preferences-content.md](preferences-content.md)) has a checkbox, *Share usage data with Wolfram to help improve these tools*, which is checked by default. Its state is a single global setting on this machine rather than anything in the clients' configurations: unchecking it stores `"SubmitUsageData" -> False` in the global settings file (see below), and checking it again stores `True`. Every built-in server session reads the setting when it starts, so the change applies to all existing installations at once without re-deploying anything. Only an explicit `False` opts out, and an explicit `SUBMIT_USAGE_DATA` in a client configuration (from the `"SubmitUsageData"` option) still takes precedence over the global setting, in both directions.
 
 #### The Global Settings File
 
@@ -99,7 +116,7 @@ Usage tracking must never interfere with the server: every hook is wrapped in `u
 
 | File | Role |
 |------|------|
-| `Kernel/Server/UsageData.wl` | Session state, enabling logic (including the global setting: `getGlobalUsageDataSetting`, `setGlobalUsageDataSetting`), recording, the session file, the keep-alive task, and locked submission |
+| `Kernel/Server/UsageData.wl` | Session state, enabling logic (including the global setting: `getGlobalUsageDataSetting`, `setGlobalUsageDataSetting`), recording, the product identity information (`$productIdentityInfo`), the session file, the keep-alive task, and locked submission |
 | `Kernel/Server/Local.wl` | Calls `initializeUsageData` when the server starts and `recordUsageData` after each handled request |
 | `Kernel/Server/Server.wl` | Declares the session symbols and hooks shared with the local transport |
 | `Kernel/DefaultServers.wl` | `"EnableUsageData" -> True` for the built-in servers |

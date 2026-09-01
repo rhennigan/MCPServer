@@ -65,7 +65,7 @@ $subcontexts = {
     (* Transport-agnostic core: dispatch, tool/prompt resolution, result formatting, init *)
     "Wolfram`AgentTools`Server`Shared`",
 
-    (* Usage data: session ID, anonymous usage tracking for local servers, and submission of finished sessions *)
+    (* Usage data: session ID, usage tracking for local servers, and submission of finished sessions *)
     "Wolfram`AgentTools`Server`UsageData`",
 
     (* Local stdio transport: StartMCPServer, the read loop, warmup, superQuiet *)

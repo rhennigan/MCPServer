@@ -25,7 +25,7 @@ This is the developer documentation for contributing to AgentTools. For user doc
 - **[Deploy Agent Tools](deploy-agent-tools.md)** - Managed deployment of Wolfram tools to AI agent clients
 - **[Cloud Deployment](cloud-deployment.md)** - Deploying an `MCPServerObject` as a remote HTTP MCP server in the Wolfram Cloud
 - **[Preferences Content](preferences-content.md)** - System preferences UI for managing deployed Wolfram toolsets
-- **[Usage Data](usage-data.md)** - Anonymous usage data collected by the built-in local servers, and how to opt out
+- **[Usage Data](usage-data.md)** - Usage data collected by the built-in local servers, what it records about the installation, and how to opt out
 - **[Paclet Extensions](paclet-extensions.md)** - Third-party paclet extension system for contributing tools, prompts, and servers
 
 ## Development Workflow

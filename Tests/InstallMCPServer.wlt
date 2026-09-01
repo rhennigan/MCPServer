@@ -306,7 +306,7 @@ VerificationTest[
 
 (* "SubmitUsageData" -> True/False injects SUBMIT_USAGE_DATA into the server's env block, which takes precedence
    over the server's "EnableUsageData" property at startup (see docs/usage-data.md). The default, Automatic, adds
-   nothing, so the property decides: built-in servers track anonymous usage data, custom servers do not. *)
+   nothing, so the property decides: built-in servers track usage data, custom servers do not. *)
 installUsageDataEnv[ server_MCPServerObject, opts___ ] := Module[ { configFile, configName, env },
     configFile = File @ FileNameJoin @ { $TemporaryDirectory, StringJoin[ "mcp_usage_", CreateUUID[], ".json" ] };
     configName = Replace[ server[ "MCPServerName" ], Except[ _String ] :> server[ "Name" ] ];

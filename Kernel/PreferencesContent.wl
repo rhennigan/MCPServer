@@ -662,7 +662,7 @@ dirSettingsRow[Dynamic[dirSettings_], i_, {obj_, server_, scope_, active_}] :=
 
 
 (*
-	Anonymous usage data (see docs/usage-data.md) is shared by default. The opt-out made here is a single global
+	Usage data (see docs/usage-data.md) is shared by default. The opt-out made here is a single global
 	setting stored on disk (getGlobalUsageDataSetting and setGlobalUsageDataSetting in Kernel/Server/UsageData.wl),
 	which every server session consults when it starts, so changing it never requires re-deploying anything. The
 	stored value is read when the checkbox is displayed rather than when the panel is built, so it is always current;

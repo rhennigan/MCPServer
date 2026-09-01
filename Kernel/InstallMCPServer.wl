@@ -28,7 +28,7 @@ InstallMCPServer // beginDefinition;
    This allows testing local changes without reinstalling the paclet.
 
    "SubmitUsageData" option:
-   - Automatic (default): Nothing is added to the configuration; the server tracks anonymous usage data only if its
+   - Automatic (default): Nothing is added to the configuration; the server tracks usage data only if its
      "EnableUsageData" property is True (as it is for the built-in servers)
    - True/False: Sets SUBMIT_USAGE_DATA in the server's environment, which takes precedence over the property
    See docs/usage-data.md.
