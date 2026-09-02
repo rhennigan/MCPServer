@@ -70,6 +70,101 @@ VerificationTest[
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
+(*JSON Files*)
+(* writeRawJSONFile and writeRawJSONString wrap the Developer` JSON writers with jsonConvert as the default
+   "ConversionFunction", so values that JSON cannot represent become strings instead of failing the export *)
+
+(* JSON-representable values are written as usual *)
+VerificationTest[
+    Wolfram`AgentTools`Common`writeRawJSONString[
+        <| "int" -> 1, "real" -> 2.5, "string" -> "x", "true" -> True, "false" -> False, "null" -> Null, "list" -> { 1, "a" }, "object" -> <| "k" -> 1 |> |>,
+        "Compact" -> True
+    ],
+    "{\"int\":1,\"real\":2.5,\"string\":\"x\",\"true\":true,\"false\":false,\"null\":null,\"list\":[1,\"a\"],\"object\":{\"k\":1}}",
+    SameTest -> SameQ,
+    TestID   -> "WriteRawJSONString-JSONValues@@Tests/Files.wlt:78,1-86,2"
+]
+
+(* Anything else becomes its InputForm string, wherever it appears *)
+VerificationTest[
+    Developer`ReadRawJSONString @ Wolfram`AgentTools`Common`writeRawJSONString @ <|
+        "none"    -> None,
+        "inf"     -> Infinity,
+        "missing" -> Missing[ "NotAvailable" ],
+        "list"    -> { $Failed, Automatic },
+        "nested"  -> <| "q" -> Quantity[ 1, "Hours" ] |>
+    |>,
+    <|
+        "none"    -> "None",
+        "inf"     -> "Infinity",
+        "missing" -> "Missing[\"NotAvailable\"]",
+        "list"    -> { "$Failed", "Automatic" },
+        "nested"  -> <| "q" -> "Quantity[1, \"Hours\"]" |>
+    |>,
+    SameTest -> SameQ,
+    TestID   -> "WriteRawJSONString-NonJSONValuesAsStrings@@Tests/Files.wlt:89,1-106,2"
+]
+
+(* Dates become ISO 8601 strings in UTC with millisecond precision *)
+VerificationTest[
+    Developer`ReadRawJSONString @ Wolfram`AgentTools`Common`writeRawJSONString @ <|
+        "utc"   -> DateObject[ { 2026, 8, 1, 12, 0, 0 }, TimeZone -> 0 ],
+        "local" -> DateObject[ { 2026, 8, 1, 12, 0, 0 }, TimeZone -> -5 ],
+        "ms"    -> DateObject[ { 2026, 8, 1, 12, 0, 0.25 }, TimeZone -> 0 ],
+        "day"   -> DateObject[ { 2026, 8, 1 }, TimeZone -> 0 ]
+    |>,
+    <|
+        "utc"   -> "2026-08-01T12:00:00.000Z",
+        "local" -> "2026-08-01T17:00:00.000Z",
+        "ms"    -> "2026-08-01T12:00:00.250Z",
+        "day"   -> "2026-08-01T00:00:00.000Z"
+    |>,
+    SameTest -> SameQ,
+    TestID   -> "WriteRawJSONString-Dates@@Tests/Files.wlt:109,1-124,2"
+]
+
+(* A "ConversionFunction" given by the caller takes precedence over jsonConvert *)
+VerificationTest[
+    Wolfram`AgentTools`Common`writeRawJSONString[ <| "none" -> None |>, "ConversionFunction" -> ("custom" &), "Compact" -> True ],
+    "{\"none\":\"custom\"}",
+    SameTest -> SameQ,
+    TestID   -> "WriteRawJSONString-ConversionFunctionOverride@@Tests/Files.wlt:127,1-132,2"
+]
+
+(* jsonConvert holds its argument, so an expression is converted as it is rather than evaluated again *)
+(* :!CodeAnalysis::BeginBlock:: *)
+(* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
+VerificationTest[
+    Wolfram`AgentTools`Files`Private`jsonConvert /@ Unevaluated @ {
+        None, Infinity, 1 + 1, Hold[ 1 + 1 ], DateObject[ { 2026, 8, 1, 12, 0, 0 }, TimeZone -> 0 ]
+    },
+    { "None", "Infinity", "1 + 1", "Hold[1 + 1]", "2026-08-01T12:00:00.000Z" },
+    SameTest -> SameQ,
+    TestID   -> "JSONConvert-HoldsArgument@@Tests/Files.wlt:137,1-144,2"
+]
+(* :!CodeAnalysis::EndBlock:: *)
+
+(* writeRawJSONFile creates the file's directory, applies the same conversions, and readRawJSONFile reads the result
+   back *)
+VerificationTest[
+    Module[ { file, written },
+        file = FileNameJoin @ { $TemporaryDirectory, "AgentToolsFilesTest_" <> CreateUUID[ ], "data.json" };
+        written = Wolfram`AgentTools`Common`writeRawJSONFile[
+            file,
+            <| "int" -> 1, "none" -> None, "date" -> DateObject[ { 2026, 8, 1, 12, 0, 0 }, TimeZone -> 0 ] |>
+        ];
+        WithCleanup[
+            { FileExistsQ @ written, Wolfram`AgentTools`Common`readRawJSONFile @ file },
+            DeleteDirectory[ DirectoryName @ file, DeleteContents -> True ]
+        ]
+    ],
+    { True, <| "int" -> 1, "none" -> "None", "date" -> "2026-08-01T12:00:00.000Z" |> },
+    SameTest -> SameQ,
+    TestID   -> "WriteRawJSONFile-NonJSONValuesAsStrings@@Tests/Files.wlt:149,1-164,2"
+]
+
+(* ::**************************************************************************************************************:: *)
+(* ::Section::Closed:: *)
 (*Global Settings*)
 (* :!CodeAnalysis::BeginBlock:: *)
 (* :!CodeAnalysis::Disable::PrivateContextSymbol:: *)
@@ -82,7 +177,7 @@ VerificationTest[
     ],
     True,
     SameTest -> SameQ,
-    TestID   -> "GlobalSettings-FileLocation@@Tests/Files.wlt:78,1-86,2"
+    TestID   -> "GlobalSettings-FileLocation@@Tests/Files.wlt:173,1-181,2"
 ]
 
 (* Nothing has been set yet: reading gives no settings and creates nothing *)
@@ -96,7 +191,7 @@ VerificationTest[
     },
     { <| |>, Missing[ "KeyAbsent", "Anything" ], "default", False, False },
     SameTest -> SameQ,
-    TestID   -> "GlobalSettings-Unset@@Tests/Files.wlt:89,1-100,2"
+    TestID   -> "GlobalSettings-Unset@@Tests/Files.wlt:184,1-195,2"
 ]
 
 (* Setting a value creates the file (and its directory) and returns the value *)
@@ -111,7 +206,7 @@ VerificationTest[
     },
     { 1, True, <| "A" -> 1 |>, 1, 1, <| "A" -> 1 |> },
     SameTest -> SameQ,
-    TestID   -> "GlobalSettings-SetAndGet@@Tests/Files.wlt:103,1-115,2"
+    TestID   -> "GlobalSettings-SetAndGet@@Tests/Files.wlt:198,1-210,2"
 ]
 
 (* New values are merged into the existing settings, so setting one never loses another *)
@@ -124,7 +219,7 @@ VerificationTest[
     ),
     <| "A" -> False, "B" -> { "x", "y" } |>,
     SameTest -> SameQ,
-    TestID   -> "GlobalSettings-Merge@@Tests/Files.wlt:118,1-128,2"
+    TestID   -> "GlobalSettings-Merge@@Tests/Files.wlt:213,1-223,2"
 ]
 
 (* A file that cannot be read, or that does not hold an association, counts as no settings and is replaced by the
@@ -143,7 +238,7 @@ VerificationTest[
     ],
     { <| |>, <| |>, <| "A" -> 1 |> },
     SameTest -> SameQ,
-    TestID   -> "GlobalSettings-Unreadable@@Tests/Files.wlt:132,1-147,2"
+    TestID   -> "GlobalSettings-Unreadable@@Tests/Files.wlt:227,1-242,2"
 ]
 
 (* :!CodeAnalysis::EndBlock:: *)

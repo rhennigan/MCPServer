@@ -403,6 +403,8 @@ $writeNotebookCloudOverrides = <|
 
 Overrides replace whole properties (e.g. the entire `"Parameters"` list); `<| |>` or `None` leaves the tool unchanged. They are applied by `initializeServerState` (both transports) and by `serverToolListData` (the cloud landing page's `/api/info`), not when a tool is evaluated directly, so `$DefaultMCPTools["WriteNotebook"]` always holds the local definition.
 
+Two further exported symbols describe the product rather than the transport: `$StandaloneMCPServer` is `True` when the kernel is the standalone MCP server product (a kernel that only runs the MCP server, without a full Mathematica installation), and `$StandaloneMCPServerInformation` holds the information that product publishes about itself. Both are set by the standalone application and are `False` and `<| |>` everywhere else; see [usage-data.md](usage-data.md#standalone-mcp-server).
+
 ## Tool Output Format
 
 Tools must return strings. For structured output, use consistent formats:

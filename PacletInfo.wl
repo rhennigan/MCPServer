@@ -34,6 +34,8 @@ PacletObject[ <|
                 "Wolfram`AgentTools`$LastAgentToolsFailureText",
                 "Wolfram`AgentTools`$MCPEvaluationEnvironment",
                 "Wolfram`AgentTools`$MCPTransport",
+                "Wolfram`AgentTools`$StandaloneMCPServer",
+                "Wolfram`AgentTools`$StandaloneMCPServerInformation",
                 "Wolfram`AgentTools`$SupportedMCPClients",
                 "Wolfram`AgentTools`AgentTools",
                 "Wolfram`AgentTools`CloudDeployMCPServer",

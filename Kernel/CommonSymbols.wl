@@ -73,6 +73,7 @@ BeginPackage[ "Wolfram`AgentTools`Common`" ];
 `validateMCPServerObjectData;
 `writeCloudWXF;
 `writeRawJSONFile;
+`writeRawJSONString;
 `writeWXFFile;
 
 (* TOML support for Codex: *)

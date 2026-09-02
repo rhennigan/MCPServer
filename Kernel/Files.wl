@@ -250,16 +250,54 @@ readRawJSONFile // endDefinition;
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*writeRawJSONFile*)
+(* Developer`WriteRawJSONFile with the file's directory ensured, and jsonConvert for the values that JSON cannot
+   represent. A "ConversionFunction" given by the caller takes precedence (the first setting of an option wins). *)
 writeRawJSONFile // beginDefinition;
 
 writeRawJSONFile[ file_, data_, opts: OptionsPattern[ ] ] :=
     Developer`WriteRawJSONFile[
         ExpandFileName @ ensureFilePath @ file,
         data,
-        opts
+        opts,
+        "ConversionFunction" -> jsonConvert
     ];
 
 writeRawJSONFile // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*writeRawJSONString*)
+(* Developer`WriteRawJSONString with jsonConvert for the values that JSON cannot represent (see writeRawJSONFile) *)
+writeRawJSONString // beginDefinition;
+
+writeRawJSONString[ data_, opts: OptionsPattern[ ] ] :=
+    Developer`WriteRawJSONString[ data, opts, "ConversionFunction" -> jsonConvert ];
+
+writeRawJSONString // endDefinition;
+
+(* ::**************************************************************************************************************:: *)
+(* ::Subsection::Closed:: *)
+(*jsonConvert*)
+(* The default "ConversionFunction" of writeRawJSONFile and writeRawJSONString: JSON export calls it for every
+   subexpression (value or key) that has no built-in JSON representation and then converts its result in turn. It holds
+   its argument so that the expression is not evaluated again, and it always returns a string, which JSON can
+   always represent. *)
+jsonConvert // beginDefinition;
+jsonConvert // Attributes = { HoldAllComplete };
+
+(* Convert dates to ISO 8601 strings in UTC, e.g. "2026-08-01T12:00:00.000Z" *)
+jsonConvert[ date_DateObject? DateObjectQ ] :=
+    DateString[
+        date,
+        { "Year", "-", "Month", "-", "Day", "T", "Hour", ":", "Minute", ":", "Second", ".", "Millisecond", "Z" },
+        TimeZone -> 0
+    ];
+
+(* Convert anything else to an InputForm string *)
+jsonConvert[ expr_ ] :=
+    ToString[ Unevaluated @ expr, InputForm ];
+
+jsonConvert // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Section::Closed:: *)
