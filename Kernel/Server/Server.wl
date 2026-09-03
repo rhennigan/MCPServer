@@ -55,6 +55,21 @@ Needs[ "Wolfram`AgentTools`Common`" ];
 $MCPEvaluationEnvironment = None;
 $MCPTransport             = None;
 
+(* Exported descriptors of the standalone MCP server product: a kernel that only runs the MCP server, without a full
+   Mathematica installation and under its own licensing. Nothing in this paclet sets them; the standalone application
+   sets both after the paclet has been loaded (loading resets them to the defaults below). Like the other exported
+   symbols they are Protected (see $AgentToolsProtectedNames in Main.wl), so setting them takes Unprotect or Block.
+
+     $StandaloneMCPServer             True when running under the standalone MCP server, False everywhere else.
+     $StandaloneMCPServerInformation  Information the standalone product publishes about itself (version, build,
+                                      and so on), as an association with string keys; empty everywhere else.
+
+   Both are included in the usage data of local server sessions (usageDataPayload in UsageData.wl); the information
+   association is included as it is, with values that JSON cannot represent written as strings (jsonConvert in
+   Files.wl), so it must only describe the product, never anything about a session. *)
+$StandaloneMCPServer            = False;
+$StandaloneMCPServerInformation = <| |>;
+
 (* Default when not inside a request; each transport Blocks this per session/request. *)
 $currentMCPServer = None;
 

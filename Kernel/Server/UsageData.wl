@@ -20,6 +20,9 @@ Needs[ "Wolfram`AgentTools`Server`" ];
         (license, activation key, machine ID, product, release, system ID, language, license process counts, and the
         cloud user UUID when connected; see $productIdentityInfo). This identifies the installation, so the data is
         not anonymous.
+      * whether the server runs under the standalone MCP server product, and the information that product publishes
+        about itself ($StandaloneMCPServer and $StandaloneMCPServerInformation, defined in Server.wl and set only by
+        the standalone application; False and <| |> everywhere else)
     No tool arguments, prompt arguments, results, or any other content are ever recorded (see recordUsageData0).
 
     Tracking is enabled for a session when the SUBMIT_USAGE_DATA environment variable holds a boolean (written into
@@ -303,18 +306,34 @@ recordUsageEvent // endDefinition;
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*usageDataPayload*)
-(* The data stored in the session file, and later submitted as JSON. *)
+(* The data stored in the session file, and later submitted as JSON (usageDataJSON). Kernel values are kept as they
+   are here, including ones that JSON cannot represent (None, Infinity, dates, ...); those are converted to strings
+   when the JSON is written. *)
 usageDataPayload // beginDefinition;
 
 usageDataPayload[ ] := Enclose[
     <|
+        (* MCP information *)
         "MCPSessionID"      -> $mcpSessionID,
         "ServerName"        -> $usageDataServerName,
         "ClientInformation" -> $mcpClientInformation,
         "Events"            -> ConfirmBy[ Internal`BagPart[ $usageEvents, All ], ListQ, "Events" ],
-        "PacletVersion"     -> ConfirmBy[ $pacletVersion, StringQ, "PacletVersion" ],
-        "LastUpdated"       -> AbsoluteTime[ TimeZone -> 0 ],
-        ConfirmBy[ $productIdentityInfo, AssociationQ, "ProductIdentityInfo" ]
+
+        (* Standalone MCP server information *)
+        "StandaloneMCPServer" -> ConfirmBy[ $StandaloneMCPServer, BooleanQ, "StandaloneMCPServer" ],
+
+        "StandaloneMCPServerInformation" -> ConfirmBy[
+            $StandaloneMCPServerInformation,
+            AssociationQ,
+            "StandaloneMCPServerInformation"
+        ],
+
+        (* Product identity information *)
+        ConfirmBy[ $productIdentityInfo, AssociationQ, "ProductIdentityInfo" ],
+
+        (* Other *)
+        "PacletVersion" -> ConfirmBy[ $pacletVersion, StringQ, "PacletVersion" ],
+        "LastUpdated"   -> AbsoluteTime[ TimeZone -> 0 ]
     |>,
     throwInternalFailure
 ];
@@ -330,35 +349,35 @@ usageDataPayload // endDefinition;
    It identifies the installation (and the cloud user, when the kernel is connected), which is why the usage data is
    not anonymous.
 
-   Values that JSON cannot represent are stored as their InputForm strings, e.g. "Infinity" for an unlimited process
-   count and "None" for $CloudUserUUID without a cloud connection. The RuleCondition is essential: Replace at level 1
-   of an Association would otherwise leave the unevaluated ToString[...] in the value, which WriteRawJSONString
-   rejects. The values are read again on every write of the session file, so a kernel that connects to the cloud
-   later in the session picks up the CloudUserUUID. *)
-$productIdentityInfo := Replace[
-    <|
-        "ActivationKey"          -> $ActivationKey,
-        "CloudUserUUID"          -> $CloudUserUUID,
-        "Language"               -> $Language,
-        "LicenseID"              -> $LicenseID,
-        "LicenseProcesses"       -> $LicenseProcesses,
-        "LicenseSubprocesses"    -> $LicenseSubprocesses,
-        "MachineID"              -> $MachineID,
-        "MaxLicenseProcesses"    -> $MaxLicenseProcesses,
-        "MaxLicenseSubprocesses" -> $MaxLicenseSubprocesses,
-        "ProductIDName"          -> SystemInformation[ "Kernel", "ProductIDName" ],
-        "ReleaseID"              -> SystemInformation[ "Kernel", "ReleaseID" ],
-        "SystemID"               -> $SystemID
-    |>,
-    e: Except[ _Integer | _Real | _String | Null ] :> RuleCondition @ ToString[ e, InputForm ],
-    { 1 }
-];
+   The values are stored in the session file as they are. Those that JSON cannot represent, e.g. Infinity for an
+   unlimited process count and None for $CloudUserUUID without a cloud connection, become their InputForm strings
+   ("Infinity", "None") when the payload is written as JSON (see usageDataJSON, and jsonConvert in Files.wl). The
+   values are read again on every write of the session file, so a kernel that connects to the cloud later in the
+   session picks up the CloudUserUUID. *)
+$productIdentityInfo := <|
+    "ActivationKey"          -> $ActivationKey,
+    "CloudUserUUID"          -> $CloudUserUUID,
+    "Language"               -> $Language,
+    "LicenseID"              -> $LicenseID,
+    "LicenseProcesses"       -> $LicenseProcesses,
+    "LicenseSubprocesses"    -> $LicenseSubprocesses,
+    "MachineID"              -> $MachineID,
+    "MaxLicenseProcesses"    -> $MaxLicenseProcesses,
+    "MaxLicenseSubprocesses" -> $MaxLicenseSubprocesses,
+    "ProductIDName"          -> SystemInformation[ "Kernel", "ProductIDName" ],
+    "ReleaseID"              -> SystemInformation[ "Kernel", "ReleaseID" ],
+    "SystemID"               -> $SystemID
+|>;
 
 (* ::**************************************************************************************************************:: *)
 (* ::Subsection::Closed:: *)
 (*usageDataJSON*)
+(* The payload as compact JSON, encoded as UTF-8 bytes so that the HTTP body is exactly these bytes (a String body
+   would be encoded by URLRead). writeRawJSONString converts the values that JSON cannot represent (None, Infinity,
+   dates, anything the standalone application puts in $StandaloneMCPServerInformation, ...) to strings; see
+   jsonConvert in Files.wl. *)
 usageDataJSON // beginDefinition;
-usageDataJSON[ payload_Association ] := Developer`WriteRawJSONString[ payload, "Compact" -> True ];
+usageDataJSON[ payload_Association ] := StringToByteArray[ writeRawJSONString[ payload, "Compact" -> True ], "UTF-8" ];
 usageDataJSON // endDefinition;
 
 (* ::**************************************************************************************************************:: *)
@@ -532,7 +551,7 @@ submitUsagePayload // beginDefinition;
 
 submitUsagePayload[ payload_Association ] := Enclose[
     Module[ { json, request, response },
-        json = ConfirmBy[ usageDataJSON @ payload, StringQ, "JSON" ];
+        json = ConfirmBy[ usageDataJSON @ payload, ByteArrayQ, "JSON" ];
         request = HTTPRequest[
             $usageDataEndpoint,
             <| "Method" -> "POST", "ContentType" -> "application/json", "Body" -> json |>

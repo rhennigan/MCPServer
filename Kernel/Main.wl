@@ -20,6 +20,8 @@ System`DeployAgentTools;
 `$LastAgentToolsFailureText;
 `$MCPEvaluationEnvironment;
 `$MCPTransport;
+`$StandaloneMCPServer;
+`$StandaloneMCPServerInformation;
 `$SupportedMCPClients;
 `AgentTools;
 `CloudDeployMCPServer;
@@ -112,6 +114,8 @@ $AgentToolsProtectedNames = "Wolfram`AgentTools`" <> # & /@ {
     "$LastAgentToolsFailureText",
     "$MCPEvaluationEnvironment",
     "$MCPTransport",
+    "$StandaloneMCPServer",
+    "$StandaloneMCPServerInformation",
     "$SupportedMCPClients",
     "AgentTools",
     "CloudDeployMCPServer",

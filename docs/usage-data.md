@@ -4,7 +4,7 @@ This document describes the usage data collected by the local MCP servers, how u
 
 ## Overview
 
-To learn which AI environments (MCP clients) people use with the Wolfram tools and which tools and prompts get used, the built-in local MCP servers (`Wolfram`, `WolframAlpha`, `WolframLanguage`, and `WolframPacletDevelopment`) record basic usage data for each server session and submit it to Wolfram. The data never contains content: no tool arguments, prompt arguments, results, code, or queries. It is not anonymous, though: every session carries the [product identity information](#product-identity-information) — license, activation key, machine ID, product, release, and so on — that the paclet manager sends with every request to the Wolfram paclet server, so sessions can be related to the Wolfram installation they came from (and to the cloud user, when the server kernel is connected to the Wolfram Cloud).
+To learn which AI environments (MCP clients) people use with the Wolfram tools and which tools and prompts get used, the built-in local MCP servers (`Wolfram`, `WolframAlpha`, `WolframLanguage`, and `WolframPacletDevelopment`) record basic usage data for each server session and submit it to Wolfram. The data never contains content: no tool arguments, prompt arguments, results, code, or queries. It is not anonymous, though: every session carries the [product identity information](#product-identity-information) — license, activation key, machine ID, product, release, and so on — that the paclet manager sends with every request to the Wolfram paclet server, so sessions can be related to the Wolfram installation they came from (and to the cloud user, when the server kernel is connected to the Wolfram Cloud). Each session also says whether the server runs under the [standalone MCP server](#standalone-mcp-server) product and, if so, what that product reports about itself.
 
 Cloud-deployed servers (see [cloud-deployment.md](cloud-deployment.md)) do not collect usage data.
 
@@ -18,6 +18,8 @@ For each local server session (one server process, from start to exit):
 | `ServerName` | The name of the MCP server, e.g. `"WolframLanguage"` |
 | `ClientInformation` | The `params` of the client's `initialize` request: `clientInfo` (name and version of the MCP client), `protocolVersion`, and `capabilities`. `null` until `initialize` has been received |
 | `Events` | One event per `tools/call` and `prompts/get` request (see below) |
+| `StandaloneMCPServer` | `true` when the server runs under the [standalone MCP server](#standalone-mcp-server) product, `false` for a regular kernel (`$StandaloneMCPServer`) |
+| `StandaloneMCPServerInformation` | The information the standalone MCP server product publishes about itself (version, build, and so on); an empty object for a regular kernel (`$StandaloneMCPServerInformation`) |
 | `PacletVersion` | The version of Wolfram/AgentTools |
 | `LastUpdated` | `AbsoluteTime[TimeZone -> 0]` of the last change |
 | `ActivationKey`, `CloudUserUUID`, `Language`, `LicenseID`, `LicenseProcesses`, `LicenseSubprocesses`, `MachineID`, `MaxLicenseProcesses`, `MaxLicenseSubprocesses`, `ProductIDName`, `ReleaseID`, `SystemID` | The [product identity information](#product-identity-information) described below, at the top level of the same association |
@@ -49,7 +51,18 @@ Every session file, and therefore every submission, also carries the product ide
 | `ReleaseID` | `SystemInformation["Kernel", "ReleaseID"]`, e.g. `"15.0.1.0 (13811065, 202607025984)"` | The version in the `User-Agent` header |
 | `SystemID` | `$SystemID` | `Mathematica-systemID` |
 
-Integers, reals, strings, and `Null` are stored as they are; any other value is stored as its `InputForm` string, so an unlimited process count is `"Infinity"` and a missing cloud connection gives `"None"` (`WriteRawJSONString` cannot encode `Infinity` or `None` themselves). The values are read again each time the session file is written, so a session whose server kernel connects to the cloud later on picks up the `CloudUserUUID`.
+The session file holds the kernel's values as they are. When the payload is written as JSON, integers, reals, strings, booleans, and `Null` are written natively, a `DateObject` becomes an ISO 8601 string in UTC (`"2026-08-01T12:00:00.000Z"`), and any other value becomes its `InputForm` string, so an unlimited process count is `"Infinity"` and a missing cloud connection gives `"None"` (`WriteRawJSONString` cannot encode `Infinity` or `None` themselves; the conversion is the `jsonConvert` function that `writeRawJSONString` and `writeRawJSONFile` in `Kernel/Files.wl` pass as its `"ConversionFunction"`). The values are read again each time the session file is written, so a session whose server kernel connects to the cloud later on picks up the `CloudUserUUID`.
+
+### Standalone MCP Server
+
+The standalone MCP server is a Wolfram kernel that only runs the MCP server, without a full Mathematica installation and under its own licensing. Two exported symbols, defined in `Kernel/Server/Server.wl`, describe it:
+
+| Symbol | Regular kernel | Standalone MCP server |
+|--------|----------------|-----------------------|
+| `$StandaloneMCPServer` | `False` | `True` |
+| `$StandaloneMCPServerInformation` | `<| |>` | An association with string keys describing the product: version, build, and so on |
+
+Nothing in the paclet sets them. The standalone application sets both after loading the paclet (loading resets them to the defaults); since they are Protected like every other exported symbol, that takes `Unprotect` or a `Block` around `StartMCPServer`. Every session file carries both values, so sessions of the standalone product can be told apart from those of a regular installation, and the product identity information above is recorded for them as well. The information association goes into the payload as it is, with values that JSON cannot represent written as strings like the product identity values, so it must only describe the product, never anything about a session.
 
 ## When It Is Recorded
 
@@ -94,7 +107,7 @@ A server session cannot know that it is over, and an MCP client may leave a serv
 
 ## How It Is Submitted
 
-Submission happens in later sessions. Ten seconds after any tracked server starts, a scheduled task submits every session file that has not been modified for 24 hours by POSTing the file's contents as JSON (`Content-Type: application/json`) to
+Submission happens in later sessions. Ten seconds after any tracked server starts, a scheduled task submits every session file that has not been modified for 24 hours by POSTing the file's contents as UTF-8 encoded JSON (`Content-Type: application/json`) to
 
 ```
 https://www.wolframcloud.com/obj/wolframai-content/api/1.0/usage
@@ -116,14 +129,14 @@ Usage tracking must never interfere with the server: every hook is wrapped in `u
 
 | File | Role |
 |------|------|
-| `Kernel/Server/UsageData.wl` | Session state, enabling logic (including the global setting: `getGlobalUsageDataSetting`, `setGlobalUsageDataSetting`), recording, the product identity information (`$productIdentityInfo`), the session file, the keep-alive task, and locked submission |
+| `Kernel/Server/UsageData.wl` | Session state, enabling logic (including the global setting: `getGlobalUsageDataSetting`, `setGlobalUsageDataSetting`), recording, the product identity information (`$productIdentityInfo`), the session file, its JSON encoding (`usageDataJSON`), the keep-alive task, and locked submission |
 | `Kernel/Server/Local.wl` | Calls `initializeUsageData` when the server starts and `recordUsageData` after each handled request |
-| `Kernel/Server/Server.wl` | Declares the session symbols and hooks shared with the local transport |
+| `Kernel/Server/Server.wl` | Declares the session symbols and hooks shared with the local transport; defines `$StandaloneMCPServer` and `$StandaloneMCPServerInformation` |
 | `Kernel/DefaultServers.wl` | `"EnableUsageData" -> True` for the built-in servers |
 | `Kernel/InstallMCPServer.wl` | The `"SubmitUsageData"` option and the `SUBMIT_USAGE_DATA` environment variable |
-| `Kernel/Files.wl` | The global settings file: `$globalSettingsFile`, `readGlobalSettings`, `getGlobalSetting`, `setGlobalSetting` |
+| `Kernel/Files.wl` | The global settings file: `$globalSettingsFile`, `readGlobalSettings`, `getGlobalSetting`, `setGlobalSetting`; `writeRawJSONString` and `writeRawJSONFile`, whose `jsonConvert` conversion function writes the values that JSON cannot represent as strings |
 | `Kernel/PreferencesContent.wl` | The opt-out checkbox, which reads and writes the global setting |
-| `Tests/UsageData.wlt`, `Tests/Files.wlt`, `Tests/PreferencesContent.wlt` | Unit tests and server integration tests; tests of the global settings file; tests of the checkbox |
+| `Tests/UsageData.wlt`, `Tests/Files.wlt`, `Tests/PreferencesContent.wlt` | Unit tests and server integration tests; tests of the global settings file and the JSON writers; tests of the checkbox |
 
 Session state lives in the `` Wolfram`AgentTools`Server` `` context: `$mcpSessionID`, `$mcpClientInformation`, `$usageEvents` (an `` Internal`Bag ``), and `$usageDataEnabled`. Tunable settings (endpoint, timeouts, intervals, limits) are file-scoped variables at the top of `Kernel/Server/UsageData.wl`.
 
