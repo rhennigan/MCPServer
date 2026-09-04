@@ -70,6 +70,7 @@ See [building.md](docs/building.md) for detailed instructions.
 - `Assets/`: Static assets bundled with the paclet
   - `Apps/`: HTML and JSON files for [MCP Apps](docs/mcp-apps.md) UI resources
   - `Cloud/`: Landing- and admin-page HTML/CSS/JS for [cloud-deployed MCP servers](Specs/CloudDeployment.md) — the dynamic `index.html` + `assets/` (fetches `/api/info`) and the self-contained owner-only `admin.html` (calls `/api/admin`), read via `PacletObject[…]["AssetLocation","Cloud"]`
+- `ResourceFunctions/`: Local copies of the Wolfram Function Repository functions the paclet uses (one `.wl` file per function, each wrapped in its own context), which `importResourceFunction` in `Kernel/Common.wl` prefers over fetching from the repository so that builds and source loads work without cloud access; not declared in `PacletInfo.wl`, so not part of the built paclet (see [building.md](docs/building.md#resource-functions-and-offline-builds) and [ResourceFunctions/README.md](ResourceFunctions/README.md))
 - `FrontEnd/`: FrontEnd extension resources loaded by the notebook front end
   - `Assets/AgentTools.wl`: Localized strings (`AgentToolsStrings`) and graphics (`AgentToolsExpressions`) used by `CreatePreferencesContent` (see [preferences-content.md](docs/preferences-content.md))
 - `Scripts/`: Contains utility scripts for building, testing, and running the paclet
